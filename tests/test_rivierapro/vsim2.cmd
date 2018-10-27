@@ -1,0 +1,1 @@
+-c -quiet -do edalize_run.tcl
