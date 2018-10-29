@@ -37,7 +37,9 @@ setup(
     ],
     install_requires=[
         'pytest>=3.3.0',
-        'pyyaml',
         'Jinja2>=2.8',
+    ],
+    tests_require=[
+        'pyyaml',
     ],
 )
