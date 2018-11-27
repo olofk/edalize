@@ -9,13 +9,13 @@ NEXTPNR_OPTIONS     := multiple nextpnr_options
 all: $(TARGET).bin
 
 %.blif: %.ys
-	yosys -q -s $?
+	yosys -l yosys.log -q -s $?
 %_arachne.asc: $(PCF_FILE) %.blif
 	arachne-pnr $(ARACHNE_PNR_OPTIONS) -q -p $? -o $@
 %.json: %.ys
-	yosys -q -s $?
+	yosys -l yosys.log -q -s $?
 %_next.asc: %.json
-	nextpnr-ice40 -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
+	nextpnr-ice40 -l next.log -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
 %.bin: %_$(PNR).asc
 	icepack $< $@
 

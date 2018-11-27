@@ -6,14 +6,14 @@ NEXTPNR_OPTIONS     := {{ nextpnr_options|join(' ') }}
 all: $(TARGET).bit
 
 %.json: %.ys
-	yosys -q -s $?
+	yosys -l yosys.log -q -s $?
 %.config: %.json
-	nextpnr-ecp5 $(NEXTPNR_OPTIONS) --json $? --textcfg $@
+	nextpnr-ecp5 -l next.log -q $(NEXTPNR_OPTIONS) --json $? --textcfg $@
 %.bit: %.config
 	ecppack $< $@
 
 build-gui: $(TARGET).json
-	nextpnr-ecp5 $(NEXTPNR_OPTIONS) --json $? --textcfg $@ --gui
+	nextpnr-ecp5 -q $(NEXTPNR_OPTIONS) --json $? --textcfg $@ --gui
 
 clean:
 	rm -f  $(TARGET).json $(TARGET).config $(TARGET).bit
