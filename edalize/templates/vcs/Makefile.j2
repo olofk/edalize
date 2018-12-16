@@ -1,0 +1,10 @@
+all: {{ name }}
+
+{{ name }}: {{ name }}.scr
+	vcs -full64 -t {{ toplevel }} -f {{ name }}.scr -o $@ {% for option in tool_options %} {{ option }} {% endfor %}
+
+run: {{ name }}
+	{{ name }} -l vcs.log {% for plusarg in plusargs %} {{ plusarg }} {% endfor %}
+
+clean:
+	$(RM) {{ name }}
