@@ -37,11 +37,6 @@ clean:
             f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, self._param_value_str(value, '"')))
         for id in incdirs:
             f.write("+incdir+" + id+'\n')
-        timescale = self.tool_options.get('timescale')
-        if timescale:
-            with open(os.path.join(self.work_root, 'timescale.v'), 'w') as tsfile:
-                tsfile.write("`timescale {}\n".format(timescale))
-            f.write('timescale.v\n')
         for src_file in src_files:
             if src_file.file_type in ["verilogSource",
 		                      "verilogSource-95",
