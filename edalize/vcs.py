@@ -13,19 +13,6 @@ class Vcs(Edatool):
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
-    MAKEFILE_TEMPLATE = """
-all: $(TARGET)
-
-$(TARGET):
-	vcs -full64 -t $(TOPLEVEL) -f $(TARGET).scr -o $@ $(VCS_OPTIONS)
-
-run: $(TARGET)
-	$(TARGET) -l vcs.log $(EXTRA_OPTIONS)
-
-clean:
-	$(RM) $(TARGET)
-"""
-
     def configure_main(self):
         f = open(os.path.join(self.work_root, self.name+'.scr'),'w')
 
