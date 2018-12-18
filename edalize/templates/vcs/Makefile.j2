@@ -1,6 +1,6 @@
 all: {{ name }}
 
-{{ name }}:
+{{ name }}: {{ name }}.scr
 	vcs -full64 -t {{ toplevel }} -f {{ name }}.scr -o $@ {% for option in tool_options %} {{ option }} {% endfor %}
 
 run: {{ name }}
