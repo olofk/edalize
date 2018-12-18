@@ -25,14 +25,7 @@ class Vcs(Edatool):
         for id in incdirs:
             f.write("+incdir+" + id+'\n')
         for src_file in src_files:
-            if src_file.file_type in ["verilogSource",
-		                      "verilogSource-95",
-		                      "verilogSource-2001",
-		                      "verilogSource-2005",
-                                      "systemVerilogSource",
-			              "systemVerilogSource-3.0",
-			              "systemVerilogSource-3.1",
-			              "systemVerilogSource-3.1a"]:
+            if (src_file.file_type.startswith("verilogSource") or src_file.file_type.startswith("systemVerilogSource")):
                 f.write(src_file.name+'\n')
             elif src_file.file_type == 'user':
                 pass
@@ -42,8 +35,8 @@ class Vcs(Edatool):
 
         f.close()
 
+        plusargs = []
         if self.plusarg:
-            plusargs = []
             for key, value in self.plusarg.items():
                 plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
 
