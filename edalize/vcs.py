@@ -55,18 +55,19 @@ clean:
 
         f.close()
 
-        with open(os.path.join(self.work_root, 'Makefile'), 'w') as f:
+        if self.plusarg:
+            plusargs = []
+            for key, value in self.plusarg.items():
+                plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
 
-            f.write("TARGET           := {}\n".format(self.name))
-            f.write("TOPLEVEL         := {}\n".format(self.toplevel))
-            f.write("VCS_OPTIONS := {}\n".format(' '.join(self.tool_options.get('vcs_options', []))))
-            if self.plusarg:
-                plusargs = []
-                for key, value in self.plusarg.items():
-                    plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
-                f.write("EXTRA_OPTIONS    ?= {}\n".format(' '.join(plusargs)))
+        template_vars = {
+            'name'              : self.name,
+            'tool_options'      : self.tool_options,
+            'toplevel'          : self.toplevel,
+            'plusargs'          : plusargs
+        }
 
-            f.write(self.MAKEFILE_TEMPLATE)
+        self.render_template('Makefile.j2', os.path.join(self.work_root, 'Makefile'), template_vars)
 
     def run_main(self):
         args = ['run']
