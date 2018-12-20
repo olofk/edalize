@@ -11,10 +11,17 @@ $(error Environment variable MODEL_TECH was not found. It should be set to <mode
 endif
 
 CC ?= gcc
-CFLAGS := -c -std=c99 -fPIC -fno-stack-protector -g -m32
+CFLAGS := -c -std=c99 -fPIC -fno-stack-protector -g
 
 LD ?= ld
-LDFLAGS := -shared -E -melf_i386
+LDFLAGS := -shared -E
+
+#Try to determine if ModelSim is 32- or 64-bit.
+#To manually override, set the environment MTI_VCO_MODE to 32 or 64
+ifeq ($(findstring 64, $(shell $(MODEL_TECH)/../vco)),)
+CFLAGS  += -m32
+LDFLAGS += -melf_i386
+endif
 
 RM ?= rm
 INCS := -I$(MODEL_TECH)/../include
