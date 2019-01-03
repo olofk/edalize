@@ -62,7 +62,7 @@ class Modelsim(Edatool):
     tool_options = {'lists' : {'vlog_options' : 'String',
                                'vsim_options' : 'String'}}
 
-    argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
+    argtypes = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
 
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), 'w')
@@ -119,6 +119,8 @@ class Modelsim(Edatool):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), 'w')
         _parameters = []
         for key, value in self.vlogparam.items():
+            _parameters += ['{}={}'.format(key, self._param_value_str(value))]
+        for key, value in self.generic.items():
             _parameters += ['{}={}'.format(key, self._param_value_str(value))]
         _plusargs = []
         for key, value in self.plusarg.items():
