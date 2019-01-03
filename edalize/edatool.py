@@ -171,6 +171,9 @@ class Edatool(object):
                     raise RuntimeError("Invalid data type {} for parameter '{}'".format(str(e),
                                                                                         name))
                 param_type_map[name.replace('-','_')] = _paramtype
+            else:
+                logging.warn("Parameter '{}' has unsupported type '{}' for requested backend".format(name, _paramtype))
+
         #Parse arguments
         for key,value in sorted(vars(parser.parse_args(args)).items()):
 
