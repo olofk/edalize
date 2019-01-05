@@ -30,7 +30,7 @@ class Vivado(Edatool):
 
     tool_options = {'members' : {'part' : 'String'}}
 
-    argtypes = ['vlogdefine', 'vlogparam']
+    argtypes = ['vlogdefine', 'vlogparam', 'generic']
 
     """ Configuration is the first phase of the build
 
@@ -54,6 +54,7 @@ class Vivado(Edatool):
             'toplevel'     : self.toplevel,
             'vlogparam'    : self.vlogparam,
             'vlogdefine'   : self.vlogdefine,
+            'generic'      : self.generic,
             'has_vhdl2008' : has_vhdl2008,
             'has_xci'      : has_xci,
         }
