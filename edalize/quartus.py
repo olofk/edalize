@@ -22,7 +22,7 @@ class Quartus(Edatool):
                                  'device' : 'String'},
                     'lists'   : {'quartus_options' : 'String'}}
 
-    argtypes = ['vlogdefine', 'vlogparam']
+    argtypes = ['vlogdefine', 'vlogparam', 'generic']
 
     # Define Standard edition to be our default version
     isPro = False
@@ -80,6 +80,7 @@ class Quartus(Edatool):
             'toplevel'     : self.toplevel,
             'vlogparam'    : self.vlogparam,
             'vlogdefine'   : self.vlogdefine,
+            'generic'      : self.generic,
             'has_vhdl2008' : has_vhdl2008
         }
 

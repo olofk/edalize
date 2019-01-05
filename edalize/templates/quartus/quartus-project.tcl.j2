@@ -12,6 +12,11 @@ set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 set_parameter -name {{k}} {{v|param_value_str}}
 {% endfor %}
 {% endif %}
+{% if generic %}
+{% for k, v in generic.items() %}
+set_parameter -name {{k}} {{v|param_value_str}}
+{% endfor %}
+{% endif %}
 {% if vlogdefine %}
 {% for k, v in vlogdefine.items() %}
 set_global_assignment -name VERILOG_MACRO "{{ k }}={{ v|param_value_str }}"
