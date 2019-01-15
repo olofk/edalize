@@ -7,7 +7,7 @@ RUN_OPTIONS = a few run_options
 all: analyze
 
 run:
-	ghdl --elab-run $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+	ghdl --elab-run $(ANALYZE_OPTIONS) $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 analyze:
 	ghdl -a $(STD) $(ANALYZE_OPTIONS) vhdl_file.vhd
 	ghdl -a $(STD) $(ANALYZE_OPTIONS) --work=libx vhdl_lfile

@@ -51,7 +51,7 @@ RUN_OPTIONS = {run_options}
 all: analyze
 
 run:
-	ghdl --elab-run $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+	ghdl --elab-run $(ANALYZE_OPTIONS) $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 analyze:
 """.format(std=' '.join(stdarg),
            toplevel=self.toplevel,
