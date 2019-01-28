@@ -13,7 +13,7 @@ files         List of File_        Contains all the HDL source files, constraint
 hooks         List of FIXME        Extra commands to execute at various stages of the project build/run
 name          String               **Required** Name of the project
 parameters    Dict of `Parameter`_ Specifies build- and run-time parameters, such as verilog plusargs, VHDL generics, verilog defines etc.
-tool_options  `Tool Options`_      A dictionary of tool-specific options. 
+tool_options  `Tool Options`_      A dictionary of tool-specific options.
 toplevel     List of String        Toplevel module(s) for the project
 vpi          List of `VPI`         VPI modules to build for the project
 ============ ===================== ===========
@@ -203,14 +203,14 @@ vsim_options     List of String        Extra options for running the simulation 
 spyglass
 ~~~~~~~~
 
-=================== ===================== ===========
-Field Name          Type                  Description
-=================== ===================== ===========
-methodology         String                TODO
-goals               List of String        TODO
-rule_parameters     List of String        TODO
-spyglass_parameters List of String        TODO
-=================== ===================== ===========
+=================== ===================== ====================================== ===========
+Field Name          Type                  Default                                Description
+=================== ===================== ====================================== ===========
+methodology         String                ``GuideWare/latest/block/rtl_handoff`` Selected methodology
+goals               List of String        ``[ 'lint/lint_rtl' ]``                Selected goals
+rule_parameters     List of String        ``[]``                                 Options passed with ``set_option`` to Spyglass, e.g. "handlememory yes" to prevent error SYNTH_5273 on generic RAM descriptions
+spyglass_parameters List of String        ``[]``                                 Rule parameters passed with ``set_parameter`` to Spyglass, e.g. ``handle_static_caselabels yes`` to allow localparam to be used in case labels (e.g. in state machines)
+=================== ===================== ====================================== ===========
 
 trellis
 ~~~~~~~
