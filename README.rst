@@ -49,7 +49,7 @@ Let Edalize know we intend to use Icarus Verilog for our simulation::
 
 And put it all into a single data structure together with some info about the toplevel and name for the project::
 
-  eda_api = {
+  edam = {
     'files'        : files,
     'name'         : 'blinky_project',
     'parameters'   : parameters,
@@ -58,7 +58,7 @@ And put it all into a single data structure together with some info about the to
 
 Now we need to get ourselves a backend object from Edalize::
 
-  backend = get_edatool(tool)(eda_api=eda_api,
+  backend = get_edatool(tool)(edam=edam,
                               work_root=work_root)
 
 Create the directory and the project files::

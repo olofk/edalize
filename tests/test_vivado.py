@@ -42,9 +42,9 @@ def test_vivado_minimal():
     name = 'test_vivado_minimal_0'
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
-    eda_api = {'name'         : name}
+    edam = {'name'         : name}
 
-    backend = get_edatool(tool)(eda_api=eda_api, work_root=work_root)
+    backend = get_edatool(tool)(edam=edam, work_root=work_root)
     backend.configure([])
 
     compare_files(ref_dir, work_root, [

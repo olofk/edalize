@@ -39,11 +39,11 @@ def setup_backend_minimal(name, tool, files):
 
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
-    eda_api = {'name'         : name,
+    edam = {'name'         : name,
                'files'        : files,
                'toplevel'     : 'top_module',
     }
-    return (get_edatool(tool)(eda_api=eda_api,
+    return (get_edatool(tool)(edam=edam,
                               work_root=work_root), work_root)
 
 
@@ -64,14 +64,14 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
                 with open(_f, 'a'):
                     os.utime(_f, None)
 
-    eda_api = {'name'         : name,
+    edam = {'name'         : name,
                'files'        : files,
                'parameters'   : parameters,
                'tool_options' : {tool : tool_options},
                'toplevel'     : 'top_module',
                'vpi'          :  _vpi}
 
-    backend = get_edatool(tool)(eda_api=eda_api, work_root=work_root)
+    backend = get_edatool(tool)(edam=edam, work_root=work_root)
     return (backend, args, work_root)
 
 files = [

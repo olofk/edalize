@@ -1,27 +1,27 @@
 import pytest
 import shutil
 
-def test_empty_eda_api():
+def test_empty_edam():
     import tempfile
     from edalize import get_edatool
 
-    (h, eda_api_file) = tempfile.mkstemp()
+    (h, edam_file) = tempfile.mkstemp()
 
     with pytest.raises(TypeError):
-        backend = get_edatool('icarus')(eda_api=None)
+        backend = get_edatool('icarus')(edam=None)
 
-def test_incomplete_eda_api():
+def test_incomplete_edam():
     from edalize import get_edatool
 
     with pytest.raises(RuntimeError) as excinfo:
-        backend = get_edatool('icarus')(eda_api={'version' : '0.1.2'})
+        backend = get_edatool('icarus')(edam={'version' : '0.1.2'})
     assert "Missing required parameter 'name'" in str(excinfo.value)
 
-    backend = get_edatool('icarus')(eda_api={
+    backend = get_edatool('icarus')(edam={
         'version' : '0.1.2',
         'name' : 'corename'})
 
-def test_eda_api_files():
+def test_edam_files():
     from edalize import get_edatool
     files = [{'name' : 'plain_file'},
              {'name' : 'subdir/plain_include_file',
@@ -33,10 +33,10 @@ def test_eda_api_files():
               'is_include_file' : True,
               'file_type' : 'verilogSource',
               'logical_name' : 'libx'}]
-    eda_api = {'files' : files,
-               'name' : 'test_eda_api_files'}
+    edam = {'files' : files,
+               'name' : 'test_edam_files'}
 
-    backend = get_edatool('icarus')(eda_api=eda_api)
+    backend = get_edatool('icarus')(edam=edam)
     (parsed_files, incdirs) = backend._get_fileset_files()
 
     assert len(parsed_files) == 2
@@ -49,7 +49,7 @@ def test_eda_api_files():
 
     assert incdirs == ['subdir', '.']
 
-def test_eda_api_hooks():
+def test_edam_hooks():
     import os.path
     import tempfile
     from edalize import get_edatool
@@ -62,11 +62,11 @@ def test_eda_api_hooks():
         {'cmd' : ['sh', os.path.join(ref_dir, script)],
          'name' : script}]}
 
-    work_root = tempfile.mkdtemp(prefix='eda_api_hooks_')
-    eda_api = {'hooks' : hooks,
+    work_root = tempfile.mkdtemp(prefix='edam_hooks_')
+    edam = {'hooks' : hooks,
                'name' : script}
 
-    backend = get_edatool('icarus')(eda_api=eda_api,
+    backend = get_edatool('icarus')(edam=edam,
                                     work_root=work_root)
     with pytest.raises(RuntimeError):
         backend.build()

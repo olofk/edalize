@@ -39,22 +39,24 @@ class FileAction(argparse.Action):
 
 class Edatool(object):
 
-    def __init__(self, eda_api, work_root=None):
+    def __init__(self, edam=None, work_root=None, eda_api=None):
         _tool_name = self.__class__.__name__.lower()
 
+        if not edam:
+            edam = eda_api
         try:
-            self.name = eda_api['name']
+            self.name = edam['name']
         except KeyError:
             raise RuntimeError("Missing required parameter 'name'")
 
-        self.tool_options = eda_api.get('tool_options', {}).get(_tool_name, {})
+        self.tool_options = edam.get('tool_options', {}).get(_tool_name, {})
 
-        self.files       = eda_api.get('files', [])
-        self.toplevel    = eda_api.get('toplevel', [])
-        self.vpi_modules = eda_api.get('vpi', [])
+        self.files       = edam.get('files', [])
+        self.toplevel    = edam.get('toplevel', [])
+        self.vpi_modules = edam.get('vpi', [])
 
-        self.hooks       = eda_api.get('hooks', {})
-        self.parameters  = eda_api.get('parameters', {})
+        self.hooks       = edam.get('hooks', {})
+        self.parameters  = edam.get('parameters', {})
 
         self.work_root = work_root
         self.env = os.environ.copy()

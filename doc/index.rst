@@ -10,7 +10,7 @@ Welcome to Edalize's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   eda_api/api.rst
+   edam/api.rst
    source/modules.rst
 
 

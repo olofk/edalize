@@ -45,10 +45,10 @@ def test_icarus_minimal():
     name = 'test_'+tool+'_minimal_0'
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
-    eda_api = {'name'         : name,
+    edam = {'name'         : name,
                'toplevel' : 'top'}
 
-    backend = get_edatool(tool)(eda_api=eda_api, work_root=work_root)
+    backend = get_edatool(tool)(edam=edam, work_root=work_root)
     backend.configure([])
 
     compare_files(ref_dir, work_root, ['Makefile',
