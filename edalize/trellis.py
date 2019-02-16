@@ -28,6 +28,8 @@ class Trellis(Edatool):
             for f in src_files:
                 if f.file_type in ['verilogSource']:
                     yosys_file.write("read_verilog {}\n".format(f.name))
+                elif f.file_type in ['systemVerilogSource']:
+                    yosys_file.write("read_verilog -sv {}\n".format(f.name))
                 elif f.file_type == 'user':
                     pass
             for key, value in self.vlogparam.items():
