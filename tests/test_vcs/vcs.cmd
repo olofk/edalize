@@ -1,0 +1,1 @@
+-full64 -t top_module -f test_vcs_0.scr -o test_vcs_0
