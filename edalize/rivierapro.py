@@ -11,6 +11,8 @@ exit
 """
 class Rivierapro(Edatool):
 
+    _description = "Riviera Pro proprietary simulator from Aldec"
+
     tool_options = {'lists' : {'vlog_options' : 'String',
                                'vsim_options' : 'String'}}
 

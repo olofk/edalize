@@ -66,6 +66,8 @@ clean_{name}:
 
 class Modelsim(Edatool):
 
+    _description = "ModelSim proprietary simulator from Mentor Graphics"
+
     tool_options = {'lists' : {'vlog_options' : 'String',
                                'vsim_options' : 'String'}}
 

@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 class Ghdl(Edatool):
 
+    _description = "GHDL is an open source VHDL simulator, which fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and partially the 1076-2008 version of VHDL"
     tool_options = {'lists' : {'analyze_options' : 'String',
                                'run_options'     : 'String'}}
     argtypes = ['vlogparam']

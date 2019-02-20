@@ -4,6 +4,8 @@ from edalize.edatool import Edatool
 
 class Icestorm(Edatool):
 
+    _description = "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route"
+
     tool_options = {
         'lists' : {
             'arachne_pnr_options' : 'String',

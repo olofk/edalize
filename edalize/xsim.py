@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 class Xsim(Edatool):
 
+    _description = "XSim simulator from the Xilinx Vivado suite"
+
     tool_options = {'lists' : {'xelab_options' : 'String',
                                'xsim_options'  : 'String'}}
 
