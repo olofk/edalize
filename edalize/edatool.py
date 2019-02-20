@@ -77,6 +77,22 @@ class Edatool(object):
         )
         self.jinja_env.filters['param_value_str'] = jinja_filter_param_value_str
 
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            desc = getattr(cls, '_description', 'Options for {} backend'.format(cls.__name__))
+            opts = {'description' : desc}
+            for group in ['members', 'lists', 'dicts']:
+                if group in cls.tool_options:
+                    opts[group] = []
+                    for _name, _type in cls.tool_options[group].items():
+                        opts[group].append({'name' : _name,
+                                            'type' : _type,
+                                            'desc' : ''})
+            return opts
+        else:
+            logger.warning("Invalid API version '{}' for get_tool_options".format(api_ver))
+
     def configure(self, args):
         logger.info("Setting up project")
         self.configure_pre(args)
