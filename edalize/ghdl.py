@@ -11,6 +11,19 @@ class Ghdl(Edatool):
                                'run_options'     : 'String'}}
     argtypes = ['vlogparam']
 
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'lists' : [
+                        {'name' : 'analyze_options',
+                         'type' : 'String',
+                         'desc' : 'Options to use for the analyze (ghdl -a) phase'},
+                        {'name' : 'run_options',
+                         'type' : 'String',
+                         'desc' : 'Options to use for the run (ghdl -r) phase'},
+                        ]}
+
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files()
         # ghdl does not support mixing incompatible versions

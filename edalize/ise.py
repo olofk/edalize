@@ -4,6 +4,7 @@ from edalize.edatool import Edatool
 
 class Ise(Edatool):
 
+    _description = "Xilinx ISE Design Suite"
     tool_options = {'members' : {'family'  : 'String',
                                  'device'  : 'String',
                                  'package' : 'String',
@@ -61,6 +62,25 @@ program -p 1
 saveCDF -file {cdf_file}
 quit
 """
+
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'members' : [
+                        {'name' : 'family',
+                         'type' : 'String',
+                         'desc' : 'FPGA family (e.g. spartan6)'},
+                        {'name' : 'device',
+                         'type' : 'String',
+                         'desc' : 'FPGA device (e.g. xc6slx45)'},
+                        {'name' : 'package',
+                         'type' : 'String',
+                         'desc' : 'FPGA package (e.g. csg324)'},
+                        {'name' : 'speed',
+                         'type' : 'String',
+                         'desc' : 'FPGA speed grade (e.g. -2)'},
+                    ]}
 
     def configure_main(self):
         for i in ['family', 'device', 'package', 'speed']:

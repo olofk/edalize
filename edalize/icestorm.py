@@ -19,6 +19,26 @@ class Icestorm(Edatool):
 
     argtypes = ['vlogdefine', 'vlogparam']
 
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'members' : [
+                        {'name' : 'pnr',
+                         'type' : 'String',
+                         'desc' : 'Select Place & Route tool. Legal values are *arachne* for Arachne-PNR or *next* for nextpnr. Default is arachne'}],
+                    'lists' : [
+                        {'name' : 'arachne_pnr_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for Arachnhe PNR'},
+                        {'name' : 'nextpnr_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for nextpnr'},
+                        {'name' : 'yosys_synth_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for the synth_ice40 command'},
+                        ]}
+
     def configure_main(self):
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files()

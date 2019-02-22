@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 class Isim(Edatool):
 
+    _description = "Xilinx ISim simulator from ISE design suite"
     tool_options = {'lists' : {'fuse_options' : 'String',
                                'isim_options' : 'String'}}
 
@@ -47,6 +48,18 @@ run all
 quit
 """
 
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'lists' : [
+                        {'name' : 'fuse_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for compilation with FUSE'},
+                        {'name' : 'isim_options',
+                         'type' : 'String',
+                         'desc' : 'Additional run options for ISim'},
+                        ]}
     def configure_main(self):
         #Check if any VPI modules are present and display warning
         if len(self.vpi_modules) > 0:
