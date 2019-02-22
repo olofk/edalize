@@ -6,26 +6,29 @@ from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-""" Synopsys (formerly Atrenta) Spyglass Backend
+class Spyglass(Edatool):
+
+    _description = """ Synopsys (formerly Atrenta) Spyglass Backend
 
 Spyglass performs static source code analysis on HDL code and checks for common
 coding errors or coding style violations.
 
-Example snippet of a CAPI2 description file:
+Example snippet of a CAPI2 description file
 
-spyglass:
-  methodology: "GuideWare/latest/block/rtl_handoff"
-  goals:
-    - lint/lint_rtl
-  spyglass_options:
-    # prevent error SYNTH_5273 on generic RAM descriptions
-    - handlememory yes
-  rule_parameters:
-    # Allow localparam to be used in case labels (e.g. in state machines)
-    - handle_static_caselabels yes
+::
+
+   spyglass:
+     methodology: "GuideWare/latest/block/rtl_handoff"
+     goals:
+       - lint/lint_rtl
+     spyglass_options:
+       # prevent error SYNTH_5273 on generic RAM descriptions
+       - handlememory yes
+     rule_parameters:
+       # Allow localparam to be used in case labels (e.g. in state machines)
+       - handle_static_caselabels yes
 
 """
-class Spyglass(Edatool):
 
     tool_options = {
         'members' : {

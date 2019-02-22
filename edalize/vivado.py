@@ -8,15 +8,6 @@ logger = logging.getLogger(__name__)
 
 """ Vivado Backend
 
-The Vivado backend executes Xilinx Vivado to build systems and program the FPGA.
-
-The backend defines the following section:
-
-    [vivado]
-    part = <part name> # Format <family><device><package>-<speedgrade>
-    hw_device = <device name> # Format <family><device>_0
-    top_module = <RTL module name>
-
 A core (usually the system core) can add the following files:
 
 - Standard design sources
@@ -28,9 +19,20 @@ A core (usually the system core) can add the following files:
 """
 class Vivado(Edatool):
 
+    _description = "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA"
+
     tool_options = {'members' : {'part' : 'String'}}
 
     argtypes = ['vlogdefine', 'vlogparam', 'generic']
+
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'members' : [
+                        {'name' : 'part',
+                         'type' : 'String',
+                         'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)'}]}
 
     """ Configuration is the first phase of the build
 

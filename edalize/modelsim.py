@@ -66,12 +66,25 @@ clean_{name}:
 
 class Modelsim(Edatool):
 
-    _description = "ModelSim proprietary simulator from Mentor Graphics"
+    _description = "ModelSim simulator from Mentor Graphics"
 
     tool_options = {'lists' : {'vlog_options' : 'String',
                                'vsim_options' : 'String'}}
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
+
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'lists' : [
+                        {'name' : 'vlog_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for compilation with vlog'},
+                        {'name' : 'vsim_options',
+                         'type' : 'String',
+                         'desc' : 'Additional run options for vsim'},
+                        ]}
 
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), 'w')

@@ -33,12 +33,33 @@ V$(TOP_MODULE).mk:
 
 class Verilator(Edatool):
 
+    _description = "Verilator is the fastest free Verilog HDL simulator, and outperforms most commercial simulators"
     tool_options = {'members' : {'mode' : 'String',
                                  'cli_parser' : 'String'},
                     'lists'   : {'libs' : 'String',
                                  'verilator_options' : 'String'}}
 
     argtypes = ['cmdlinearg', 'plusarg', 'vlogdefine', 'vlogparam']
+
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'members' : [
+                        {'name' : 'mode',
+                         'type' : 'String',
+                         'desc' : 'Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for systemC testbenches or *lint-only* to only perform linting on the Verilog code'},
+                        {'name' : 'cli-parser',
+                         'type' : 'String',
+                         'desc' : 'Select whether FuseSoC should handle command-line arguments (*mamanged*) or if they should be passed directly to the verilated model (*raw*). Default is *managed*'}],
+                    'lists' : [
+                        {'name' : 'libs',
+                         'type' : 'String',
+                         'desc' : 'Extra libraries for the verilated model to link against'},
+                        {'name' : 'verilator_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for verilator'},
+                        ]}
 
     def _managed_parser(self):
         return not 'cli_parser' in self.tool_options or self.tool_options['cli_parser'] == 'managed'

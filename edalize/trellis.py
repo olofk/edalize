@@ -4,6 +4,7 @@ from edalize.edatool import Edatool
 
 class Trellis(Edatool):
 
+    _description = "Project Trellis enables a fully open-source flow for ECP5 FPGAs using Yosys for Verilog synthesis and nextpnr for place and route"
     tool_options = {
         'lists' : {
             'nextpnr_options'     : 'String',
@@ -12,6 +13,19 @@ class Trellis(Edatool):
     }
 
     argtypes = ['vlogdefine', 'vlogparam']
+
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'lists' : [
+                        {'name' : 'nextpnr_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for nextpnr'},
+                        {'name' : 'yosys_synth_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for the synth_ecp5 command'},
+                        ]}
 
     def configure_main(self):
         # Write yosys script file

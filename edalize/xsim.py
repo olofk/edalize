@@ -50,6 +50,18 @@ quit
 add_wave -radix hex /
 run all
 """
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'lists' : [
+                        {'name' : 'xelab_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for compilation with xelab'},
+                        {'name' : 'xsim_options',
+                         'type' : 'String',
+                         'desc' : 'Additional run options for XSim'},
+                        ]}
 
     def configure_main(self):
         self._write_config_files()

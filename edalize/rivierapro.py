@@ -11,12 +11,25 @@ exit
 """
 class Rivierapro(Edatool):
 
-    _description = "Riviera Pro proprietary simulator from Aldec"
+    _description = "Riviera Pro simulator from Aldec"
 
     tool_options = {'lists' : {'vlog_options' : 'String',
                                'vsim_options' : 'String'}}
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
+
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'lists' : [
+                        {'name' : 'vlog_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for compilation with vlog'},
+                        {'name' : 'vsim_options',
+                         'type' : 'String',
+                         'desc' : 'Additional run options for vsim'},
+                        ]}
 
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), 'w')

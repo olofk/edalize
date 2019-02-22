@@ -10,13 +10,9 @@ from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-""" Quartus Backend
-
-The Quartus backend supports Intel Quartus Std and Pro editions to build
-systems and program the FPGA.
-
-"""
 class Quartus(Edatool):
+
+    _description = "The Quartus backend supports Intel Quartus Std and Pro editions to build systems and program the FPGA"
 
     tool_options = {'members' : {'family' : 'String',
                                  'device' : 'String'},
@@ -29,6 +25,22 @@ class Quartus(Edatool):
     makefile_template = {False : "quartus-std-makefile.j2",
                          True  : "quartus-pro-makefile.j2"}
 
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : cls._description,
+                    'members' : [
+                        {'name' : 'family',
+                         'type' : 'String',
+                         'desc' : 'FPGA family (e.g. Cyclone V)'},
+                        {'name' : 'device',
+                         'type' : 'String',
+                         'desc' : 'FPGA device (e.g. 5CSXFC6D6F31C8ES)'}],
+                    'lists' : [
+                        {'name' : 'quartus_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for Quartus'},
+                        ]}
     """ Initial setup of the class
 
     This calls the parent constructor, but also identifies whether
