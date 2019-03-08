@@ -192,13 +192,29 @@ class Edatool(object):
             else:
                 logging.warn("Parameter '{}' has unsupported type '{}' for requested backend".format(name, _paramtype))
 
+        #backend_args.
+        backend_args = parser.add_argument_group("Backend arguments")
+        _opts = self.__class__.get_doc(0)
+        for _opt in _opts.get('members', []) + _opts.get('lists', []):
+            backend_args.add_argument('--'+_opt['name'],
+                                      help=_opt['desc'])
         #Parse arguments
+        backend_members = [x['name'] for x in _opts.get('members', [])]
+        backend_lists   = [x['name'] for x in _opts.get('lists', [])]
         for key,value in sorted(vars(parser.parse_args(args)).items()):
 
-            paramtype = param_type_map[key]
             if value is None:
                 continue
+            if key in backend_members:
+                self.tool_options[key] = value
+                continue
+            if key in backend_lists:
+                if not key in self.tool_options:
+                    self.tool_options[key] = []
+                self.tool_options[key] += value.split(' ')
+                continue
 
+            paramtype = param_type_map[key]
             if type(value) == bool:
                 _value = value
             else:
