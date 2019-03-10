@@ -42,7 +42,7 @@ class Vcs(Edatool):
 
         template_vars = {
             'name'              : self.name,
-            'tool_options'      : self.tool_options,
+            'tool_options'      : self.tool_options.get('vcs_options', []),
             'toplevel'          : self.toplevel,
             'plusargs'          : plusargs
         }
