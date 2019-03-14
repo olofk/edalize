@@ -84,7 +84,7 @@ class Icestorm(Edatool):
             raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
 
         pnr = self.tool_options.get('pnr', 'arachne')
-        if not pnr in ['arachne', 'next']:
+        if not pnr in ['arachne', 'next', 'none']:
             raise RuntimeError("Invalid pnr option '{}'. Valid values are 'arachne' for Arachne-pnr or 'next' for nextpnr".format(pnr))
         # Write Makefile
         arachne_pnr_options = self.tool_options.get('arachne_pnr_options', [])
@@ -95,6 +95,7 @@ class Icestorm(Edatool):
             'pnr'                 : pnr,
             'arachne_pnr_options' : arachne_pnr_options,
             'nextpnr_options'     : nextpnr_options,
+            'default_target'      : 'json' if pnr == 'none' else 'bin',
         }
         self.render_template('icestorm-makefile.j2',
                              'Makefile',

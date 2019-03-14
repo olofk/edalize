@@ -6,7 +6,7 @@ PNR      ?= {{ pnr }}
 ARACHNE_PNR_OPTIONS := {{ arachne_pnr_options|join(' ') }}
 NEXTPNR_OPTIONS     := {{ nextpnr_options|join(' ') }}
 
-all: $(TARGET).bin
+all: $(TARGET).{{ default_target }}
 
 %.blif: %.ys
 	yosys -l yosys.log -q -s $?
