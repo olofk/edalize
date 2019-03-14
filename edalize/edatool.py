@@ -9,22 +9,23 @@ from jinja2 import Environment, PackageLoader
 logger = logging.getLogger(__name__)
 
 # Jinja2 tests and filters, available in all templates
-def jinja_filter_param_value_str(value, str_quote_style=""):
+def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     """ Convert a parameter value to string suitable to be passed to an EDA tool
 
     Rules:
-    - Booleans are represented as 0/1
+    - Booleans are represented as 0/1 or "true"/"false" depending on the
+      bool_is_str argument
     - Strings are either passed through or enclosed in the characters specified
       in str_quote_style (e.g. '"' or '\\"')
     - Everything else (including int, float, etc.) are converted using the str()
       function.
     """
-    if type(value) == bool:
+    if (type(value) == bool) and not bool_is_str:
         if (value) == True:
             return '1'
         else:
             return '0'
-    elif type(value) == str:
+    elif type(value) == str or ((type(value) == bool) and bool_is_str):
         return str_quote_style + str(value) + str_quote_style
     else:
         return str(value)
@@ -261,8 +262,8 @@ class Edatool(object):
                                       logical_name))
         return (src_files, incdirs)
 
-    def _param_value_str(self, param_value, str_quote_style=""):
-        return jinja_filter_param_value_str(param_value, str_quote_style)
+    def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):
+        return jinja_filter_param_value_str(param_value, str_quote_style, bool_is_str)
 
     def _run_scripts(self, scripts):
         for script in scripts:
