@@ -143,7 +143,7 @@ class Modelsim(Edatool):
         for key, value in self.vlogparam.items():
             _parameters += ['{}={}'.format(key, self._param_value_str(value))]
         for key, value in self.generic.items():
-            _parameters += ['{}={}'.format(key, self._param_value_str(value))]
+            _parameters += ['{}={}'.format(key, self._param_value_str(value, bool_is_str=True))]
         _plusargs = []
         for key, value in self.plusarg.items():
             _plusargs += ['{}={}'.format(key, self._param_value_str(value))]
