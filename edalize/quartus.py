@@ -81,6 +81,12 @@ class Quartus(Edatool):
 
         self.isPro = (version['edition'] == "Pro")
 
+        # Quartus Pro 17 and later use 1/0 for boolean generics. Other editions
+        # and versions use "true"/"false" strings
+        if (version['edition'] != "Pro") or (int(version['major']) < 17):
+            self.jinja_env.filters['generic_value_str'] = \
+                partial(self.jinja_env.filters['generic_value_str'], bool_is_str=True)
+
     """ Configuration is the first phase of the build
 
     This writes the project TCL files and Makefile. It first collects all
