@@ -53,23 +53,33 @@ class Quartus(Edatool):
         super(Quartus, self).__init__(edam, work_root)
 
         # Acquire quartus_sh identification information from available tool if
-        # possible. We always default to Standard if a problem is encountered
-        selected = "Standard"
+        # possible. We always default to version 18.1 Standard if a problem is encountered
+        version = {
+            'major':   '18',
+            'minor':   '1',
+            'patch':   '0',
+            'date':    '01/01/2019',
+            'edition': 'Standard'
+        }
         try:
             qsh_text = subprocess.Popen(["quartus_sh", "--version"], stdout=subprocess.PIPE, env=os.environ).communicate()[0]
 
             # Attempt to pattern match the output. Examples include
             # Version 16.1.2 Build 203 01/18/2017 SJ Standard Edition
             # Version 17.1.2 Build 304 01/31/2018 SJ Pro Edition
-            match = re.search("Version \d+\.\d+\.\d+ Build \d+ \d{2}/\d{2}/\d{4} SJ (Standard|Pro) Edition", str(qsh_text))
+            version_exp = r'Version (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+) ' + \
+                          r'Build (?P<build>\d+) (?P<date>\d{2}/\d{2}/\d{4}) SJ '    + \
+                          r'(?P<edition>(Lite|Standard|Pro)) Edition'
+
+            match = re.search(version_exp, str(qsh_text))
             if match != None:
-                selected = match.group(1)
+                version = match.groupdict()
         except:
             # It is possible for this to have been run on a box without
             # Quartus being installed. Allow these errors to be ignored
             logger.warning("Unable to recognise Quartus version via quartus_sh")
 
-        self.isPro = (selected == "Pro")
+        self.isPro = (version['edition'] == "Pro")
 
     """ Configuration is the first phase of the build
 
