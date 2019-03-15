@@ -76,7 +76,8 @@ class Edatool(object):
             trim_blocks = True,
             lstrip_blocks = True,
         )
-        self.jinja_env.filters['param_value_str'] = jinja_filter_param_value_str
+        self.jinja_env.filters['param_value_str']   = jinja_filter_param_value_str
+        self.jinja_env.filters['generic_value_str'] = jinja_filter_param_value_str
 
     @classmethod
     def get_doc(cls, api_ver):

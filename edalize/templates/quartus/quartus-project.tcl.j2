@@ -14,7 +14,7 @@ set_parameter -name {{k}} {{v|param_value_str}}
 {% endif %}
 {% if generic %}
 {% for k, v in generic.items() %}
-set_parameter -name {{k}} {{v|param_value_str}}
+set_parameter -name {{k}} {{v|generic_value_str}}
 {% endfor %}
 {% endif %}
 {% if vlogdefine %}
