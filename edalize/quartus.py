@@ -78,8 +78,9 @@ class Quartus(Edatool):
 
         self.isPro = (version['edition'] == "Pro")
 
-        # Before Quartus 17 VHDL boolean generics need to be strings
-        if int(version['major']) < 17:
+        # Quartus Pro 17 and later use 1/0 for boolean generics. Other editions
+        # and versions use "true"/"false" strings
+        if (version['edition'] != "Pro") or (int(version['major']) < 17):
             self.jinja_env.filters['generic_value_str'] = \
                 partial(self.jinja_env.filters['generic_value_str'], bool_is_str=True)
 
