@@ -143,24 +143,23 @@ class Verilator(Edatool):
         _s = os.path.join(self.work_root, 'verilator.{}.log')
         self._run_tool('make', args)
 
-    def run(self, args):
+    def run_pre(self, args):
         if self.tool_options['mode'] == 'lint-only':
             return
         if self._managed_parser():
             self.parse_args(args, self.argtypes)
 
-            _args = []
+            self.args = []
             for key, value in self.plusarg.items():
-                _args += ['+{}={}'.format(key, self._param_value_str(value))]
+                self.args += ['+{}={}'.format(key, self._param_value_str(value))]
             for key, value in self.cmdlinearg.items():
-                _args += ['--{}={}'.format(key, self._param_value_str(value))]
+                self.args += ['--{}={}'.format(key, self._param_value_str(value))]
         else:
-            _args = args
+            self.args = args
 
         if 'pre_run' in self.hooks:
             self._run_scripts(self.hooks['pre_run'])
 
+    def run_main(self):
         logger.info("Running simulation")
-        self._run_tool('./V' + self.toplevel, _args)
-
-        self.run_post()
+        self._run_tool('./V' + self.toplevel, self.args)

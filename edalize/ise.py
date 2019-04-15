@@ -146,7 +146,7 @@ quit
         tcl_file.write('project set top "{}"\n'.format(self.toplevel))
         tcl_file.close()
 
-    def run(self, remaining):
+    def run_main(self):
         pgm_file_name = os.path.join(self.work_root, self.name+'.pgm')
         self._write_pgm_file(pgm_file_name)
         self._run_tool('impact', ['-batch', pgm_file_name])

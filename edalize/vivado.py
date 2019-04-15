@@ -106,7 +106,7 @@ class Vivado(Edatool):
     correct FPGA board and then downloads the bitstream. The tcl script is then
     executed in Vivado's batch mode.
     """
-    def run(self, remaining):
+    def run_main(self):
         tcl_file_name = self.name+"_pgm.tcl"
         self._write_program_tcl_file(tcl_file_name)
         self._run_tool('vivado', ['-mode', 'batch', '-source', tcl_file_name ])

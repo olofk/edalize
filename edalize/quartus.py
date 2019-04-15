@@ -215,7 +215,7 @@ class Quartus(Edatool):
 
     """ Program the FPGA
     """
-    def run(self, remaining):
+    def run_main(self):
         args = ['--mode=jtag']
         args += remaining
         args += ['-o']
