@@ -72,6 +72,11 @@ class Vivado(Edatool):
         self.render_template('vivado-run.tcl.j2',
                              self.name+"_run.tcl")
 
+        self.render_template('vivado-program.tcl.j2',
+                             self.name+"_pgm.tcl",
+                             {'part' : self.tool_options.get('part', ""),
+                              'bitstream_name' : self.name+'.bit'})
+
     def src_file_filter(self, f):
         def _vhdl_source(f):
             s = 'read_vhdl'
@@ -107,17 +112,5 @@ class Vivado(Edatool):
     executed in Vivado's batch mode.
     """
     def run_main(self):
-        tcl_file_name = self.name+"_pgm.tcl"
-        self._write_program_tcl_file(tcl_file_name)
-        self._run_tool('vivado', ['-mode', 'batch', '-source', tcl_file_name ])
+        self._run_tool('vivado', ['-mode', 'batch', '-source', self.name+"_pgm.tcl"])
 
-    """ Write the programming TCL file """
-    def _write_program_tcl_file(self, program_tcl_filename):
-        template_vars = {}
-        template_vars['bitstream_name'] = self.name+'.bit'
-        template_vars['hw_device'] = self.tool_options['hw_device']
-
-        template = self.jinja_env.get_template('vivado/vivado-program.tcl.j2')
-        tcl_file_path = os.path.join(self.work_root, program_tcl_filename)
-        with open(tcl_file_path, 'w') as program_tcl_file:
-            program_tcl_file.write(template.render(template_vars))
