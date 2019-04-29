@@ -26,7 +26,7 @@ setup(
     author = "Olof Kindgren",
     author_email = "olof.kindgren@gmail.com",
     description = ("Edalize is a library for interfacing EDA tools, primarily for FPGA development"),
-    license = "",
+    license = "BSD-2-Clause",
     keywords = ["VHDL", "verilog", "EDA", "hdl", "rtl", "synthesis", "FPGA", "simulation", "Xilinx", "Altera"],
     url = "https://github.com/olofk/edalize",
     long_description=read('README.rst'),
