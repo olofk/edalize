@@ -1,0 +1,1 @@
+-i run-ascentlint.tcl -log ascentlint.log
