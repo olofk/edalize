@@ -1,10 +1,10 @@
 all: {{ name }}
 
 {{ name }}: {{ name }}.scr
-	vcs -full64 -top {{ toplevel }} -f {{ name }}.scr -o $@ {% for option in tool_options %} {{ option }} {% endfor %}
+	vcs -full64 -top {{ toplevel }} -f {{ name }}.scr -o $@ {% for option in vcs_options %} {{ option }}{% endfor %}
 
 run: {{ name }}
-	./{{ name }} -l vcs.log {% for plusarg in plusargs %} {{ plusarg }} {% endfor %}
+	./{{ name }} -l vcs.log {% for plusarg in plusargs %} {{ plusarg }} {% endfor %}{% for option in run_options %} {{ option }}{% endfor %}
 
 clean:
 	$(RM) {{ name }}
