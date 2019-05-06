@@ -22,7 +22,8 @@ common coding errors or coding style violations.
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        self._write_fileset_to_f_file(os.path.join(self.work_root, 'sources.f'))
+        self._write_fileset_to_f_file(os.path.join(self.work_root, 'sources.f'),
+                                      include_vlogparams = False)
 
         tcl_source_files = [f for f in src_files if f.file_type == 'tclSource']
         waiver_files = [f for f in src_files if f.file_type == 'waiver']
@@ -32,6 +33,7 @@ common coding errors or coding style violations.
             'tcl_source_files' : tcl_source_files,
             'waiver_files'     : waiver_files,
             'toplevel'         : self.toplevel,
+            'vlogparam'        : self.vlogparam,
         }
 
         self.render_template('run-ascentlint.tcl.j2',

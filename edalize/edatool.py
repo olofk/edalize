@@ -295,7 +295,7 @@ class Edatool(object):
             _s = "'{}' exited with an error code"
             raise RuntimeError(_s.format(cmd))
 
-    def _write_fileset_to_f_file(self, output_file):
+    def _write_fileset_to_f_file(self, output_file, include_vlogparams = True):
         """ Write a file list (*.f) file
 
         Returns a list of all files which were not added to the *.f file
@@ -309,9 +309,10 @@ class Edatool(object):
                 define_str = self._param_value_str(param_value = value)
                 f.write('+define+{}={}\n'.format(key, define_str))
 
-            for key, value in self.vlogparam.items():
-                param_str = self._param_value_str(param_value = value, str_quote_style = '"')
-                f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, param_str))
+            if include_vlogparams:
+                for key, value in self.vlogparam.items():
+                    param_str = self._param_value_str(param_value = value, str_quote_style = '"')
+                    f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, param_str))
 
             for id in incdirs:
                 f.write("+incdir+" + id + '\n')

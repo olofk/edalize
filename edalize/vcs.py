@@ -14,7 +14,8 @@ class Vcs(Edatool):
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
     def configure_main(self):
-        self._write_fileset_to_f_file(os.path.join(self.work_root, self.name + '.scr'))
+        self._write_fileset_to_f_file(os.path.join(self.work_root, self.name + '.scr'),
+                                      include_vlogparams = True)
 
         plusargs = []
         if self.plusarg:

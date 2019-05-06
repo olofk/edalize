@@ -4,6 +4,6 @@ source tcl_file.tcl
 
 
 analyze -f sources.f
-elaborate top_module
+elaborate -params { { vlogparam_bool 1 } { vlogparam_int 42 } { vlogparam_str "hello" } } top_module
 report_policy -skip_empty_summary_status -compat -output ascentlint.rpt NEW
 exit
