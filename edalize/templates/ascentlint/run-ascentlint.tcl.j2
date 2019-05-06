@@ -9,6 +9,8 @@ source {{ waiver_file.name }}
 {% endfor %}
 
 analyze -f sources.f
-elaborate {{ toplevel }}
+elaborate {% if vlogparam -%}
+-params { {% for k, v in vlogparam.items() %}{ {{ k }} {{ v|param_value_str(str_quote_style = '"') }} } {% endfor -%} }
+{%- endif%} {{ toplevel }}
 report_policy -skip_empty_summary_status -compat -output ascentlint.rpt NEW
 exit
