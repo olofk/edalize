@@ -75,6 +75,7 @@ class Edatool(object):
             loader = PackageLoader(__package__, 'templates'),
             trim_blocks = True,
             lstrip_blocks = True,
+            keep_trailing_newline = True,
         )
         self.jinja_env.filters['param_value_str']   = jinja_filter_param_value_str
         self.jinja_env.filters['generic_value_str'] = jinja_filter_param_value_str
