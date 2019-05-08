@@ -25,7 +25,7 @@ def test_verilator_configure():
         work_root    = tempfile.mkdtemp()
         edam_file = os.path.join(ref_dir, mode, core_name) + '.eda.yml'
 
-        backend = get_edatool(tool)(edam=yaml.load(open(edam_file)), work_root=work_root)
+        backend = get_edatool(tool)(edam=yaml.safe_load(open(edam_file)), work_root=work_root)
 
         if mode is 'cc':
             _params = params
@@ -48,7 +48,7 @@ def test_verilator_run():
 
     work_root    = tempfile.mkdtemp()
     edam_file = os.path.join(ref_dir_cc, core_name)+ '.eda.yml'
-    backend = get_edatool(tool)(edam=yaml.load(open(edam_file)), work_root=work_root)
+    backend = get_edatool(tool)(edam=yaml.safe_load(open(edam_file)), work_root=work_root)
     dummy_exe = 'V'+backend.tool_options['top_module']
     shutil.copy(os.path.join(ref_dir, dummy_exe),
                 os.path.join(work_root, dummy_exe))
