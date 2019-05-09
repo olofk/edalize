@@ -5,10 +5,32 @@ from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
+
 class Vcs(Edatool):
 
+    _description = """ Synopsys VCS Backend
+
+VCS is one of the "Big 3" simulators.
+
+Example snippet of a CAPI2 description file for VCS:
+
+.. code:: yaml
+
+   vcs:
+     vcs_options:
+       # Compile-time options passed to the vcs command
+       - -debug_access+pp
+       - -debug_access+all
+     run_options:
+       # Run-time options passed to the simulation itself
+       - -licqueue
+"""
+
     tool_options = {
-        'lists' : {'vcs_options' : 'String'}
+        'lists' : {
+            'vcs_options' : 'String', # compile-time options (passed to VCS)
+            'run_options' : 'String', # runtime options (passed to simulation)
+        }
     }
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
@@ -24,7 +46,8 @@ class Vcs(Edatool):
 
         template_vars = {
             'name'              : self.name,
-            'tool_options'      : self.tool_options.get('vcs_options', []),
+            'vcs_options'       : self.tool_options.get('vcs_options', []),
+            'run_options'       : self.tool_options.get('run_options', []),
             'toplevel'          : self.toplevel,
             'plusargs'          : plusargs
         }

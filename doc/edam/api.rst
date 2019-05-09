@@ -228,7 +228,8 @@ vcs
 ================ ===================== ===========
 Field Name       Type                  Description
 ================ ===================== ===========
-vcs_options      List of String        Extra options for VCS
+vcs_options      List of String        Compile time options passed to ``vcs``
+run_options      List of String        Runtime options passed to the simulation
 ================ ===================== ===========
 
 verilator
