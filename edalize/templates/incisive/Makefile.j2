@@ -1,0 +1,10 @@
+all: {{ name }}
+
+{{ name }}: {{ name }}.scr
+	ncverilog -C -f {{ name }}.scr +nctop+{{ toplevel }} {% for option in incisive_options %} {{ option }}{% endfor %}
+
+run: {{ name }}
+	ncverilog +nclibdirname+INCA_libs -r worklib.{{ toplevel }}:v {% for plusarg in plusargs %} {{ plusarg }} {% endfor %}{% for option in run_options %} {{ option }}{% endfor %}
+
+clean:
+	$(RM) {{ name }}
