@@ -59,6 +59,5 @@ Example snippet of a CAPI2 description file for Incisive:
             plusargs = []
             for key, value in self.plusarg.items():
                 plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
-            args.append('EXTRA_OPTIONS='+' '.join(plusargs))
 
         self._run_tool('make', args)
