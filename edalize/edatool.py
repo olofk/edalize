@@ -13,6 +13,7 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     """ Convert a parameter value to string suitable to be passed to an EDA tool
 
     Rules:
+
     - Booleans are represented as 0/1 or "true"/"false" depending on the
       bool_is_str argument
     - Strings are either passed through or enclosed in the characters specified
