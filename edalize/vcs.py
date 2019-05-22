@@ -35,6 +35,16 @@ Example snippet of a CAPI2 description file for VCS:
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
+
+    def _filelist_has_filetype(self, file_list, string, match_type='prefix'):
+        for f in file_list:
+            if match_type == 'prefix' and f.file_type.startswith(string):
+                return True
+            elif match_type == 'exact' and f.file_type == string:
+                return True
+        return False
+
+
     def configure_main(self):
         self._write_fileset_to_f_file(os.path.join(self.work_root, self.name + '.scr'),
                                       include_vlogparams = True)
@@ -44,9 +54,18 @@ Example snippet of a CAPI2 description file for VCS:
             for key, value in self.plusarg.items():
                 plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
 
+        vcs_options = self.tool_options.get('vcs_options', [])
+
+        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        if self._filelist_has_filetype(src_files, 'systemVerilog', match_type = 'prefix'):
+            vcs_options.append('-sverilog')
+
+        if self._filelist_has_filetype(src_files, 'verilog2001', match_type = 'exact'):
+            vcs_options.append('+v2k')
+
         template_vars = {
             'name'              : self.name,
-            'vcs_options'       : self.tool_options.get('vcs_options', []),
+            'vcs_options'       : vcs_options,
             'run_options'       : self.tool_options.get('run_options', []),
             'toplevel'          : self.toplevel,
             'plusargs'          : plusargs
