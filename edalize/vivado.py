@@ -21,7 +21,10 @@ class Vivado(Edatool):
 
     _description = "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA"
 
-    tool_options = {'members' : {'part' : 'String'}}
+    tool_options = {'members' : {'part' : 'String',
+                                 'jtag_freq': 'Integer',
+                                 'hw_target': 'String',
+    }}
 
     argtypes = ['vlogdefine', 'vlogparam', 'generic']
 
@@ -29,10 +32,20 @@ class Vivado(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : cls._description,
-                    'members' : [
-                        {'name' : 'part',
-                         'type' : 'String',
-                         'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)'}]}
+                    'members' : [{
+                        'name' : 'part',
+                        'type' : 'String',
+                        'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)',
+                    }, {
+                        'name' : 'jtag_freq',
+                        'type' : 'Integer',
+                        'desc' : 'The frequency for jtag communication',
+                    }, {
+                        'name' : 'hw_target',
+                        'type' : 'Description',
+                        'desc' : 'Board identifier (e.g. */xilinx_tcf/Digilent/123456789123A',
+                        }
+                    ]}
 
     """ Configuration is the first phase of the build
 
@@ -72,10 +85,19 @@ class Vivado(Edatool):
         self.render_template('vivado-run.tcl.j2',
                              self.name+"_run.tcl")
 
+        # Convert jtag_freq from float to integer if necessary.
+        jtag_freq = self.tool_options.get('jtag_freq', '""')
+        if 'jtag_freq' in self.tool_options:
+            jtag_freq = int(self.tool_options['jtag_freq'])
+        else:
+            jtag_freq = '""'
         self.render_template('vivado-program.tcl.j2',
                              self.name+"_pgm.tcl",
                              {'part' : self.tool_options.get('part', ""),
-                              'bitstream_name' : self.name+'.bit'})
+                              'bitstream_name' : self.name+'.bit',
+                              'hw_target': self.tool_options.get('hw_target', '""'),
+                              'jtag_freq': jtag_freq,
+                             })
 
     def src_file_filter(self, f):
         def _vhdl_source(f):
@@ -113,4 +135,3 @@ class Vivado(Edatool):
     """
     def run_main(self):
         self._run_tool('vivado', ['-mode', 'batch', '-source', self.name+"_pgm.tcl"])
-

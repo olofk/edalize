@@ -1,33 +1,44 @@
 # Auto-generated program tcl file
 
+set hw_target {{ hw_target }}
 set bit {{ bitstream_name }}
 set part {{ part }}
+set jtag_freq {{ jtag_freq }}
 
 open_hw
 connect_hw_server
 
 set found 0
 
-foreach { hw_target } [get_hw_targets] {
+if {$hw_target == ""} {
+    set hw_targets [get_hw_targets]
+} else {
+    set hw_targets [get_hw_targets $hw_target]
+}
+
+foreach hw_target $hw_targets {
     current_hw_target $hw_target
     open_hw_target
     foreach { hw_device } [get_hw_devices] {
-	if { [string first [get_property PART $hw_device] $part] == 0 } {
-	    puts "Found hardware target with a ${part} device."
-	    current_hw_device $hw_device
-	    set found 1
-	    break
-	}
+        if { [string first [get_property PART $hw_device] $part] == 0 } {
+            puts "Found hardware target with a ${part} device."
+            current_hw_device $hw_device
+            set found 1
+            break
+	    }
     }
     if {$found} {break}
     close_hw_target
 }
+
 if { $found == 0 } {
     puts "Did not find board with a ${part} device."
     exit 1
 }
 
 set_property PROGRAM.FILE $bit [current_hw_device]
+if {$jtag_freq != ""} {
+  set_property PARAM.FREQUENCY $jtag_freq [get_hw_targets $hw_target]
+}
 program_hw_devices [current_hw_device]
 disconnect_hw_server
-
