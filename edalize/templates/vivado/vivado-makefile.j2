@@ -8,5 +8,14 @@ $(NAME).bit:  $(NAME)_run.tcl $(NAME).xpr
 $(NAME).xpr: $(NAME).tcl
 	vivado -mode batch -source $<
 
+ifdef HWTARGET
+program: $(NAME).bit $(NAME)_pgm.tcl
+	vivado -mode batch -source $(NAME)_pgm.tcl -tclargs $(HWTARGET)
+else
+program: $(NAME).bit $(NAME)_pgm.tcl
+	vivado -mode batch -source $(NAME)_pgm.tcl
+endif
+      
+
 build-gui: $(NAME).xpr
 	vivado $<

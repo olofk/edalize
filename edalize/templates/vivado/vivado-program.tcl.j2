@@ -5,6 +5,12 @@ set bit {{ bitstream_name }}
 set part {{ part }}
 set jtag_freq {{ jtag_freq }}
 
+# If a command line argument was passed then
+# we use it to override the hw_target.
+if {[llength $argv] > 0} {
+    set hw_target [lindex $argv 0]
+}
+
 open_hw
 connect_hw_server
 
