@@ -51,7 +51,7 @@ class Vivado(Edatool):
         template_vars = {
             'name'         : self.name,
             'src_files'    : src_files,
-            'incdirs'      : incdirs,
+            'incdirs'      : incdirs+['.'],
             'tool_options' : self.tool_options,
             'toplevel'     : self.toplevel,
             'vlogparam'    : self.vlogparam,

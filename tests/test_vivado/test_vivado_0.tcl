@@ -18,7 +18,7 @@ read_vhdl -vhdl2008 vhdl2008_file
 read_ip xci_file.xci
 read_xdc xdc_file.xdc
 
-set_property include_dirs [list .] [get_filesets sources_1]
+set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]
 set_property source_mgmt_mode None [current_project]
 upgrade_ip [get_ips]
