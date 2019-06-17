@@ -144,6 +144,9 @@ class Verilator(Edatool):
         self._run_tool('make', args)
 
     def run_pre(self, args):
+        #Default to cc mode if not specified
+        if not 'mode' in self.tool_options:
+            self.tool_options['mode'] = 'cc'
         if self.tool_options['mode'] == 'lint-only':
             return
         if self._managed_parser():
@@ -161,5 +164,7 @@ class Verilator(Edatool):
             self._run_scripts(self.hooks['pre_run'])
 
     def run_main(self):
+        if self.tool_options['mode'] == 'lint-only':
+            return
         logger.info("Running simulation")
         self._run_tool('./V' + self.toplevel, self.args)
