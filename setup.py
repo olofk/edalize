@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "edalize",
-    version = "0.1.3",
+    version = "0.1.4",
     packages=['edalize'],
     package_data = {'edalize' : [
         'templates/icestorm/icestorm-makefile.j2',
