@@ -55,6 +55,8 @@ class Icestorm(Edatool):
             for f in src_files:
                 if f.file_type in ['verilogSource']:
                     yosys_file.write("read_verilog {}\n".format(f.name))
+                if f.file_type in ['systemVerilogSource']:
+                    yosys_file.write("read_verilog -sv {}\n".format(f.name))
                 elif f.file_type == 'PCF':
                     pcf_files.append(f.name)
                 elif f.file_type == 'user':
