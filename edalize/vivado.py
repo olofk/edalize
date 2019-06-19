@@ -32,7 +32,11 @@ class Vivado(Edatool):
                     'members' : [
                         {'name' : 'part',
                          'type' : 'String',
-                         'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)'}]}
+                         'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)'},
+                        {'name' : 'pnr',
+                         'type' : 'String',
+                         'desc' : 'P&R tool. Allowed values are vivado (default) and none (to just run synthesis)'},
+                    ]}
 
     """ Configuration is the first phase of the build
 
@@ -72,6 +76,9 @@ class Vivado(Edatool):
         self.render_template('vivado-run.tcl.j2',
                              self.name+"_run.tcl")
 
+        self.render_template('vivado-synth.tcl.j2',
+                             self.name+"_synth.tcl")
+
         self.render_template('vivado-program.tcl.j2',
                              self.name+"_pgm.tcl",
                              {'part' : self.tool_options.get('part', ""),
@@ -105,6 +112,16 @@ class Vivado(Edatool):
                                      f.file_type))
         return ''
 
+    def build_main(self):
+        logger.info("Building")
+        args = []
+        if 'pnr' in self.tool_options:
+            if self.tool_options['pnr'] == 'vivado':
+                pass
+            elif self.tool_options['pnr'] == 'none':
+                args.append('synth')
+        self._run_tool('make', args)
+
     """ Program the FPGA
 
     For programming the FPGA a vivado tcl script is written that searches for the
@@ -112,5 +129,11 @@ class Vivado(Edatool):
     executed in Vivado's batch mode.
     """
     def run_main(self):
+        if 'pnr' in self.tool_options:
+            if self.tool_options['pnr'] == 'vivado':
+                pass
+            elif self.tool_options['pnr'] == 'none':
+                return
+
         self._run_tool('vivado', ['-mode', 'batch', '-source', self.name+"_pgm.tcl"])
 

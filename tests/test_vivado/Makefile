@@ -10,3 +10,8 @@ $(NAME).xpr: $(NAME).tcl
 
 build-gui: $(NAME).xpr
 	vivado $<
+
+$(NAME).runs/synth_1: $(NAME)_synth.tcl $(NAME).xpr
+	vivado -mode batch -source $^
+
+synth: $(NAME).runs/synth_1
