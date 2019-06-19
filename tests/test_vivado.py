@@ -6,7 +6,7 @@ def test_vivado():
     from edalize_common import compare_files, setup_backend, tests_dir
 
     ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['vlogdefine', 'vlogparam']
+    paramtypes   = ['generic', 'vlogdefine', 'vlogparam']
     name         = 'test_vivado_0'
     tool         = 'vivado'
     tool_options = {

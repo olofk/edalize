@@ -19,7 +19,7 @@ set_property generic {
 
 {% if generic -%}
 set_property generic {
-  {%- for k, v in generic.items() %}{{ k }}={{ v|param_value_str }} {% endfor -%}
+  {%- for k, v in generic.items() %}{{ k }}={{ v|generic_value_str(bool_is_str = True) }} {% endfor -%}
   } [get_filesets sources_1]
 {%- endif %}
 
