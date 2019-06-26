@@ -116,6 +116,7 @@ tool_options:
     mode: cc
     top_module: orpsoc_top
     verilator_options: [-Wno-fatal, --trace]
+    make_options: ['OPT_FAST=-O2']
 toplevel: orpsoc_top
 version: 0.1.1
 vpi:

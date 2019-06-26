@@ -3,3 +3,4 @@
 TOP_MODULE        := orpsoc_top
 VC_FILE           := mor1kx-generic_0.vc
 VERILATOR_OPTIONS := -Wno-fatal --trace
+MAKE_OPTIONS      := OPT_FAST=-O2
