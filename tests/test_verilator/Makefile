@@ -10,7 +10,7 @@ VERILATOR ?= $(VERILATOR_ROOT)/bin/verilator
 endif
 
 V$(TOP_MODULE): V$(TOP_MODULE).mk
-	$(MAKE) -f $<
+	$(MAKE) $(MAKE_OPTIONS) -f $<
 
 V$(TOP_MODULE).mk:
 	$(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
