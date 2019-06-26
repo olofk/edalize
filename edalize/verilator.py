@@ -48,10 +48,10 @@ class Verilator(Edatool):
                     'members' : [
                         {'name' : 'mode',
                          'type' : 'String',
-                         'desc' : 'Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for systemC testbenches or *lint-only* to only perform linting on the Verilog code'},
+                         'desc' : 'Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for SystemC testbenches or *lint-only* to only perform linting on the Verilog code'},
                         {'name' : 'cli_parser',
                          'type' : 'String',
-                         'desc' : 'Select whether FuseSoC should handle command-line arguments (*mamanged*) or if they should be passed directly to the verilated model (*raw*). Default is *managed*'}],
+                         'desc' : 'Select whether FuseSoC should handle command-line arguments (*managed*) or if they should be passed directly to the verilated model (*raw*). Default is *managed*'}],
                     'lists' : [
                         {'name' : 'libs',
                          'type' : 'String',
