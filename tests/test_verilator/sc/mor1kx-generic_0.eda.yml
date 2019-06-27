@@ -4,6 +4,8 @@ files:
 - {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilog/include/test-defines.v}
 - {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/rtl/verilog/wb_intercon.v}
 - {file_type: cSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilator/tb.cpp}
+- {file_type: user, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilator/other_user_file.data}
+- {file_type: vlt, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilator/waiver.vlt}
 name: mor1kx-generic_0
 tool_options:
   fusesoc: {}
