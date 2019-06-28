@@ -7,6 +7,7 @@ tests_dir = os.path.dirname(__file__)
 
 def compare_files(ref_dir, work_root, files):
     import os.path
+    import shutil
 
     for f in files:
         reference_file = os.path.join(ref_dir, f)
@@ -14,8 +15,12 @@ def compare_files(ref_dir, work_root, files):
 
         assert os.path.exists(generated_file)
 
+        if 'GOLDEN_RUN' in os.environ:
+            shutil.copy(generated_file, reference_file)
+
         with open(reference_file) as fref, open(generated_file) as fgen:
             assert fref.read() == fgen.read(), f
+
 
 def param_gen(paramtypes):
     args = []
