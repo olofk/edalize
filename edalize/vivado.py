@@ -100,6 +100,7 @@ class Vivado(Edatool):
             'xci'                 : 'read_ip',
             'xdc'                 : 'read_xdc',
             'tclSource'           : 'source',
+            'SDC'                 : 'read_xdc -unmanaged',
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
