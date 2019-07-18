@@ -7,7 +7,7 @@ xsim.dir/$(TARGET)/xsimk:
 	xelab $(TOPLEVEL) -prj $(TARGET).prj -snapshot $(TARGET) $(VLOG_DEFINES) $(VLOG_INCLUDES) $(VLOG_PARAMS) $(XELAB_OPTIONS)
 
 run: xsim.dir/$(TARGET)/xsimk
-	xsim --tclbatch run.tcl $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
+	xsim -R $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
 
 run-gui: xsim.dir/$(TARGET)/xsimk
-	xsim --gui --tclbatch run-gui.tcl $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
+	xsim --gui $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
