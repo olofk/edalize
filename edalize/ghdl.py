@@ -9,7 +9,7 @@ class Ghdl(Edatool):
     _description = "GHDL is an open source VHDL simulator, which fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and partially the 1076-2008 version of VHDL"
     tool_options = {'lists' : {'analyze_options' : 'String',
                                'run_options'     : 'String'}}
-    argtypes = ['vlogparam']
+    argtypes = ['vlogparam', 'generic']
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -90,9 +90,20 @@ analyze:
         cmd = 'make'
         args = ['run']
 
+        # GHDL doesn't support Verilog, but the backend used vlogparam since
+        # edalize didn't support generic at the time. Now that generic support
+        # has been added support for vlogparam is deprecated and will be
+        # removed in the future. For now support either option.
+
         if self.vlogparam:
+            logger.warning("GHDL backend support for vlogparam is deprecated and will be removed.\n"+
+                           "Use generic instead."
+            )
+
+        if self.vlogparam or self.generic:
             extra_options='EXTRA_OPTIONS='
-            for k,v in self.vlogparam.items():
-                extra_options += ' -g{}={}'.format(k,self._param_value_str(v,'"'))
+            for d in [self.vlogparam, self.generic]:
+                for k,v in d.items():
+                    extra_options += ' -g{}={}'.format(k,self._param_value_str(v,'"'))
             args.append(extra_options)
         self._run_tool(cmd, args)
