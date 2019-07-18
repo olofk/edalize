@@ -79,7 +79,9 @@ class Icestorm(Edatool):
             yosys_file.write("write_json {}.json\n".format(self.name))
 
         if not pcf_files:
-            raise RuntimeError("Icestorm backend requires a PCF file")
+            pcf_files = ['empty.pcf']
+            with open(os.path.join(self.work_root, pcf_files[0]), 'a'):
+                os.utime(os.path.join(self.work_root, pcf_files[0]), None)
         elif len(pcf_files) > 1:
             raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
 

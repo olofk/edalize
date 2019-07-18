@@ -62,9 +62,8 @@ def test_icestorm_no_pcf():
     tool         = 'icestorm'
 
     (backend, work_root) = setup_backend_minimal(name, tool, [])
-    with pytest.raises(RuntimeError) as e:
-        backend.configure('')
-    assert "Icestorm backend requires a PCF file" in str(e.value)
+    backend.configure('')
+    assert os.path.exists(os.path.join(work_root, 'empty.pcf'))
 
 def test_icestorm_multiple_pcf():
     import os
