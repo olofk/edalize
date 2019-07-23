@@ -108,17 +108,22 @@ class Verilator(Edatool):
             for include_dir in incdirs:
                 f.write("+incdir+" + include_dir + '\n')
                 f.write("-CFLAGS -I{}\n".format(include_dir))
+            vlt_files = []
+            vlog_files = []
             opt_c_files = []
             for src_file in src_files:
                 if src_file.file_type.startswith("systemVerilogSource") or src_file.file_type.startswith("verilogSource"):
-                    f.write(src_file.name + '\n')
+                    vlog_files.append(src_file.name)
                 elif src_file.file_type in ['cppSource', 'systemCSource', 'cSource']:
                     opt_c_files.append(src_file.name)
                 elif src_file.file_type == 'vlt':
-                    f.write(src_file.name + '\n')
+                    vlt_files.append(src_file.name)
                 elif src_file.file_type == 'user':
                     pass
 
+            if vlt_files:
+                f.write('\n'.join(vlt_files) + '\n')
+            f.write('\n'.join(vlog_files) + '\n')
             f.write('--top-module {}\n'.format(self.toplevel))
             f.write('--exe\n')
             f.write('\n'.join(opt_c_files))
