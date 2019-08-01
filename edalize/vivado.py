@@ -12,10 +12,10 @@ A core (usually the system core) can add the following files:
 
 - Standard design sources
 
-- Constraints: Supply xdc files with file_type=xdc
+- Constraints: Supply xdc files with file_type=xdc or unmanaged constraints with file_type SDC
 
 - IP: Supply the IP core xci file with file_type=xci and other files (like .prj)
-      as file_type=data
+      as file_type=user
 """
 class Vivado(Edatool):
 
