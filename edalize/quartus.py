@@ -217,7 +217,6 @@ class Quartus(Edatool):
     """
     def run_main(self):
         args = ['--mode=jtag']
-        args += remaining
         args += ['-o']
         args += ['p;' + self.name.replace('.', '_') + '.sof']
         self._run_tool('quartus_pgm', args)
