@@ -10,16 +10,19 @@ set found 0
 
 foreach { hw_target } [get_hw_targets] {
     current_hw_target $hw_target
-    open_hw_target
-    foreach { hw_device } [get_hw_devices] {
-	if { [string first [get_property PART $hw_device] $part] == 0 } {
-	    puts "Found hardware target with a ${part} device."
-	    current_hw_device $hw_device
-	    set found 1
-	    break
+    if {[catch {open_hw_target} res_open_hw] == 0} {
+	foreach { hw_device } [get_hw_devices] {
+	    if { [string first [get_property PART $hw_device] $part] == 0 } {
+		puts "Found hardware target with a ${part} device."
+		current_hw_device $hw_device
+		set found 1
+		break
+	    }
 	}
+	if {$found} {break}
+    } else {
+	puts "Catched $res_open_hw"
     }
-    if {$found} {break}
     close_hw_target
 }
 if { $found == 0 } {
