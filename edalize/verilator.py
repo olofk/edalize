@@ -34,19 +34,12 @@ V$(TOP_MODULE).mk:
 
 class Verilator(Edatool):
 
-    _description = "Verilator is the fastest free Verilog HDL simulator, and outperforms most commercial simulators"
-    tool_options = {'members' : {'mode' : 'String',
-                                 'cli_parser' : 'String'},
-                    'lists'   : {'libs' : 'String',
-                                 'verilator_options' : 'String'},
-                                 'make_options': 'String'}
-
     argtypes = ['cmdlinearg', 'plusarg', 'vlogdefine', 'vlogparam']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "Verilator is the fastest free Verilog HDL simulator, and outperforms most commercial simulators",
                     'members' : [
                         {'name' : 'mode',
                          'type' : 'String',

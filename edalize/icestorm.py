@@ -4,25 +4,12 @@ from edalize.edatool import Edatool
 
 class Icestorm(Edatool):
 
-    _description = "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route"
-
-    tool_options = {
-        'lists' : {
-            'arachne_pnr_options' : 'String',
-            'nextpnr_options'     : 'String',
-            'yosys_synth_options' : 'String',
-        },
-        'members': {
-            'pnr' : 'String',
-        }
-    }
-
     argtypes = ['vlogdefine', 'vlogparam']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route",
                     'members' : [
                         {'name' : 'pnr',
                          'type' : 'String',

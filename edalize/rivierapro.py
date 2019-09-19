@@ -11,17 +11,12 @@ exit
 """
 class Rivierapro(Edatool):
 
-    _description = "Riviera Pro simulator from Aldec"
-
-    tool_options = {'lists' : {'vlog_options' : 'String',
-                               'vsim_options' : 'String'}}
-
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "Riviera Pro simulator from Aldec",
                     'lists' : [
                         {'name' : 'vlog_options',
                          'type' : 'String',

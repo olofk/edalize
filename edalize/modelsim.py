@@ -66,17 +66,12 @@ clean_{name}:
 
 class Modelsim(Edatool):
 
-    _description = "ModelSim simulator from Mentor Graphics"
-
-    tool_options = {'lists' : {'vlog_options' : 'String',
-                               'vsim_options' : 'String'}}
-
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "ModelSim simulator from Mentor Graphics",
                     'lists' : [
                         {'name' : 'vlog_options',
                          'type' : 'String',

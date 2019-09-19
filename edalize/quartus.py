@@ -12,12 +12,6 @@ logger = logging.getLogger(__name__)
 
 class Quartus(Edatool):
 
-    _description = "The Quartus backend supports Intel Quartus Std and Pro editions to build systems and program the FPGA"
-
-    tool_options = {'members' : {'family' : 'String',
-                                 'device' : 'String'},
-                    'lists'   : {'quartus_options' : 'String'}}
-
     argtypes = ['vlogdefine', 'vlogparam', 'generic']
 
     # Define Standard edition to be our default version
@@ -28,7 +22,7 @@ class Quartus(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "The Quartus backend supports Intel Quartus Std and Pro editions to build systems and program the FPGA",
                     'members' : [
                         {'name' : 'family',
                          'type' : 'String',

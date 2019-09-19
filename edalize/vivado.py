@@ -19,16 +19,12 @@ A core (usually the system core) can add the following files:
 """
 class Vivado(Edatool):
 
-    _description = "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA"
-
-    tool_options = {'members' : {'part' : 'String'}}
-
     argtypes = ['vlogdefine', 'vlogparam', 'generic']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA",
                     'members' : [
                         {'name' : 'part',
                          'type' : 'String',
