@@ -38,7 +38,7 @@ EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(P
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
-	$(VSIM) -do "run -all" -c $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
+	$(VSIM) -do "run -all; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
 
 run-gui: work $(VPI_MODULES)
 	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
