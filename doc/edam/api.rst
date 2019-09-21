@@ -262,6 +262,7 @@ vunit
 Field Name       Type                  Description
 ================ ===================== ===========
 vunit_options    List of String        Extra options for the VUnit test runner
+add_libraries    List of String        A list of framework libraries to add. Allowed values include "array_util", "com", "json4hdl", "osvvm", "random", "verification_components"
 ================ ===================== ===========
 
 

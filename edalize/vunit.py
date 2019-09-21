@@ -17,12 +17,16 @@ class Vunit(Edatool):
         if api_ver == 0:
             return {'description': "VUnit testing framework",
                     'lists': [
+                        {'name': 'add_libraries',
+                         'type': 'String',
+                         'desc': 'A list of framework libraries to add. Allowed values include "array_util", "com", "json4hdl", "osvvm", "random", "verification_components"' },
                         {'name': 'vunit_options',
                          'type': 'String',
-                         'desc': 'Options to pass to the VUnit test runner'}]}
+                         'desc': 'Options to pass to the VUnit test runner'}
+                         ]}
 
     def configure_main(self):
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        (src_files, _incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
 
         library_names = [f.logical_name for f in src_files]
@@ -32,16 +36,16 @@ class Vunit(Edatool):
             file for file in src_files if file.logical_name == lib] for lib in library_names}
 
         escaped_name = self.name.replace(".", "_")
-
+        add_libraries = self.tool_options.get('add_libraries', [])
         self.render_template(self.testrunner_template,
                              self.testrunner,
                              {'name': escaped_name,
                               'libraries': libraries,
+                              'add_libraries': add_libraries,
                               'tool_options': self.tool_options})
 
     def run_main(self):
         vunit_options = self.tool_options.get('vunit_options', [])
-        _vsim_options = self.tool_options.get('vsim_options', [])
         testrunner = os.path.join(self.work_root, self.testrunner)
         self._run_tool(sys.executable, [testrunner] + vunit_options)
 

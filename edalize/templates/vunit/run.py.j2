@@ -4,6 +4,10 @@ from vunit import VUnit
 # Create VUnit instance by parsing command line arguments
 vu = VUnit.from_argv()
 
+{% for extlib in add_libraries %}
+vu.add_{{ extlib }}()
+{% endfor %}
+
 # Create library 'lib'
 {% for library, src_files in libraries.items() %}
 lib = vu.add_library("{{ library }}")
