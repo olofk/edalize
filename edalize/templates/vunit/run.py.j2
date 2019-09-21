@@ -1,0 +1,16 @@
+
+from vunit import VUnit
+
+# Create VUnit instance by parsing command line arguments
+vu = VUnit.from_argv()
+
+# Create library 'lib'
+{% for library, src_files in libraries.items() %}
+lib = vu.add_library("{{ library }}")
+{% for src_file in src_files if src_file|src_file_filter %}
+lib.add_source_files("{{ src_file|src_file_filter }}")
+{% endfor %}
+{% endfor %}
+
+# Run vunit function
+vu.main()

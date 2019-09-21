@@ -112,6 +112,7 @@ trellis         String                Options for Project Trellis_
 vcs             String                Options for Synopsys VCS_
 verilator       String                Options for Verilator_
 vivado          String                Options for Xilinx Vivado_
+vunit           String                Options for VUnit_
 xsim            String                Options for Xilinx XSim_
 =============== ===================== ===========
 
@@ -253,6 +254,16 @@ Field Name       Type                  Description
 ================ ===================== ===========
 part             String                Device identifier. e.g. *xc7a35tcsg324-1*
 ================ ===================== ===========
+
+vunit
+~~~~~~
+
+================ ===================== ===========
+Field Name       Type                  Description
+================ ===================== ===========
+vunit_options    List of String        Extra options for the VUnit test runner
+================ ===================== ===========
+
 
 xsim
 ~~~~
