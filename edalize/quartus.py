@@ -29,7 +29,10 @@ class Quartus(Edatool):
                          'desc' : 'FPGA family (e.g. Cyclone V)'},
                         {'name' : 'device',
                          'type' : 'String',
-                         'desc' : 'FPGA device (e.g. 5CSXFC6D6F31C8ES)'}],
+                         'desc' : 'FPGA device (e.g. 5CSXFC6D6F31C8ES)'},
+                        {'name' : 'board_device_index',
+                         'type' : 'String',
+                         'desc' : "Specifies the FPGA's device number in the JTAG chain. The device index specifies the device where the flash programmer looks for the Nios® II JTAG debug module. JTAG devices are numbered relative to the JTAG chain, starting at 1. Use the tool `jtagconfig` to determine the index."}],
                     'lists' : [
                         {'name' : 'quartus_options',
                          'type' : 'String',
@@ -213,4 +216,8 @@ class Quartus(Edatool):
         args = ['--mode=jtag']
         args += ['-o']
         args += ['p;' + self.name.replace('.', '_') + '.sof']
+
+        if 'board_device_index' in self.tool_options:
+            args[-1] += "@" + self.tool_options['board_device_index']
+
         self._run_tool('quartus_pgm', args)
