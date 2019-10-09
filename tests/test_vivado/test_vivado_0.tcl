@@ -1,6 +1,6 @@
 # Auto-generated project tcl file
 
-create_project test_vivado_0
+create_project test_vivado_0 -force
 
 set_property part xc7a35tcsg324-1 [current_project]
 #Default since Vivado 2016.1
