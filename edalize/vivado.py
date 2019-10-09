@@ -1,6 +1,8 @@
 import logging
 import os.path
 import platform
+import re
+import subprocess
 
 from edalize.edatool import Edatool
 
@@ -34,8 +36,27 @@ class Vivado(Edatool):
                          'desc' : 'P&R tool. Allowed values are vivado (default) and none (to just run synthesis)'},
                     ]}
 
-    """ Configuration is the first phase of the build
+    """ Get tool version
 
+    This gets the Vivado version by running vivado -version and
+    parsing the output. If this command fails, "unknown" is returned
+    """
+    def get_version(self):
+
+        version = "unknown"
+        try:
+            vivado_text = subprocess.Popen(["vivado", "-version"], stdout=subprocess.PIPE, env=os.environ).communicate()[0]
+            version_exp = r'Vivado.*(?P<version>v.*) \(.*'
+
+            match = re.search(version_exp, str(vivado_text))
+            if match is not None:
+                version = match.group('version')
+        except Exception as ex:
+            logger.warning("Unable to recognize Vivado version")
+
+        return version
+
+    """ Configuration is the first phase of the build
     This writes the project TCL files and Makefile. It first collects all
     sources, IPs and contraints and then writes them to the TCL file along
      with the build steps.
