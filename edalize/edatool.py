@@ -317,7 +317,7 @@ class Edatool(object):
             if include_vlogparams:
                 for key, value in self.vlogparam.items():
                     param_str = self._param_value_str(param_value = value, str_quote_style = '"')
-                    f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, param_str))
+                    f.write('-pvalue+{}.{}={}\n'.format(self.toplevel, key, param_str))
 
             for id in incdirs:
                 f.write("+incdir+" + id + '\n')
