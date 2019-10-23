@@ -122,7 +122,7 @@ class Edatool(object):
 
     def build_pre(self):
         if 'pre_build' in self.hooks:
-            self._run_scripts(self.hooks['pre_build'])
+            self._run_scripts(self.hooks['pre_build'], 'pre_build')
 
     def build_main(self):
         logger.info("Building");
@@ -130,7 +130,7 @@ class Edatool(object):
 
     def build_post(self):
         if 'post_build' in self.hooks:
-            self._run_scripts(self.hooks['post_build'])
+            self._run_scripts(self.hooks['post_build'], 'post_build')
 
     def run(self, args):
         logger.info("Running")
@@ -141,14 +141,14 @@ class Edatool(object):
     def run_pre(self, args):
         self.parse_args(args, self.argtypes)
         if 'pre_run' in self.hooks:
-            self._run_scripts(self.hooks['pre_run'])
+            self._run_scripts(self.hooks['pre_run'], 'pre_run')
 
     def run_main(self):
         pass
 
     def run_post(self):
         if 'post_run' in self.hooks:
-            self._run_scripts(self.hooks['post_run'])
+            self._run_scripts(self.hooks['post_run'], 'post_run')
 
     def parse_args(self, args, paramtypes):
         if self.parsed_args:
@@ -271,19 +271,24 @@ class Edatool(object):
     def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):
         return jinja_filter_param_value_str(param_value, str_quote_style, bool_is_str)
 
-    def _run_scripts(self, scripts):
+    def _run_scripts(self, scripts, hook_name):
         for script in scripts:
             _env = self.env.copy()
             if 'env' in script:
                 _env.update(script['env'])
-            logger.info("Running " + script['name'])
+            logger.info("Running {} script {}".format(hook_name, script['name']))
+            logger.debug("Environment: " + str(_env))
+            logger.debug("Working directory: " + self.work_root)
             try:
                 subprocess.check_call(script['cmd'],
                                       cwd = self.work_root,
                                       env = _env)
+            except FileNotFoundError as e:
+                msg = "Unable to run {} script '{}': {}"
+                raise RuntimeError(msg.format(hook_name, script['name'], str(e)))
             except subprocess.CalledProcessError as e:
-                msg = "'{}' exited with error code {}"
-                raise RuntimeError(msg.format(script['name'], e.returncode))
+                msg = "{} script '{}' exited with error code {}"
+                raise RuntimeError(msg.format(hook_name, script['name'], e.returncode))
 
     def _run_tool(self, cmd, args=[]):
         logger.debug("Running " + cmd)
