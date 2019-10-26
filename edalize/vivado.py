@@ -58,7 +58,7 @@ class Vivado(Edatool):
 
     """ Configuration is the first phase of the build
     This writes the project TCL files and Makefile. It first collects all
-    sources, IPs and contraints and then writes them to the TCL file along
+    sources, IPs and constraints and then writes them to the TCL file along
      with the build steps.
     """
     def configure_main(self):
@@ -88,7 +88,9 @@ class Vivado(Edatool):
 
         self.render_template('vivado-makefile.j2',
                              'Makefile',
-                             {'name' : self.name})
+                             {'name' : self.name,
+                              'part' : self.tool_options.get('part', ""),
+                              'bitstream' : self.name+'.bit'})
 
         self.render_template('vivado-run.tcl.j2',
                              self.name+"_run.tcl")
@@ -97,9 +99,7 @@ class Vivado(Edatool):
                              self.name+"_synth.tcl")
 
         self.render_template('vivado-program.tcl.j2',
-                             self.name+"_pgm.tcl",
-                             {'part' : self.tool_options.get('part', ""),
-                              'bitstream_name' : self.name+'.bit'})
+                             self.name+"_pgm.tcl")
 
     def src_file_filter(self, f):
         def _vhdl_source(f):
@@ -153,5 +153,4 @@ class Vivado(Edatool):
             elif self.tool_options['pnr'] == 'none':
                 return
 
-        self._run_tool('vivado', ['-mode', 'batch', '-source', self.name+"_pgm.tcl"])
-
+        self._run_tool('make', ['pgm'])
