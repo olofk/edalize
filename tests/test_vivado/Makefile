@@ -1,8 +1,10 @@
 NAME := test_vivado_0
+BITSTREAM := test_vivado_0.bit
+PART := xc7a35tcsg324-1
 
-all: $(NAME).bit
+all: $(BITSTREAM)
 
-$(NAME).bit:  $(NAME)_run.tcl $(NAME).xpr
+$(BITSTREAM):  $(NAME)_run.tcl $(NAME).xpr
 	vivado -mode batch -source $^
 
 $(NAME).xpr: $(NAME).tcl
@@ -15,3 +17,8 @@ $(NAME).runs/synth_1: $(NAME)_synth.tcl $(NAME).xpr
 	vivado -mode batch -source $^
 
 synth: $(NAME).runs/synth_1
+
+pgm: $(NAME)_pgm.tcl $(BITSTREAM)
+	vivado -quiet -nolog -notrace -mode batch -source $< -tclargs $(PART) $(BITSTREAM)
+
+.PHONY: pgm
