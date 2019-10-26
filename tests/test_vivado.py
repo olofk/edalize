@@ -20,6 +20,7 @@ def test_vivado():
         'Makefile',
         name+'.tcl',
         name+'_run.tcl',
+        name+'_pgm.tcl',
     ])
 
     backend.build()
@@ -39,10 +40,15 @@ def test_vivado_minimal():
     ref_dir      = os.path.join(tests_dir, __name__, 'minimal')
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     tool = 'vivado'
+    tool_options = {
+        'part' : 'xc7a35tcsg324-1',
+    }
     name = 'test_vivado_minimal_0'
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
-    edam = {'name'         : name}
+    edam = {'name'         : name,
+            'tool_options' : {'vivado' : tool_options}
+    }
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
     backend.configure([])
@@ -51,6 +57,7 @@ def test_vivado_minimal():
         'Makefile',
         name+'.tcl',
         name+'_run.tcl',
+        name+'_pgm.tcl',
     ])
 
     backend.build()
