@@ -263,7 +263,7 @@ Field Name       Type                  Description
 ================ ===================== ===========
 vunit_options    List of String        Extra options for the VUnit test runner
 add_libraries    List of String        A list of framework libraries to add. Allowed values include "array_util", "com", "json4hdl", "osvvm", "random", "verification_components"
-vunit_runner     String                Name of the Python file exporting a ``VUnitRunner`` class (must derive from ``vunit_hooks.VUnitHooks``) that is used to configure and execute test. This allows very customized test control via VUnit's Python-interfaces.
+vunit_runner     String                Name of the Python file exporting a ``VUnitRunner`` class (must derive from ``edalize.vunit_hooks.VUnitHooks``) that is used to configure and execute test. This allows very customized test control via VUnit's Python-interfaces.
 ================ ===================== ===========
 
 In case a more advanced VUnit configuration or execution of the testbench is necessary, the option ``vunit_runner`` can be used to specify the filename of a Python-script which can hook into the construction, parametrization, and execution of the test runner. For this to work, the Python-skript must export a ``class VUnitRunner(vunit_hooks.VUnitHooks)`` which derives from (and optionally overrides) the behavior of ``vunit_hooks.VUnitHooks``.
