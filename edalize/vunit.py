@@ -13,8 +13,6 @@ class Vunit(Edatool):
     argtypes = ['cmdlinearg']
     testrunner_template = "run.py.j2"
     testrunner = "run.py"
-    vunit_hooks_template = 'vunit_hooks.py.j2'
-    vunit_hooks = 'vunit_hooks.py'
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -33,21 +31,20 @@ class Vunit(Edatool):
                          'desc': 'Options to pass to the VUnit test runner'}
                          ]}
 
-    def _get_vunit_runner_name(self, src_files):
-        vunit_runner_filename = self.tool_options.get('vunit_runner', None)
-        if vunit_runner_filename is None:
-            # if no vunit_runner.py exists, fall back to VUnitRunner from unit_hooks
-            return 'vunit_hooks', None
-
+    def get_vunit_runner_path(self, src_files):
+        # TODO: Figure out a better way to get the path to the runner
+        runner = self.tool_options.get('vunit_runner', '')
+        if len(runner) == 0:
+            return ''
         for f in src_files:
-            if f.name.endswith(vunit_runner_filename):
-                return splitext(vunit_runner_filename)[0], os.path.join(self.work_root, f.name)
-
-        raise RuntimeError("Could not find specified test runner " + vunit_runner_filename + " in the files " + str(src_files))
+            if f.name.endswith(runner):
+                return f.name
+        return ''
 
     def configure_main(self):
         (src_files, _incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
+        self.jinja_env.filters['src_file_vhdl_standard_filter'] = self.src_file_vhdl_standard_filter
 
         library_names = [f.logical_name for f in src_files]
 
@@ -55,32 +52,32 @@ class Vunit(Edatool):
         libraries = {lib if lib != '' else 'vunit_test_runner_lib': [
             file for file in src_files if file.logical_name == lib] for lib in library_names}
 
-        vunit_runner_name, vunit_runner_file = self._get_vunit_runner_name(src_files)
-        if vunit_runner_file is not None:
-            copy(vunit_runner_file, self.work_root)
-
-        self.render_template(self.vunit_hooks_template,
-                             self.vunit_hooks, {})
-
         escaped_name = self.name.replace(".", "_")
         add_libraries = self.tool_options.get('add_libraries', [])
         self.render_template(self.testrunner_template,
                              self.testrunner,
                              {'name': escaped_name,
-                              'work_root': self.work_root,
-                              'vunit_runner_name': vunit_runner_name,
+                              'vunit_runner_path': self.get_vunit_runner_path(src_files),
                               'libraries': libraries,
                               'add_libraries': add_libraries,
                               'tool_options': self.tool_options})
 
+    def build_main(self):
+        vunit_options = self.tool_options.get('vunit_options', [])
+        testrunner = os.path.join(self.work_root, self.testrunner)
+        self._run_tool(sys.executable, [testrunner, '--compile', '-k'] + vunit_options)
 
     def run_main(self):
         vunit_options = self.tool_options.get('vunit_options', [])
         testrunner = os.path.join(self.work_root, self.testrunner)
         self._run_tool(sys.executable, [testrunner] + vunit_options)
 
-    def build_main(self):
-        pass
+    def src_file_vhdl_standard_filter(self, f):
+        fragments = f.file_type.split('-')
+        if fragments[0] != 'vhdlSource' or len(fragments) < 2:
+            return ''
+        return fragments[1]
+
 
     def src_file_filter(self, f):
         def _get_file_type(f):

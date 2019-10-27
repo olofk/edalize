@@ -287,13 +287,12 @@ In case a more advanced VUnit configuration or execution of the testbench is nec
             vu.enable_check_preprocessing()
             return vu
 
-        def handle_library(self, logical_name: str, vu_lib: Library, files: Collection[str]):
+        def handle_library(self, logical_name: str, vu_lib: Library):
             '''
             Override this to customize each library, e.g. with additional simulator options.
             This hook will be invoked for each library, after all source files have been added.
             :param logical_name: The logical name of the library
             :param vu_lib: The vunit.ui.Library instance, configured with all sources of this `logical_name`
-            :param files: A list of filenames (including their paths) of the files in the library
             '''
             # e.g. you can access and customize test-bench entities of this library:
             if logical_name == 'my_tb_library_name':
