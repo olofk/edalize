@@ -3,13 +3,14 @@
 set part [lindex $argv 0]
 set bitstream [lindex $argv 1]
 
+
 if {[info exists env(HW_TARGET)]} {
-   set explicit_hw_target env(HW_TARGET)
+   set explicit_hw_target $env(HW_TARGET)
 } else {
    set explicit_hw_target ""
 }
 if {[info exists env(JTAG_FREQ)]} {
-   set jtag_freq env(JTAG_FREQ)
+   set jtag_freq $env(JTAG_FREQ)
 } else {
    set jtag_freq ""
 }
@@ -18,6 +19,9 @@ puts "FuseSoC Xilinx FPGA Programming Tool"
 puts "===================================="
 puts ""
 puts "INFO: Programming part $part with bitstream $bitstream"
+if { $explicit_hw_target != "" } {
+  puts "INFO: Programming target $explicit_hw_target"
+}
 
 # Connect to Xilinx Hardware Server
 open_hw
@@ -26,6 +30,13 @@ connect_hw_server
 # If hw_target is not specified then this should return
 # all possible targets.
 set hw_targets [get_hw_targets $explicit_hw_target]
+if { [llength $hw_targets] == 0 } {
+  if { $explicit_hw_target == "" } {
+    puts "ERROR: Failed to find any targets"
+  } else {
+    puts "ERROR: Failed to find target: $target"
+  }
+}
 
 # Find the first target and device that contains a FPGA $part.
 set hw_device_found 0
