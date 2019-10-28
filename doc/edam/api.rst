@@ -182,13 +182,14 @@ vsim_options     List of String        Extra options for running the simulation 
 quartus
 ~~~~~~~
 
-================ ===================== ===========
-Field Name       Type                  Description
-================ ===================== ===========
-family           String                FPGA family e.g. *Cyclone IV E*
-device           String                Device identifier. e.g. *EP4CE55F23C8* or *5CSXFC6D6F31C8ES*
-quartus_options  List of String        Extra command-line options for Quartus
-================ ===================== ===========
+================== ===================== ===========
+Field Name         Type                  Description
+================== ===================== ===========
+board_device_index  List of String        Specifies the FPGA's device number in the JTAG chain. The device index specifies the device where the flash programmer looks for the Nios® II JTAG debug module. JTAG devices are numbered relative to the JTAG chain, starting at 1. Use the tool `jtagconfig` to determine the index.
+family              String                FPGA family e.g. *Cyclone IV E*
+device              String                Device identifier. e.g. *EP4CE55F23C8* or *5CSXFC6D6F31C8ES*
+quartus_options     List of String        Extra command-line options for Quartus
+================== ===================== ===========
 
 rivierapro
 ~~~~~~~~~~

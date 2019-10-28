@@ -18,8 +18,7 @@ def test_xsim():
     compare_files(ref_dir, work_root, ['config.mk',
                                        'Makefile',
                                        name+'.prj',
-                                       'run-gui.tcl',
-                                       'run.tcl'])
+    ])
 
     backend.build()
     compare_files(ref_dir, work_root, ['xelab.cmd'])

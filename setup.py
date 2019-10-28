@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "edalize",
-    version = "0.1.3",
+    version = "0.1.6",
     packages=['edalize'],
     package_data = {'edalize' : [
         'templates/icestorm/icestorm-makefile.j2',
@@ -18,6 +18,7 @@ setup(
         'templates/vivado/vivado-program.tcl.j2',
         'templates/vivado/vivado-project.tcl.j2',
         'templates/vivado/vivado-run.tcl.j2',
+        'templates/vivado/vivado-synth.tcl.j2',
         'templates/quartus/quartus-project.tcl.j2',
         'templates/quartus/quartus-std-makefile.j2',
         'templates/quartus/quartus-pro-makefile.j2',

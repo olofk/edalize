@@ -1,1 +1,1 @@
---elab-run some analyze_options --std=08 top_module a few run_options -gvlogparam_bool=1 -gvlogparam_int=42 -gvlogparam_str=hello
+--elab-run some analyze_options --std=08 top_module a few run_options -ggeneric_bool=1 -ggeneric_int=42 -ggeneric_str=hello

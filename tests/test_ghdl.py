@@ -6,7 +6,7 @@ def test_ghdl():
     from edalize_common import compare_files, setup_backend, tests_dir
 
     ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['vlogparam']
+    paramtypes   = ['generic']
     name         = 'test_ghdl'
     tool         = 'ghdl'
     tool_options = {'analyze_options' : ['some', 'analyze_options'],

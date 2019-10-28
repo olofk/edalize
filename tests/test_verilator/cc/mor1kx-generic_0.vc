@@ -17,6 +17,7 @@
 -CFLAGS -I../../../cores/mor1kx-generic/rtl/verilog
 +incdir+../../../cores/mor1kx-generic/bench/verilog/include
 -CFLAGS -I../../../cores/mor1kx-generic/bench/verilog/include
+../../../cores/misc/waiver.vlt
 ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v
 ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_status_reg.v
 ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_biu.v

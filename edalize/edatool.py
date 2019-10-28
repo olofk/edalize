@@ -8,11 +8,15 @@ from jinja2 import Environment, PackageLoader
 
 logger = logging.getLogger(__name__)
 
+if sys.version[0] == '2':
+    FileNotFoundError = OSError
+
 # Jinja2 tests and filters, available in all templates
 def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     """ Convert a parameter value to string suitable to be passed to an EDA tool
 
     Rules:
+
     - Booleans are represented as 0/1 or "true"/"false" depending on the
       bool_is_str argument
     - Strings are either passed through or enclosed in the characters specified
@@ -20,11 +24,11 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     - Everything else (including int, float, etc.) are converted using the str()
       function.
     """
-    if (type(value) == bool) and not bool_is_str:
-        if (value) == True:
-            return '1'
+    if type(value) == bool:
+        if bool_is_str:
+            return 'true' if value else 'false'
         else:
-            return '0'
+            return '1' if value else '0'
     elif type(value) == str or ((type(value) == bool) and bool_is_str):
         return str_quote_style + str(value) + str_quote_style
     else:
@@ -118,7 +122,7 @@ class Edatool(object):
 
     def build_pre(self):
         if 'pre_build' in self.hooks:
-            self._run_scripts(self.hooks['pre_build'])
+            self._run_scripts(self.hooks['pre_build'], 'pre_build')
 
     def build_main(self):
         logger.info("Building");
@@ -126,7 +130,7 @@ class Edatool(object):
 
     def build_post(self):
         if 'post_build' in self.hooks:
-            self._run_scripts(self.hooks['post_build'])
+            self._run_scripts(self.hooks['post_build'], 'post_build')
 
     def run(self, args):
         logger.info("Running")
@@ -137,14 +141,14 @@ class Edatool(object):
     def run_pre(self, args):
         self.parse_args(args, self.argtypes)
         if 'pre_run' in self.hooks:
-            self._run_scripts(self.hooks['pre_run'])
+            self._run_scripts(self.hooks['pre_run'], 'pre_run')
 
     def run_main(self):
         pass
 
     def run_post(self):
         if 'post_run' in self.hooks:
-            self._run_scripts(self.hooks['post_run'])
+            self._run_scripts(self.hooks['post_run'], 'post_run')
 
     def parse_args(self, args, paramtypes):
         if self.parsed_args:
@@ -233,7 +237,7 @@ class Edatool(object):
         The template file is expected in the directory templates/BACKEND_NAME.
         """
         template_dir = str(self.__class__.__name__).lower()
-        template = self.jinja_env.get_template(os.path.join(template_dir, template_file))
+        template = self.jinja_env.get_template('/'.join([template_dir, template_file]))
         file_path = os.path.join(self.work_root, target_file)
         with open(file_path, 'w') as f:
             f.write(template.render(template_vars))
@@ -267,19 +271,24 @@ class Edatool(object):
     def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):
         return jinja_filter_param_value_str(param_value, str_quote_style, bool_is_str)
 
-    def _run_scripts(self, scripts):
+    def _run_scripts(self, scripts, hook_name):
         for script in scripts:
             _env = self.env.copy()
             if 'env' in script:
                 _env.update(script['env'])
-            logger.info("Running " + script['name'])
+            logger.info("Running {} script {}".format(hook_name, script['name']))
+            logger.debug("Environment: " + str(_env))
+            logger.debug("Working directory: " + self.work_root)
             try:
                 subprocess.check_call(script['cmd'],
                                       cwd = self.work_root,
                                       env = _env)
+            except FileNotFoundError as e:
+                msg = "Unable to run {} script '{}': {}"
+                raise RuntimeError(msg.format(hook_name, script['name'], str(e)))
             except subprocess.CalledProcessError as e:
-                msg = "'{}' exited with error code {}"
-                raise RuntimeError(msg.format(script['name'], e.returncode))
+                msg = "{} script '{}' exited with error code {}"
+                raise RuntimeError(msg.format(hook_name, script['name'], e.returncode))
 
     def _run_tool(self, cmd, args=[]):
         logger.debug("Running " + cmd)
@@ -313,7 +322,7 @@ class Edatool(object):
             if include_vlogparams:
                 for key, value in self.vlogparam.items():
                     param_str = self._param_value_str(param_value = value, str_quote_style = '"')
-                    f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, param_str))
+                    f.write('-pvalue+{}.{}={}\n'.format(self.toplevel, key, param_str))
 
             for id in incdirs:
                 f.write("+incdir+" + id + '\n')

@@ -7,12 +7,6 @@ logger = logging.getLogger(__name__)
 
 class Icarus(Edatool):
 
-    _description = "Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code written in Verilog (IEEE-1364) into some target format"
-    tool_options = {
-        'members' : {'timescale' : 'String'},
-        'lists' : {'iverilog_options' : 'String'}
-    }
-
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
     MAKEFILE_TEMPLATE = """
@@ -43,7 +37,7 @@ clean_{name}:
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code written in Verilog (IEEE-1364) into some target format",
                     'members' : [
                         {'name' : 'timescale',
                          'type' : 'String',

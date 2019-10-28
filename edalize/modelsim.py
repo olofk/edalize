@@ -38,7 +38,7 @@ EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(P
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
-	$(VSIM) -do "run -all" -c $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
+	$(VSIM) -do "run -all; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
 
 run-gui: work $(VPI_MODULES)
 	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
@@ -66,17 +66,12 @@ clean_{name}:
 
 class Modelsim(Edatool):
 
-    _description = "ModelSim simulator from Mentor Graphics"
-
-    tool_options = {'lists' : {'vlog_options' : 'String',
-                               'vsim_options' : 'String'}}
-
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "ModelSim simulator from Mentor Graphics",
                     'lists' : [
                         {'name' : 'vlog_options',
                          'type' : 'String',

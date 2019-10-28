@@ -3,17 +3,6 @@
 set part [lindex $argv 0]
 set bitstream [lindex $argv 1]
 
-if {[info exists env(HW_TARGET)]} {
-   set explicit_hw_target env(HW_TARGET)
-} else {
-   set explicit_hw_target ""
-}
-if {[info exists env(JTAG_FREQ)]} {
-   set jtag_freq env(JTAG_FREQ)
-} else {
-   set jtag_freq ""
-}
-
 puts "FuseSoC Xilinx FPGA Programming Tool"
 puts "===================================="
 puts ""
@@ -23,14 +12,11 @@ puts "INFO: Programming part $part with bitstream $bitstream"
 open_hw
 connect_hw_server
 
-# If hw_target is not specified then this should return
-# all possible targets.
-set hw_targets [get_hw_targets $explicit_hw_target]
-
 # Find the first target and device that contains a FPGA $part.
 set hw_device_found 0
-foreach hw_target $hw_targets {
+foreach { hw_target } [get_hw_targets] {
     puts "INFO: Trying to use hardware target $hw_target"
+
     current_hw_target $hw_target
 
     # Open hardware target
@@ -77,9 +63,6 @@ puts "INFO: Programming bitstream to device $hw_device on target $hw_target."
 # Do the programming
 current_hw_device $hw_device
 set_property PROGRAM.FILE $bitstream [current_hw_device]
-if {$jtag_freq != ""} {
-  set_property PARAM.FREQUENCY $jtag_freq [get_hw_targets $hw_target]
-}
 program_hw_devices [current_hw_device]
 
 # Disconnect from Xilinx Hardware Server

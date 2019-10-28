@@ -4,6 +4,7 @@ verilog_defines -Dvlogdefine_str=hello
 verilog_defaults -push
 verilog_defaults -add -defer
 verilog_defaults -add -I.
+read_verilog -sv sv_file.sv
 read_verilog vlog_file.v
 chparam -set vlogparam_bool 1 $abstract\top_module
 chparam -set vlogparam_int 42 $abstract\top_module

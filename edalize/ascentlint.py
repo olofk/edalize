@@ -9,15 +9,16 @@ logger = logging.getLogger(__name__)
 
 class Ascentlint(Edatool):
 
-    _description = """ Real Intent Ascent Lint backend
+    argtypes = ['vlogdefine', 'vlogparam']
+
+    @classmethod
+    def get_doc(cls, api_ver):
+        if api_ver == 0:
+            return {'description' : """ Real Intent Ascent Lint backend
 
 Ascent Lint performs static source code analysis on HDL code and checks for
 common coding errors or coding style violations.
-"""
-
-    tool_options = { }
-
-    argtypes = ['vlogdefine', 'vlogparam']
+"""}
 
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)

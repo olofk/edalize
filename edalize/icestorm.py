@@ -4,25 +4,12 @@ from edalize.edatool import Edatool
 
 class Icestorm(Edatool):
 
-    _description = "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route"
-
-    tool_options = {
-        'lists' : {
-            'arachne_pnr_options' : 'String',
-            'nextpnr_options'     : 'String',
-            'yosys_synth_options' : 'String',
-        },
-        'members': {
-            'pnr' : 'String',
-        }
-    }
-
     argtypes = ['vlogdefine', 'vlogparam']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : cls._description,
+            return {'description' : "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route",
                     'members' : [
                         {'name' : 'pnr',
                          'type' : 'String',
@@ -55,6 +42,8 @@ class Icestorm(Edatool):
             for f in src_files:
                 if f.file_type in ['verilogSource']:
                     yosys_file.write("read_verilog {}\n".format(f.name))
+                if f.file_type in ['systemVerilogSource']:
+                    yosys_file.write("read_verilog -sv {}\n".format(f.name))
                 elif f.file_type == 'PCF':
                     pcf_files.append(f.name)
                 elif f.file_type == 'user':
@@ -77,12 +66,14 @@ class Icestorm(Edatool):
             yosys_file.write("write_json {}.json\n".format(self.name))
 
         if not pcf_files:
-            raise RuntimeError("Icestorm backend requires a PCF file")
+            pcf_files = ['empty.pcf']
+            with open(os.path.join(self.work_root, pcf_files[0]), 'a'):
+                os.utime(os.path.join(self.work_root, pcf_files[0]), None)
         elif len(pcf_files) > 1:
             raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
 
         pnr = self.tool_options.get('pnr', 'arachne')
-        if not pnr in ['arachne', 'next']:
+        if not pnr in ['arachne', 'next', 'none']:
             raise RuntimeError("Invalid pnr option '{}'. Valid values are 'arachne' for Arachne-pnr or 'next' for nextpnr".format(pnr))
         # Write Makefile
         arachne_pnr_options = self.tool_options.get('arachne_pnr_options', [])
@@ -93,6 +84,7 @@ class Icestorm(Edatool):
             'pnr'                 : pnr,
             'arachne_pnr_options' : arachne_pnr_options,
             'nextpnr_options'     : nextpnr_options,
+            'default_target'      : 'json' if pnr == 'none' else 'bin',
         }
         self.render_template('icestorm-makefile.j2',
                              'Makefile',
