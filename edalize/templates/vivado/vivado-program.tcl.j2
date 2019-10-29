@@ -27,9 +27,12 @@ if { $explicit_hw_target != "" } {
 open_hw
 connect_hw_server
 
-# If hw_target is not specified then this should return
-# all possible targets.
-set hw_targets [get_hw_targets $explicit_hw_target]
+if { $explicit_hw_target == "" } {
+  set hw_targets [get_hw_targets]
+} else {
+  set hw_targets [get_hw_targets $explicit_hw_target]
+}
+
 if { [llength $hw_targets] == 0 } {
   if { $explicit_hw_target == "" } {
     puts "ERROR: Failed to find any targets"
