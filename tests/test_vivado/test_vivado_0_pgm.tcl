@@ -50,12 +50,13 @@ foreach { hw_target } [get_hw_targets] {
         break
     } else {
         # Close currently tried device, and try with next one.
-        puts "INFO: Part not found as part of $hw_device. Trying next device."
+        puts "INFO: Part not found as part of $hw_target. Trying next device."
         close_hw_target
     }
 }
 if { $hw_device_found == 0 } {
-    puts "ERROR: None of the hardware targets included a $part FPGA part."
+    puts "ERROR: None of the hardware targets included a $part FPGA part. \
+        Check cables and ensure that jumpers are correct for JTAG programming."
     exit 1
 }
 puts "INFO: Programming bitstream to device $hw_device on target $hw_target."
