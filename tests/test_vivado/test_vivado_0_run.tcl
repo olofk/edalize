@@ -1,6 +1,11 @@
 launch_runs impl_1 -to_step write_bitstream
 wait_on_run impl_1
 
+if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
+   puts "ERROR: Implementation and bitstream generation step failed."
+   exit 1
+}
+
 puts "Bitstream generation completed"
 
 # By default, Vivado writes the bitstream to a file named after the toplevel and

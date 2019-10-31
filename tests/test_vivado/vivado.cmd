@@ -1,2 +1,2 @@
--mode batch -source test_vivado_0.tcl
--mode batch -source test_vivado_0_run.tcl test_vivado_0.xpr
+-notrace -mode batch -source test_vivado_0.tcl
+-notrace -mode batch -source test_vivado_0_run.tcl test_vivado_0.xpr
