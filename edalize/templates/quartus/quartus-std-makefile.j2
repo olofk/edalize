@@ -16,7 +16,7 @@ qsys: project
 syn: qsys
 	quartus_map $(OPTIONS) $(NAME)
 
-fit: map
+fit: syn
 	quartus_fit $(OPTIONS) $(NAME)
 
 asm: fit
