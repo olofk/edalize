@@ -1,12 +1,17 @@
-launch_runs impl_1 -to_step write_bitstream
-wait_on_run impl_1
+# Vivado will raise an error if impl_1 is launched when it is already done. So
+# check the progress first and only launch if its not complete.
+if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
+  launch_runs impl_1 -to_step write_bitstream
+  wait_on_run impl_1
+  puts "Bitstream generation completed"
+} else {
+  puts "Bitstream generation already complete"
+}
 
 if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
    puts "ERROR: Implementation and bitstream generation step failed."
    exit 1
 }
-
-puts "Bitstream generation completed"
 
 # By default, Vivado writes the bitstream to a file named after the toplevel and
 # put into the *.runs/impl_1 folder.
