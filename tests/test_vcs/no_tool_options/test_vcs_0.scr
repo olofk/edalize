@@ -8,3 +8,5 @@
 sv_file.sv
 vlog_file.v
 vlog05_file.v
+c_file.c
+cpp_file.cpp
