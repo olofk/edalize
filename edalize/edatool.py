@@ -305,7 +305,11 @@ class Edatool(object):
             _s = "'{}' exited with an error code"
             raise RuntimeError(_s.format(cmd))
 
-    def _write_fileset_to_f_file(self, output_file, include_vlogparams = True):
+    def _filter_verilog_files(src_file):
+        ft = src_file.file_type
+        return ft.startswith("verilogSource") or ft.startswith("systemVerilogSource")
+
+    def _write_fileset_to_f_file(self, output_file, include_vlogparams = True, filter_func = _filter_verilog_files):
         """ Write a file list (*.f) file
 
         Returns a list of all files which were not added to the *.f file
@@ -328,7 +332,7 @@ class Edatool(object):
                 f.write("+incdir+" + id + '\n')
 
             for src_file in src_files:
-                if (src_file.file_type.startswith("verilogSource") or src_file.file_type.startswith("systemVerilogSource")):
+                if (filter_func is None or filter_func(src_file)):
                     f.write(src_file.name + '\n')
                 else:
                     unused_files.append(src_file)
