@@ -98,6 +98,10 @@ files = [
     {'name' : 'xci_file.xci' , 'file_type' : 'xci'},
     {'name' : 'xdc_file.xdc' , 'file_type' : 'xdc'},
     {'name' : 'bootrom.mem'  , 'file_type' : 'mem'},
+    {'name' : 'c_file.c'     , 'file_type' : 'cSource'},
+    {'name' : 'cpp_file.cpp' , 'file_type' : 'cppSource'},
+    {'name' : 'c_header.h'   , 'file_type' : 'cSource', 'is_include_file' : True},
+    {'name' : 'c_header.h'   , 'file_type' : 'cppSource', 'is_include_file' : True},
 ]
 
 vpi = [

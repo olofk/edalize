@@ -44,10 +44,19 @@ Example snippet of a CAPI2 description file for VCS:
                 return True
         return False
 
-
     def configure_main(self):
+
+        def _vcs_filelist_filter(src_file):
+            ft = src_file.file_type
+            # XXX: C source files can be passed to VCS to be compiled into DPI
+            # libraries; passing C sources together with RTL sources is a
+            # workaround until we have proper DPI support
+            # (https://github.com/olofk/fusesoc/issues/311).
+            return ft.startswith("verilogSource") or ft.startswith("systemVerilogSource") or ft == 'cSource' or ft == 'cppSource'
+
         self._write_fileset_to_f_file(os.path.join(self.work_root, self.name + '.scr'),
-                                      include_vlogparams = True)
+                                      include_vlogparams=True,
+                                      filter_func=_vcs_filelist_filter)
 
         plusargs = []
         if self.plusarg:
