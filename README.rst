@@ -1,6 +1,10 @@
 Edalize
 =======
 
+.. image:: https://readthedocs.org/projects/edalize/badge/?version=latest
+        :target: https://edalize.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
 What's this?
 ------------
 
