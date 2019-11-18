@@ -29,11 +29,11 @@ How to use it?
 
 Ok, this sounds great. Now, how do I get started?
 
-Assume we have a project that consists of a Verilog source file called :file:`blinky.v`.
-Then there's also a testbench called :file:`blinky_tb.v` and a constraints file for synthesis called :file:`constraints.sdc`.
+Assume we have a project that consists of a Verilog source file called ``blinky.v``.
+Then there's also a testbench called ``blinky_tb.v`` and a constraints file for synthesis called ``constraints.sdc``.
 You can get those files from here: https://github.com/fusesoc/blinky
 
-For a simulation, we want to use the two Verilog files, build it in a subdirectory called :file:`build`, and then run it with a parameter to control simulated clock frequency.
+For a simulation, we want to use the two Verilog files, build it in a subdirectory called ``build``, and then run it with a parameter to control simulated clock frequency.
 
 First we register the files to use::
 
