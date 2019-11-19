@@ -1,4 +1,4 @@
-"""This module exports `VUnitHooks` which can be used to implement advanced VUnit test cases"""
+"""This module exports :class:`VUnitHooks` which can be used to implement advanced VUnit test cases"""
 
 from vunit.ui import Library
 from vunit import VUnit
@@ -6,7 +6,7 @@ from typing import Mapping, Collection
 
 
 class VUnitHooks(object):
-    """Derive the VUnitRunner instance from this class and override its member functions if necessary"""
+    """Derive the :class:`VUnitRunner` instance from this class and override its member functions if necessary"""
 
     def __init__(self):
         pass
@@ -20,7 +20,7 @@ class VUnitHooks(object):
         pass
 
     def main(self, vu: VUnit):
-        """override this for final parametrization of the VUnit instance, or for custom invokation of VUnit"""
+        """override this for final parametrization of the :class:`VUnit` instance, or for custom invokation of VUnit"""
         vu.main()
 
 

@@ -302,7 +302,7 @@ For this to work, the Python script must export a ``class VUnitRunner(vunit_hook
                                 generics=dict(CLK_FREQ=54687500))
 
         def main(self, vu: VUnit):
-            """Override this for final parametrization of the VUnit instance (after all libraries have been added),
+            """Override this for final parametrization of the :class:`VUnit` instance (after all libraries have been added),
             or for custom invocation of VUnit
             """
             def post_run_handler(results: Results):
