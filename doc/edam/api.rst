@@ -308,7 +308,7 @@ For this to work, the Python script must export a ``class VUnitRunner(vunit_hook
 
         def main(self, vu: VUnit):
             '''
-            Override this for final parametrization of the VUnit instance (after all libraries have been added), or for custom invokation of VUnit
+            Override this for final parametrization of the VUnit instance (after all libraries have been added), or for custom invocation of VUnit.
             '''
             def post_run_handler(results: Results):
                 results.merge_coverage(file_name="coverage_data")
