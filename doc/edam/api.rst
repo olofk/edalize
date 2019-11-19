@@ -270,49 +270,46 @@ In case a more advanced VUnit configuration or execution of the testbench is nec
 
 .. code-block:: python
 
-    from vunit_hooks import VUnitHooks as VH
+    from edalize.vunit_hooks import VUnitHooks
+    from vunit import VUnit
     from vunit.ui import Library, Results
     from typing import Mapping, Collection
 
+
     class VUnitRunner(VUnitHooks):
-        '''
-        Example of custom VUnit instrumentation
-        '''
+        """Example of custom VUnit instrumentation."""
 
         def create(self) -> VUnit:
-            '''
-            Customized creation of the test runner
-            '''
+            """Customized creation of the test runner"""
             vu = VUnit.from_argv()
             vu.enable_check_preprocessing()
             return vu
 
         def handle_library(self, logical_name: str, vu_lib: Library):
-            '''
-            Override this to customize each library, e.g. with additional simulator options.
+            """Override this to customize each library, e.g. with additional simulator options.
             This hook will be invoked for each library, after all source files have been added.
             :param logical_name: The logical name of the library
             :param vu_lib: The vunit.ui.Library instance, configured with all sources of this `logical_name`
-            '''
+            """
             # e.g. you can access and customize test-bench entities of this library:
-            if logical_name == 'my_tb_library_name':
-                entity = vu_lib.entity('my_toplevel_tb')
+            if logical_name == "my_tb_library_name":
+                entity = vu_lib.entity("my_toplevel_tb")
                 entity.set_generic("message", "Test message")
-                entity.add_config(
-                        name     = "TestConfig1",
-                        generics = dict(CLK_FREQ=10000000))
-                entity.add_config(
-                        name     = "TestConfig2",
-                        generics = dict(CLK_FREQ=54687500))
+                entity.add_config(name="TestConfig1",
+                                generics=dict(CLK_FREQ=10000000))
+                entity.add_config(name="TestConfig2",
+                                generics=dict(CLK_FREQ=54687500))
 
         def main(self, vu: VUnit):
-            '''
-            Override this for final parametrization of the VUnit instance (after all libraries have been added), or for custom invokation of VUnit
-            '''
+            """Override this for final parametrization of the VUnit instance (after all libraries have been added),
+            or for custom invokation of VUnit
+            """
+
             def post_run_handler(results: Results):
                 results.merge_coverage(file_name="coverage_data")
 
-            vu.main(post_run = post_run_handler)
+            vu.main(post_run=post_run_handler)
+
 
 
 
