@@ -31,11 +31,14 @@ class Trellis(Edatool):
             if incdirs:
                 yosys_file.write("verilog_defaults -add {}\n".format(' '.join(['-I'+d for d in incdirs])))
 
+            lpf_files = []
             for f in src_files:
                 if f.file_type in ['verilogSource']:
                     yosys_file.write("read_verilog {}\n".format(f.name))
                 elif f.file_type in ['systemVerilogSource']:
                     yosys_file.write("read_verilog -sv {}\n".format(f.name))
+                elif f.file_type == 'LPF':
+                    lpf_files.append(f.name)
                 elif f.file_type == 'user':
                     pass
             for key, value in self.vlogparam.items():
@@ -54,10 +57,18 @@ class Trellis(Edatool):
                 yosys_file.write(" -top " + self.toplevel)
             yosys_file.write("\n")
 
+        if not lpf_files:
+            lpf_files = ['empty.lpf']
+            with open(os.path.join(self.work_root, lpf_files[0]), 'a'):
+                os.utime(os.path.join(self.work_root, lpf_files[0]), None)
+        elif len(lpf_files) > 1:
+            raise RuntimeError("trellis backend supports only one LPF file. Found {}".format(', '.join(lpf_files)))
+
         # Write Makefile
         nextpnr_options     = self.tool_options.get('nextpnr_options', [])
         template_vars = {
             'name'                : self.name,
+            'lpf_file'            : lpf_files[0],
             'nextpnr_options'     : nextpnr_options,
         }
         self.render_template('trellis-makefile.j2',
