@@ -15,7 +15,8 @@
 from datetime import datetime
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../edalize'))
+sys.path.insert(0, os.path.abspath('../../edalize'))
+sys.path.insert(0, os.path.abspath('../../edalize/tests/test_vunit/vunit_mock/'))
 
 
 # -- Project information -----------------------------------------------------
@@ -43,6 +44,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -71,6 +73,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
+
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
+                       'vunit': ('https://vunit.github.io/', None)}
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -169,7 +174,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'Edalize', 'Edalize Documentation',
-     author, 'Edalize', 'One line description of project.',
+     author, 'Edalize', 'Edalize is a Python Library for interacting with EDA tools.',
      'Miscellaneous'),
 ]
 
