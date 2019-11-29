@@ -124,9 +124,9 @@ class Edatool(object):
         if 'pre_build' in self.hooks:
             self._run_scripts(self.hooks['pre_build'], 'pre_build')
 
-    def build_main(self):
-        logger.info("Building");
-        self._run_tool('make')
+    def build_main(self, target=None):
+        logger.info("Building{}".format("" if target is None else "target " + " ".join(target)))
+        self._run_tool('make', [] if target is None else [target])
 
     def build_post(self):
         if 'post_build' in self.hooks:
