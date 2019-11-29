@@ -5,8 +5,13 @@ PCF_FILE := {{ pcf_file }}
 PNR      ?= {{ pnr }}
 ARACHNE_PNR_OPTIONS := {{ arachne_pnr_options|join(' ') }}
 NEXTPNR_OPTIONS     := {{ nextpnr_options|join(' ') }}
+DEVICE   := {{ device }}
 
 all: $(TARGET).{{ default_target }}
+timing: $(TARGET).tim
+stats: $(TARGET).stat
+
+.PRECIOUS: %_next.asc %_arachne.asc
 
 %.blif: %.ys
 	yosys -l yosys.log -q -s $?
@@ -18,6 +23,10 @@ all: $(TARGET).{{ default_target }}
 	nextpnr-ice40 -l next.log -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
 %.bin: %_$(PNR).asc
 	icepack $< $@
+%.tim: %_$(PNR).asc
+	icetime -tmd $(DEVICE) $< > $@
+%.stat: %_$(PNR).asc
+	icebox_stat $< > $@
 
 build-gui: $(TARGET).json
 	nextpnr-ice40 -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
