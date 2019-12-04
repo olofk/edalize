@@ -73,6 +73,9 @@ class Modelsim(Edatool):
         if api_ver == 0:
             return {'description' : "ModelSim simulator from Mentor Graphics",
                     'lists' : [
+                        {'name' : 'vcom_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for compilation with vcom'},
                         {'name' : 'vlog_options',
                          'type' : 'String',
                          'desc' : 'Additional options for compilation with vlog'},
@@ -117,6 +120,9 @@ class Modelsim(Edatool):
                     args = ['-2008']
                 else:
                     args = []
+
+                args += self.tool_options.get('vcom_options', [])
+
             elif f.file_type == 'tclSource':
                 cmd = None
                 tcl_main.write("do {}\n".format(f.name))

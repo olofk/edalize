@@ -10,6 +10,7 @@ def test_modelsim():
     name         = 'test_modelsim_0'
     tool         = 'modelsim'
     tool_options = {
+        'vcom_options' : ['various', 'vcom_options'],
         'vlog_options' : ['some', 'vlog_options'],
         'vsim_options' : ['a', 'few', 'vsim_options'],
     }
