@@ -1,3 +1,6 @@
+# Create a bin file which can be used to program the flash on the FPGA
+set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
+
 # Vivado will raise an error if impl_1 is launched when it is already done. So
 # check the progress first and only launch if its not complete.
 if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
