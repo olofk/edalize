@@ -18,6 +18,7 @@ read_vhdl -library libx vhdl_lfile
 read_vhdl -vhdl2008 vhdl2008_file
 read_ip xci_file.xci
 read_xdc xdc_file.xdc
+read_mem bootrom.mem
 
 set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]
