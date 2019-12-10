@@ -20,7 +20,7 @@ class VUnitHooks(object):
         pass
 
     def main(self, vu: VUnit):
-        """Override this for final parametrization of the :class:`~edalize.vunit.Vunit` instance, or for custom invocation of VUnit."""
+        """Override this for final parametrization of the :class:`~vunit.ui.VUnit` instance, or for custom invocation of VUnit."""
         vu.main()
 
 
