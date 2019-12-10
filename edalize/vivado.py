@@ -51,7 +51,7 @@ class Vivado(Edatool):
             match = re.search(version_exp, str(vivado_text))
             if match is not None:
                 version = match.group('version')
-        except Exception as ex:
+        except Exception:
             logger.warning("Unable to recognize Vivado version")
 
         return version
