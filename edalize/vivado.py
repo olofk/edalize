@@ -123,13 +123,14 @@ class Vivado(Edatool):
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
             return file_types[_file_type] + ' ' + f.name
-        elif _file_type == 'user':
+
+        if _file_type == 'user':
             return ''
-        else:
-            _s = "{} has unknown file type '{}'"
-            logger.warning(_s.format(f.name,
-                                     f.file_type))
-        return ''
+
+        _s = "{} has unknown file type '{}', interpretation is up to Vivado"
+        logger.warning(_s.format(f.name,
+                                    f.file_type))
+        return 'add_files -norecurse' + ' ' + f.name
 
     def build_main(self):
         logger.info("Building")
