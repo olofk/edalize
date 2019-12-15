@@ -70,7 +70,7 @@ def test_vunit_hooks():
         backend.configure([])
 
         import edalize.vunit_hooks
-        with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor, mock.patch('vunit.vhdl_standard.VHDL.standard') as vhdl_standard:
+        with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor:
             hooks = MagicMock()
             vu_library = MagicMock()
             vu_mock = MagicMock()
@@ -87,9 +87,8 @@ def test_vunit_hooks():
             hooks.create.assert_called_once()
             hooks.handle_library.assert_called_with('libx', vu_library)
             hooks.main.assert_called_with(vu_mock)
-            vhdl_standard.assert_called_with('2008')
 
-        with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor, mock.patch('vunit.vhdl_standard.VHDL.standard') as vhdl_standard:
+        with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor:
             hooks = MagicMock()
             vu_library = MagicMock()
             vu_mock = MagicMock()
@@ -105,7 +104,6 @@ def test_vunit_hooks():
             hooks.create.assert_called_once()
             hooks.handle_library.assert_called_with('libx', vu_library)
             hooks.main.assert_called_with(vu_mock)
-            vhdl_standard.assert_called_with('2008')
 
 if __name__ == '__main__':
     from os.path import dirname
