@@ -22,5 +22,10 @@ asm: fit
 sta: asm
 	quartus_sta $(OPTIONS) $(NAME)
 
+dse: syn
+	quartus_dse $(NAME) --use-dse-file $(NAME).dse
+
 clean:
 	rm -rf *.* qdb tmp-clearbox
+
+.PHONY: all project qsys syn fit asm sta dse clean
