@@ -18,6 +18,7 @@ class Quartus(Edatool):
     isPro = False
     makefile_template = {False : "quartus-std-makefile.j2",
                          True  : "quartus-pro-makefile.j2"}
+    dse_template = 'quartus-dse.j2'
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -35,7 +36,28 @@ class Quartus(Edatool):
                          'desc' : "Specifies the FPGA's device number in the JTAG chain. The device index specifies the device where the flash programmer looks for the Nios® II JTAG debug module. JTAG devices are numbered relative to the JTAG chain, starting at 1. Use the tool `jtagconfig` to determine the index."},
                         {'name' : 'pnr',
                          'type' : 'String',
-                         'desc' : 'P&R tool. Allowed values are quartus (default) and none (to just run synthesis)'}],
+                         'desc' : 'P&R tool. Allowed values are quartus (default), dse (to perform a DSE based seed sweep) and none (to just run synthesis)'},
+                        {'name' : 'explore',
+                         'type' : 'String',
+                         'desc' : 'DSE exploration type, defaults to "seed" for a seed sweep'},
+                        {'name' : 'launcher',
+                         'type' : 'String',
+                         'desc' : 'DSE launcher, defaults to "local" for local building'},
+                        {'name' : 'processors',
+                         'type' : 'String',
+                         'desc' : 'The maximum number of parallel processors to use for DSE jobs, defaults to 0 for unlimited'},
+                        {'name' : 'timeout',
+                         'type' : 'String',
+                         'desc' : 'Time limit for DSE runs, defaults to "24h0m" for one day'},
+                        {'name' : 'stop_on_success',
+                         'type' : 'String',
+                         'desc' : 'True (default) to stop after the first DSE result has met all timing requirements, False to always build all seeds'},
+                        {'name' : 'parallelism',
+                         'type' : 'String',
+                         'desc' : 'Maximum number of P&R jobs DSE may run at once, default is 4'},
+                        {'name' : 'seeds',
+                         'type' : 'String',
+                         'desc' : 'Comma seperated list of seeds for DSE to try, default is "1,2,3,4"'}],
                     'lists' : [
                         {'name' : 'quartus_options',
                          'type' : 'String',
@@ -101,6 +123,15 @@ class Quartus(Edatool):
         has_vhdl2008 = 'vhdlSource-2008' in [x.file_type for x in src_files]
         has_qsys     = 'QSYS'            in [x.file_type for x in src_files]
 
+        # Set defaults
+        if not 'seeds' in self.tool_options: self.tool_options['seeds'] = '1,2,3,4'
+        if not 'parallelism' in self.tool_options: self.tool_options['parallelism'] = '4'
+        if not 'stop_on_success' in self.tool_options: self.tool_options['stop_on_success'] = 'True'
+        if not 'explore' in self.tool_options: self.tool_options['explore'] = 'seed'
+        if not 'launcher' in self.tool_options: self.tool_options['launcher'] = 'local'
+        if not 'processors' in self.tool_options: self.tool_options['processors'] = '0'
+        if not 'timeout' in self.tool_options: self.tool_options['timeout'] = '24h0m'
+
         escaped_name = self.name.replace(".", "_")
 
         template_vars = {
@@ -121,6 +152,11 @@ class Quartus(Edatool):
                              { 'name'         : escaped_name,
                                'src_files'    : src_files,
                                'tool_options' : self.tool_options})
+
+        # Render DSE settings: file
+        self.render_template(self.dse_template,
+                             escaped_name + '.dse',
+                             { 'tool_options' : self.tool_options })
 
         # Render the TCL project file
         self.render_template('quartus-project.tcl.j2',
@@ -220,6 +256,8 @@ class Quartus(Edatool):
         if 'pnr' in self.tool_options:
             if self.tool_options['pnr'] == 'quartus':
                 pass
+            elif self.tool_options['pnr'] == 'dse':
+                args.append('dse')
             elif self.tool_options['pnr'] == 'none':
                 args.append('syn')
         self._run_tool('make', args)
@@ -234,6 +272,8 @@ class Quartus(Edatool):
         if 'pnr' in self.tool_options:
             if self.tool_options['pnr'] == 'quartus':
                 pass
+            elif self.tool_options['pnr'] == 'dse':
+                return
             elif self.tool_options['pnr'] == 'none':
                 return
 
