@@ -32,7 +32,10 @@ class Quartus(Edatool):
                          'desc' : 'FPGA device (e.g. 5CSXFC6D6F31C8ES)'},
                         {'name' : 'board_device_index',
                          'type' : 'String',
-                         'desc' : "Specifies the FPGA's device number in the JTAG chain. The device index specifies the device where the flash programmer looks for the Nios® II JTAG debug module. JTAG devices are numbered relative to the JTAG chain, starting at 1. Use the tool `jtagconfig` to determine the index."}],
+                         'desc' : "Specifies the FPGA's device number in the JTAG chain. The device index specifies the device where the flash programmer looks for the Nios® II JTAG debug module. JTAG devices are numbered relative to the JTAG chain, starting at 1. Use the tool `jtagconfig` to determine the index."},
+                        {'name' : 'pnr',
+                         'type' : 'String',
+                         'desc' : 'P&R tool. Allowed values are quartus (default) and none (to just run synthesis)'}],
                     'lists' : [
                         {'name' : 'quartus_options',
                          'type' : 'String',
@@ -144,7 +147,7 @@ class Quartus(Edatool):
                 except (AttributeError, KeyError):
                     # Either a component wasn't found in the QSYS file, or it
                     # had no associated tool information. Make the assumption
-                    # it was a Standard edition file 
+                    # it was a Standard edition file
                     if not self.isPro:
                         name = f.name
             except (ET.ParseError, IOError):
@@ -210,12 +213,29 @@ class Quartus(Edatool):
 
         return ''
 
+
+    def build_main(self):
+        logger.info("Building")
+        args = []
+        if 'pnr' in self.tool_options:
+            if self.tool_options['pnr'] == 'quartus':
+                pass
+            elif self.tool_options['pnr'] == 'none':
+                args.append('syn')
+        self._run_tool('make', args)
+
     """ Program the FPGA
     """
     def run_main(self):
         args = ['--mode=jtag']
         args += ['-o']
         args += ['p;' + self.name.replace('.', '_') + '.sof']
+
+        if 'pnr' in self.tool_options:
+            if self.tool_options['pnr'] == 'quartus':
+                pass
+            elif self.tool_options['pnr'] == 'none':
+                return
 
         if 'board_device_index' in self.tool_options:
             args[-1] += "@" + self.tool_options['board_device_index']

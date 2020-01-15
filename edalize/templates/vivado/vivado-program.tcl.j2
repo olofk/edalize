@@ -83,7 +83,8 @@ foreach hw_target $hw_targets {
     }
 }
 if { $hw_device_found == 0 } {
-    puts "ERROR: None of the hardware targets included a $part FPGA part."
+    puts "ERROR: None of the hardware targets included a $part FPGA part. \
+        Check cables and ensure that jumpers are correct for JTAG programming."
     exit 1
 }
 puts "INFO: Programming bitstream to device $hw_device on target $hw_target."

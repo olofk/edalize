@@ -1,12 +1,16 @@
 Edalize
 =======
 
+.. image:: https://readthedocs.org/projects/edalize/badge/?version=latest
+        :target: https://edalize.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
 What's this?
 ------------
 
 Edalize is a Python Library for interacting with EDA tools. It can create project files for supported tools and run them in batch or GUI mode (where supported).
 
-All EDA tools such as Icarus, Yosys, ModelSim, Vivado, Verilator, GHDL, Quartus etc get input HDL files (verilog and VHDL) and some tool-specific files (constraint files, memory initialization files, IP description files etc). Together with the files, perhaps a couple of verilog \`defines, some top-level parameters/generics or some tool-specific options are set. Once the configuration is done, a simulation model, netlist or FPGA image is built, and in the case of simulations, the model is also executed, maybe with some extra run-time parameters.
+All EDA tools such as Icarus, Yosys, ModelSim, Vivado, Verilator, GHDL, Quartus etc get input HDL files (Verilog and VHDL) and some tool-specific files (constraint files, memory initialization files, IP description files etc). Together with the files, perhaps a couple of Verilog \`defines, some top-level parameters/generics or some tool-specific options are set. Once the configuration is done, a simulation model, netlist or FPGA image is built, and in the case of simulations, the model is also executed, maybe with some extra run-time parameters.
 
 The thing is, all these tools are doing this in completely different ways and there's generally no way to import configurations from one simulator to another.
 
@@ -25,9 +29,11 @@ How to use it?
 
 Ok, this sounds great. Now, how do I get started?
 
-Assume we have a project that consists of a verilog source file called blinky.v. Then there's also a testbench called blinky_tb.v and a constraints file for synthesis called constraints.sdc. You can get those files from here https://github.com/fusesoc/blinky
+Assume we have a project that consists of a Verilog source file called ``blinky.v``.
+Then there's also a testbench called ``blinky_tb.v`` and a constraints file for synthesis called ``constraints.sdc``.
+You can get those files from here: https://github.com/fusesoc/blinky
 
-For a simulation, we want to use the two verilog files, build it in a subdirectory called "build", and then run it with a parameter to control simulated clock frequency.
+For a simulation, we want to use the two Verilog files, build it in a subdirectory called ``build``, and then run it with a parameter to control simulated clock frequency.
 
 First we register the files to use::
 
@@ -41,7 +47,7 @@ First we register the files to use::
   ]
 
 
-Then we have our parameter, with the the name clk_freq_hz and happens to be a verilog parameter that accepts integers::
+Then we have our parameter, with the the name ``clk_freq_hz`` and happens to be a Verilog parameter that accepts integers::
 
   parameters = {'clk_freq_hz' : {'datatype' : 'int', 'paramtype' : 'vlogparam'}}
 
@@ -69,13 +75,13 @@ Create the directory and the project files::
   os.makedirs(work_root)
   backend.configure(args)
   
-At this point, we still haven't run the actual EDA tool and the files in the work_root directory can be used without edalize if that is preferred. But let's continue the example with Edalize.
+At this point, we still haven't run the actual EDA tool and the files in the ``work_root`` directory can be used without edalize if that is preferred. But let's continue the example with Edalize.
 
 Build the simulation model::
   
   backend.build()
 
-And finally run it, with our arguments. At this point we could change the value of clk_freq_hz, and the new value would be used instead. Or we could skip it altogether, and the default value from the configure stage would be used.::
+And finally run it, with our arguments. At this point we could change the value of ``clk_freq_hz``, and the new value would be used instead. Or we could skip it altogether, and the default value from the configure stage would be used.::
 
   backend.run(args)
 

@@ -1,21 +1,21 @@
 EDA Metadata
 ============
 
-The EDAM (EDA Metadata) API is a data structure with the intention to describe all input parameters that an EDA tool will need to run synthesis or build a simulation model from a set of HDL files. The data described in EDAM is tool-agnostic, with the option to supply tool-specific parameters when required. The data structure itself is a tree structure with lists and dictionaries using simple data types as strings and integers for the actual values, and is suitable for (de)serialization with yaml or JSON.
+The EDAM (EDA Metadata) API is a data structure with the intention to describe all input parameters that an EDA tool will need to run synthesis or build a simulation model from a set of HDL files. The data described in EDAM is tool-agnostic, with the option to supply tool-specific parameters when required. The data structure itself is a tree structure with lists and dictionaries using simple data types as strings and integers for the actual values, and is suitable for (de)serialization with YAML or JSON.
 
 Most keys are optional. The ones which are required are marked accordingly
 
 ============ ===================== ===========
 Field Name   Type                  Description
 ============ ===================== ===========
-files         List of File_        Contains all the HDL source files, constraint files,
-                                   vendor IP description files, memory initialization files etc for the project.
-hooks         List of FIXME        Extra commands to execute at various stages of the project build/run
+files         List of `File`_      Contains all the HDL source files, constraint files,
+                                   vendor IP description files, memory initialization files etc. for the project.
+hooks         `Hook`_              A dictionary of extra commands to execute at various stages of the project build/run.
 name          String               **Required** Name of the project
-parameters    Dict of `Parameter`_ Specifies build- and run-time parameters, such as verilog plusargs, VHDL generics, verilog defines etc.
+parameters    Dict of `Parameter`_ Specifies build- and run-time parameters, such as plusargs, VHDL generics, Verilog defines etc.
 tool_options  `Tool Options`_      A dictionary of tool-specific options.
-toplevel     List of String        Toplevel module(s) for the project
-vpi          List of `VPI`         VPI modules to build for the project
+toplevel     List of String        Toplevel module(s) for the project.
+vpi          List of `VPI`_        VPI modules to build for the project.
 ============ ===================== ===========
 
 
@@ -73,7 +73,7 @@ name            String                User-friendly name of the script
 Parameter
 ---------
 
-A parameter is used for build- and run-time parameters, such as verilog plusargs, VHDL generics, verilog defines, verilog parameters or any extra command-line options that should be sent to the simulation model. Different tools support different subsets of parameters. The list below describes valid parameter types
+A parameter is used for build- and run-time parameters, such as Verilog plusargs, VHDL generics, Verilog defines, Verilog parameters or any extra command-line options that should be sent to the simulation model. Different tools support different subsets of parameters. The list below describes valid parameter types
 
 - cmdlinearg : Command-line argument to be sent to a running simulation model
 - generic : VHDL generic to be set at elaboration-time
@@ -112,6 +112,7 @@ trellis         String                Options for Project Trellis_
 vcs             String                Options for Synopsys VCS_
 verilator       String                Options for Verilator_
 vivado          String                Options for Xilinx Vivado_
+vunit           String                Options for VUnit_
 xsim            String                Options for Xilinx XSim_
 =============== ===================== ===========
 
@@ -132,7 +133,7 @@ icarus
 Field Name       Type                  Description
 ================ ===================== ===========
 iverilog_options List of String        Extra options for compilation with `iverilog`
-timescale        String                Default (verilog) timescale to use before user sets one explicitly
+timescale        String                Default (Verilog) timescale to use before user sets one explicitly
 ================ ===================== ===========
 
 icestorm
@@ -175,7 +176,7 @@ modelsim
 ================ ===================== ===========
 Field Name       Type                  Description
 ================ ===================== ===========
-vlog_options     List of String        Extra options for each verilog file compiled with `vlog`
+vlog_options     List of String        Extra options for each Verilog file compiled with `vlog`
 vsim_options     List of String        Extra options for running the simulation with `vsim`
 ================ ===================== ===========
 
@@ -197,7 +198,7 @@ rivierapro
 ================ ===================== ===========
 Field Name       Type                  Description
 ================ ===================== ===========
-vlog_options     List of String        Extra options for each verilog file compiled with `vlog`
+vlog_options     List of String        Extra options for each Verilog file compiled with `vlog`
 vsim_options     List of String        Extra options for running the simulation with `vsim`
 ================ ===================== ===========
 
@@ -242,7 +243,7 @@ Field Name        Type                  Description
 cli_parser        String                If `cli_parser` is set to managed, Edalize will parse all command-line options.
                                         Otherwise, they are sent directly to the compiled simulation model.
 libs              List of String        Extra options to be passed as -LDFLAGS when linking the C++ testbench
-mode              String                *cc* runs Verilator in regular C++ mode. *sc* runs in SystemC mode. *lint-only* only performs linting on the verilog code
+mode              String                *cc* runs Verilator in regular C++ mode. *sc* runs in SystemC mode. *lint-only* only performs linting on the Verilog code
 verilator_options List of String        Extra options to be passed when verilating model
 ================= ===================== ===========
 
@@ -254,6 +255,64 @@ Field Name       Type                  Description
 ================ ===================== ===========
 part             String                Device identifier. e.g. *xc7a35tcsg324-1*
 ================ ===================== ===========
+
+vunit
+~~~~~~
+
+================ ===================== ===========
+Field Name       Type                  Description
+================ ===================== ===========
+vunit_options    List of String        Extra options for the VUnit test runner
+add_libraries    List of String        A list of framework libraries to add. Allowed values include "array_util", "com", "json4hdl", "osvvm", "random", "verification_components"
+vunit_runner     String                Name of the Python file exporting a ``VUnitRunner`` class (must derive from ``edalize.vunit_hooks.VUnitHooks``) that is used to configure and execute test. This allows very customized test control via VUnit's Python-interfaces.
+================ ===================== ===========
+
+In case a more advanced VUnit configuration or execution of the testbench is necessary, the option ``vunit_runner`` can be used to specify the filename of a Python script which can hook into the construction, parametrization, and execution of the test runner.
+For this to work, the Python script must export a ``class VUnitRunner(vunit_hooks.VUnitHooks)`` which derives from (and optionally overrides) the behavior of ``vunit_hooks.VUnitHooks``.
+
+.. code-block:: python
+
+    from edalize.vunit_hooks import VUnitHooks
+    from vunit import VUnit
+    from vunit.ui import Library, Results
+    from typing import Mapping, Collection
+
+
+    class VUnitRunner(VUnitHooks):
+        """Example of custom VUnit instrumentation."""
+
+        def create(self) -> VUnit:
+            """Customized creation of the test runner"""
+            vu = VUnit.from_argv()
+            vu.enable_check_preprocessing()
+            return vu
+
+        def handle_library(self, logical_name: str, vu_lib: Library):
+            """Override this to customize each library, e.g. with additional simulator options.
+            This hook will be invoked for each library, after all source files have been added.
+            :param logical_name: The logical name of the library
+            :param vu_lib: The vunit.ui.Library instance, configured with all sources of this `logical_name`
+            """
+            # e.g. you can access and customize test-bench entities of this library:
+            if logical_name == "my_tb_library_name":
+                entity = vu_lib.entity("my_toplevel_tb")
+                entity.set_generic("message", "Test message")
+                entity.add_config(name="TestConfig1",
+                                generics=dict(CLK_FREQ=10000000))
+                entity.add_config(name="TestConfig2",
+                                generics=dict(CLK_FREQ=54687500))
+
+        def main(self, vu: VUnit):
+            """Override this for final parametrization of the :class:`VUnit` instance (after all libraries have been added),
+            or for custom invocation of VUnit
+            """
+            def post_run_handler(results: Results):
+                results.merge_coverage(file_name="coverage_data")
+
+            vu.main(post_run=post_run_handler)
+
+
+
 
 xsim
 ~~~~
@@ -269,7 +328,7 @@ toplevel
 ~~~~~~~~
 Name of the top level module/entity
 
-vpi
+VPI
 ---
 
 Each `Vpi` object contains information on how to build the corresponding VPI library

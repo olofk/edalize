@@ -116,6 +116,22 @@ edalize.vivado module
     :undoc-members:
     :show-inheritance:
 
+edalize.vunit module
+--------------------
+
+.. automodule:: edalize.vunit
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+edalize.vunit_hooks module
+--------------------------
+
+.. automodule:: edalize.vunit_hooks
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 edalize.xsim module
 -------------------
 
