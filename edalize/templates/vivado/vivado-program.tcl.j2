@@ -78,7 +78,7 @@ foreach hw_target $hw_targets {
         break
     } else {
         # Close currently tried device, and try with next one.
-        puts "INFO: Part not found as part of $hw_device. Trying next device."
+        puts "INFO: Part not found as part of $hw_target. Trying next device."
         close_hw_target
     }
 }

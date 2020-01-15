@@ -19,8 +19,8 @@ $(NAME).runs/synth_1: $(NAME)_synth.tcl $(NAME).xpr
 synth: $(NAME).runs/synth_1
 
 pgm: $(NAME)_pgm.tcl $(BITSTREAM)
-	export HW_TARGET $(HW_TARGET); \
-	export JTAG_FREQ $(JTAG_FREQ); \
+	export HW_TARGET=$(HW_TARGET); \
+	export JTAG_FREQ=$(JTAG_FREQ); \
 	vivado -quiet -nolog -notrace -mode batch -source $< -tclargs $(PART) $(BITSTREAM)
 
 .PHONY: pgm
