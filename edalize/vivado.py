@@ -34,6 +34,12 @@ class Vivado(Edatool):
                         {'name' : 'pnr',
                          'type' : 'String',
                          'desc' : 'P&R tool. Allowed values are vivado (default) and none (to just run synthesis)'},
+                        {'name' : 'jtag_freq',
+                        'type' : 'Integer',
+                        'desc' : 'The frequency for jtag communication'},
+                        {'name' : 'hw_target',
+                        'type' : 'Description',
+                        'desc' : 'Board identifier (e.g. */xilinx_tcf/Digilent/123456789123A'},
                     ]}
 
     """ Get tool version
