@@ -43,7 +43,9 @@ setup(
     ],
     install_requires=[
         'pytest>=3.3.0',
-        'Jinja2>=2.8',
+        # Avoid Jinja 2.11 until https://github.com/pallets/jinja/issues/1138
+        # is sorted.
+        'Jinja2 >=2.8, <2.11',
     ],
     tests_require=[
         'pyyaml',
