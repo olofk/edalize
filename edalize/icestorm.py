@@ -31,17 +31,18 @@ class Icestorm(Edatool):
     def configure_main(self):
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files()
+        yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
         yosys_edam = {
                 'files'         : self.files,
                 'vlogdefine'    : self.vlogdefine,
                 'vlogparam'     : self.vlogparam,
                 'name'          : self.name,
                 'toplevel'      : self.toplevel,
+                'parameters'    : self.parameters,
                 'tool_options'  : {'yosys' : {
                                         'arch' : 'ice40',
-                                        'synth_options' : self.yosys_synth_options,
-                                        'verilog_defines' : self.vlogdefine,
-                                        'incdirs' : incdirs }
+                                        'synth_options' : yosys_synth_options,
+                                        }
                                 }
                 }
 

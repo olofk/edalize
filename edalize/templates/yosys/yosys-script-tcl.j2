@@ -1,5 +1,15 @@
 yosys -import
 
+{% if verilog_defines -%}
+set defines {{ verilog_defines }}
+
+foreach d ${defines} {
+  set key [lindex $d 0]
+  set val [lindex $d 1]
+  verilog_defines "-D$key=$val"
+}
+{%- endif %}
+
 set file_table {{ file_table }}
 
 foreach f ${file_table} {

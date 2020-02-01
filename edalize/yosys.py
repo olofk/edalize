@@ -18,13 +18,11 @@ class Yosys(Edatool):
                          'type' : 'String',
                          'desc' : 'Output file format. Legal values are *json*, *edif*, *blif*'}],
                     'lists' : [
-                        {'name' : 'options',
+                        {'name' : 'synth_options',
                          'type' : 'String',
-                         'desc' : 'Additional options for the synth command'},
+                         'desc' : 'Additional options for the synth command'}
+                        ,
 
-                        {'name' : 'output_options',
-                         'type' : 'String',
-                         'desc' : 'Additional options for the write output command'},
                         ]}
 
     def configure_main(self):
@@ -43,13 +41,16 @@ class Yosys(Edatool):
 
             file_table.append('{{{file} {switch}}}'.format(file=f.name, switch=switch))
 
+        verilog_defines = []
+        for key, value in self.vlogdefine.items():
+            verilog_defines.append('{{{key} {value}}}'.format(key=key, value=value))
         output_format = self.tool_options.get('output_format', 'blif')
         template_vars = {
+                'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
                 'file_table'          : "{" + " ".join(file_table) + "}",
                 'synth_command'       : "synth_" + self.tool_options.get('arch', 'xilinx'),
                 'synth_options'       : self.tool_options.get('options', ''),
                 'write_command'       : "write_" + output_format,
-                'write_options'       : self.tool_options.get('output_options', ''),
                 'default_target'      : output_format,
                 'name'                : self.name
         }
