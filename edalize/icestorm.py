@@ -34,8 +34,6 @@ class Icestorm(Edatool):
         yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
         yosys_edam = {
                 'files'         : self.files,
-                'vlogdefine'    : self.vlogdefine,
-                'vlogparam'     : self.vlogparam,
                 'name'          : self.name,
                 'toplevel'      : self.toplevel,
                 'parameters'    : self.parameters,

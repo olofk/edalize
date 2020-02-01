@@ -73,5 +73,4 @@ class Yosys(Edatool):
         self.render_template('yosys-makefile.j2',
                              self.name + '.mk',
                              template_vars)
-        #with open(os.path.join(self.work_root, self.name+'.tcl'), 'w') as yosys_file:
 
