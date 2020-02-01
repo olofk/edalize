@@ -44,10 +44,21 @@ class Yosys(Edatool):
         verilog_defines = []
         for key, value in self.vlogdefine.items():
             verilog_defines.append('{{{key} {value}}}'.format(key=key, value=value))
+
+        verilog_params = []
+        for key, value in self.vlogparam.items():
+            _s = "chparam -set {} {} \$abstract\{}\n"
+            verilog_params.append(_s.format(key,
+                self._param_value_str(value, '"'),
+                self.toplevel))
+
         output_format = self.tool_options.get('output_format', 'blif')
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
+				'verilog_params'	  : "\n".join(verilog_params),
                 'file_table'          : "{" + " ".join(file_table) + "}",
+                'incdirs'             : ' '.join(['-I'+d for d in incdirs]),
+                'top'                 : self.toplevel,
                 'synth_command'       : "synth_" + self.tool_options.get('arch', 'xilinx'),
                 'synth_options'       : self.tool_options.get('options', ''),
                 'write_command'       : "write_" + output_format,

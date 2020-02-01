@@ -10,6 +10,13 @@ foreach d ${defines} {
 }
 {%- endif %}
 
+verilog_defaults -push
+verilog_defaults -add -defer
+
+{% if incdirs -%}
+verilog_defaults -add {{ incdirs }}
+{%- endif %}
+
 set file_table {{ file_table }}
 
 foreach f ${file_table} {
@@ -26,6 +33,13 @@ foreach f ${file_table} {
     read_verilog $opts $file_path
   }
 }
-{{ synth_command }} {{ synth_options }}
+
+{% if verilog_params -%}
+{{ verilog_params }}
+{%- endif %}
+
+verilog_defaults -pop
+
+{{ synth_command }} {{ synth_options }} -top {{ top }}
 write_blif {{ name }}.blif
 write_json {{ name }}.json
