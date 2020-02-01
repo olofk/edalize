@@ -18,7 +18,7 @@ def test_icestorm():
     backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile',
-                                       name+'.ys'])
+                                       name+'.tcl'])
 
     f = os.path.join(work_root, 'pcf_file.pcf')
     with open(f, 'a'):
@@ -42,7 +42,7 @@ def test_icestorm_minimal():
     backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile',
-                                       name+'.ys'])
+                                       name+'.tcl'])
 
     f = os.path.join(work_root, 'pcf_file.pcf')
     with open(f, 'a'):
@@ -99,7 +99,7 @@ def test_icestorm_nextpnr():
     backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile',
-                                       name+'.ys'])
+                                       name+'.tcl'])
 
     f = os.path.join(work_root, 'pcf_file.pcf')
     with open(f, 'a'):

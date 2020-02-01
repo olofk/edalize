@@ -1,1 +1,1 @@
--l yosys.log -q -s test_icestorm_0.ys
+-l yosys.log -p tcl test_icestorm_0.tcl
