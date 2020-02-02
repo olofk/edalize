@@ -26,6 +26,7 @@ class Yosys(Edatool):
                          'desc' : 'Additional options for the synth command'}
                         , ]}
 
+
     def configure_main(self):
         # write Yosys tcl script file
         (src_files, incdirs) = self._get_fileset_files()
@@ -51,7 +52,7 @@ class Yosys(Edatool):
         for key, value in self.vlogparam.items():
             if type(value) is str:
                 value = "{\"" + value + "\"}"
-            _s = r"chparam -set {} {} {}"
+            _s = "chparam -set {} {} \$abstract\{}"
             verilog_params.append(_s.format(key,
                 self._param_value_str(value),
                 self.toplevel))
