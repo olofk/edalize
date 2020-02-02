@@ -39,7 +39,7 @@ class Trellis(Edatool):
                 }
 
         yosys = getattr(import_module("edalize.yosys"), 'Yosys')(yosys_edam, self.work_root)
-        yosys.configure("")
+        yosys.configure(self.args)
 
         lpf_files = []
         for f in src_files:

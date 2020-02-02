@@ -102,6 +102,8 @@ class Edatool(object):
 
     def configure(self, args):
         logger.info("Setting up project")
+        # store args
+        self.args = args
         self.configure_pre(args)
         self.configure_main()
         self.configure_post()

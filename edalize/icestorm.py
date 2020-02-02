@@ -45,7 +45,7 @@ class Icestorm(Edatool):
                 }
 
         yosys = getattr(import_module("edalize.yosys"), 'Yosys')(yosys_edam, self.work_root)
-        yosys.configure("")
+        yosys.configure(self.args)
 
         pcf_files = []
         for f in src_files:
