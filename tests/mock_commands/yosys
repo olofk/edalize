@@ -5,14 +5,14 @@ import sys
 grab_input = False
 for arg in sys.argv:
     if grab_input:
-        input_file = arg
-    grab_input = (arg == '-s')
+        input_file = arg.replace(" ", "_")
+    grab_input = (arg == '-p')
 
-output_file = input_file[0:-2]+'blif'
+output_file = input_file[0:-3]+'blif'
 with open(output_file, 'a'):
     os.utime(output_file, None)    
 
-output_file = input_file[0:-2]+'json'
+output_file = input_file[0:-3]+'json'
 with open(output_file, 'a'):
     os.utime(output_file, None)    
 
