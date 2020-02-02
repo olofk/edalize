@@ -25,6 +25,7 @@ class Yosys(Edatool):
 
                         ]}
 
+
     def configure_main(self):
         # write Yosys tcl script file
         (src_files, incdirs) = self._get_fileset_files()
@@ -47,7 +48,7 @@ class Yosys(Edatool):
 
         verilog_params = []
         for key, value in self.vlogparam.items():
-            _s = "chparam -set {} {} \$abstract\{}\n"
+            _s = "chparam -set {} {} \$abstract\{}"
             verilog_params.append(_s.format(key,
                 self._param_value_str(value, '"'),
                 self.toplevel))
