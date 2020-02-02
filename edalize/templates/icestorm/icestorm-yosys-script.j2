@@ -12,7 +12,7 @@ verilog_defaults -add -I{{ incdirs|join(' -I') }}
 {{ src_file|src_file_filter }}
 {% endfor %}
 {% for k, v in vlogparam.items() %}
-chparam -set {{ k }} {{ v|param_value_str }} $abstract\{{ toplevel }}
+chparam -set {{ k }} {{ v|param_value_str }} {{ toplevel }}
 {% endfor -%}
 {%- endif %}
 verilog_defaults -pop
