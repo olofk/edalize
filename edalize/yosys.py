@@ -48,7 +48,7 @@ class Yosys(Edatool):
 
         verilog_params = []
         for key, value in self.vlogparam.items():
-            _s = "chparam -set {} {} \$abstract\{}"
+            _s = r"chparam -set {} {} \$abstract\{}"
             verilog_params.append(_s.format(key,
                 self._param_value_str(value, '"'),
                 self.toplevel))
