@@ -13,12 +13,12 @@ stats: $(TARGET).stat
 
 .PRECIOUS: %_next.asc %_arachne.asc
 
-%.blif: %.ys
-	yosys -l yosys.log -q -s $?
+%.blif: %.mk
+	$(MAKE) -f $<
 %_arachne.asc: $(PCF_FILE) %.blif
 	arachne-pnr $(ARACHNE_PNR_OPTIONS) -q -p $? -o $@
-%.json: %.ys
-	yosys -l yosys.log -q -s $?
+%.json: %.mk
+	$(MAKE) -f $<
 %_next.asc: %.json
 	nextpnr-ice40 -l next.log -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
 %.bin: %_$(PNR).asc
