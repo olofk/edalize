@@ -1,6 +1,8 @@
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.yosys import Yosys
+from importlib import import_module
 
 class Trellis(Edatool):
 
@@ -22,40 +24,29 @@ class Trellis(Edatool):
     def configure_main(self):
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files()
-        with open(os.path.join(self.work_root, self.name+'.ys'), 'w') as yosys_file:
-            for key, value in self.vlogdefine.items():
-                yosys_file.write("verilog_defines -D{}={}\n".format(key, self._param_value_str(value)))
+        yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
+        yosys_synth_options = "-nomux" + yosys_synth_options
+        yosys_edam = {
+                'files'         : self.files,
+                'name'          : self.name,
+                'toplevel'      : self.toplevel,
+                'parameters'    : self.parameters,
+                'tool_options'  : {'yosys' : {
+                                        'arch' : 'ecp5',
+                                        'synth_options' : yosys_synth_options,
+                                        }
+                                }
+                }
 
-            yosys_file.write("verilog_defaults -push\n")
-            yosys_file.write("verilog_defaults -add -defer\n")
-            if incdirs:
-                yosys_file.write("verilog_defaults -add {}\n".format(' '.join(['-I'+d for d in incdirs])))
+        yosys = getattr(import_module("edalize.yosys"), 'Yosys')(yosys_edam, self.work_root)
+        yosys.configure("")
 
-            lpf_files = []
-            for f in src_files:
-                if f.file_type in ['verilogSource']:
-                    yosys_file.write("read_verilog {}\n".format(f.name))
-                elif f.file_type in ['systemVerilogSource']:
-                    yosys_file.write("read_verilog -sv {}\n".format(f.name))
-                elif f.file_type == 'LPF':
-                    lpf_files.append(f.name)
-                elif f.file_type == 'user':
-                    pass
-            for key, value in self.vlogparam.items():
-                _s = "chparam -set {} {} $abstract\{}\n"
-                yosys_file.write(_s.format(key,
-                                           self._param_value_str(value, '"'),
-                                           self.toplevel))
-
-            yosys_file.write("verilog_defaults -pop\n")
-            yosys_file.write("synth_ecp5 -nomux")
-            yosys_synth_options = self.tool_options.get('yosys_synth_options', [])
-            for option in yosys_synth_options:
-                yosys_file.write(' ' + option)
-            yosys_file.write(" -json {}.json".format(self.name))
-            if self.toplevel:
-                yosys_file.write(" -top " + self.toplevel)
-            yosys_file.write("\n")
+        lpf_files = []
+        for f in src_files:
+            if f.file_type == 'LPF':
+                lpf_files.append(f.name)
+            elif f.file_type == 'user':
+                pass
 
         if not lpf_files:
             lpf_files = ['empty.lpf']
