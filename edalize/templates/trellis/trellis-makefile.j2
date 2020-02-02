@@ -6,8 +6,8 @@ NEXTPNR_OPTIONS     := {{ nextpnr_options|join(' ') }}
 
 all: $(TARGET).bit
 
-%.json: %.ys
-	yosys -l yosys.log -q -s $?
+%.json: %.mk
+	$(MAKE) -f $<
 %.config: %.json
 	nextpnr-ecp5 -l next.log -q $(NEXTPNR_OPTIONS) --lpf $(LPF_FILE) --json $? --textcfg $@
 %.bit: %.config
