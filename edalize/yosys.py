@@ -19,12 +19,20 @@ class Yosys(Edatool):
                          'desc' : 'Output file format. Legal values are *json*, *edif*, *blif*'},
                         {'name' : 'yosys_as_subtool',
                          'type' : 'bool',
-                         'desc' : 'Determines if Yosys is run as a part of bigger toolchain, or as a standalone tool'}],
+                         'desc' : 'Determines if Yosys is run as a part of bigger toolchain, or as a standalone tool'},
+                        {'name' : 'makefile_name',
+                         'type' : 'String',
+                         'desc' : 'Generated makefile name, defaults to $name.mk'},
+
+                        {'name' : 'script_name',
+                         'type' : 'String',
+                         'desc' : 'Generated tcl script filename, defaults to $name.mk'},
+                        ],
                     'lists' : [
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
-                         'desc' : 'Additional options for the synth command'}
-                        , ]}
+                         'desc' : 'Additional options for the synth command'},
+                        ]}
 
     @classmethod
     def validate_args(cls, args):
@@ -96,8 +104,11 @@ class Yosys(Edatool):
                 'name'                : self.name
         }
 
+        makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
+        script_name = self. tool_options.get('script_name', self.name + '.tcl')
+
         self.render_template('yosys-script-tcl.j2',
-                             self.name + '.tcl',
+                             script_name,
                              template_vars)
 
         makefile_name = self.name + '.mk' if part_of_toolchain else 'Makefile'
