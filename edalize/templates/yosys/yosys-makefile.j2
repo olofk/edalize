@@ -5,9 +5,11 @@ TARGET   := {{ name }}
 all: $(TARGET).{{ default_target }}
 
 
-%.blif: %.tcl
+%.blif: {{ script_name }}
 	yosys -l yosys.log -p "tcl $?"
-%.json: %.tcl
+%.json: {{ script_name }}
+	yosys -l yosys.log -p "tcl $?"
+%.edif: {{ script_name }}
 	yosys -l yosys.log -p "tcl $?"
 
 clean:
