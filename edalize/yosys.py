@@ -91,16 +91,18 @@ class Yosys(Edatool):
                 self.toplevel))
 
         output_format = self.tool_options.get('output_format', 'blif')
+        arch = self.tool_options.get('arch', 'xilinx')
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
 				'verilog_params'	  : "\n".join(verilog_params),
                 'file_table'          : "{" + " ".join(file_table) + "}",
                 'incdirs'             : ' '.join(['-I'+d for d in incdirs]),
                 'top'                 : self.toplevel,
-                'synth_command'       : "synth_" + self.tool_options.get('arch', 'xilinx'),
+                'synth_command'       : "synth_" + arch,
                 'synth_options'       : " ".join(self.tool_options.get('yosys_synth_options', '')),
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
+                'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
                 'name'                : self.name
         }
 
