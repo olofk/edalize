@@ -1,0 +1,13 @@
+read_edif {{ edif_file }}
+
+{% if xdc_file -%}
+read_xdc {{ xdc_file }}
+{%- endif %}
+
+link_design -top {{ name }} -part {{ tool_options.part }}
+
+opt_design
+place_design
+route_design
+phys_opt_design
+write_bitstream -force {{ name }}.bit

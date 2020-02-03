@@ -3,12 +3,22 @@ BITSTREAM := {{ bitstream }}
 PART := {{ part }}
 
 all: $(BITSTREAM)
+{% if yosys -%}
+$(NAME).edif: $(NAME).mk
+	$(MAKE) -f $<
+{%- endif %}
 
 $(BITSTREAM):  $(NAME)_run.tcl $(NAME).xpr
 	vivado -notrace -mode batch -source $^
 
+{% if yosys -%}
+$(NAME).xpr: $(NAME).tcl synth
+	vivado -notrace -mode batch -source $(NAME).tcl
+{% else %}
 $(NAME).xpr: $(NAME).tcl
 	vivado -notrace -mode batch -source $<
+{%- endif %}
+
 
 build-gui: $(NAME).xpr
 	vivado $<
@@ -16,7 +26,12 @@ build-gui: $(NAME).xpr
 $(NAME).runs/synth_1: $(NAME)_synth.tcl $(NAME).xpr
 	vivado -notrace -mode batch -source $^
 
+{% if yosys -%}
+synth: $(NAME).edif
+{% else %}
 synth: $(NAME).runs/synth_1
+{%- endif %}
+
 
 pgm: $(NAME)_pgm.tcl $(BITSTREAM)
 	export HW_TARGET=$(HW_TARGET); \
