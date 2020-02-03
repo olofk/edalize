@@ -36,4 +36,4 @@ verilog_defaults -pop
 synth_ice40 some yosys_synth_options -top top_module
 write_blif test_icestorm_0.blif
 write_json test_icestorm_0.json
-write_edif test_icestorm_0.edif
+write_edif  test_icestorm_0.edif
