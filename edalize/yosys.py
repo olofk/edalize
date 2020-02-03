@@ -92,6 +92,8 @@ class Yosys(Edatool):
 
         output_format = self.tool_options.get('output_format', 'blif')
         arch = self.tool_options.get('arch', 'xilinx')
+        makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
+        script_name = self. tool_options.get('script_name', self.name + '.tcl')
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
 				'verilog_params'	  : "\n".join(verilog_params),
@@ -103,11 +105,9 @@ class Yosys(Edatool):
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
+                'script_name'         : script_name,
                 'name'                : self.name
         }
-
-        makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
-        script_name = self. tool_options.get('script_name', self.name + '.tcl')
 
         self.render_template('yosys-script-tcl.j2',
                              script_name,
