@@ -11,7 +11,8 @@ class Trellis(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "Project Trellis enables a fully open-source flow for ECP5 FPGAs using Yosys for Verilog synthesis and nextpnr for place and route",
+            yosys_help = Yosys.get_doc(api_ver)
+            trellis_help = {'description' : "Project Trellis enables a fully open-source flow for ECP5 FPGAs using Yosys for Verilog synthesis and nextpnr for place and route",
                     'lists' : [
                         {'name' : 'nextpnr_options',
                          'type' : 'String',
@@ -20,6 +21,18 @@ class Trellis(Edatool):
                          'type' : 'String',
                          'desc' : 'Additional options for the synth_ecp5 command'},
                         ]}
+
+            combined_members = []
+            combined_lists = trellis_help['lists']
+            yosys_members = yosys_help['members']
+            yosys_lists = yosys_help['lists']
+
+            combined_members.extend(m for m in yosys_members if m['name'] not in [i['name'] for i in combined_members])
+            combined_lists.extend(l for l in yosys_lists if l['name'] not in [i['name'] for i in combined_lists])
+
+            return {'description' : "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route",
+                    'members' : combined_members,
+                    'lists' : combined_lists}
 
     def configure_main(self):
         # Write yosys script file
