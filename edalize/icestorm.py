@@ -11,7 +11,8 @@ class Icestorm(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route",
+            yosys_help = Yosys.get_doc(api_ver)
+            icestorm_help = {
                     'members' : [
                         {'name' : 'pnr',
                          'type' : 'String',
@@ -27,6 +28,19 @@ class Icestorm(Edatool):
                          'type' : 'String',
                          'desc' : 'Additional options for the synth_ice40 command'},
                         ]}
+
+            combined_members = icestorm_help['members']
+            combined_lists = icestorm_help['lists']
+            yosys_members = yosys_help['members']
+            yosys_lists = yosys_help['lists']
+
+            combined_members.extend(m for m in yosys_members if m['name'] not in [i['name'] for i in combined_members])
+            combined_lists.extend(l for l in yosys_lists if l['name'] not in [i['name'] for i in combined_lists])
+
+            return {'description' : "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route",
+                    'members' : combined_members,
+                    'lists' : combined_lists}
+
 
     def configure_main(self):
         # Write yosys script file
