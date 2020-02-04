@@ -210,8 +210,8 @@ class Edatool(object):
         #Parse arguments
         backend_members = [x['name'] for x in _opts.get('members', [])]
         backend_lists   = [x['name'] for x in _opts.get('lists', [])]
-        for key,value in sorted(vars(parser.parse_args(args)).items()):
-
+        known, unknown = parser.parse_known_args(args)
+        for key,value in sorted(vars(known).items()):
             if value is None:
                 continue
             if key in backend_members:
