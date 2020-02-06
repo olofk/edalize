@@ -47,6 +47,7 @@ class Trellis(Edatool):
                 'tool_options'  : {'yosys' : {
                                         'arch' : 'ecp5',
                                         'yosys_synth_options' : yosys_synth_options,
+                                        'yosys_as_subtool' : True,
                                         }
                                 }
                 }

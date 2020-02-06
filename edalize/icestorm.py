@@ -54,6 +54,7 @@ class Icestorm(Edatool):
                 'tool_options'  : {'yosys' : {
                                         'arch' : 'ice40',
                                         'yosys_synth_options' : yosys_synth_options,
+                                        'yosys_as_subtool' : True,
                                         }
                                 }
                 }

@@ -16,7 +16,10 @@ class Yosys(Edatool):
                          'desc' : 'Target architecture. Legal values are *xilinx*, *ice40*'},
                         {'name' : 'output_format',
                          'type' : 'String',
-                         'desc' : 'Output file format. Legal values are *json*, *edif*, *blif*'}],
+                         'desc' : 'Output file format. Legal values are *json*, *edif*, *blif*'},
+                        {'name' : 'yosys_as_subtool',
+                         'type' : 'bool',
+                         'desc' : 'Determines if Yosys is run as a part of bigger toolchain, or as a standalone tool'}],
                     'lists' : [
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
@@ -29,6 +32,7 @@ class Yosys(Edatool):
     def configure_main(self):
         # write Yosys tcl script file
         (src_files, incdirs) = self._get_fileset_files()
+        part_of_toolchain = self.tool_options.get('yosys_as_subtool', False)
 
         file_table = []
         for f in src_files:
@@ -71,7 +75,8 @@ class Yosys(Edatool):
                              self.name + '.tcl',
                              template_vars)
 
+        makefile_name = self.name + '.mk' if part_of_toolchain else 'Makefile'
         self.render_template('yosys-makefile.j2',
-                             self.name + '.mk',
+                             makefile_name,
                              template_vars)
 
