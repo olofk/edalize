@@ -53,7 +53,7 @@ class Icestorm(Edatool):
                 'parameters'    : self.parameters,
                 'tool_options'  : {'yosys' : {
                                         'arch' : 'ice40',
-                                        'synth_options' : yosys_synth_options,
+                                        'yosys_synth_options' : yosys_synth_options,
                                         }
                                 }
                 }
