@@ -26,6 +26,31 @@ class Yosys(Edatool):
                          'desc' : 'Additional options for the synth command'}
                         , ]}
 
+    @classmethod
+    def validate_args(cls, args):
+        yosys_help = cls.get_doc(0)
+        yosys_members = yosys_help['members']
+        yosys_lists = yosys_help['lists']
+
+        yosys_args = []
+        yosys_args.append(a['name'] for a in yosys_members)
+        yosys_args.append(a['name'] for a in yosys_lists)
+
+        for arg in args:
+            if not arg.startswith('-'):
+                continue
+            argname = arg.strip('-')
+            if argname not in yosys_args:
+                raise Exception(f'Unknown command line option {arg}')
+
+    def check_args(self, unknown):
+        part_of_toolchain = self.tool_options.get('yosys_as_subtool', False)
+        if part_of_toolchain is False:
+            super().check_args(unknown)
+        else:
+            # we assume the calling tool will handle parameter check
+            pass
+
 
     def configure_main(self):
         # write Yosys tcl script file

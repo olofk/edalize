@@ -34,6 +34,11 @@ class Trellis(Edatool):
                     'members' : combined_members,
                     'lists' : combined_lists}
 
+
+    def check_args(self, unknown):
+        Yosys.validate_args(unknown)
+
+
     def configure_main(self):
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files()
