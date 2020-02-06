@@ -90,7 +90,7 @@ class Yosys(Edatool):
                 'incdirs'             : ' '.join(['-I'+d for d in incdirs]),
                 'top'                 : self.toplevel,
                 'synth_command'       : "synth_" + self.tool_options.get('arch', 'xilinx'),
-                'synth_options'       : self.tool_options.get('yosys_synth_options', ''),
+                'synth_options'       : " ".join(self.tool_options.get('yosys_synth_options', '')),
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
                 'name'                : self.name
