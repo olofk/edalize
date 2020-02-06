@@ -33,6 +33,6 @@ chparam -set vlogparam_int 42 \$abstract\top_module
 chparam -set vlogparam_str "hello" \$abstract\top_module
 verilog_defaults -pop
 
-synth_ice40  -top top_module
+synth_ice40 some yosys_synth_options -top top_module
 write_blif test_icestorm_0.blif
 write_json test_icestorm_0.json
