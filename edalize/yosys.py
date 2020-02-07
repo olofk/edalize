@@ -9,11 +9,11 @@ class Yosys(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "Open source synthesis tool many different FPGAs",
+            return {'description' : "Open source synthesis tool targeting many different FPGAs",
                     'members' : [
                         {'name' : 'arch',
                          'type' : 'String',
-                         'desc' : 'Target architecture. Legal values are *xilinx*, *ice40*'},
+                         'desc' : 'Target architecture. Legal values are *xilinx*, *ice40* and *ecp5*'},
                         {'name' : 'output_format',
                          'type' : 'String',
                          'desc' : 'Output file format. Legal values are *json*, *edif*, *blif*'},
@@ -24,9 +24,7 @@ class Yosys(Edatool):
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
                          'desc' : 'Additional options for the synth command'}
-                        ,
-
-                        ]}
+                        , ]}
 
     @classmethod
     def validate_args(cls, args):
