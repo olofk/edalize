@@ -94,6 +94,7 @@ class Vivado(Edatool):
                                             'arch' : 'xilinx',
                                             'output_format' : 'edif',
                                             'synth_options' : yosys_synth_options,
+                                            'yosys_as_subtool' : True,
                                             'script_name'   : 'yosys.tcl',
                                             }
                                     }
