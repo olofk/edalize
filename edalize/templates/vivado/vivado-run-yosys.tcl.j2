@@ -8,6 +8,7 @@ link_design -top {{ name }} -part {{ tool_options.part }}
 
 opt_design
 place_design
+report_utilization -file top_utilization_placed.rpt
 route_design
 phys_opt_design
 write_bitstream -force {{ name }}.bit
