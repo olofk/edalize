@@ -1,0 +1,400 @@
+Release 14.7 Map P.20131013 (lin64)
+Xilinx Mapping Report File for Design 'top'
+
+Design Information
+------------------
+Command Line   : map -intstyle ise -p xc6slx75l-csg484-1L -w -logic_opt off -ol
+high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -detail
+-ir off -pr off -lc off -power off -o top_map.ncd top.ngd top.pcf 
+Target Device  : xc6slx75l
+Target Package : csg484
+Target Speed   : -1l
+Mapper Version : spartan6l -- $Revision: 1.55 $
+Mapped Date    : Wed Dec  4 12:38:15 2019
+
+Design Summary
+--------------
+Number of errors:      0
+Number of warnings:    1
+Slice Logic Utilization:
+  Number of Slice Registers:                   959 out of  93,296    1%
+    Number used as Flip Flops:                 959
+    Number used as Latches:                      0
+    Number used as Latch-thrus:                  0
+    Number used as AND/OR logics:                0
+  Number of Slice LUTs:                      1,329 out of  46,648    2%
+    Number used as logic:                    1,317 out of  46,648    2%
+      Number using O6 output only:             901
+      Number using O5 output only:             153
+      Number using O5 and O6:                  263
+      Number used as ROM:                        0
+    Number used as Memory:                       3 out of  11,072    1%
+      Number used as Dual Port RAM:              0
+      Number used as Single Port RAM:            0
+      Number used as Shift Register:             3
+        Number using O6 output only:             3
+        Number using O5 output only:             0
+        Number using O5 and O6:                  0
+    Number used exclusively as route-thrus:      9
+      Number with same-slice register load:      5
+      Number with same-slice carry load:         4
+      Number with other load:                    0
+
+Slice Logic Distribution:
+  Number of occupied Slices:                   422 out of  11,662    3%
+  Number of MUXCYs used:                       368 out of  23,324    1%
+  Number of LUT Flip Flop pairs used:        1,395
+    Number with an unused Flip Flop:           617 out of   1,395   44%
+    Number with an unused LUT:                  66 out of   1,395    4%
+    Number of fully used LUT-FF pairs:         712 out of   1,395   51%
+    Number of unique control sets:              20
+    Number of slice register sites lost
+      to control set restrictions:              62 out of  93,296    1%
+
+  A LUT Flip Flop pair for this architecture represents one LUT paired with
+  one Flip Flop within a slice.  A control set is a unique combination of
+  clock, reset, set, and enable signals for a registered element.
+  The Slice Logic Distribution report is not meaningful if the design is
+  over-mapped for a non-slice resource or if Placement fails.
+
+IO Utilization:
+  Number of bonded IOBs:                         4 out of     328    1%
+
+Specific Feature Utilization:
+  Number of RAMB16BWERs:                         0 out of     172    0%
+  Number of RAMB8BWERs:                          2 out of     344    1%
+  Number of BUFIO2/BUFIO2_2CLKs:                 0 out of      32    0%
+  Number of BUFIO2FB/BUFIO2FB_2CLKs:             0 out of      32    0%
+  Number of BUFG/BUFGMUXs:                       1 out of      16    6%
+    Number used as BUFGs:                        1
+    Number used as BUFGMUX:                      0
+  Number of DCM/DCM_CLKGENs:                     0 out of      12    0%
+  Number of ILOGIC2/ISERDES2s:                   0 out of     442    0%
+  Number of IODELAY2/IODRP2/IODRP2_MCBs:         0 out of     442    0%
+  Number of OLOGIC2/OSERDES2s:                   0 out of     442    0%
+  Number of BSCANs:                              0 out of       4    0%
+  Number of BUFHs:                               0 out of     384    0%
+  Number of BUFPLLs:                             0 out of       8    0%
+  Number of BUFPLL_MCBs:                         0 out of       4    0%
+  Number of DSP48A1s:                            0 out of     132    0%
+  Number of ICAPs:                               0 out of       1    0%
+  Number of MCBs:                                0 out of       4    0%
+  Number of PCILOGICSEs:                         0 out of       2    0%
+  Number of PLL_ADVs:                            0 out of       6    0%
+  Number of PMVs:                                0 out of       1    0%
+  Number of STARTUPs:                            0 out of       1    0%
+  Number of SUSPEND_SYNCs:                       0 out of       1    0%
+
+Average Fanout of Non-Clock Nets:                3.72
+
+Peak Memory Usage:  839 MB
+Total REAL time to MAP completion:  46 secs 
+Total CPU time to MAP completion:   44 secs 
+
+Table of Contents
+-----------------
+Section 1 - Errors
+Section 2 - Warnings
+Section 3 - Informational
+Section 4 - Removed Logic Summary
+Section 5 - Removed Logic
+Section 6 - IOB Properties
+Section 7 - RPMs
+Section 8 - Guide Report
+Section 9 - Area Group and Partition Summary
+Section 10 - Timing Report
+Section 11 - Configuration String Information
+Section 12 - Control Set Information
+Section 13 - Utilization by Hierarchy
+
+Section 1 - Errors
+------------------
+
+Section 2 - Warnings
+--------------------
+WARNING:PhysDesignRules:2410 - This design is using one or more 9K Block RAMs
+   (RAMB8BWER).  9K Block RAM initialization data, both user defined and
+   default, may be incorrect and should not be used.  For more information,
+   please reference Xilinx Answer Record 39999.
+
+Section 3 - Informational
+-------------------------
+INFO:LIT:244 - All of the single ended outputs in this design are using slew
+   rate limited output drivers. The delay on speed critical single ended outputs
+   can be dramatically reduced by designating them as fast outputs.
+INFO:Pack:1716 - Initializing temperature to 85.000 Celsius. (default - Range:
+   0.000 to 85.000 Celsius)
+INFO:Pack:1720 - Initializing voltage to 0.950 Volts. (default - Range: 0.950 to
+   1.050 Volts)
+INFO:Map:215 - The Interim Design Summary has been generated in the MAP Report
+   (.mrp).
+INFO:Pack:1650 - Map created a placed design.
+
+Section 4 - Removed Logic Summary
+---------------------------------
+   2 block(s) optimized away
+ 156 Block(s) redundant
+
+Section 5 - Removed Logic
+-------------------------
+
+Optimized Block(s):
+TYPE 		BLOCK
+GND 		XST_GND
+VCC 		XST_VCC
+
+Redundant Block(s):
+TYPE 		BLOCK
+LUT1 		dut/Mcount_count_instr_cy<62>_rt
+LUT1 		dut/Mcount_count_instr_cy<61>_rt
+LUT1 		dut/Mcount_count_instr_cy<60>_rt
+LUT1 		dut/Mcount_count_instr_cy<59>_rt
+LUT1 		dut/Mcount_count_instr_cy<58>_rt
+LUT1 		dut/Mcount_count_instr_cy<57>_rt
+LUT1 		dut/Mcount_count_instr_cy<56>_rt
+LUT1 		dut/Mcount_count_instr_cy<55>_rt
+LUT1 		dut/Mcount_count_instr_cy<54>_rt
+LUT1 		dut/Mcount_count_instr_cy<53>_rt
+LUT1 		dut/Mcount_count_instr_cy<52>_rt
+LUT1 		dut/Mcount_count_instr_cy<51>_rt
+LUT1 		dut/Mcount_count_instr_cy<50>_rt
+LUT1 		dut/Mcount_count_instr_cy<49>_rt
+LUT1 		dut/Mcount_count_instr_cy<48>_rt
+LUT1 		dut/Mcount_count_instr_cy<47>_rt
+LUT1 		dut/Mcount_count_instr_cy<46>_rt
+LUT1 		dut/Mcount_count_instr_cy<45>_rt
+LUT1 		dut/Mcount_count_instr_cy<44>_rt
+LUT1 		dut/Mcount_count_instr_cy<43>_rt
+LUT1 		dut/Mcount_count_instr_cy<42>_rt
+LUT1 		dut/Mcount_count_instr_cy<41>_rt
+LUT1 		dut/Mcount_count_instr_cy<40>_rt
+LUT1 		dut/Mcount_count_instr_cy<39>_rt
+LUT1 		dut/Mcount_count_instr_cy<38>_rt
+LUT1 		dut/Mcount_count_instr_cy<37>_rt
+LUT1 		dut/Mcount_count_instr_cy<36>_rt
+LUT1 		dut/Mcount_count_instr_cy<35>_rt
+LUT1 		dut/Mcount_count_instr_cy<34>_rt
+LUT1 		dut/Mcount_count_instr_cy<33>_rt
+LUT1 		dut/Mcount_count_instr_cy<32>_rt
+LUT1 		dut/Mcount_count_instr_cy<31>_rt
+LUT1 		dut/Mcount_count_instr_cy<30>_rt
+LUT1 		dut/Mcount_count_instr_cy<29>_rt
+LUT1 		dut/Mcount_count_instr_cy<28>_rt
+LUT1 		dut/Mcount_count_instr_cy<27>_rt
+LUT1 		dut/Mcount_count_instr_cy<26>_rt
+LUT1 		dut/Mcount_count_instr_cy<25>_rt
+LUT1 		dut/Mcount_count_instr_cy<24>_rt
+LUT1 		dut/Mcount_count_instr_cy<23>_rt
+LUT1 		dut/Mcount_count_instr_cy<22>_rt
+LUT1 		dut/Mcount_count_instr_cy<21>_rt
+LUT1 		dut/Mcount_count_instr_cy<20>_rt
+LUT1 		dut/Mcount_count_instr_cy<19>_rt
+LUT1 		dut/Mcount_count_instr_cy<18>_rt
+LUT1 		dut/Mcount_count_instr_cy<17>_rt
+LUT1 		dut/Mcount_count_instr_cy<16>_rt
+LUT1 		dut/Mcount_count_instr_cy<15>_rt
+LUT1 		dut/Mcount_count_instr_cy<14>_rt
+LUT1 		dut/Mcount_count_instr_cy<13>_rt
+LUT1 		dut/Mcount_count_instr_cy<12>_rt
+LUT1 		dut/Mcount_count_instr_cy<11>_rt
+LUT1 		dut/Mcount_count_instr_cy<10>_rt
+LUT1 		dut/Mcount_count_instr_cy<9>_rt
+LUT1 		dut/Mcount_count_instr_cy<8>_rt
+LUT1 		dut/Mcount_count_instr_cy<7>_rt
+LUT1 		dut/Mcount_count_instr_cy<6>_rt
+LUT1 		dut/Mcount_count_instr_cy<5>_rt
+LUT1 		dut/Mcount_count_instr_cy<4>_rt
+LUT1 		dut/Mcount_count_instr_cy<3>_rt
+LUT1 		dut/Mcount_count_instr_cy<2>_rt
+LUT1 		dut/Mcount_count_instr_cy<1>_rt
+LUT1 		dut/Mcount_count_cycle_cy<62>_rt
+LUT1 		dut/Mcount_count_cycle_cy<61>_rt
+LUT1 		dut/Mcount_count_cycle_cy<60>_rt
+LUT1 		dut/Mcount_count_cycle_cy<59>_rt
+LUT1 		dut/Mcount_count_cycle_cy<58>_rt
+LUT1 		dut/Mcount_count_cycle_cy<57>_rt
+LUT1 		dut/Mcount_count_cycle_cy<56>_rt
+LUT1 		dut/Mcount_count_cycle_cy<55>_rt
+LUT1 		dut/Mcount_count_cycle_cy<54>_rt
+LUT1 		dut/Mcount_count_cycle_cy<53>_rt
+LUT1 		dut/Mcount_count_cycle_cy<52>_rt
+LUT1 		dut/Mcount_count_cycle_cy<51>_rt
+LUT1 		dut/Mcount_count_cycle_cy<50>_rt
+LUT1 		dut/Mcount_count_cycle_cy<49>_rt
+LUT1 		dut/Mcount_count_cycle_cy<48>_rt
+LUT1 		dut/Mcount_count_cycle_cy<47>_rt
+LUT1 		dut/Mcount_count_cycle_cy<46>_rt
+LUT1 		dut/Mcount_count_cycle_cy<45>_rt
+LUT1 		dut/Mcount_count_cycle_cy<44>_rt
+LUT1 		dut/Mcount_count_cycle_cy<43>_rt
+LUT1 		dut/Mcount_count_cycle_cy<42>_rt
+LUT1 		dut/Mcount_count_cycle_cy<41>_rt
+LUT1 		dut/Mcount_count_cycle_cy<40>_rt
+LUT1 		dut/Mcount_count_cycle_cy<39>_rt
+LUT1 		dut/Mcount_count_cycle_cy<38>_rt
+LUT1 		dut/Mcount_count_cycle_cy<37>_rt
+LUT1 		dut/Mcount_count_cycle_cy<36>_rt
+LUT1 		dut/Mcount_count_cycle_cy<35>_rt
+LUT1 		dut/Mcount_count_cycle_cy<34>_rt
+LUT1 		dut/Mcount_count_cycle_cy<33>_rt
+LUT1 		dut/Mcount_count_cycle_cy<32>_rt
+LUT1 		dut/Mcount_count_cycle_cy<31>_rt
+LUT1 		dut/Mcount_count_cycle_cy<30>_rt
+LUT1 		dut/Mcount_count_cycle_cy<29>_rt
+LUT1 		dut/Mcount_count_cycle_cy<28>_rt
+LUT1 		dut/Mcount_count_cycle_cy<27>_rt
+LUT1 		dut/Mcount_count_cycle_cy<26>_rt
+LUT1 		dut/Mcount_count_cycle_cy<25>_rt
+LUT1 		dut/Mcount_count_cycle_cy<24>_rt
+LUT1 		dut/Mcount_count_cycle_cy<23>_rt
+LUT1 		dut/Mcount_count_cycle_cy<22>_rt
+LUT1 		dut/Mcount_count_cycle_cy<21>_rt
+LUT1 		dut/Mcount_count_cycle_cy<20>_rt
+LUT1 		dut/Mcount_count_cycle_cy<19>_rt
+LUT1 		dut/Mcount_count_cycle_cy<18>_rt
+LUT1 		dut/Mcount_count_cycle_cy<17>_rt
+LUT1 		dut/Mcount_count_cycle_cy<16>_rt
+LUT1 		dut/Mcount_count_cycle_cy<15>_rt
+LUT1 		dut/Mcount_count_cycle_cy<14>_rt
+LUT1 		dut/Mcount_count_cycle_cy<13>_rt
+LUT1 		dut/Mcount_count_cycle_cy<12>_rt
+LUT1 		dut/Mcount_count_cycle_cy<11>_rt
+LUT1 		dut/Mcount_count_cycle_cy<10>_rt
+LUT1 		dut/Mcount_count_cycle_cy<9>_rt
+LUT1 		dut/Mcount_count_cycle_cy<8>_rt
+LUT1 		dut/Mcount_count_cycle_cy<7>_rt
+LUT1 		dut/Mcount_count_cycle_cy<6>_rt
+LUT1 		dut/Mcount_count_cycle_cy<5>_rt
+LUT1 		dut/Mcount_count_cycle_cy<4>_rt
+LUT1 		dut/Mcount_count_cycle_cy<3>_rt
+LUT1 		dut/Mcount_count_cycle_cy<2>_rt
+LUT1 		dut/Mcount_count_cycle_cy<1>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<30>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<29>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<28>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<27>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<26>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<25>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<24>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<23>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<22>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<21>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<20>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<19>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<18>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<17>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<16>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<15>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<14>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<13>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<12>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<11>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<10>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<9>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<8>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<7>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<6>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<5>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<4>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_cy<3>_rt
+LUT1 		dut/Mcount_count_instr_xor<63>_rt
+LUT1 		dut/Mcount_count_cycle_xor<63>_rt
+LUT1 		dut/Madd_reg_pc[31]_GND_2_o_add_332_OUT_xor<31>_rt
+LUT1 		dut/Madd_reg_pc[31]_decoded_imm[31]_add_415_OUT_xor<0>_rt
+
+Section 6 - IOB Properties
+--------------------------
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| IOB Name                           | Type             | Direction | IO Standard          | Diff  | Drive    | Slew | Reg (s)      | Resistor | IOB      |
+|                                    |                  |           |                      | Term  | Strength | Rate |              |          | Delay    |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| clk                                | IOB              | INPUT     | LVCMOS25             |       |          |      |              |          |          |
+| di                                 | IOB              | INPUT     | LVCMOS25             |       |          |      |              |          |          |
+| do                                 | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| stb                                | IOB              | INPUT     | LVCMOS25             |       |          |      |              |          |          |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 7 - RPMs
+----------------
+
+Section 8 - Guide Report
+------------------------
+Guide not run on this design.
+
+Section 9 - Area Group and Partition Summary
+--------------------------------------------
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+Area Group Information
+----------------------
+
+  No area groups were found in this design.
+
+----------------------
+
+Section 10 - Timing Report
+--------------------------
+A logic-level (pre-route) timing report can be generated by using Xilinx static
+timing analysis tools, Timing Analyzer (GUI) or TRCE (command line), with the
+mapped NCD and PCF files. Please note that this timing report will be generated
+using estimated delay information. For accurate numbers, please generate a
+timing report with the post Place and Route NCD file.
+
+For more information about the Timing Analyzer, consult the Xilinx Timing
+Analyzer Reference Manual; for more information about TRCE, consult the Xilinx
+Command Line Tools User Guide "TRACE" chapter.
+
+Section 11 - Configuration String Details
+-----------------------------------------
+
+Section 12 - Control Set Information
+------------------------------------
++-----------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Clock Signal | Reset Signal                        | Set Signal | Enable Signal                                       | Slice Load Count | Bel Load Count |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------+
+| clk_BUFGP    |                                     |            |                                                     | 125              | 456            |
+| clk_BUFGP    |                                     |            | GLOBAL_LOGIC1                                       | 1                | 3              |
+| clk_BUFGP    |                                     |            | din<0>                                              | 23               | 71             |
+| clk_BUFGP    |                                     |            | dut/_n1003_inv                                      | 12               | 30             |
+| clk_BUFGP    |                                     |            | dut/_n1007_inv                                      | 6                | 32             |
+| clk_BUFGP    |                                     |            | dut/decoder_trigger_decoder_pseudo_trigger_AND_28_o | 30               | 59             |
+| clk_BUFGP    |                                     |            | dut/mem_do_rinst_mem_done_AND_22_o                  | 18               | 35             |
+| clk_BUFGP    |                                     |            | stb_IBUF                                            | 16               | 36             |
+| clk_BUFGP    | dut/GND_2_o_GND_2_o_MUX_1221_o      |            |                                                     | 2                | 2              |
+| clk_BUFGP    | dut/Reset_OR_DriverANDClockEnable   |            | dut/_n1003_inv                                      | 2                | 4              |
+| clk_BUFGP    | dut/Reset_OR_DriverANDClockEnable10 |            | dut/decoder_trigger_decoder_pseudo_trigger_AND_28_o | 2                | 2              |
+| clk_BUFGP    | dut/Reset_OR_DriverANDClockEnable11 |            | dut/decoder_trigger_decoder_pseudo_trigger_AND_28_o | 5                | 7              |
+| clk_BUFGP    | dut/Reset_OR_DriverANDClockEnable14 |            | dut/decoder_trigger_decoder_pseudo_trigger_AND_28_o | 2                | 2              |
+| clk_BUFGP    | dut/Reset_OR_DriverANDClockEnable16 |            | dut/decoder_trigger_decoder_pseudo_trigger_AND_28_o | 5                | 6              |
+| clk_BUFGP    | dut/resetn_inv                      |            |                                                     | 23               | 74             |
+| clk_BUFGP    | dut/resetn_inv                      |            | dut/_n1107_inv                                      | 16               | 64             |
+| clk_BUFGP    | dut/resetn_inv                      |            | dut/cpu_state_FSM_FFd2-In21                         | 19               | 62             |
+| clk_BUFGP    | dut/resetn_inv                      |            | dut/decoder_trigger_decoder_pseudo_trigger_AND_28_o | 6                | 7              |
+| clk_BUFGP    | dut/resetn_inv                      |            | dut/resetn_trap_OR_51_o_inv                         | 1                | 2              |
+| clk_BUFGP    | dut/resetn_reg_pc[1]_AND_180_o      |            |                                                     | 5                | 8              |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 13 - Utilization by Hierarchy
+-------------------------------------
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Module             | Partition | Slices*       | Slice Reg     | LUTs          | LUTRAM        | BRAM/FIFO | DSP48A1 | BUFG  | BUFIO | BUFR  | DCM   | PLL_ADV   | Full Hierarchical  |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| top/               |           | 73/441        | 378/959       | 171/1329      | 3/3           | 0/2       | 0/0     | 1/1   | 0/0   | 0/0   | 0/0   | 0/0       | top                |
+| +dut               |           | 368/368       | 581/581       | 1158/1158     | 0/0           | 2/2       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | top/dut            |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+* Slices can be packed with basic elements from multiple hierarchies.
+  Therefore, a slice will be counted in every hierarchical module
+  that each of its packed basic elements belong to.
+** For each column, there are two numbers reported <A>/<B>.
+   <A> is the number of elements that belong to that specific hierarchical module.
+   <B> is the total number of elements from that hierarchical module and any lower level
+   hierarchical modules below.
+*** The LUTRAM column counts all LUTs used as memory including RAM, ROM, and shift registers.
