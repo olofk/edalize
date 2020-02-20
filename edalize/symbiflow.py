@@ -27,9 +27,12 @@ class Symbiflow(Edatool):
         if api_ver == 0:
             return {'description' : "The Symbilow backend executes Yosys sythesis tool and VPR place and route. It can target multiple different FPGA vendors",
                     'members' : [
+                        {'name' : 'package',
+                         'type' : 'String',
+                         'desc' : 'FPGA chip package (e.g. clg400-1)'},
                         {'name' : 'part',
                          'type' : 'String',
-                         'desc' : 'FPGA part number (e.g. xc7a50t)'},
+                         'desc' : 'FPGA part type (e.g. xc7a50t)'},
                         {'name' : 'vendor',
                          'type' : 'String',
                          'desc' : 'Target architecture. Currently only "xilinx" is supported '},
@@ -55,18 +58,24 @@ class Symbiflow(Edatool):
             if f.file_type in ['SDC']:
                 constraints.append(f.name)
 
-        partname = self.tool_options.get('part', None)
-        assert partname is not None, 'Missing required "partname" parameter'
-        if 'xc7a' in partname:
+        part = self.tool_options.get('part', None)
+        package = self.tool_options.get('package', None)
+
+        assert part is not None, 'Missing required "part" parameter'
+        assert package is not None, 'Missing required "package" parameter'
+
+        if 'xc7a' in part:
             bitstream_device = 'artix7'
-        if 'xc7z' in partname:
+        if 'xc7z' in part:
             bitstream_device = 'zynq7'
-        if 'xc7k' in partname:
+        if 'xc7k' in part:
             bitstream_device = 'kintex7'
 
-        makefile_params = {'top' : 'top',
+        partname = part + package
+        makefile_params = {'top' : self.toplevel,
                            'sources' : ' '.join(file_list),
                            'partname' : partname,
+                           'part' : part,
                            'bitstream_device' : bitstream_device,
                            'pcf' : ' '.join(constraints),
                            'builddir' : 'build',

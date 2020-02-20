@@ -2,7 +2,8 @@
 
 TOP	:= {{ top }}
 VERILOG := {{ sources }}
-DEVICE  := {{ partname }}_test
+PARTNAME:= {{ partname }}
+DEVICE  := {{ part }}_test
 BITSTREAM_DEVICE := {{ bitstream_device }}
 PCF	 = {{ pcf }}
 BUILDDIR:= {{ builddir }}
@@ -28,7 +29,7 @@ ${TOP}.fasm: ${TOP}.route
 	cd ${BUILDDIR} && write_fasm -e ${TOP}.eblif -d ${DEVICE}
 
 ${TOP}.bit: ${TOP}.fasm
-	cd ${BUILDDIR} && write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -b ${TOP}.bit
+	cd ${BUILDDIR} && write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit
 
 clean:
 	rm -rf ${BUILDDIR}
