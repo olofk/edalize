@@ -1,0 +1,414 @@
+Timing Analyzer report for picorv32_wrap_0_1
+Wed Dec  4 12:53:04 2019
+Quartus Prime Version 19.1.0 Build 240 03/26/2019 SJ Pro Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Timing Analyzer Summary
+  3. Timing Delays: Final Snapshot
+  4. SDC File List
+  5. Clocks
+  6. Slow 900mV 100C Model Fmax Summary
+  7. Timing Closure Recommendations
+  8. Slow 900mV 100C Model Setup Summary
+  9. Slow 900mV 100C Model Hold Summary
+ 10. Slow 900mV 100C Model Recovery Summary
+ 11. Slow 900mV 100C Model Removal Summary
+ 12. Slow 900mV 100C Model Minimum Pulse Width Summary
+ 13. Slow 900mV 100C Model Metastability Summary
+ 14. Slow 900mV 0C Model Fmax Summary
+ 15. Slow 900mV 0C Model Setup Summary
+ 16. Slow 900mV 0C Model Hold Summary
+ 17. Slow 900mV 0C Model Recovery Summary
+ 18. Slow 900mV 0C Model Removal Summary
+ 19. Slow 900mV 0C Model Minimum Pulse Width Summary
+ 20. Slow 900mV 0C Model Metastability Summary
+ 21. Fast 900mV 100C Model Setup Summary
+ 22. Fast 900mV 100C Model Hold Summary
+ 23. Fast 900mV 100C Model Recovery Summary
+ 24. Fast 900mV 100C Model Removal Summary
+ 25. Fast 900mV 100C Model Minimum Pulse Width Summary
+ 26. Fast 900mV 100C Model Metastability Summary
+ 27. Fast 900mV 0C Model Setup Summary
+ 28. Fast 900mV 0C Model Hold Summary
+ 29. Fast 900mV 0C Model Recovery Summary
+ 30. Fast 900mV 0C Model Removal Summary
+ 31. Fast 900mV 0C Model Minimum Pulse Width Summary
+ 32. Fast 900mV 0C Model Metastability Summary
+ 33. Multicorner Timing Analysis Summary
+ 34. Board Trace Model Assignments
+ 35. Input Transition Times
+ 36. Signal Integrity Metrics (Slow 900mv 100c Model)
+ 37. Signal Integrity Metrics (Fast 900mv 0c Model)
+ 38. Setup Transfers
+ 39. Hold Transfers
+ 40. Timing Analyzer Messages
+ 41. Unconstrained Paths Summary
+ 42. Clock Status Summary
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2019  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+
+
+
++----------------------------------------------------------------------------+
+; Timing Analyzer Summary                                                    ;
++-----------------------+----------------------------------------------------+
+; Quartus Prime Version ; Version 19.1.0 Build 240 03/26/2019 SJ Pro Edition ;
+; Timing Analyzer       ; Timing Analyzer                                    ;
+; Revision Name         ; picorv32_wrap_0_1                                  ;
+; Device Family         ; Cyclone 10 GX                                      ;
+; Device Name           ; 10CX220YF780E5G                                    ;
+; Snapshot              ; final                                              ;
+; Timing Models         ; Final                                              ;
+; Delay Model           ; Combined                                           ;
+; Rise/Fall Delays      ; Enabled                                            ;
++-----------------------+----------------------------------------------------+
+
+
++---------------------------------------------+
+; Timing Delays: Final Snapshot               ;
++----------------------------------+----------+
+; Snapshot                         ; final    ;
+; Periphery block cell delays      ; Sign-off ;
+; Core block cell delays           ; Sign-off ;
+; Routing interconnect (IC) delays ; Sign-off ;
++----------------------------------+----------+
+
+
++----------------------------------------------------------------------------------------------------------------------------+
+; SDC File List                                                                                                              ;
++-----------------------------------------------------------+----------+--------+--------------------------+-----------------+
+; SDC File Path                                             ; Instance ; Status ; Read at                  ; Processing Time ;
++-----------------------------------------------------------+----------+--------+--------------------------+-----------------+
+; ../src/picorv32_wrap-quartus_constraints_0.1/picorv32.sdc ;          ; OK     ; Wed Dec  4 12:53:03 2019 ; 00:00:00        ;
++-----------------------------------------------------------+----------+--------+--------------------------+-----------------+
+Note: All paths for non-entity SDC files are reported relative to the project directory (/some/path/was/here/build/picorv32_wrap_0.1/cyclone10-quartus/).
+
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Clocks                                                                                                                                                                         ;
++------------+------+--------+-----------+-------+-------+------------+-----------+-------------+-------+--------+-----------+------------+----------+--------+--------+---------+
+; Clock Name ; Type ; Period ; Frequency ; Rise  ; Fall  ; Duty Cycle ; Divide by ; Multiply by ; Phase ; Offset ; Edge List ; Edge Shift ; Inverted ; Master ; Source ; Targets ;
++------------+------+--------+-----------+-------+-------+------------+-----------+-------------+-------+--------+-----------+------------+----------+--------+--------+---------+
+; clk        ; Base ; 5.714  ; 175.0 MHz ; 0.000 ; 2.857 ;            ;           ;             ;       ;        ;           ;            ;          ;        ;        ; { clk } ;
++------------+------+--------+-----------+-------+-------+------------+-----------+-------------+-------+--------+-----------+------------+----------+--------+--------+---------+
+
+
++--------------------------------------------------+
+; Slow 900mV 100C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 131.58 MHz ; 131.58 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+This panel reports FMAX for every clock in the design, regardless of the user-specified clock periods.  FMAX is only computed for paths where the source and destination registers or ports are driven by the same clock.  Paths of different clocks, including generated clocks, are ignored.  For paths between a clock and its inversion, FMAX is computed as if the rising and falling edges are scaled along with FMAX, such that the duty cycle (in terms of a percentage) is maintained. Intel recommends that you always use clock constraints and other slack reports for sign-off analysis.
+
+
+----------------------------------
+; Timing Closure Recommendations ;
+----------------------------------
+HTML report is unavailable in plain text report export.
+
+
++-------------------------------------+
+; Slow 900mV 100C Model Setup Summary ;
++-------+--------+--------------------+
+; Clock ; Slack  ; End Point TNS      ;
++-------+--------+--------------------+
+; clk   ; -1.886 ; -4.292             ;
++-------+--------+--------------------+
+
+
++------------------------------------+
+; Slow 900mV 100C Model Hold Summary ;
++-------+-------+--------------------+
+; Clock ; Slack ; End Point TNS      ;
++-------+-------+--------------------+
+; clk   ; 0.057 ; 0.000              ;
++-------+-------+--------------------+
+
+
+------------------------------------------
+; Slow 900mV 100C Model Recovery Summary ;
+------------------------------------------
+No paths to report.
+
+
+-----------------------------------------
+; Slow 900mV 100C Model Removal Summary ;
+-----------------------------------------
+No paths to report.
+
+
++---------------------------------------------------+
+; Slow 900mV 100C Model Minimum Pulse Width Summary ;
++-------+-------+-----------------------------------+
+; Clock ; Slack ; End Point TNS                     ;
++-------+-------+-----------------------------------+
+; clk   ; 2.443 ; 0.000                             ;
++-------+-------+-----------------------------------+
+
+
+-----------------------------------------------
+; Slow 900mV 100C Model Metastability Summary ;
+-----------------------------------------------
+No synchronizer chains to report.
+
+
++--------------------------------------------------+
+; Slow 900mV 0C Model Fmax Summary                 ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 141.68 MHz ; 141.68 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+This panel reports FMAX for every clock in the design, regardless of the user-specified clock periods.  FMAX is only computed for paths where the source and destination registers or ports are driven by the same clock.  Paths of different clocks, including generated clocks, are ignored.  For paths between a clock and its inversion, FMAX is computed as if the rising and falling edges are scaled along with FMAX, such that the duty cycle (in terms of a percentage) is maintained. Intel recommends that you always use clock constraints and other slack reports for sign-off analysis.
+
+
++-----------------------------------+
+; Slow 900mV 0C Model Setup Summary ;
++-------+--------+------------------+
+; Clock ; Slack  ; End Point TNS    ;
++-------+--------+------------------+
+; clk   ; -1.344 ; -2.728           ;
++-------+--------+------------------+
+
+
++----------------------------------+
+; Slow 900mV 0C Model Hold Summary ;
++-------+-------+------------------+
+; Clock ; Slack ; End Point TNS    ;
++-------+-------+------------------+
+; clk   ; 0.052 ; 0.000            ;
++-------+-------+------------------+
+
+
+----------------------------------------
+; Slow 900mV 0C Model Recovery Summary ;
+----------------------------------------
+No paths to report.
+
+
+---------------------------------------
+; Slow 900mV 0C Model Removal Summary ;
+---------------------------------------
+No paths to report.
+
+
++-------------------------------------------------+
+; Slow 900mV 0C Model Minimum Pulse Width Summary ;
++-------+-------+---------------------------------+
+; Clock ; Slack ; End Point TNS                   ;
++-------+-------+---------------------------------+
+; clk   ; 2.397 ; 0.000                           ;
++-------+-------+---------------------------------+
+
+
+---------------------------------------------
+; Slow 900mV 0C Model Metastability Summary ;
+---------------------------------------------
+No synchronizer chains to report.
+
+
++-------------------------------------+
+; Fast 900mV 100C Model Setup Summary ;
++-------+--------+--------------------+
+; Clock ; Slack  ; End Point TNS      ;
++-------+--------+--------------------+
+; clk   ; -0.314 ; -0.314             ;
++-------+--------+--------------------+
+
+
++------------------------------------+
+; Fast 900mV 100C Model Hold Summary ;
++-------+-------+--------------------+
+; Clock ; Slack ; End Point TNS      ;
++-------+-------+--------------------+
+; clk   ; 0.020 ; 0.000              ;
++-------+-------+--------------------+
+
+
+------------------------------------------
+; Fast 900mV 100C Model Recovery Summary ;
+------------------------------------------
+No paths to report.
+
+
+-----------------------------------------
+; Fast 900mV 100C Model Removal Summary ;
+-----------------------------------------
+No paths to report.
+
+
++---------------------------------------------------+
+; Fast 900mV 100C Model Minimum Pulse Width Summary ;
++-------+-------+-----------------------------------+
+; Clock ; Slack ; End Point TNS                     ;
++-------+-------+-----------------------------------+
+; clk   ; 2.468 ; 0.000                             ;
++-------+-------+-----------------------------------+
+
+
+-----------------------------------------------
+; Fast 900mV 100C Model Metastability Summary ;
+-----------------------------------------------
+No synchronizer chains to report.
+
+
++-----------------------------------+
+; Fast 900mV 0C Model Setup Summary ;
++-------+-------+-------------------+
+; Clock ; Slack ; End Point TNS     ;
++-------+-------+-------------------+
+; clk   ; 0.650 ; 0.000             ;
++-------+-------+-------------------+
+
+
++----------------------------------+
+; Fast 900mV 0C Model Hold Summary ;
++-------+-------+------------------+
+; Clock ; Slack ; End Point TNS    ;
++-------+-------+------------------+
+; clk   ; 0.019 ; 0.000            ;
++-------+-------+------------------+
+
+
+----------------------------------------
+; Fast 900mV 0C Model Recovery Summary ;
+----------------------------------------
+No paths to report.
+
+
+---------------------------------------
+; Fast 900mV 0C Model Removal Summary ;
+---------------------------------------
+No paths to report.
+
+
++-------------------------------------------------+
+; Fast 900mV 0C Model Minimum Pulse Width Summary ;
++-------+-------+---------------------------------+
+; Clock ; Slack ; End Point TNS                   ;
++-------+-------+---------------------------------+
+; clk   ; 2.490 ; 0.000                           ;
++-------+-------+---------------------------------+
+
+
+---------------------------------------------
+; Fast 900mV 0C Model Metastability Summary ;
+---------------------------------------------
+No synchronizer chains to report.
+
+
++------------------------------------------------------------------------------+
+; Multicorner Timing Analysis Summary                                          ;
++------------------+--------+-------+----------+---------+---------------------+
+; Clock            ; Setup  ; Hold  ; Recovery ; Removal ; Minimum Pulse Width ;
++------------------+--------+-------+----------+---------+---------------------+
+; Worst-case Slack ; -1.886 ; 0.019 ; N/A      ; N/A     ; 2.397               ;
+;  clk             ; -1.886 ; 0.019 ; N/A      ; N/A     ; 2.397               ;
+; Design-wide TNS  ; -4.292 ; 0.0   ; 0.0      ; 0.0     ; 0.0                 ;
+;  clk             ; -4.292 ; 0.000 ; N/A      ; N/A     ; 0.000               ;
++------------------+--------+-------+----------+---------+---------------------+
+
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Board Trace Model Assignments                                                                                                                                                                                                                                                                                                                                                                          ;
++-----+--------------+-------------------+-------------------------+-------------------------+---------------+---------------------+----------------+------------------+--------+------------------+------------------------+------------------------+--------------+---------------+-----------------+-------+---------------------+--------------------+---------------+-----------------+-------------+
+; Pin ; I/O Standard ; Near Tline Length ; Near Tline L per Length ; Near Tline C per Length ; Near Series R ; Near Differential R ; Near Pull-up R ; Near Pull-down R ; Near C ; Far Tline Length ; Far Tline L per Length ; Far Tline C per Length ; Far Series R ; Far Pull-up R ; Far Pull-down R ; Far C ; Termination Voltage ; Far Differential R ; EBD File Name ; EBD Signal Name ; EBD Far-end ;
++-----+--------------+-------------------+-------------------------+-------------------------+---------------+---------------------+----------------+------------------+--------+------------------+------------------------+------------------------+--------------+---------------+-----------------+-------+---------------------+--------------------+---------------+-----------------+-------------+
+
+
++-------------------------------------------------------------------+
+; Input Transition Times                                            ;
++----------------+--------------+-----------------+-----------------+
+; Pin            ; I/O Standard ; 10-90 Rise Time ; 90-10 Fall Time ;
++----------------+--------------+-----------------+-----------------+
+; clk            ; 1.8 V        ; 1440 ps         ; 1440 ps         ;
+; ~ALTERA_DATA0~ ; 1.8 V        ; 1440 ps         ; 1440 ps         ;
++----------------+--------------+-----------------+-----------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Signal Integrity Metrics (Slow 900mv 100c Model)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ;
++-----+--------------+---------------------+---------------------+------------------------------+------------------------------+---------------------+---------------------+--------------------------------------+--------------------------------------+-----------------------------+-----------------------------+----------------------------+----------------------------+-----------------------------+-----------------------------+--------------------+--------------------+-------------------------------------+-------------------------------------+----------------------------+----------------------------+---------------------------+---------------------------+
+; Pin ; I/O Standard ; Board Delay on Rise ; Board Delay on Fall ; Steady State Voh at FPGA Pin ; Steady State Vol at FPGA Pin ; Voh Max at FPGA Pin ; Vol Min at FPGA Pin ; Ringback Voltage on Rise at FPGA Pin ; Ringback Voltage on Fall at FPGA Pin ; 10-90 Rise Time at FPGA Pin ; 90-10 Fall Time at FPGA Pin ; Monotonic Rise at FPGA Pin ; Monotonic Fall at FPGA Pin ; Steady State Voh at Far-end ; Steady State Vol at Far-end ; Voh Max at Far-end ; Vol Min at Far-end ; Ringback Voltage on Rise at Far-end ; Ringback Voltage on Fall at Far-end ; 10-90 Rise Time at Far-end ; 90-10 Fall Time at Far-end ; Monotonic Rise at Far-end ; Monotonic Fall at Far-end ;
++-----+--------------+---------------------+---------------------+------------------------------+------------------------------+---------------------+---------------------+--------------------------------------+--------------------------------------+-----------------------------+-----------------------------+----------------------------+----------------------------+-----------------------------+-----------------------------+--------------------+--------------------+-------------------------------------+-------------------------------------+----------------------------+----------------------------+---------------------------+---------------------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Signal Integrity Metrics (Fast 900mv 0c Model)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
++-----+--------------+---------------------+---------------------+------------------------------+------------------------------+---------------------+---------------------+--------------------------------------+--------------------------------------+-----------------------------+-----------------------------+----------------------------+----------------------------+-----------------------------+-----------------------------+--------------------+--------------------+-------------------------------------+-------------------------------------+----------------------------+----------------------------+---------------------------+---------------------------+
+; Pin ; I/O Standard ; Board Delay on Rise ; Board Delay on Fall ; Steady State Voh at FPGA Pin ; Steady State Vol at FPGA Pin ; Voh Max at FPGA Pin ; Vol Min at FPGA Pin ; Ringback Voltage on Rise at FPGA Pin ; Ringback Voltage on Fall at FPGA Pin ; 10-90 Rise Time at FPGA Pin ; 90-10 Fall Time at FPGA Pin ; Monotonic Rise at FPGA Pin ; Monotonic Fall at FPGA Pin ; Steady State Voh at Far-end ; Steady State Vol at Far-end ; Voh Max at Far-end ; Vol Min at Far-end ; Ringback Voltage on Rise at Far-end ; Ringback Voltage on Fall at Far-end ; 10-90 Rise Time at Far-end ; 90-10 Fall Time at Far-end ; Monotonic Rise at Far-end ; Monotonic Fall at Far-end ;
++-----+--------------+---------------------+---------------------+------------------------------+------------------------------+---------------------+---------------------+--------------------------------------+--------------------------------------+-----------------------------+-----------------------------+----------------------------+----------------------------+-----------------------------+-----------------------------+--------------------+--------------------+-------------------------------------+-------------------------------------+----------------------------+----------------------------+---------------------------+---------------------------+
+
+
++-------------------------------------------------------------------+
+; Setup Transfers                                                   ;
++------------+----------+----------+----------+----------+----------+
+; From Clock ; To Clock ; RR Paths ; FR Paths ; RF Paths ; FF Paths ;
++------------+----------+----------+----------+----------+----------+
+; clk        ; clk      ; 47749    ; 0        ; 0        ; 0        ;
++------------+----------+----------+----------+----------+----------+
+Entries labeled "false path" only account for clock-to-clock false paths and not path-based false paths. As a result, actual path counts may be lower than reported.
+
+
++-------------------------------------------------------------------+
+; Hold Transfers                                                    ;
++------------+----------+----------+----------+----------+----------+
+; From Clock ; To Clock ; RR Paths ; FR Paths ; RF Paths ; FF Paths ;
++------------+----------+----------+----------+----------+----------+
+; clk        ; clk      ; 47749    ; 0        ; 0        ; 0        ;
++------------+----------+----------+----------+----------+----------+
+Entries labeled "false path" only account for clock-to-clock false paths and not path-based false paths. As a result, actual path counts may be lower than reported.
+
+
++--------------------------+
+; Timing Analyzer Messages ;
++--------------------------+
+
+
++------------------------------------------------+
+; Unconstrained Paths Summary                    ;
++---------------------------------+-------+------+
+; Property                        ; Setup ; Hold ;
++---------------------------------+-------+------+
+; Illegal Clocks                  ; 0     ; 0    ;
+; Unconstrained Clocks            ; 0     ; 0    ;
+; Unconstrained Input Ports       ; 0     ; 0    ;
+; Unconstrained Input Port Paths  ; 0     ; 0    ;
+; Unconstrained Output Ports      ; 0     ; 0    ;
+; Unconstrained Output Port Paths ; 0     ; 0    ;
++---------------------------------+-------+------+
+
+
++-------------------------------------+
+; Clock Status Summary                ;
++--------+-------+------+-------------+
+; Target ; Clock ; Type ; Status      ;
++--------+-------+------+-------------+
+; clk    ; clk   ; Base ; Constrained ;
++--------+-------+------+-------------+
+
+
