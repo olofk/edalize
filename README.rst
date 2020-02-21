@@ -41,8 +41,8 @@ Ok, this sounds great. Now, how do I get started?
 
 Assume we have a project that consists of a Verilog source file called ``blinky.v``.
 Then there's also a testbench called ``blinky_tb.v`` and a constraints file for synthesis called ``constraints.sdc``.
-You can get those files from `blinky https://github.com/fusesoc/blinky`_ and for
-``vlog_tb_utils.v`` in `orpsoc-cores https://github.com/openrisc/orpsoc-cores/blob/master/cores/vlog_tb_utils/vlog_tb_utils.v`_
+You can get those files from `blinky <https://github.com/fusesoc/blinky>`_ and for
+``vlog_tb_utils.v`` in `orpsoc-cores <https://github.com/openrisc/orpsoc-cores/blob/master/cores/vlog_tb_utils/vlog_tb_utils.v>`_
 
 For a simulation, we want to use the two Verilog files, build it in a subdirectory called ``build``, and then run it with a parameter to control simulated clock frequency.
 
