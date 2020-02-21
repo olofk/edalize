@@ -17,6 +17,10 @@ class Rivierapro(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : "Riviera Pro simulator from Aldec",
+                    'members' : [
+                        {'name' : 'compilation_mode',
+                         'type' : 'String',
+                         'desc' : 'Common or separate compilation, sep - for separate compilation, common - for common compilation'}],
                     'lists' : [
                         {'name' : 'vlog_options',
                          'type' : 'String',
@@ -24,15 +28,12 @@ class Rivierapro(Edatool):
                         {'name' : 'vsim_options',
                          'type' : 'String',
                          'desc' : 'Additional run options for vsim'},
-                        {'name' : 'compilation_mode',
-                         'type' : 'String',
-                         'desc' : 'Common or separate compilation, sep - for separate compilation, common - for common compilation'},
                         ]}
 
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), 'w')
 
-        (src_files, incdirs) = self._get_fileset_files()
+        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
 
         libs = []
@@ -89,18 +90,16 @@ class Rivierapro(Edatool):
             if cmd:
                 args += ['-quiet']
                 args += ['-work', f.logical_name]
-                args += [f.name.replace('\\','/')]
-                common_compilation += [f.name.replace('\\','/'),'\\\n']
-
-                if (self.tool_options.get('compilation_mode'))==['sep']:
+                args += [f.name]
+                common_compilation += [f.name,'\\\n']
+                if (self.tool_options.get('compilation_mode'))=='sep' or (self.tool_options.get('compilation_mode')==None):
                     tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))
 
-        if (self.tool_options.get('compilation_mode')==['common']) or (self.tool_options.get('compilation_mode')==None):
+        if (self.tool_options.get('compilation_mode')=='common'):
             tcl_build_rtl.write("{} \n".format(' '.join(common_compilation)))
 			
-        if not (self.tool_options.get('compilation_mode')==['common'] or self.tool_options.get('compilation_mode')==None or self.tool_options.get('compilation_mode')==['sep']):
-            print('wrong compilation mode, use --compilation_mode=common for common compilation or --compilation_mode=sep for separate compilation')
-            sys.exit()
+        if not (self.tool_options.get('compilation_mode')=='common' or self.tool_options.get('compilation_mode')==None or self.tool_options.get('compilation_mode')=='sep'):
+            raise RuntimeError('wrong compilation mode, use --compilation_mode=common for common compilation or --compilation_mode=sep for separate compilation')
 
 
 
