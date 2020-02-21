@@ -24,6 +24,16 @@ It can also be used to just get a quick template that you can open up in the too
 
 It can be directly integrated as a library for your existing Python-powered HDL project, or can be used stand-alone (soon anyway) to feed Edalize from projects written in other languages.
 
+Install it
+----------
+
+Edalize is a python module. Then once downloaded we can install it with
+following python command::
+
+    $ cd edalize
+    $ python -m pip install -e .
+
+
 How to use it?
 --------------
 
@@ -35,7 +45,18 @@ You can get those files from here: https://github.com/fusesoc/blinky
 
 For a simulation, we want to use the two Verilog files, build it in a subdirectory called ``build``, and then run it with a parameter to control simulated clock frequency.
 
-First we register the files to use::
+Edalize is a python tool, then we can run it inside a python script file or
+directly in python console.
+
+First we have to import edalize objects::
+
+  from edalize import *
+
+os module is also required for this tutorial::
+
+  import os
+
+then register the files to use::
 
   work_root = 'build'
 
