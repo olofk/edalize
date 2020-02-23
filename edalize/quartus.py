@@ -31,6 +31,9 @@ class Quartus(Edatool):
                         {'name' : 'device',
                          'type' : 'String',
                          'desc' : 'FPGA device (e.g. 5CSXFC6D6F31C8ES)'},
+                        {'name' : 'cable',
+                         'type' : 'String',
+                         'desc' : "Specifies the FPGA's JTAG programming cable. Use the tool `jtagconfig` to determine the available cables."},
                         {'name' : 'board_device_index',
                          'type' : 'String',
                          'desc' : "Specifies the FPGA's device number in the JTAG chain. The device index specifies the device where the flash programmer looks for the Nios® II JTAG debug module. JTAG devices are numbered relative to the JTAG chain, starting at 1. Use the tool `jtagconfig` to determine the index."},
@@ -266,6 +269,8 @@ class Quartus(Edatool):
     """
     def run_main(self):
         args = ['--mode=jtag']
+        if 'cable' in self.tool_options:
+            args += ['-c', self.tool_options['cable']]
         args += ['-o']
         args += ['p;' + self.name.replace('.', '_') + '.sof']
 
