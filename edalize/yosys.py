@@ -75,9 +75,11 @@ class Yosys(Edatool):
 
         verilog_params = []
         for key, value in self.vlogparam.items():
+            if type(value) is str:
+                value = "{\"" + value + "\"}"
             _s = r"chparam -set {} {} \$abstract\{}"
             verilog_params.append(_s.format(key,
-                self._param_value_str(value, '"'),
+                self._param_value_str(value, ''),
                 self.toplevel))
 
         output_format = self.tool_options.get('output_format', 'blif')
