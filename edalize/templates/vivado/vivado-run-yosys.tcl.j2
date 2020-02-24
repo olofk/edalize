@@ -6,9 +6,18 @@ read_xdc {{ xdc_file }}
 
 link_design -top {{ name }} -part {{ tool_options.part }}
 
+{% if pre_imp -%}
+source {{ pre_imp }}
+{%- endif %} 
+
 opt_design
 place_design
 report_utilization -file top_utilization_placed.rpt
 route_design
 phys_opt_design
+
+{% if post_imp -%}
+source {{ post_imp }}
+{%- endif %} 
+
 write_bitstream -force {{ name }}.bit

@@ -81,6 +81,8 @@ class Vivado(Edatool):
         has_vhdl2008 = 'vhdlSource-2008' in [x.file_type for x in src_files]
         has_xci      = 'xci'             in [x.file_type for x in src_files]
 
+        self.pre_imp = self.tool_options.get('pre_imp', None)
+        self.post_imp = self.tool_options.get('post_imp', None)
         self.synth_tool = self.tool_options.get('synth', 'vivado')
         if self.synth_tool == 'yosys':
             assert (not has_vhdl and not has_vhdl2008), 'VHDL files are not supported in Yosys'
@@ -115,23 +117,29 @@ class Vivado(Edatool):
             'generic'      : self.generic,
             'has_vhdl2008' : has_vhdl2008,
             'has_xci'      : has_xci,
+            'pre_imp'      : self.pre_imp,
+            'post_imp'     : self.post_imp,
         }
+
 
         if self.synth_tool == 'yosys':
             xdc_file = next((f for f in src_files if f.file_type == 'xdc'), None)
             if xdc_file is not None:
                 xdc_file = xdc_file.name
+
             self.render_template('vivado-project-yosys.tcl.j2',
                                  self.name+'.tcl',
                                  {'name' : self.name,
                                   'tool_options' : self.tool_options})
 
+            template_vars.update({
+                'edif_file' : self.name + '.edif',
+                'xdc_file'  : xdc_file,
+            })
+
             self.render_template('vivado-run-yosys.tcl.j2',
                                  self.name+"_run.tcl",
-                                 {'edif_file' : self.name + '.edif',
-                                  'xdc_file' : xdc_file,
-                                  'name' : self.name,
-                                  'tool_options' : self.tool_options})
+                                 template_vars)
         else:
             self.render_template('vivado-project.tcl.j2',
                                  self.name+'.tcl',
