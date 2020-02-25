@@ -60,7 +60,10 @@ class Quartus(Edatool):
                          'desc' : 'Maximum number of P&R jobs DSE may run at once, default is 4'},
                         {'name' : 'seeds',
                          'type' : 'String',
-                         'desc' : 'Comma seperated list of seeds for DSE to try, default is "1,2,3,4"'}],
+                         'desc' : 'Comma seperated list of seeds for DSE to try, default is "1,2,3,4"'},
+                        {'name' : 'quality_of_fit',
+                         'type' : 'String',
+                         'desc' : 'Path to a Python file containing the algorithm that determines the quality of fit score'}],
                     'lists' : [
                         {'name' : 'quartus_options',
                          'type' : 'String',
