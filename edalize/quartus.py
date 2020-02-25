@@ -93,7 +93,7 @@ class Quartus(Edatool):
             # Version 16.1.2 Build 203 01/18/2017 SJ Standard Edition
             # Version 17.1.2 Build 304 01/31/2018 SJ Pro Edition
             version_exp = r'Version (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+) ' + \
-                          r'Build (?P<build>\d+) (?P<date>\d{2}/\d{2}/\d{4}) SJ '    + \
+                          r'Build (?P<build>\d+) (?P<date>\d{2}/\d{2}/\d{4}) (?:\w+) '    + \
                           r'(?P<edition>(Lite|Standard|Pro)) Edition'
 
             match = re.search(version_exp, str(qsh_text))
