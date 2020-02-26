@@ -33,6 +33,9 @@ class Symbiflow(Edatool):
                         {'name' : 'part',
                          'type' : 'String',
                          'desc' : 'FPGA part type (e.g. xc7a50t)'},
+                        {'name' : 'builddir',
+                         'type' : 'String',
+                         'desc' : 'directory where all the intermediate files will be stored (default "build")'},
                         {'name' : 'vendor',
                          'type' : 'String',
                          'desc' : 'Target architecture. Currently only "xilinx" is supported '},
@@ -67,6 +70,8 @@ class Symbiflow(Edatool):
             if f.file_type in ['user']:
                 user_files.append(f.name)
 
+        builddir = self.tool_options.get('builddir', 'build')
+
         part = self.tool_options.get('part', None)
         package = self.tool_options.get('package', None)
 
@@ -89,6 +94,7 @@ class Symbiflow(Edatool):
                            'sdc' : ' '.join(timing_constraints),
                            'pcf' : ' '.join(pins_constraints),
                            'xdc' : ' '.join(placement_constraints),
+                           'builddir' : builddir,
                           }
         self.render_template('symbiflow-makefile.j2',
                              'Makefile',
