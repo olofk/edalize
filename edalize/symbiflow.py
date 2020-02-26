@@ -14,7 +14,7 @@ A core (usually the system core) can add the following files:
 
 - Standard design sources (Verilog only)
 
-- Constraints: unmanaged constraints with file_type SDC
+- Constraints: unmanaged constraints with file_type SDC, pin_constraints with file_type SDF and placement constraints with file_type xdc
 
 """
 
@@ -50,13 +50,22 @@ class Symbiflow(Edatool):
 
         assert (not has_vhdl and not has_vhdl2008), 'VHDL files are not supported in Yosys'
         file_list = []
-        constraints = []
+        timing_constraints = []
+        pins_constraints = []
+        placement_constraints = []
+        user_files = []
 
         for f in src_files:
             if f.file_type in ['verilogSource']:
                 file_list.append(f.name)
             if f.file_type in ['SDC']:
-                constraints.append(f.name)
+                timing_constraints.append(f.name)
+            if f.file_type in ['PCF']:
+                pins_constraints.append(f.name)
+            if f.file_type in ['xdc']:
+                placement_constraints.append(f.name)
+            if f.file_type in ['user']:
+                user_files.append(f.name)
 
         part = self.tool_options.get('part', None)
         package = self.tool_options.get('package', None)
@@ -77,8 +86,9 @@ class Symbiflow(Edatool):
                            'partname' : partname,
                            'part' : part,
                            'bitstream_device' : bitstream_device,
-                           'pcf' : ' '.join(constraints),
-                           'builddir' : 'build',
+                           'sdc' : ' '.join(timing_constraints),
+                           'pcf' : ' '.join(pins_constraints),
+                           'xdc' : ' '.join(placement_constraints),
                           }
         self.render_template('symbiflow-makefile.j2',
                              'Makefile',
