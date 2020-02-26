@@ -2,7 +2,15 @@
 import os
 import sys
 
-cmd_file = 'analyze.cmd' if sys.argv[1] == '-a' else 'elab-run.cmd'
+cmd_file = 'analyze.cmd' if sys.argv[1] == '-i' else 'elab-run.cmd'
 
 with open(cmd_file, 'a') as f:
     f.write(' '.join(sys.argv[1:]) + '\n')
+
+if sys.argv[1] == '-i':
+    for arg in sys.argv:
+        if arg.startswith('--std'):
+            std = arg.split('=')[1]
+            output_file = 'work-obj'+std+'.cf'
+            with open(output_file, 'a'):
+                os.utime(output_file, None)

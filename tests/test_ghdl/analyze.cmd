@@ -1,3 +1,3 @@
--a --std=08 some analyze_options -P./libx vhdl_file.vhd
--a --std=08 some analyze_options -P./libx --work=libx --workdir=./libx vhdl_lfile
--a --std=08 some analyze_options -P./libx vhdl2008_file
+-i --std=08 some analyze_options -P./libx vhdl_file.vhd
+-i --std=08 some analyze_options -P./libx --work=libx --workdir=./libx vhdl_lfile
+-i --std=08 some analyze_options -P./libx vhdl2008_file
