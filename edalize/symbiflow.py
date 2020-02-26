@@ -86,6 +86,12 @@ class Symbiflow(Edatool):
             bitstream_device = 'kintex7'
 
         partname = part + package
+
+        # a35t are in fact a50t
+        # leave partname with 35 so we access correct DB
+        if part == 'xc7a35t':
+            part = 'xc7a50t'
+
         makefile_params = {'top' : self.toplevel,
                            'sources' : ' '.join(file_list),
                            'partname' : partname,
