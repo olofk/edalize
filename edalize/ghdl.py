@@ -58,24 +58,29 @@ TOPLEVEL = {toplevel}
 ANALYZE_OPTIONS = {analyze_options}
 RUN_OPTIONS = {run_options}
 
-all: analyze
+VHDL_SOURCES = {vhdl_sources}
 
-run:
-	ghdl --elab-run $(ANALYZE_OPTIONS) $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+all: work-obj{standard}.cf
+
+run: $(TOPLEVEL)
+\tghdl -r $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+
+$(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
+\tghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
 
 make_libraries_directories:
 \techo "Creating libraries directories"
 {make_libraries_directories}
-
-analyze: make_libraries_directories
-{analyze}
+work-obj{standard}.cf:
+{include}
 """
 
         analyze_options=' '.join(analyze_options)
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
         libraries = set()
-        analyze = ""
+        include = ""
+        vhdl_sources = ""
         for f in src_files:
             if f.file_type in _vhdltypes:
                 lib = ""
@@ -84,7 +89,8 @@ analyze: make_libraries_directories
                     lib = ' --work='+f.logical_name
                     lib_dir = ' --workdir=./'+f.logical_name
                     libraries.add(f.logical_name)
-                analyze += ("\tghdl -a $(STD) $(ANALYZE_OPTIONS){lib} {lib_dir} {file}\n".format(lib=lib, lib_dir=lib_dir, file=f.name))
+                include += ("\tghdl -i $(STD) $(ANALYZE_OPTIONS){lib} {lib_dir} {file}\n".format(lib=lib, lib_dir=lib_dir, file=f.name))
+                vhdl_sources += (" {file}".format(file=f.name))
             elif f.file_type in ["user"]:
                 pass
             else:
@@ -99,10 +105,12 @@ analyze: make_libraries_directories
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as makefile:
             makefile.write(MAKEFILE_TEMPLATE.format(std=' '.join(stdarg),
                                                     toplevel=self.toplevel,
+                                                    vhdl_sources=vhdl_sources,
+                                                    standard=stdarg[0].split("=")[1],
                                                     analyze_options=analyze_options,
                                                     run_options=' '.join(run_options),
                                                     make_libraries_directories=make_libraries_directories,
-                                                    analyze=analyze))
+                                                    include=include))
 
     def run_main(self):
         cmd = 'make'
