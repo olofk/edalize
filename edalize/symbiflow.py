@@ -72,6 +72,10 @@ class Symbiflow(Edatool):
 
         builddir = self.tool_options.get('builddir', 'build')
 
+        # copy user files to builddir
+        for f in user_files:
+            shutil.copy(f, self.work_root + "/" + builddir)
+
         part = self.tool_options.get('part', None)
         package = self.tool_options.get('package', None)
 
