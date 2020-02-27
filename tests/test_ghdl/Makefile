@@ -4,18 +4,22 @@ TOPLEVEL = top_module
 ANALYZE_OPTIONS = some analyze_options -P./libx
 RUN_OPTIONS = a few run_options
 
-all: analyze
+VHDL_SOURCES =  vhdl_file.vhd vhdl_lfile vhdl2008_file
 
-run:
-	ghdl --elab-run $(ANALYZE_OPTIONS) $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+all: work-obj08.cf
+
+run: $(TOPLEVEL)
+	ghdl -r $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+
+$(TOPLEVEL): $(VHDL_SOURCES) work-obj08.cf
+	ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
 
 make_libraries_directories:
 	echo "Creating libraries directories"
 	mkdir -p libx
 
-
-analyze: make_libraries_directories
-	ghdl -a $(STD) $(ANALYZE_OPTIONS)  vhdl_file.vhd
-	ghdl -a $(STD) $(ANALYZE_OPTIONS) --work=libx  --workdir=./libx vhdl_lfile
-	ghdl -a $(STD) $(ANALYZE_OPTIONS)  vhdl2008_file
+work-obj08.cf:
+	ghdl -i $(STD) $(ANALYZE_OPTIONS)  vhdl_file.vhd
+	ghdl -i $(STD) $(ANALYZE_OPTIONS) --work=libx  --workdir=./libx vhdl_lfile
+	ghdl -i $(STD) $(ANALYZE_OPTIONS)  vhdl2008_file
 
