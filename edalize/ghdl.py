@@ -15,7 +15,7 @@ class Ghdl(Edatool):
                     'lists' : [
                         {'name' : 'analyze_options',
                          'type' : 'String',
-                         'desc' : 'Options to use for the analyze (ghdl -a) phase'},
+                         'desc' : 'Options to use for the import (ghdl -i) and make (ghdl -m) phases'},
                         {'name' : 'run_options',
                          'type' : 'String',
                          'desc' : 'Options to use for the run (ghdl -r) phase'},
@@ -71,15 +71,15 @@ $(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
 make_libraries_directories:
 \techo "Creating libraries directories"
 {make_libraries_directories}
-{include}
 work-obj{standard}.cf: make_libraries_directories
+{ghdlimport}
 """
 
         analyze_options=' '.join(analyze_options)
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
         libraries = set()
-        include = ""
+        ghdlimport = ""
         vhdl_sources = ""
         for f in src_files:
             if f.file_type in _vhdltypes:
@@ -89,7 +89,7 @@ work-obj{standard}.cf: make_libraries_directories
                     lib = ' --work='+f.logical_name
                     lib_dir = ' --workdir=./'+f.logical_name
                     libraries.add(f.logical_name)
-                include += ("\tghdl -i $(STD) $(ANALYZE_OPTIONS){lib} {lib_dir} {file}\n".format(lib=lib, lib_dir=lib_dir, file=f.name))
+                ghdlimport += ("\tghdl -i $(STD) $(ANALYZE_OPTIONS){lib} {lib_dir} {file}\n".format(lib=lib, lib_dir=lib_dir, file=f.name))
                 vhdl_sources += (" {file}".format(file=f.name))
             elif f.file_type in ["user"]:
                 pass
@@ -110,7 +110,7 @@ work-obj{standard}.cf: make_libraries_directories
                                                     analyze_options=analyze_options,
                                                     run_options=' '.join(run_options),
                                                     make_libraries_directories=make_libraries_directories,
-                                                    include=include))
+                                                    ghdlimport=ghdlimport))
 
     def run_main(self):
         cmd = 'make'
