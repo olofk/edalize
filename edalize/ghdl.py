@@ -71,8 +71,8 @@ $(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
 make_libraries_directories:
 \techo "Creating libraries directories"
 {make_libraries_directories}
-work-obj{standard}.cf:
 {include}
+work-obj{standard}.cf: make_libraries_directories
 """
 
         analyze_options=' '.join(analyze_options)
