@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 import os
 import logging
@@ -46,7 +47,7 @@ class Verilator(Edatool):
                          'desc' : 'Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for SystemC testbenches or *lint-only* to only perform linting on the Verilog code'},
                         {'name' : 'cli_parser',
                          'type' : 'String',
-                         'desc' : 'Select whether FuseSoC should handle command-line arguments (*managed*) or if they should be passed directly to the verilated model (*raw*). Default is *managed*'}],
+                         'desc' : '**Deprecated: Use run_options instead** : Select whether FuseSoC should handle command-line arguments (*managed*) or if they should be passed directly to the verilated model (*raw*). Default is *managed*'}],
                     'lists' : [
                         {'name' : 'libs',
                          'type' : 'String',
@@ -57,16 +58,18 @@ class Verilator(Edatool):
                         {'name' : 'make_options',
                          'type' : 'String',
                          'desc' : 'Additional arguments passed to make when compiling the simulation. This is commonly used to set OPT/OPT_FAST/OPT_SLOW.'},
+                        {'name' : 'run_options',
+                         'type' : 'String',
+                         'desc' : 'Additional arguments directly passed to the verilated model'},
                         ]}
 
-    def _managed_parser(self):
-        return not 'cli_parser' in self.tool_options or self.tool_options['cli_parser'] == 'managed'
-
-    def configure_pre(self, args):
-        if self._managed_parser():
-            self.parse_args(args, self.argtypes)
+    def check_managed_parser(self):
+        managed = 'cli_parser' not in self.tool_options or self.tool_options['cli_parser'] == 'managed'
+        if not managed:
+            logger.warning("The cli_parser argument is deprecated. Use run_options to pass raw arguments to verilated models")
 
     def configure_main(self):
+        self.check_managed_parser()
         if not self.toplevel:
             raise RuntimeError("'" + self.name + "' miss a mandatory parameter 'top_module'")
 
@@ -158,27 +161,19 @@ class Verilator(Edatool):
         _s = os.path.join(self.work_root, 'verilator.{}.log')
         self._run_tool('make', args)
 
-    def run_pre(self, args):
+    def run_main(self):
+        self.check_managed_parser()
+        self.args = []
+        for key, value in self.plusarg.items():
+            self.args += ['+{}={}'.format(key, self._param_value_str(value))]
+        for key, value in self.cmdlinearg.items():
+            self.args += ['--{}={}'.format(key, self._param_value_str(value))]
+
+        self.args += self.tool_options.get('run_options', [])
+
         #Default to cc mode if not specified
         if not 'mode' in self.tool_options:
             self.tool_options['mode'] = 'cc'
-        if self.tool_options['mode'] == 'lint-only':
-            return
-        if self._managed_parser():
-            self.parse_args(args, self.argtypes)
-
-            self.args = []
-            for key, value in self.plusarg.items():
-                self.args += ['+{}={}'.format(key, self._param_value_str(value))]
-            for key, value in self.cmdlinearg.items():
-                self.args += ['--{}={}'.format(key, self._param_value_str(value))]
-        else:
-            self.args = args
-
-        if 'pre_run' in self.hooks:
-            self._run_scripts(self.hooks['pre_run'])
-
-    def run_main(self):
         if self.tool_options['mode'] == 'lint-only':
             return
         logger.info("Running simulation")
