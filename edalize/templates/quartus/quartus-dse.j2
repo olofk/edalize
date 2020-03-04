@@ -10,6 +10,9 @@ num_concurrent={{ tool_options.parallelism }}
 num_parallel_processors={{ tool_options.processors }}
 use_auto_gen_seed=False
 num_seeds=1
+{% if tool_options.quality_of_fit %}
+quality_of_fit={{ tool_options.quality_of_fit }}
+{% endif %}
 save_results=all
 seeds={{ tool_options.seeds }}
 skip_base_compile=True
@@ -19,3 +22,4 @@ use_archive_file=
 use_existing_archive=False
 use_new_archive=True
 use_simple_compilation=False
+use_time_limit=False
