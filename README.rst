@@ -42,7 +42,7 @@ Ok, this sounds great. Now, how do I get started?
 Assume we have a project that consists of a Verilog source file called ``blinky.v``.
 Then there's also a testbench called ``blinky_tb.v`` and a constraints file for synthesis called ``constraints.sdc``.
 You can get those files from `blinky <https://github.com/fusesoc/blinky>`_ and for
-``vlog_tb_utils.v`` in `orpsoc-cores <https://github.com/openrisc/orpsoc-cores/blob/master/cores/vlog_tb_utils/vlog_tb_utils.v>`_
+``vlog_tb_utils.v`` in `orpsoc-cores <https://github.com/fusesoc/vlog_tb_utils/blob/master/vlog_tb_utils.v>`_
 
 For a simulation, we want to use the two Verilog files, build it in a subdirectory called ``build``, and then run it with a parameter to control simulated clock frequency.
 
@@ -70,10 +70,12 @@ then register the files to use::
      'file_type' : 'verilogSource'}
   ]
 
+The design has a toplevel verilog parameter with the name ``clk_freq_hz``
+that accepts integers. We set its default value to ``1000``. The testbench also
+has an option to enable waveform dumping by setting a plusarg called ``vcd``::
 
-Then we have our parameter, with the the name ``clk_freq_hz`` and happens to be a Verilog parameter that accepts integers::
-
-  parameters = {'clk_freq_hz' : {'datatype' : 'int', 'paramtype' : 'vlogparam'}}
+  parameters = {'clk_freq_hz' : {'datatype' : 'int', 'default' : 1000, 'paramtype' : 'vlogparam'},
+                'vcd' : {'datatype' : 'bool', 'paramtype' : 'plusarg'}}
 
 Let Edalize know we intend to use Icarus Verilog for our simulation::
 
@@ -95,9 +97,8 @@ Now we need to get ourselves a backend object from Edalize::
 
 Create the directory and the project files::
 
-  args = ['--clk_freq_hz=1000']
   os.makedirs(work_root)
-  backend.configure(args)
+  backend.configure()
   
 At this point, we still haven't run the actual EDA tool and the files in the ``work_root`` directory can be used without edalize if that is preferred. But let's continue the example with Edalize.
 
@@ -105,8 +106,9 @@ Build the simulation model::
   
   backend.build()
 
-And finally run it, with our arguments. At this point we could change the value of ``clk_freq_hz``, and the new value would be used instead. Or we could skip it altogether, and the default value from the configure stage would be used.::
+And finally run it, with our arguments. Some types of parameters (e.g. plusargs) are defined aat runtime, and at this point we can change their value by passing the name and new value to ``run()``. Or we could skip it altogether, and the default value from the configure stage would be used. Let's run with VCD logging enabled::
 
+  args = {'vcd' : True}
   backend.run(args)
 
 Tada! We have simulated. As an exercise, try to just change the tool variable to e.g. modelsim, xsim or any of the other simulators supported by Edalize and see if it works without any changes.

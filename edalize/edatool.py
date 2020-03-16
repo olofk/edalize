@@ -73,7 +73,11 @@ class Edatool(object):
         self.vlogdefine  = OrderedDict()
         self.generic     = OrderedDict()
         self.cmdlinearg  = OrderedDict()
-        self.parsed_args = False
+
+        args = {}
+        for k, v in self.parameters.items():
+            args[k] = v.get('default')
+        self._apply_parameters(args)
 
         self.jinja_env = Environment(
             loader = PackageLoader(__package__, 'templates'),
@@ -100,14 +104,16 @@ class Edatool(object):
         else:
             logger.warning("Invalid API version '{}' for get_tool_options".format(api_ver))
 
-    def configure(self, args):
+    def configure(self, args=[]):
+        if args:
+            logger.error("Edalize has stopped supporting passing arguments as a function argument. Set these values as default values in the EDAM object instead")
         logger.info("Setting up project")
-        self.configure_pre(args)
+        self.configure_pre()
         self.configure_main()
         self.configure_post()
 
-    def configure_pre(self, args):
-        self.parse_args(args, self.argtypes)
+    def configure_pre(self):
+        pass
 
     def configure_main(self):
         pass
@@ -132,14 +138,18 @@ class Edatool(object):
         if 'post_build' in self.hooks:
             self._run_scripts(self.hooks['post_build'], 'post_build')
 
-    def run(self, args):
+    def run(self, args={}):
         logger.info("Running")
         self.run_pre(args)
         self.run_main()
         self.run_post()
 
-    def run_pre(self, args):
-        self.parse_args(args, self.argtypes)
+    def run_pre(self, args=None):
+        if type(args) == list:
+            parsed_args = self.parse_args(args, self.argtypes)
+        else:
+            parsed_args = args
+        self._apply_parameters(parsed_args)
         if 'pre_run' in self.hooks:
             self._run_scripts(self.hooks['pre_run'], 'pre_run')
 
@@ -151,8 +161,6 @@ class Edatool(object):
             self._run_scripts(self.hooks['post_run'], 'post_run')
 
     def parse_args(self, args, paramtypes):
-        if self.parsed_args:
-            return
         typedict = {'bool' : {'action' : 'store_true'},
                     'file' : {'type' : str , 'nargs' : 1, 'action' : FileAction},
                     'int'  : {'type' : int , 'nargs' : 1},
@@ -205,11 +213,24 @@ class Edatool(object):
         for _opt in _opts.get('members', []) + _opts.get('lists', []):
             backend_args.add_argument('--'+_opt['name'],
                                       help=_opt['desc'])
+
+        args_dict = {}
+        for key, value in vars(parser.parse_args(args)).items():
+            if value is None:
+                continue
+            if type(value) == bool:
+                _value = value
+            else:
+                _value = value[0]
+            args_dict[key] = _value
+        return args_dict
+
+    def _apply_parameters(self, args):
+        _opts = self.__class__.get_doc(0)
         #Parse arguments
         backend_members = [x['name'] for x in _opts.get('members', [])]
         backend_lists   = [x['name'] for x in _opts.get('lists', [])]
-        for key,value in sorted(vars(parser.parse_args(args)).items()):
-
+        for key,value in args.items():
             if value is None:
                 continue
             if key in backend_members:
@@ -221,14 +242,8 @@ class Edatool(object):
                 self.tool_options[key] += value.split(' ')
                 continue
 
-            paramtype = param_type_map[key]
-            if type(value) == bool:
-                _value = value
-            else:
-                _value = value[0]
-
-            getattr(self, paramtype)[key] = _value
-        self.parsed_args = True
+            paramtype = self.parameters[key]['paramtype']
+            getattr(self, paramtype)[key] = value
 
     def render_template(self, template_file, target_file, template_vars = {}):
         """

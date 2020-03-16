@@ -23,21 +23,21 @@ def compare_files(ref_dir, work_root, files):
 
 
 def param_gen(paramtypes):
-    args = []
     defs = {}
     for paramtype in paramtypes:
         for datatype in ['bool', 'int', 'str']:
-            _arg = '--{}_{}'.format(paramtype, datatype)
             if datatype == 'int':
-                _arg += '=42'
+                default = 42
             elif datatype == 'str':
-                _arg += '=hello'
-            args.append(_arg)
+                default = 'hello'
+            else:
+                default = True
             defs[paramtype+'_'+datatype] = {
                 'datatype'    : datatype,
+                'default'     : default,
                 'description' : '',
                 'paramtype'   : paramtype}
-    return (defs, args)
+    return defs
 
 def setup_backend_minimal(name, tool, files):
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
@@ -54,7 +54,7 @@ def setup_backend_minimal(name, tool, files):
 
 def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    (parameters, args) = param_gen(paramtypes)
+    parameters = param_gen(paramtypes)
 
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
@@ -77,7 +77,7 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
                'vpi'          :  _vpi}
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    return (backend, args, work_root)
+    return (backend, [], work_root)
 
 files = [
     {'name' : 'qip_file.qip' , 'file_type' : 'QIP'},
