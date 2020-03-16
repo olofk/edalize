@@ -1,0 +1,11 @@
+--Mdir .
+--sc
++incdir+.
+-CFLAGS -I.
+sv_file.sv
+vlog_file.v
+vlog05_file.v
+--top-module top_module
+--exe
+c_file.c
+cpp_file.cpp

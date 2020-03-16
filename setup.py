@@ -48,7 +48,6 @@ setup(
         'Jinja2 >=2.8, <2.11',
     ],
     tests_require=[
-        'pyyaml',
         'vunit_hdl>=4.0.8'
     ],
 )
