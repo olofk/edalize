@@ -15,6 +15,7 @@ place_design
 report_utilization -file top_utilization_placed.rpt
 route_design
 phys_opt_design
+report_timing_summary -file top_timing_summary_routed.rpt
 
 {% if post_imp -%}
 source {{ post_imp }}
