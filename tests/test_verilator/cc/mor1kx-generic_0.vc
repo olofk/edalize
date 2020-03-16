@@ -85,7 +85,7 @@
 ../../../cores/mor1kx-generic/bench/verilator/tb.cpp
 -Gvlogparam_bool=1
 -Gvlogparam_int=42
--Gvlogparam_str=hello
+-Gvlogparam_str=\"hello\"
 -Dvlogdefine_bool=1
 -Dvlogdefine_int=42
 -Dvlogdefine_str=hello

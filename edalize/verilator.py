@@ -124,7 +124,7 @@ class Verilator(Edatool):
             f.write('--exe\n')
             f.write('\n'.join(opt_c_files))
             f.write('\n')
-            f.write(''.join(['-G{}={}\n'.format(key, self._param_value_str(value)) for key, value in self.vlogparam.items()]))
+            f.write(''.join(['-G{}={}\n'.format(key, self._param_value_str(value, str_quote_style='\\"')) for key, value in self.vlogparam.items()]))
             f.write(''.join(['-D{}={}\n'.format(key, self._param_value_str(value)) for key, value in self.vlogdefine.items()]))
 
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as makefile:
