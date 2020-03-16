@@ -14,8 +14,8 @@ def test_isim():
         'isim_options' : ['a', 'few', 'isim_options'],
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    backend.configure()
 
     compare_files(ref_dir, work_root,
                   ['config.mk',
@@ -27,6 +27,6 @@ def test_isim():
     shutil.copy(os.path.join(ref_dir, dummy_exe),
                 os.path.join(work_root, dummy_exe))
 
-    backend.run([])
+    backend.run()
 
     compare_files(ref_dir, work_root, ['run.cmd'])

@@ -77,7 +77,7 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
                'vpi'          :  _vpi}
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    return (backend, [], work_root)
+    return (backend, work_root)
 
 files = [
     {'name' : 'qip_file.qip' , 'file_type' : 'QIP'},

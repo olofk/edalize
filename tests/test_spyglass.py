@@ -13,9 +13,9 @@ def test_spyglass_defaults():
     tool = 'spyglass'
     tool_options = {}
 
-    (backend, args, work_root) = setup_backend(
+    (backend, work_root) = setup_backend(
         paramtypes, name, tool, tool_options)
-    backend.configure(args)
+    backend.configure()
 
     compare_files(ref_dir, work_root, [
         'Makefile',
@@ -47,9 +47,9 @@ def test_spyglass_tooloptions():
         'rule_parameters': ['handle_static_caselabels yes'],
     }
 
-    (backend, args, work_root) = setup_backend(
+    (backend, work_root) = setup_backend(
         paramtypes, name, tool, tool_options)
-    backend.configure(args)
+    backend.configure()
 
     compare_files(ref_dir, work_root, [
         'Makefile',

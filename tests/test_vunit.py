@@ -12,10 +12,10 @@ def test_vunit_codegen():
     tool = 'vunit'
     tool_options = {}
 
-    (backend, args, work_root) = setup_backend(
+    (backend, work_root) = setup_backend(
         paramtypes, name, tool, tool_options, use_vpi=False)
 
-    backend.configure(args)
+    backend.configure()
     compare_files(ref_dir, work_root, ['run.py'])
 
 
@@ -67,7 +67,7 @@ def test_vunit_hooks():
             original_impl(args, **kwargs)
 
     with mock.patch('subprocess.check_call', new=subprocess_intercept):
-        backend.configure([])
+        backend.configure()
 
         import edalize.vunit_hooks
         with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor:
@@ -96,7 +96,7 @@ def test_vunit_hooks():
             hooks.create.return_value = vu_mock
             vu_mock.add_library.return_value = vu_library
 
-            backend.run([])
+            backend.run()
 
             hooks_constructor.assert_called_once()
             hooks.create.assert_called_once()

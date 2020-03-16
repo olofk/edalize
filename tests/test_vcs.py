@@ -15,15 +15,15 @@ def test_vcs_tool_options():
         'run_options'  : [ '-licqueue' ],
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile', name + '.scr' ])
 
     backend.build()
     compare_files(ref_dir, work_root, ['vcs.cmd'])
 
-    backend.run(args)
+    backend.run()
 
     compare_files(ref_dir, work_root, ['run.cmd'])
 
@@ -39,15 +39,15 @@ def test_vcs_no_tool_options():
     tool         = 'vcs'
     tool_options = {}
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile', name + '.scr' ])
 
     backend.build()
     compare_files(ref_dir, work_root, ['vcs.cmd'])
 
-    backend.run(args)
+    backend.run()
 
     compare_files(ref_dir, work_root, ['run.cmd'])
 
@@ -70,13 +70,13 @@ def test_vcs_minimal():
                'toplevel' : 'top'}
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    backend.configure([])
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile', name + '.scr' ])
 
     backend.build()
     compare_files(ref_dir, work_root, ['vcs.cmd'])
 
-    backend.run([])
+    backend.run()
 
     compare_files(ref_dir, work_root, ['run.cmd'])

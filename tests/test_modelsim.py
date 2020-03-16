@@ -16,8 +16,8 @@ def test_modelsim():
     }
 
     #FIXME: Add VPI tests
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
+    backend.configure()
 
     compare_files(ref_dir, work_root, [
         'Makefile',
@@ -33,7 +33,7 @@ def test_modelsim():
 
     compare_files(ref_dir, work_root, ['vsim.cmd'])
 
-    backend.run(args)
+    backend.run()
 
     with open(os.path.join(ref_dir, 'vsim2.cmd')) as fref, open(os.path.join(work_root, 'vsim.cmd')) as fgen:
         assert fref.read() == fgen.read()

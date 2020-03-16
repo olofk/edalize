@@ -13,11 +13,11 @@ def test_veriblelint_default():
     tool = 'veriblelint'
     tool_options = {}
 
-    (backend, args, work_root) = setup_backend(
+    (backend, work_root) = setup_backend(
         paramtypes, name, tool, tool_options)
-    backend.configure(args)
+    backend.configure()
     backend.build()
-    backend.run(args)
+    backend.run()
     compare_files(ref_dir, work_root, [
         'verilog_lint.cmd',
     ])

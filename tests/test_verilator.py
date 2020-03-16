@@ -17,9 +17,9 @@ def test_verilator_cc():
         'make_options' : ['OPT_FAST=-O2'],
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
 
-    backend.configure(args)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile'])
 
@@ -30,7 +30,7 @@ def test_verilator_cc():
     dummy_exe = 'Vtop_module'
     shutil.copy(os.path.join(ref_dir, dummy_exe),
                 os.path.join(work_root, dummy_exe))
-    backend.run(args)
+    backend.run()
 
     compare_files(ref_dir, work_root, ['run.cmd'])
 
@@ -48,9 +48,9 @@ def test_verilator_sc():
         'mode' : mode,
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
 
-    backend.configure(args)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile'])
 
@@ -72,9 +72,9 @@ def test_verilator_lint_only():
         'mode' : mode,
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
 
-    backend.configure(args)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile'])
 

@@ -14,8 +14,8 @@ def test_icarus():
         'timescale'        : '1ns/1ns',
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=True)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=True)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile',
                                        name+'.scr',
@@ -26,7 +26,7 @@ def test_icarus():
     compare_files(ref_dir, work_root, ['iverilog.cmd'])
     compare_files(ref_dir, work_root, ['iverilog-vpi.cmd'])
 
-    backend.run(args)
+    backend.run()
 
     compare_files(ref_dir, work_root, ['vvp.cmd'])
 
@@ -49,7 +49,7 @@ def test_icarus_minimal():
                'toplevel' : 'top'}
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    backend.configure([])
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile',
                                        name+'.scr',
@@ -58,6 +58,6 @@ def test_icarus_minimal():
     backend.build()
     compare_files(ref_dir, work_root, ['iverilog.cmd'])
 
-    backend.run([])
+    backend.run()
 
     compare_files(ref_dir, work_root, ['vvp.cmd'])

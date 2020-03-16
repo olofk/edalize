@@ -13,8 +13,8 @@ def test_vivado():
         'part' : 'xc7a35tcsg324-1',
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    backend.configure()
 
     compare_files(ref_dir, work_root, [
         'Makefile',
@@ -51,7 +51,7 @@ def test_vivado_minimal():
     }
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    backend.configure([])
+    backend.configure()
 
     compare_files(ref_dir, work_root, [
         'Makefile',

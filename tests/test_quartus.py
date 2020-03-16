@@ -49,14 +49,14 @@ def test_quartus():
 
             # Ensure we test the edition we intend to, even if quartus_sh is present
             os.environ["FUSESOC_QUARTUS_EDITION"] = edition
-            (backend, args, work_root) = setup_backend(paramtypes, name, tool, _tool_options)
+            (backend, work_root) = setup_backend(paramtypes, name, tool, _tool_options)
 
             # Each edition performs checks on the QSYS files present, so provide
             # a minimal example
             with open(os.path.join(work_root, "qsys_file"), 'w') as f:
                 f.write(qsys_file.format(qsys_fill[edition]))
 
-            backend.configure(args)
+            backend.configure()
 
             compare_files(ref_dir, work_root, ['Makefile',
                                                name+'.tcl'])

@@ -12,8 +12,8 @@ def test_xsim():
     tool_options = {'xelab_options' : ['some', 'xelab_options'],
                     'xsim_options'  : ['a', 'few', 'xsim_options']}
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['config.mk',
                                        'Makefile',
@@ -27,6 +27,6 @@ def test_xsim():
     os.makedirs(xsimkdir)
     with open(os.path.join(xsimkdir, 'xsimk'), 'w') as f:
         f.write("I am a compiled simulation kernel\n")
-    backend.run(args)
+    backend.run()
 
     compare_files(ref_dir, work_root, ['xsim.cmd'])

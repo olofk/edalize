@@ -16,8 +16,8 @@ def test_ise():
         'speed'   : '-2'
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    backend.configure(args)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    backend.configure()
 
     compare_files(ref_dir, work_root, ['Makefile',
                                        'config.mk',
@@ -47,7 +47,7 @@ def test_ise_missing_options():
         'package' : 'csg324',
     }
 
-    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
     with pytest.raises(RuntimeError) as e:
-        backend.configure('')
+        backend.configure()
     assert "Missing required option 'speed'" in str(e.value)
