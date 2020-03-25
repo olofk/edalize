@@ -146,7 +146,8 @@ class Vivado(Edatool):
                                  template_vars)
 
             self.render_template('vivado-run.tcl.j2',
-                                 self.name+"_run.tcl")
+                                 self.name+"_run.tcl",
+                                 template_vars)
 
             self.render_template('vivado-synth.tcl.j2',
                                  self.name+"_synth.tcl")
