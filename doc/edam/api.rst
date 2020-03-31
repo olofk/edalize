@@ -28,9 +28,12 @@ Different EDA tools handle different subsets of files and are expected to ignore
 - QIP : Intel Quartus IP file
 - UCF : Xilinx ISE constraint file
 - verilogSource-2005 : Verilog 200 source
+- systemVerilogSource : SystemVerilog 2009/2017 source
 - vhdlSource-2008 : VHDL 2008 source
 - xci : Xilinx Vivado IP file
 - xdc : Xilinx Vivado constraint file
+- SDC : Synopsys Design Constraints used by Intel Quartus and Xilinx Vivado
+- SDF : Standard Delay Format (IEEE 1497) for timing data
 
 
 =============== ===================== ===========
@@ -41,6 +44,10 @@ file_type       String                **Required** File type
 is_include_file Bool                  Indicates if this file should be treated as an include file (default false)
 include_path    String                When is_include_file is true, the directory containing the file will be added to the include path. include_path allows setting an explicit directory to use instead
 logical_name    String                Logical name (e.g. VHDL/SystemVerilog library) of the file
+sdf_type        String                For SDF files indicates if SDF should be copied to work directory ("copy")
+                                      for use by $sdf_annotate() or used as "min"/"typ"/"max" corner (default "copy")
+sdf_instance    String                For SDF files of type min/typ/max the instance to which the SDF file should
+                                      be applied (default "")
 =============== ===================== ===========
 
 Hook
