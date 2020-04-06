@@ -19,6 +19,9 @@ class Veriblelint(Edatool):
                          {'name': 'ruleset',
                           'type': 'String',
                           'desc': 'Ruleset: [default|all|none]'},
+                         {'name': 'rules_config_file',
+                          'type': 'String',
+                          'desc': 'Path to the rule config file'}
                     ],
                     'lists': [
                          {'name' : 'verible_lint_args',
@@ -36,6 +39,8 @@ class Veriblelint(Edatool):
     def _get_tool_args(self):
         args = [ '--lint_fatal', '--parse_fatal' ]
 
+        if 'rules_config_file' in self.tool_options:
+            args.append('--rules_config=' + ','.join(self.tool_options['rules_config_file']))
         if 'rules' in self.tool_options:
             args.append('--rules=' + ','.join(self.tool_options['rules']))
         if 'ruleset' in self.tool_options:
