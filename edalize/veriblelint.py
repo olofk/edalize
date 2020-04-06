@@ -19,9 +19,6 @@ class Veriblelint(Edatool):
                          {'name': 'ruleset',
                           'type': 'String',
                           'desc': 'Ruleset: [default|all|none]'},
-                         {'name': 'rules_config_file',
-                          'type': 'String',
-                          'desc': 'Path to the rule config file'}
                     ],
                     'lists': [
                          {'name' : 'verible_lint_args',
@@ -39,8 +36,6 @@ class Veriblelint(Edatool):
     def _get_tool_args(self):
         args = [ '--lint_fatal', '--parse_fatal' ]
 
-        if 'rules_config_file' in self.tool_options:
-            args.append('--rules_config=' + ','.join(self.tool_options['rules_config_file']))
         if 'rules' in self.tool_options:
             args.append('--rules=' + ','.join(self.tool_options['rules']))
         if 'ruleset' in self.tool_options:
@@ -54,19 +49,28 @@ class Veriblelint(Edatool):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
         src_files_filtered = []
+        config_files_filtered = []
         for src_file in src_files:
             ft = src_file.file_type
-            if not ft.startswith("verilogSource") and not ft.startswith("systemVerilogSource"):
-                continue
-            src_files_filtered.append(src_file.name)
+
+            if ft.startswith("verilogSource") or ft.startswith("systemVerilogSource"):
+               src_files_filtered.append(src_file.name)
+            elif ft.startswith("veribleLintRules"):
+               config_files_filtered.append(src_file.name)
 
         if len(src_files_filtered) == 0:
             logger.warning("No SystemVerilog source files to be processed.")
             return
 
         lint_fail = False
+        args = self._get_tool_args()
+        if len(config_files_filtered) > 1:
+            raise RuntimeError("Too many Verible lint rule files specified")
+        elif len(config_files_filtered) == 1:
+            args.append('--rules_config=' + config_files_filtered[0])
+
         for src_file in src_files_filtered:
-            cmd = ['verilog_lint'] + self._get_tool_args() + [src_file]
+            cmd = ['verilog_lint'] + args + [src_file]
             logger.debug("Running " + ' '.join(cmd))
 
             try:

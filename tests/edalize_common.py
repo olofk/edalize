@@ -127,6 +127,7 @@ FILES = [
     {'name' : 'cpp_file.cpp' , 'file_type' : 'cppSource'},
     {'name' : 'c_header.h'   , 'file_type' : 'cSource', 'is_include_file' : True},
     {'name' : 'c_header.h'   , 'file_type' : 'cppSource', 'is_include_file' : True},
+    {'name' : 'config.vbl'   , 'file_type' : 'veribleLintRules'}
 ]
 """Files of all supported file types."""
 
