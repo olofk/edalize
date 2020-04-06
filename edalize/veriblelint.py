@@ -34,12 +34,12 @@ class Veriblelint(Edatool):
         pass
 
     def _get_tool_args(self):
-        args = [ '-lint_fatal', '-parse_fatal' ]
+        args = [ '--lint_fatal', '--parse_fatal' ]
 
         if 'rules' in self.tool_options:
-            args.append('-rules=' + ','.join(self.tool_options['rules']))
+            args.append('--rules=' + ','.join(self.tool_options['rules']))
         if 'ruleset' in self.tool_options:
-            args.append('-ruleset=' + self.tool_options['ruleset'])
+            args.append('--ruleset=' + self.tool_options['ruleset'])
         if 'verible_lint_args' in self.tool_options:
             args += self.tool_options['verible_lint_args']
 
