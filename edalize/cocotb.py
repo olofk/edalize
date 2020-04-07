@@ -18,9 +18,24 @@ class Cocotb(Edatool):
                          'desc' : 'The simulator for Cocotb to use'},
                         ]}
 
+    def _create_python_path(self):
+        (src_files, incdirs) = self._get_fileset_files()
+        print(src_files)
+
+        path_components = set()
+
+        for f in src_files:
+            if f.file_type is 'pythonSource':
+                component = os.path.dirname(f.name)
+                if component != '':
+                    path_components.add(component)
+                    
+        return ':'.join(path_components)
 
     def configure_main(self):
-        self.render_template(self.makefile_template, 'Makefile', {})
+        python_path = self._create_python_path()
+        self.render_template(self.makefile_template, 'Makefile', {
+            'python_path' : python_path})
 
     def run_main(self):
         self._run_tool('make', ['run'])
