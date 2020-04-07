@@ -1,6 +1,6 @@
 import os
 import logging
-
+import sys
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -17,6 +17,10 @@ class Rivierapro(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : "Riviera Pro simulator from Aldec",
+                    'members' : [
+                        {'name' : 'compilation_mode',
+                         'type' : 'String',
+                         'desc' : 'Common or separate compilation, sep - for separate compilation, common - for common compilation'}],
                     'lists' : [
                         {'name' : 'vlog_options',
                          'type' : 'String',
@@ -29,10 +33,16 @@ class Rivierapro(Edatool):
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), 'w')
 
-        (src_files, incdirs) = self._get_fileset_files()
+        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
 
         libs = []
+        common_compilation = []
+        common_compilation += ['vlog']
+        common_compilation += self.tool_options.get('vlog_options', [])
+        common_compilation += vlog_include_dirs
+        for k, v in self.vlogdefine.items():
+            common_compilation += ['+define+{}={}'.format(k,self._param_value_str(v))]
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = 'work'
@@ -41,12 +51,9 @@ class Rivierapro(Edatool):
                 libs.append(f.logical_name)
             if f.file_type.startswith("verilogSource") or \
                f.file_type.startswith("systemVerilogSource"):
-
                 cmd = 'vlog'
                 args = []
-
                 args += self.tool_options.get('vlog_options', [])
-
                 if f.file_type.startswith("verilogSource"):
                     if f.file_type.endswith("95"):
                         args.append('-v95')
@@ -83,8 +90,19 @@ class Rivierapro(Edatool):
             if cmd:
                 args += ['-quiet']
                 args += ['-work', f.logical_name]
-                args += [f.name.replace('\\','/')]
-                tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))
+                args += [f.name]
+                common_compilation += [f.name,'\\\n']
+                if (self.tool_options.get('compilation_mode'))=='sep' or (self.tool_options.get('compilation_mode')==None):
+                    tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))
+
+        if (self.tool_options.get('compilation_mode')=='common'):
+            tcl_build_rtl.write("{} \n".format(' '.join(common_compilation)))
+			
+        if not (self.tool_options.get('compilation_mode')=='common' or self.tool_options.get('compilation_mode')==None or self.tool_options.get('compilation_mode')=='sep'):
+            raise RuntimeError('wrong compilation mode, use --compilation_mode=common for common compilation or --compilation_mode=sep for separate compilation')
+
+
+
 
     def _write_run_tcl_file(self):
         tcl_launch = open(os.path.join(self.work_root, "edalize_launch.tcl"), 'w')
