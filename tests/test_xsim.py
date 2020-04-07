@@ -1,12 +1,9 @@
-import pytest
-
 def test_xsim():
     import os
-    import shutil
     from edalize_common import compare_files, setup_backend, tests_dir
 
     ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam']
+    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
     name         = 'test_xsim_0'
     tool         = 'xsim'
     tool_options = {'xelab_options' : ['some', 'xelab_options'],
