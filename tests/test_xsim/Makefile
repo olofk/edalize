@@ -4,7 +4,7 @@ include config.mk
 all: xsim.dir/$(TARGET)/xsimk
 
 xsim.dir/$(TARGET)/xsimk:
-	xelab $(TOPLEVEL) -prj $(TARGET).prj -snapshot $(TARGET) $(VLOG_DEFINES) $(VLOG_INCLUDES) $(VLOG_PARAMS) $(XELAB_OPTIONS)
+	xelab $(TOPLEVEL) -prj $(TARGET).prj -snapshot $(TARGET) $(VLOG_DEFINES) $(VLOG_INCLUDES) $(GEN_PARAMS) $(XELAB_OPTIONS)
 
 run: xsim.dir/$(TARGET)/xsimk
 	xsim -R $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
