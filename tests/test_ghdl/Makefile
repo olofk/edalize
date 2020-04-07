@@ -18,7 +18,7 @@ make_libraries_directories:
 	echo "Creating libraries directories"
 	mkdir -p libx
 
-work-obj08.cf:
+work-obj08.cf: make_libraries_directories
 	ghdl -i $(STD) $(ANALYZE_OPTIONS)  vhdl_file.vhd
 	ghdl -i $(STD) $(ANALYZE_OPTIONS) --work=libx  --workdir=./libx vhdl_lfile
 	ghdl -i $(STD) $(ANALYZE_OPTIONS)  vhdl2008_file
