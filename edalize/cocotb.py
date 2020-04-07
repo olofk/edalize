@@ -20,15 +20,13 @@ class Cocotb(Edatool):
 
     def _create_python_path(self):
         (src_files, incdirs) = self._get_fileset_files()
-        print(src_files)
-
-        path_components = set()
+        path_components = []
 
         for f in src_files:
             if f.file_type is 'pythonSource':
                 component = os.path.dirname(f.name)
-                if component != '':
-                    path_components.add(component)
+                if component != '' and component not in path_components:
+                    path_components.append(component)
                     
         return ':'.join(path_components)
 
