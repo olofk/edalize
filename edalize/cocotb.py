@@ -6,6 +6,8 @@ logger = logging.getLogger(__name__)
 
 class Cocotb(Edatool):
 
+    argtypes = []
+
     makefile_template = 'cocotb-makefile.j2'
 
     @classmethod
@@ -59,7 +61,9 @@ class Cocotb(Edatool):
             'vhdl_sources': ' '.join(vhdl_sources),
             'python_path': python_path,
             'toplevel': self.toplevel,
-            'tool_options': self.tool_options,
+            'sim': self.tool_options['sim'][0],
+            'module': self.tool_options['module'][0],
+            'toplevel_lang': self.tool_options['toplevel_lang'][0],
             })
 
     def build_main(self):
