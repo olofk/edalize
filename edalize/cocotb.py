@@ -14,7 +14,7 @@ class Cocotb(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : "Cocotb",
-                    'lists' : [
+                    'members' : [
                         {'name': 'sim',
                          'type': 'String',
                          'desc': 'The simulator for Cocotb to use'},
@@ -61,9 +61,9 @@ class Cocotb(Edatool):
             'vhdl_sources': ' '.join(vhdl_sources),
             'python_path': python_path,
             'toplevel': self.toplevel,
-            'sim': self.tool_options['sim'][0],
-            'module': self.tool_options['module'][0],
-            'toplevel_lang': self.tool_options['toplevel_lang'][0],
+            'sim': self.tool_options['sim'],
+            'module': self.tool_options['module'],
+            'toplevel_lang': self.tool_options['toplevel_lang'],
             })
 
     def build_main(self):
