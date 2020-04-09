@@ -103,9 +103,7 @@ files = [
     {'name' : 'c_header.h'   , 'file_type' : 'cSource', 'is_include_file' : True},
     {'name': 'c_header.h', 'file_type': 'cppSource', 'is_include_file': True},
     {'name' : 'python_dir/python_file.py', 'file_type' : 'pythonSource'},
-    {'name' : 'python_dir/python_file2.py', 'file_type' : 'pythonSource'},
-    {'name' : 'python_dir2/python_file.py', 'file_type' : 'pythonSource'},
-    {'name' : 'python_dir3/python_file.py', 'file_type' : 'pythonSource'},
+    {'name' : 'python_dir2/python_file2.py', 'file_type' : 'pythonSource'},
 ]
 
 vpi = [

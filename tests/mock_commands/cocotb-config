@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import os
+
+print(os.environ['EDALIZE_REF_DIR'])

@@ -33,7 +33,7 @@ class Cocotb(Edatool):
 
         for f in src_files:
             if f.file_type == 'pythonSource':
-                component = os.path.dirname(os.path.normpath(os.path.join(self.work_root, f.name)))
+                component = os.path.join('$(PWD)', os.path.dirname(f.name))
                 if component not in path_components:
                     path_components.append(component)
 
@@ -45,7 +45,7 @@ class Cocotb(Edatool):
         vhdl_sources = []
 
         for f in src_files:
-            path = os.path.normpath(os.path.join(self.work_root, f.name))
+            path = os.path.join('$(PWD)', f.name)
 
             if f.file_type.startswith('vhdlSource'):
                 vhdl_sources.append(path)
