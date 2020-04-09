@@ -1,3 +1,4 @@
+import copy
 import pytest
 
 def test_cocotb():
@@ -16,7 +17,7 @@ def test_cocotb():
 
     (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
 
-    orig_env = os.environ.copy()
+    orig_env = copy.deepcopy(os.environ)
     os.environ['EDALIZE_REF_DIR'] = ref_dir
 
     backend.configure()
