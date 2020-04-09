@@ -1,4 +1,5 @@
 import pytest
+import copy
 
 def test_modelsim():
     import os
@@ -25,7 +26,7 @@ def test_modelsim():
         'edalize_main.tcl',
     ])
 
-    orig_env = os.environ.copy()
+    orig_env = copy.deepcopy(os.environ)
     os.environ['MODEL_TECH'] = os.path.join(tests_dir, 'mock_commands')
 
     backend.build()
