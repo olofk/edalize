@@ -1,4 +1,5 @@
 import pytest
+import copy
 
 def test_rivierapro():
     import os
@@ -24,7 +25,7 @@ def test_rivierapro():
         'edalize_main.tcl',
     ])
 
-    orig_env = os.environ.copy()
+    orig_env = copy.deepcopy(os.environ)
     os.environ['ALDEC_PATH'] = os.path.join(tests_dir, 'mock_commands')
 
     backend.build()
