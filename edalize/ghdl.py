@@ -47,8 +47,11 @@ class Ghdl(Edatool):
             stdarg = ['--std=87']
         elif has93:
             stdarg = ['--std=93']
+        else:
+            stdarg = ['--std=93c']     ## added TH
 
         analyze_options = self.tool_options.get('analyze_options', '')
+      
 
         run_options = self.tool_options.get('run_options', [])
 
@@ -63,7 +66,7 @@ VHDL_SOURCES = {vhdl_sources}
 all: work-obj{standard}.cf
 
 run: $(TOPLEVEL)
-\tghdl -r $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+\tghdl -r $(ANALYZE_OPTIONS) $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
 \tghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
