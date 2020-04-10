@@ -5,6 +5,8 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
+from edalize.yosys import Yosys
+from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ A core (usually the system core) can add the following files:
 
 - Standard design sources (Verilog only)
 
-- Constraints: unmanaged constraints with file_type SDC, pin_constraints with file_type SDF and placement constraints with file_type xdc
+- Constraints: unmanaged constraints with file_type SDC, pin_constraints with file_type PCF and placement constraints with file_type xdc
 
 """
 
@@ -25,7 +27,7 @@ class Symbiflow(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "The Symbilow backend executes Yosys sythesis tool and VPR place and route. It can target multiple different FPGA vendors",
+            symbiflow_help = {
                     'members' : [
                         {'name' : 'package',
                          'type' : 'String',
@@ -38,14 +40,67 @@ class Symbiflow(Edatool):
                          'desc' : 'directory where all the intermediate files will be stored (default "build")'},
                         {'name' : 'vendor',
                          'type' : 'String',
-                         'desc' : 'Target architecture. Currently only "xilinx" is supported '},
+                         'desc' : 'Target architecture. Currently only "xilinx" is supported'},
+                        {'name' : 'pnr',
+                         'type' : 'String',
+                         'desc' : 'Place and Route tool. Currently only "vpr" and "nextpnr" are supported'},
                    ]}
+
+            symbiflow_members = symbiflow_help['members']
+
+            return {'description' : "The Symbilow backend executes Yosys sythesis tool and VPR place and route. It can target multiple different FPGA vendors",
+                    'members': symbiflow_members}
 
     def get_version(self):
         return "1.0"
 
+    def configure_nextpnr(self):
+        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-    def configure_main(self):
+        nextpnr_edam = {
+                'files'         : self.files,
+                'name'          : self.name,
+                'toplevel'      : self.toplevel,
+                'tool_options'  : {'nextpnr' : {
+                                        'arch' : 'xilinx',
+                                        'nextpnr_as_subtool' : True,
+                                        }
+
+                                }
+                }
+
+        nextpnr = getattr(import_module("edalize.nextpnr"), 'Nextpnr')(nextpnr_edam, self.work_root)
+        nextpnr.configure(self.args)
+
+        builddir = self.tool_options.get('builddir', 'build')
+
+        part = self.tool_options.get('part', None)
+        package = self.tool_options.get('package', None)
+
+        assert part is not None, 'Missing required "part" parameter'
+        assert package is not None, 'Missing required "package" parameter'
+
+        partname = part + package
+
+        if 'xc7a' in part:
+            bitstream_device = 'artix7'
+        if 'xc7z' in part:
+            bitstream_device = 'zynq7'
+        if 'xc7k' in part:
+            bitstream_device = 'kintex7'
+
+        makefile_params = {
+                'top' : self.name,
+                'partname' : partname,
+                'bitstream_device' : bitstream_device,
+                'builddir' : builddir,
+            }
+
+        self.render_template('symbiflow-nextpnr-makefile.j2',
+                             'Makefile',
+                             makefile_params)
+
+    def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
         has_vhdl     = 'vhdlSource'      in [x.file_type for x in src_files]
@@ -106,9 +161,15 @@ class Symbiflow(Edatool):
                            'xdc' : ' '.join(placement_constraints),
                            'builddir' : builddir,
                           }
-        self.render_template('symbiflow-makefile.j2',
+        self.render_template('symbiflow-vpr-makefile.j2',
                              'Makefile',
                              makefile_params)
+
+    def configure_main(self):
+        if self.tool_options.get('pnr') == 'nextpnr':
+            self.configure_nextpnr()
+        else:
+            self.configure_vpr()
 
 
     def run_main(self):
