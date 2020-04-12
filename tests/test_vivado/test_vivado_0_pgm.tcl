@@ -24,7 +24,7 @@ if { $explicit_hw_target != "" } {
 }
 
 # Connect to Xilinx Hardware Server
-open_hw
+if { [ catch { open_hw_manager } ] } { open_hw }
 connect_hw_server
 
 if { $explicit_hw_target == "" } {
