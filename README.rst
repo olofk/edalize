@@ -1,6 +1,10 @@
 Edalize
 =======
 
+.. image:: https://github.com/olofk/edalize/workflows/CI/badge.svg
+        :target: https://github.com/olofk/edalize/workflows/CI/badge.svg
+        :alt: CI status
+
 .. image:: https://readthedocs.org/projects/edalize/badge/?version=latest
         :target: https://edalize.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
