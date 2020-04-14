@@ -14,17 +14,46 @@ class Cocotb(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description': "Cocotb",
+            return {'description': 'cocotb - see <https://docs.cocotb.org/> for additional documentation on options',
                     'members': [
                         {'name': 'sim',
                          'type': 'String',
-                         'desc': 'The simulator for Cocotb to use'},
+                         'desc': 'The simulator for Cocotb to use (required)'},
                         {'name': 'module',
                          'type': 'String',
-                         'desc': 'Name of top level Python testbench'},
+                         'desc': 'Comma-separated list of the Python modules to search for test functions (required)'},
                         {'name': 'toplevel_lang',
                          'type': 'String',
-                         'desc': 'Language of top level HDL module'},
+                         'desc': 'Language of top level HDL module (required)'},
+                        {'name': 'gui',
+                         'type': 'Integer',
+                         'desc': 'Set to 1 to enable GUI mode in simulator'},
+                        {'name': 'waves',
+                         'type': 'Integer',
+                         'desc': 'Set to 1 to enable wave traces dump'},
+                        {'name': 'compile_args',
+                         'type': 'String',
+                         'desc': 'Any arguments or flags to pass to the compile stage of the simulation'},
+                        {'name': 'sim_args',
+                         'type': 'String',
+                         'desc': 'Any arguments or flags to pass to the execution of the compiled simulation'},
+                        {'name': 'run_args',
+                         'type': 'String',
+                         'desc': 'Any argument to be passed to the “first” invocation of a simulator that runs via a TCL script'},
+                        {'name': 'extra_args',
+                         'type': 'String',
+                         'desc': 'Passed to both the compile and execute phases of simulators with'
+                         + ' two rules, or passed to the single compile and run command for simulators'
+                         + ' which don’t have a distinct compilation stage'},
+                        {'name': 'random_seed',
+                         'type': 'Integer',
+                         'desc': 'Seed the Python random module to recreate a previous test stimulus'},
+                        {'name': 'testcase',
+                         'type': 'String',
+                         'desc': 'Comma-separated list the test functions to run'},
+                        {'name': 'cocotb_results_file',
+                         'type': 'String',
+                         'desc': 'The file name where xUnit XML tests results are stored'},
                         ]}
 
     def _create_python_path(self):
