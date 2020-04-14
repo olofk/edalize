@@ -18,6 +18,12 @@ VERILOG_SOURCES := {{verilog_sources}}
 {% if vhdl_sources != "" %}
 VHDL_SOURCES := {{vhdl_sources}}
 {% endif %}
+{% for lib, sources in vhdl_lib_sources.items() %}
+VHDL_SOURCES_{{lib}} := {{sources}}
+{% endfor %}
+{% if tool_options.rtl_library is defined %}
+RTL_LIBRARY := {{tool_options.rtl_library}}
+{% endif %}
 
 # HDL top level configuration
 TOPLEVEL := {{toplevel}}
@@ -27,28 +33,29 @@ TOPLEVEL_LANG := {{tool_options.toplevel_lang}}
 PYTHONPATH := {{python_path}}
 MODULE := {{tool_options.module}}
 {% if tool_options.testcase is defined %}
-TESTCASE = {{tool_options.testcase}}
+TESTCASE := {{tool_options.testcase}}
 {% endif %}
 {% if tool_options.random_seed is defined %}
-RANDOM_SEED = {{tool_options.random_seed}}
+RANDOM_SEED := {{tool_options.random_seed}}
 {% endif %}
 {% if tool_options.extra_args is defined %}
-COCOTB_RESULTS_FILE = {{tool_options.cocotb_results_file}}
+COCOTB_RESULTS_FILE := {{tool_options.cocotb_results_file}}
 {% endif %}
 
 # Compilation and execution arguments
 {% if tool_options.compile_args is defined %}
-COMPILE_ARGS = {{tool_options.compile_args}}
+COMPILE_ARGS := {{tool_options.compile_args}}
 {% endif %}
 {% if tool_options.sim_args is defined %}
-SIM_ARGS = {{tool_options.sim_args}}
+SIM_ARGS := {{tool_options.sim_args}}
 {% endif %}
 {% if tool_options.run_args is defined %}
-RUN_ARGS = {{tool_options.run_args}}
+RUN_ARGS := {{tool_options.run_args}}
 {% endif %}
 {% if tool_options.extra_args is defined %}
-EXTRA_ARGS = {{tool_options.extra_args}}
+EXTRA_ARGS := {{tool_options.extra_args}}
 {% endif %}
 
+# cocotb makefiles
 include $(shell cocotb-config --makefiles)/Makefile.inc
 include $(shell cocotb-config --makefiles)/Makefile.sim

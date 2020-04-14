@@ -4,6 +4,9 @@ from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
+# This is a list of simulators where VHDL libraries are supported in cocotb
+sims_with_vhdl_lib_support = ['ghdl']
+
 
 class Cocotb(Edatool):
 
@@ -25,6 +28,9 @@ class Cocotb(Edatool):
                         {'name': 'toplevel_lang',
                          'type': 'String',
                          'desc': 'Language of top level HDL module (required)'},
+                        {'name': 'rtl_library',
+                         'type': 'String',
+                         'desc': 'VHDL library for top level entity'},
                         {'name': 'gui',
                          'type': 'Integer',
                          'desc': 'Set to 1 to enable GUI mode in simulator'},
@@ -72,26 +78,39 @@ class Cocotb(Edatool):
         (src_files, incdirs) = self._get_fileset_files()
         verilog_sources = []
         vhdl_sources = []
+        vhdl_lib_sources = {}
+
+        use_vhdl_lib_sources = self.tool_options['sim'] in sims_with_vhdl_lib_support
 
         for f in src_files:
             path = os.path.join('$(PWD)', f.name)
 
             if f.file_type.startswith('vhdlSource'):
-                vhdl_sources.append(path)
+                if use_vhdl_lib_sources and f.logical_name:
+                    if f.logical_name not in vhdl_lib_sources:
+                        vhdl_lib_sources[f.logical_name] = []
+                    vhdl_lib_sources[f.logical_name].append(path)
+                else:
+                    vhdl_sources.append(path)
             elif f.file_type.startswith('verilogSource'):
                 verilog_sources.append(path)
             elif f.file_type.startswith('systemVerilogSource'):
                 verilog_sources.append(path)
 
-        return verilog_sources, vhdl_sources
+        joined_vhdl_lib_sources = {}
+        for lib, sources in vhdl_lib_sources.items():
+            joined_vhdl_lib_sources[lib] = ' '.join(sources)
+
+        return ' '.join(verilog_sources), ' '.join(vhdl_sources), joined_vhdl_lib_sources
 
     def configure_main(self):
-        print('work_root = ' + self.work_root)
         python_path = self._create_python_path()
-        (verilog_sources, vhdl_sources) = self._get_sources()
+        (verilog_sources, vhdl_sources, vhdl_lib_sources) = self._get_sources()
+
         self.render_template(self.makefile_template, 'Makefile', {
-            'verilog_sources': ' '.join(verilog_sources),
-            'vhdl_sources': ' '.join(vhdl_sources),
+            'verilog_sources': verilog_sources,
+            'vhdl_sources': vhdl_sources,
+            'vhdl_lib_sources': vhdl_lib_sources,
             'python_path': python_path,
             'toplevel': self.toplevel,
             'tool_options': self.tool_options,
