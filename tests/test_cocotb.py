@@ -10,9 +10,19 @@ def test_cocotb():
     name         = 'test_cocotb_0'
     tool         = 'cocotb'
     tool_options = {
-        'sim': 'icarus',
+        'sim': 'ghdl',
         'module': 'python_file',
-        'toplevel_lang': 'verilog',
+        'toplevel_lang': 'vhdl',
+        'rtl_library': 'my_lib',
+        'gui': 1,
+        'waves': 1,
+        'compile_args': '--compile-arg',
+        'sim_args': '--sim-arg',
+        'run_args': '--run-arg',
+        'extra_args': '--extra-arg',
+        'random_seed': 1729,
+        'testcase': 'test_to_run',
+        'cocotb_results_file': 'my_results.xml',
     }
 
     (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)

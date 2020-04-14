@@ -5,10 +5,10 @@ PWD = $(shell pwd)
 # Simulator configuration
 SIM := {{tool_options.sim}}
 {% if tool_options.gui is defined %}
-GUI = {{tool_options.gui}}
+GUI := {{tool_options.gui}}
 {% endif %}
 {% if tool_options.waves is defined %}
-WAVES = {{tool_options.waves}}
+WAVES := {{tool_options.waves}}
 {% endif %}
 
 # HDL sources
@@ -38,7 +38,7 @@ TESTCASE := {{tool_options.testcase}}
 {% if tool_options.random_seed is defined %}
 RANDOM_SEED := {{tool_options.random_seed}}
 {% endif %}
-{% if tool_options.extra_args is defined %}
+{% if tool_options.cocotb_results_file is defined %}
 COCOTB_RESULTS_FILE := {{tool_options.cocotb_results_file}}
 {% endif %}
 

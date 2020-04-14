@@ -3,21 +3,32 @@
 PWD = $(shell pwd)
 
 # Simulator configuration
-SIM := icarus
+SIM := ghdl
+GUI := 1
+WAVES := 1
 
 # HDL sources
 VERILOG_SOURCES := $(PWD)/sv_file.sv $(PWD)/vlog_file.v $(PWD)/vlog05_file.v
-VHDL_SOURCES := $(PWD)/vhdl_file.vhd $(PWD)/vhdl_lfile $(PWD)/vhdl2008_file
+VHDL_SOURCES := $(PWD)/vhdl_file.vhd $(PWD)/vhdl2008_file
+VHDL_SOURCES_libx := $(PWD)/vhdl_lfile
+RTL_LIBRARY := my_lib
 
 # HDL top level configuration
 TOPLEVEL := top_module
-TOPLEVEL_LANG := verilog
+TOPLEVEL_LANG := vhdl
 
 # Python testbench configuration
 PYTHONPATH := $(PWD)/python_dir:$(PWD)/python_dir2
 MODULE := python_file
+TESTCASE := test_to_run
+RANDOM_SEED := 1729
+COCOTB_RESULTS_FILE := my_results.xml
 
 # Compilation and execution arguments
+COMPILE_ARGS := --compile-arg
+SIM_ARGS := --sim-arg
+RUN_ARGS := --run-arg
+EXTRA_ARGS := --extra-arg
 
 # cocotb makefiles
 include $(shell cocotb-config --makefiles)/Makefile.inc
