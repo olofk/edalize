@@ -30,7 +30,7 @@ TOPLEVEL := {{toplevel}}
 TOPLEVEL_LANG := {{tool_options.toplevel_lang}}
 
 # Python testbench configuration
-PYTHONPATH := {{python_path}}
+export PYTHONPATH := {{python_path}}
 MODULE := {{tool_options.module}}
 {% if tool_options.testcase is defined %}
 TESTCASE := {{tool_options.testcase}}
