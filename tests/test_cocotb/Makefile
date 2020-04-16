@@ -13,12 +13,19 @@ VHDL_SOURCES := $(PWD)/vhdl_file.vhd $(PWD)/vhdl2008_file
 VHDL_SOURCES_libx := $(PWD)/vhdl_lfile
 RTL_LIBRARY := my_lib
 
+# Verilog includes - copying method from Cocotb axi_lite_slave example
+ifeq ($(SIM),icarus)
+VERILOG_INCLUDE_ARGS += -I$(PWD)/.
+else
+VERILOG_INCLUDE_ARGS += +incdir+$(PWD)/.
+endif
+
 # HDL top level configuration
 TOPLEVEL := top_module
 TOPLEVEL_LANG := vhdl
 
 # Python testbench configuration
-PYTHONPATH := $(PWD)/python_dir:$(PWD)/python_dir2
+export PYTHONPATH := $(PWD)/python_dir:$(PWD)/python_dir2
 MODULE := python_file
 TESTCASE := test_to_run
 RANDOM_SEED := 1729
@@ -26,6 +33,9 @@ COCOTB_RESULTS_FILE := my_results.xml
 
 # Compilation and execution arguments
 COMPILE_ARGS := --compile-arg
+ifdef VERILOG_INCLUDE_ARGS
+COMPILE_ARGS += $(VERILOG_INCLUDE_ARGS)
+endif
 SIM_ARGS := --sim-arg
 RUN_ARGS := --run-arg
 EXTRA_ARGS := --extra-arg

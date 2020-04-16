@@ -103,12 +103,20 @@ class Cocotb(Edatool):
 
         return ' '.join(verilog_sources), ' '.join(vhdl_sources), joined_vhdl_lib_sources
 
+    def _get_verilog_include_dirs(self):
+        (src_files, incdirs) = self._get_fileset_files()
+        verilog_include_dirs = [os.path.join('$(PWD)', dir) for dir in incdirs]
+        
+        return verilog_include_dirs
+
     def configure_main(self):
         python_path = self._create_python_path()
         (verilog_sources, vhdl_sources, vhdl_lib_sources) = self._get_sources()
+        verilog_include_dirs = self._get_verilog_include_dirs()
 
         self.render_template(self.makefile_template, 'Makefile', {
             'verilog_sources': verilog_sources,
+            'verilog_include_dirs': verilog_include_dirs,
             'vhdl_sources': vhdl_sources,
             'vhdl_lib_sources': vhdl_lib_sources,
             'python_path': python_path,
