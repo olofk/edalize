@@ -1,0 +1,876 @@
+Release 14.7 Map P.20131013 (lin64)
+Xilinx Mapping Report File for Design 'top'
+
+Design Information
+------------------
+Command Line   : map -detail -ol high -w -o top_map.ncd top.ngd top.pcf 
+Target Device  : xc6slx45
+Target Package : csg324
+Target Speed   : -3
+Mapper Version : spartan6 -- $Revision: 1.55 $
+Mapped Date    : Tue Mar 24 11:12:56 2020
+
+Design Summary
+--------------
+Number of errors:      0
+Number of warnings:    1
+Slice Logic Utilization:
+  Number of Slice Registers:                 3,913 out of  54,576    7%
+    Number used as Flip Flops:               3,913
+    Number used as Latches:                      0
+    Number used as Latch-thrus:                  0
+    Number used as AND/OR logics:                0
+  Number of Slice LUTs:                      4,760 out of  27,288   17%
+    Number used as logic:                    4,510 out of  27,288   16%
+      Number using O6 output only:           3,659
+      Number using O5 output only:             148
+      Number using O5 and O6:                  703
+      Number used as ROM:                        0
+    Number used as Memory:                     141 out of   6,408    2%
+      Number used as Dual Port RAM:            116
+        Number using O6 output only:            12
+        Number using O5 output only:            12
+        Number using O5 and O6:                 92
+      Number used as Single Port RAM:            0
+      Number used as Shift Register:            25
+        Number using O6 output only:            10
+        Number using O5 output only:             0
+        Number using O5 and O6:                 15
+    Number used exclusively as route-thrus:    109
+      Number with same-slice register load:    104
+      Number with same-slice carry load:         5
+      Number with other load:                    0
+
+Slice Logic Distribution:
+  Number of occupied Slices:                 1,915 out of   6,822   28%
+  Number of MUXCYs used:                       756 out of  13,644    5%
+  Number of LUT Flip Flop pairs used:        5,756
+    Number with an unused Flip Flop:         2,192 out of   5,756   38%
+    Number with an unused LUT:                 996 out of   5,756   17%
+    Number of fully used LUT-FF pairs:       2,568 out of   5,756   44%
+    Number of unique control sets:             146
+    Number of slice register sites lost
+      to control set restrictions:             343 out of  54,576    1%
+
+  A LUT Flip Flop pair for this architecture represents one LUT paired with
+  one Flip Flop within a slice.  A control set is a unique combination of
+  clock, reset, set, and enable signals for a registered element.
+  The Slice Logic Distribution report is not meaningful if the design is
+  over-mapped for a non-slice resource or if Placement fails.
+
+IO Utilization:
+  Number of bonded IOBs:                        47 out of     218   21%
+    Number of LOCed IOBs:                       47 out of      47  100%
+    IOB Flip Flops:                              6
+
+Specific Feature Utilization:
+  Number of RAMB16BWERs:                        29 out of     116   25%
+  Number of RAMB8BWERs:                         24 out of     232   10%
+  Number of BUFIO2/BUFIO2_2CLKs:                 1 out of      32    3%
+    Number used as BUFIO2s:                      1
+    Number used as BUFIO2_2CLKs:                 0
+  Number of BUFIO2FB/BUFIO2FB_2CLKs:             0 out of      32    0%
+  Number of BUFG/BUFGMUXs:                       3 out of      16   18%
+    Number used as BUFGs:                        3
+    Number used as BUFGMUX:                      0
+  Number of DCM/DCM_CLKGENs:                     0 out of       8    0%
+  Number of ILOGIC2/ISERDES2s:                  16 out of     376    4%
+    Number used as ILOGIC2s:                     0
+    Number used as ISERDES2s:                   16
+  Number of IODELAY2/IODRP2/IODRP2_MCBs:         0 out of     376    0%
+  Number of OLOGIC2/OSERDES2s:                  22 out of     376    5%
+    Number used as OLOGIC2s:                     4
+    Number used as OSERDES2s:                   18
+  Number of BSCANs:                              0 out of       4    0%
+  Number of BUFHs:                               0 out of     256    0%
+  Number of BUFPLLs:                             1 out of       8   12%
+  Number of BUFPLL_MCBs:                         0 out of       4    0%
+  Number of DSP48A1s:                            4 out of      58    6%
+  Number of ICAPs:                               0 out of       1    0%
+  Number of MCBs:                                0 out of       2    0%
+  Number of PCILOGICSEs:                         0 out of       2    0%
+  Number of PLL_ADVs:                            1 out of       4   25%
+  Number of PMVs:                                0 out of       1    0%
+  Number of STARTUPs:                            0 out of       1    0%
+  Number of SUSPEND_SYNCs:                       0 out of       1    0%
+
+Average Fanout of Non-Clock Nets:                3.85
+
+Peak Memory Usage:  896 MB
+Total REAL time to MAP completion:  2 mins 34 secs 
+Total CPU time to MAP completion:   2 mins 33 secs 
+
+Table of Contents
+-----------------
+Section 1 - Errors
+Section 2 - Warnings
+Section 3 - Informational
+Section 4 - Removed Logic Summary
+Section 5 - Removed Logic
+Section 6 - IOB Properties
+Section 7 - RPMs
+Section 8 - Guide Report
+Section 9 - Area Group and Partition Summary
+Section 10 - Timing Report
+Section 11 - Configuration String Information
+Section 12 - Control Set Information
+Section 13 - Utilization by Hierarchy
+
+Section 1 - Errors
+------------------
+
+Section 2 - Warnings
+--------------------
+WARNING:PhysDesignRules:2410 - This design is using one or more 9K Block RAMs
+   (RAMB8BWER).  9K Block RAM initialization data, both user defined and
+   default, may be incorrect and should not be used.  For more information,
+   please reference Xilinx Answer Record 39999.
+
+Section 3 - Informational
+-------------------------
+INFO:LIT:243 - Logical network serial_cts_IBUF has no load.
+INFO:LIT:243 - Logical network serial_rts_IBUF has no load.
+INFO:LIT:243 - Logical network Mram_storage_11/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_12/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_13/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_14/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_17/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_15/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_16/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_18/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_31/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_21/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_41/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_51/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage1/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage2/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage3/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage4/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage5/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage8/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage6/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage7/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_32/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_33/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_34/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_35/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_36/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_39/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_37/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_38/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_310/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_311/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_312/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_313/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_316/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_314/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_315/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_317/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_318/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_319/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_320/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_321/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_322/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_22/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_23/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_26/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_24/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_25/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_27/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_28/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_29/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_210/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_213/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_211/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_212/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_214/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_215/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_216/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_217/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_220/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_218/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_219/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_221/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_222/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_43/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_42/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_44/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_45/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_46/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_47/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_410/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_48/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_49/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_411/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_412/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_413/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_414/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_417/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_415/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_416/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_418/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_419/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_420/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_421/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_422/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_52/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_53/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_54/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_57/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_55/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_56/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_58/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_59/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_510/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_511/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_514/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_512/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_513/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_515/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_516/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_517/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_518/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_521/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_519/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_520/SPO has no load.
+INFO:LIT:243 - Logical network Mram_storage_522/SPO has no load.
+INFO:LIT:243 - Logical network IOBUF/O has no load.
+INFO:LIT:243 - Logical network IOBUF_1/O has no load.
+INFO:MapLib:562 - No environment variables are currently set.
+INFO:LIT:244 - All of the single ended outputs in this design are using slew
+   rate limited output drivers. The delay on speed critical single ended outputs
+   can be dramatically reduced by designating them as fast outputs.
+INFO:Pack:1716 - Initializing temperature to 85.000 Celsius. (default - Range:
+   0.000 to 85.000 Celsius)
+INFO:Pack:1720 - Initializing voltage to 1.140 Volts. (default - Range: 1.140 to
+   1.260 Volts)
+INFO:Timing:3386 - Intersecting Constraints found and resolved.  For more information, see the TSI report.  Please consult the Xilinx
+   Command Line Tools User Guide for information on generating a TSI report.
+INFO:Map:215 - The Interim Design Summary has been generated in the MAP Report
+   (.mrp).
+INFO:Pack:1650 - Map created a placed design.
+
+Section 4 - Removed Logic Summary
+---------------------------------
+   3 block(s) removed
+   2 block(s) optimized away
+   2 signal(s) removed
+ 152 Block(s) redundant
+
+Section 5 - Removed Logic
+-------------------------
+
+The trimmed logic report below shows the logic removed from your design due to
+sourceless or loadless signals, and VCC or ground connections.  If the removal
+of a signal or symbol results in the subsequent removal of an additional signal
+or symbol, the message explaining that second removal will be indented.  This
+indentation will be repeated as a chain of related logic is removed.
+
+To quickly locate the original cause for the removal of a chain of logic, look
+above the place where that logic is listed in the trimming report, then locate
+the lines that are least indented (begin at the leftmost edge).
+
+Loadless block "VexRiscv/Madd__zz_27_35" (ROM) removed.
+The signal "IOBUF/O" is sourceless and has been removed.
+The signal "IOBUF_1/O" is sourceless and has been removed.
+Unused block "IOBUF/IBUF" (BUF) removed.
+Unused block "IOBUF_1/IBUF" (BUF) removed.
+
+Optimized Block(s):
+TYPE 		BLOCK
+GND 		XST_GND
+VCC 		XST_VCC
+
+Redundant Block(s):
+TYPE 		BLOCK
+LUT1 		Msub_soclinux_soclinux_timer_value[31]_GND_1_o_sub_1032_OUT_cy<0>_rt
+LUT1 		Mcount_soclinux_crg_por_cy<0>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<1>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<2>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<3>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<4>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<5>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<6>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<7>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<8>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<9>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<10>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<11>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<12>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<13>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<14>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<15>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<16>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<17>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<18>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<19>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<20>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<21>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<22>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<23>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<24>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<25>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<26>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<27>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<28>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<29>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<30>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<31>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<32>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<33>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<34>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<35>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<36>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<37>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<38>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<39>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<40>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<41>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<42>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<43>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<44>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<45>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<46>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<47>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<48>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<49>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<50>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<51>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<52>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<53>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<54>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<55>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<56>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<57>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<58>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<59>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<60>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<61>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_cy<62>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<1>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<2>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<3>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<4>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<5>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<6>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<7>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<8>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<9>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<10>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<11>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<12>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<13>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<14>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<15>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<16>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<17>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<18>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<19>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<20>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<21>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<22>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<23>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<24>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<25>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<26>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<27>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<28>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<29>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_cy<30>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<3
+0>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+9>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+8>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+7>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+6>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+5>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+4>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+3>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+2>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+1>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<2
+0>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+9>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+8>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+7>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+6>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+5>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+4>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+3>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+2>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+1>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<1
+0>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<9
+>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<8
+>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<7
+>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<6
+>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<5
+>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<4
+>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_cy<3
+>_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_14_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_13_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_12_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_11_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_10_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_9_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_8_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_7_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_6_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_5_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_4_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_3_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_2_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_1_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_0_rt
+LUT1 		VexRiscv/Madd__zz_27__cy<0>_rt
+LUT1 		VexRiscv/IBusCachedPlugin_cache/Mcount_lineLoader_flushCounter_cy<6>_rt
+LUT1 		VexRiscv/IBusCachedPlugin_cache/Mcount_lineLoader_flushCounter_cy<5>_rt
+LUT1 		VexRiscv/IBusCachedPlugin_cache/Mcount_lineLoader_flushCounter_cy<4>_rt
+LUT1 		VexRiscv/IBusCachedPlugin_cache/Mcount_lineLoader_flushCounter_cy<3>_rt
+LUT1 		VexRiscv/IBusCachedPlugin_cache/Mcount_lineLoader_flushCounter_cy<2>_rt
+LUT1 		VexRiscv/IBusCachedPlugin_cache/Mcount_lineLoader_flushCounter_cy<1>_rt
+LUT1 		Mcount_soclinux_soclinux_cpu_time_xor<63>_rt
+LUT1 		Mcount_soclinux_soclinux_soccontroller_bus_errors_xor<31>_rt
+LUT1
+		VexRiscv/Madd_IBusCachedPlugin_fetchPc_pcReg[31]__zz_351_[31]_add_533_OUT_xor<
+31>_rt
+LUT1 		VexRiscv/IBusCachedPlugin_cache/Mcount_lineLoader_flushCounter_xor<7>_rt
+LUT1 		VexRiscv/dataCache_1_/stageA_wayHits_01_cy_rt
+LUT1 		VexRiscv/Madd_execute_RS2[31]__zz_448_[31]_add_1374_OUT_cy<0>_rt
+INV 		soclinux_ddrphy_sdram_half_clk_n1_INV_0
+INV 		soclinux_crg_clk_sdram_half_shifted_INV_385_o1_INV_0
+
+Section 6 - IOB Properties
+--------------------------
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| IOB Name                           | Type             | Direction | IO Standard          | Diff  | Drive    | Slew | Reg (s)      | Resistor | IOB      |
+|                                    |                  |           |                      | Term  | Strength | Rate |              |          | Delay    |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| clk50                              | IOB              | INPUT     | LVTTL                |       |          |      |              |          |          |
+| ddram_a<0>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<1>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<2>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<3>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<4>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<5>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<6>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<7>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<8>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<9>                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<10>                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<11>                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_a<12>                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_ba<0>                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_ba<1>                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_cas_n                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_cke                          | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_clock_n                      | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      | ODDR         |          |          |
+| ddram_clock_p                      | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      | ODDR         |          |          |
+| ddram_dm<0>                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      | OSERDES      |          |          |
+| ddram_dm<1>                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      | OSERDES      |          |          |
+| ddram_dq<0>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<1>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<2>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<3>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<4>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<5>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<6>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<7>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<8>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<9>                        | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<10>                       | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<11>                       | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<12>                       | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<13>                       | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<14>                       | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dq<15>                       | IOB              | BIDIR     | MOBILE_DDR           |       |          |      | ISERDESOSERD |          |          |
+| ddram_dqs<0>                       | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      | ODDR         |          |          |
+|                                    |                  |           |                      |       |          |      | TDDR         |          |          |
+| ddram_dqs<1>                       | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      | ODDR         |          |          |
+|                                    |                  |           |                      |       |          |      | TDDR         |          |          |
+| ddram_ras_n                        | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| ddram_we_n                         | IOB              | OUTPUT    | MOBILE_DDR           |       |          |      |              |          |          |
+| serial_cts                         | IOB              | INPUT     | LVTTL                |       |          |      |              | PULLUP   |          |
+| serial_rts                         | IOB              | INPUT     | LVTTL                |       |          |      |              | PULLUP   |          |
+| serial_rx                          | IOB              | INPUT     | LVTTL                |       |          |      |              | PULLUP   |          |
+| serial_tx                          | IOB              | OUTPUT    | LVTTL                |       | 12       | SLOW |              |          |          |
+| user_btn                           | IOB              | INPUT     | LVTTL                |       |          |      |              | PULLDOWN |          |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 7 - RPMs
+----------------
+
+Section 8 - Guide Report
+------------------------
+Guide not run on this design.
+
+Section 9 - Area Group and Partition Summary
+--------------------------------------------
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+Area Group Information
+----------------------
+
+  No area groups were found in this design.
+
+----------------------
+
+Section 10 - Timing Report
+--------------------------
+A logic-level (pre-route) timing report can be generated by using Xilinx static
+timing analysis tools, Timing Analyzer (GUI) or TRCE (command line), with the
+mapped NCD and PCF files. Please note that this timing report will be generated
+using estimated delay information. For accurate numbers, please generate a
+timing report with the post Place and Route NCD file.
+
+For more information about the Timing Analyzer, consult the Xilinx Timing
+Analyzer Reference Manual; for more information about TRCE, consult the Xilinx
+Command Line Tools User Guide "TRACE" chapter.
+
+Section 11 - Configuration String Details
+-----------------------------------------
+PLL_ADV "crg_pll_adv":
+BANDWIDTH:OPTIMIZED
+CLK_FEEDBACK:CLKFBOUT
+COMPENSATION:INTERNAL
+PLL_ADD_LEAKAGE:2
+PLL_AVDD_COMP_SET:2
+PLL_CLAMP_BYPASS:FALSE
+PLL_CLAMP_REF_SEL:1
+PLL_CLK0MX:0
+PLL_CLK1MX:0
+PLL_CLK2MX:0
+PLL_CLK3MX:0
+PLL_CLK4MX:0
+PLL_CLK5MX:0
+PLL_CLKBURST_CNT:0
+PLL_CLKBURST_ENABLE:TRUE
+PLL_CLKCNTRL:0
+PLL_CLKFBMX:0
+PLL_CLKFBOUT2_EDGE:TRUE
+PLL_CLKFBOUT2_NOCOUNT:TRUE
+PLL_CLKFBOUT_EDGE:TRUE
+PLL_CLKFBOUT_EN:FALSE
+PLL_CLKFBOUT_NOCOUNT:TRUE
+PLL_CLKOUT0_EDGE:TRUE
+PLL_CLKOUT0_EN:FALSE
+PLL_CLKOUT0_NOCOUNT:TRUE
+PLL_CLKOUT1_EDGE:TRUE
+PLL_CLKOUT1_EN:FALSE
+PLL_CLKOUT1_NOCOUNT:TRUE
+PLL_CLKOUT2_EDGE:TRUE
+PLL_CLKOUT2_EN:FALSE
+PLL_CLKOUT2_NOCOUNT:TRUE
+PLL_CLKOUT3_EDGE:TRUE
+PLL_CLKOUT3_EN:FALSE
+PLL_CLKOUT3_NOCOUNT:TRUE
+PLL_CLKOUT4_EDGE:TRUE
+PLL_CLKOUT4_EN:FALSE
+PLL_CLKOUT4_NOCOUNT:TRUE
+PLL_CLKOUT5_EDGE:TRUE
+PLL_CLKOUT5_EN:FALSE
+PLL_CLKOUT5_NOCOUNT:TRUE
+PLL_CLK_LOST_DETECT:FALSE
+PLL_CP:1
+PLL_CP_BIAS_TRIP_SHIFT:TRUE
+PLL_CP_REPL:1
+PLL_CP_RES:0
+PLL_DIRECT_PATH_CNTRL:TRUE
+PLL_DIVCLK_EDGE:TRUE
+PLL_DIVCLK_NOCOUNT:TRUE
+PLL_DVDD_COMP_SET:2
+PLL_EN:FALSE
+PLL_EN_DLY:TRUE
+PLL_EN_LEAKAGE:2
+PLL_EN_TCLK0:TRUE
+PLL_EN_TCLK1:TRUE
+PLL_EN_TCLK2:TRUE
+PLL_EN_TCLK3:TRUE
+PLL_EN_VCO0:FALSE
+PLL_EN_VCO1:FALSE
+PLL_EN_VCO2:FALSE
+PLL_EN_VCO3:FALSE
+PLL_EN_VCO4:FALSE
+PLL_EN_VCO5:FALSE
+PLL_EN_VCO6:FALSE
+PLL_EN_VCO7:FALSE
+PLL_EN_VCO_DIV1:FALSE
+PLL_EN_VCO_DIV6:TRUE
+PLL_INTFB:0
+PLL_IO_CLKSRC:0
+PLL_LFHF:3
+PLL_LOCK_FB_DLY:3
+PLL_LOCK_REF_DLY:5
+PLL_MAN_LF_EN:TRUE
+PLL_NBTI_EN:TRUE
+PLL_PFD_CNTRL:8
+PLL_PFD_DLY:1
+PLL_PWRD_CFG:FALSE
+PLL_REG_INPUT:TRUE
+PLL_RES:1
+PLL_SEL_SLIPD:FALSE
+PLL_SKEW_CNTRL:0
+PLL_TEST_IN_WINDOW:FALSE
+PLL_VDD_SEL:0
+PLL_VLFHIGH_DIS:TRUE
+CLKFBOUT_MULT = 20
+CLKFBOUT_PHASE = 0.0
+CLKIN1_PERIOD = 20
+CLKIN2_PERIOD = 0
+CLKOUT0_DIVIDE = 3
+CLKOUT0_DUTY_CYCLE = 0.5
+CLKOUT0_PHASE = 0.0
+CLKOUT1_DIVIDE = 15
+CLKOUT1_DUTY_CYCLE = 0.5
+CLKOUT1_PHASE = 0.0
+CLKOUT2_DIVIDE = 6
+CLKOUT2_DUTY_CYCLE = 0.5
+CLKOUT2_PHASE = 270.0
+CLKOUT3_DIVIDE = 6
+CLKOUT3_DUTY_CYCLE = 0.5
+CLKOUT3_PHASE = 250.0
+CLKOUT4_DIVIDE = 20
+CLKOUT4_DUTY_CYCLE = 0.5
+CLKOUT4_PHASE = 0.0
+CLKOUT5_DIVIDE = 12
+CLKOUT5_DUTY_CYCLE = 0.5
+CLKOUT5_PHASE = 0.0
+DIVCLK_DIVIDE = 1
+REF_JITTER = 0.01
+
+
+
+Section 12 - Control Set Information
+------------------------------------
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Clock Signal   | Reset Signal                                    | Set Signal | Enable Signal                                                                                           | Slice Load Count | Bel Load Count |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| sdram_half_clk |                                                 |            |                                                                                                         | 19               | 87             |
+| sdram_half_clk |                                                 |            | GLOBAL_LOGIC1                                                                                           | 1                | 8              |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| sys_clk        |                                                 |            |                                                                                                         | 180              | 436            |
+| sys_clk        |                                                 |            | GLOBAL_LOGIC1                                                                                           | 6                | 32             |
+| sys_clk        |                                                 |            | VexRiscv/IBusCachedPlugin_cache/io_cpu_decode_isStuck_inv                                               | 30               | 89             |
+| sys_clk        |                                                 |            | VexRiscv/MmuPlugin_dBusAccess_rsp_valid_MmuPlugin_dBusAccess_rsp_payload_redo_AND_728_o                 | 6                | 20             |
+| sys_clk        |                                                 |            | VexRiscv/_n8992_inv                                                                                     | 6                | 20             |
+| sys_clk        |                                                 |            | VexRiscv/_n9005_inv                                                                                     | 17               | 46             |
+| sys_clk        |                                                 |            | VexRiscv/_n9075_inv                                                                                     | 18               | 46             |
+| sys_clk        |                                                 |            | VexRiscv/_n9145_inv                                                                                     | 16               | 46             |
+| sys_clk        |                                                 |            | VexRiscv/_n9215_inv                                                                                     | 17               | 46             |
+| sys_clk        |                                                 |            | VexRiscv/_n9285_inv                                                                                     | 14               | 44             |
+| sys_clk        |                                                 |            | VexRiscv/_n9355_inv                                                                                     | 16               | 44             |
+| sys_clk        |                                                 |            | VexRiscv/_n9425_inv                                                                                     | 15               | 44             |
+| sys_clk        |                                                 |            | VexRiscv/_n9495_inv                                                                                     | 15               | 44             |
+| sys_clk        |                                                 |            | VexRiscv/_n9568_inv                                                                                     | 16               | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9604_inv                                                                                     | 2                | 3              |
+| sys_clk        |                                                 |            | VexRiscv/_n9620_inv                                                                                     | 2                | 5              |
+| sys_clk        |                                                 |            | VexRiscv/_n9652_inv                                                                                     | 8                | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9675_inv                                                                                     | 13               | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9679_inv                                                                                     | 2                | 5              |
+| sys_clk        |                                                 |            | VexRiscv/_n9699_inv                                                                                     | 8                | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9706_inv                                                                                     | 8                | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9713_inv                                                                                     | 8                | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9771_inv                                                                                     | 9                | 30             |
+| sys_clk        |                                                 |            | VexRiscv/_n9775_inv                                                                                     | 5                | 20             |
+| sys_clk        |                                                 |            | VexRiscv/_n9779_inv                                                                                     | 9                | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9787_inv                                                                                     | 10               | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_n9791_inv                                                                                     | 8                | 32             |
+| sys_clk        |                                                 |            | VexRiscv/_zz_184_                                                                                       | 25               | 37             |
+| sys_clk        |                                                 |            | VexRiscv/_zz_247_                                                                                       | 9                | 30             |
+| sys_clk        |                                                 |            | VexRiscv/_zz_324_                                                                                       | 26               | 68             |
+| sys_clk        |                                                 |            | VexRiscv/dataCache_1_/_zz_21_                                                                           | 6                | 7              |
+| sys_clk        |                                                 |            | VexRiscv/dataCache_1_/io_cpu_memory_isStuck_inv                                                         | 90               | 235            |
+| sys_clk        |                                                 |            | VexRiscv/dataCache_1_/io_cpu_writeBack_isStuck_inv                                                      | 42               | 139            |
+| sys_clk        |                                                 |            | VexRiscv/dataCache_1__io_mem_cmd_s2mPipe_ready                                                          | 20               | 70             |
+| sys_clk        |                                                 |            | VexRiscv/execute_arbitration_isStuck_inv                                                                | 87               | 185            |
+| sys_clk        |                                                 |            | VexRiscv/writeBack_arbitration_isStuck_CsrPlugin_exceptionPortCtrl_exceptionValids_writeBack_AND_1552_o | 8                | 30             |
+| sys_clk        |                                                 |            | _n5716_inv                                                                                              | 2                | 4              |
+| sys_clk        |                                                 |            | _n5732_inv                                                                                              | 3                | 4              |
+| sys_clk        |                                                 |            | soclinux_sdram_bankmachine0_cmd_buffer_lookahead_wrport_we                                              | 6                | 44             |
+| sys_clk        |                                                 |            | soclinux_sdram_bankmachine1_cmd_buffer_lookahead_wrport_we                                              | 6                | 44             |
+| sys_clk        |                                                 |            | soclinux_sdram_bankmachine2_cmd_buffer_lookahead_wrport_we                                              | 7                | 44             |
+| sys_clk        |                                                 |            | soclinux_sdram_bankmachine3_cmd_buffer_lookahead_wrport_we                                              | 7                | 44             |
+| sys_clk        |                                                 |            | soclinux_soclinux_uart_rx_fifo_do_read                                                                  | 2                | 8              |
+| sys_clk        |                                                 |            | soclinux_soclinux_uart_rx_fifo_wrport_we                                                                | 2                | 16             |
+| sys_clk        |                                                 |            | soclinux_soclinux_uart_tx_fifo_do_read                                                                  | 2                | 8              |
+| sys_clk        |                                                 |            | soclinux_soclinux_uart_tx_fifo_wrport_we                                                                | 2                | 16             |
+| sys_clk        | Mcount_soclinux_sdram_sequencer_counter_val     |            |                                                                                                         | 2                | 2              |
+| sys_clk        | Mcount_soclinux_sdram_sequencer_counter_val     |            | _n6102_inv                                                                                              | 1                | 4              |
+| sys_clk        | Mcount_soclinux_soclinux_rx_bitcount_val        |            | _n6092_inv                                                                                              | 1                | 4              |
+| sys_clk        | Mcount_soclinux_soclinux_tx_bitcount_val        |            | soclinux_soclinux_uart_clk_txen_soclinux_soclinux_tx_busy_AND_672_o                                     | 1                | 4              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            |                                                                                                         | 213              | 456            |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | Mmux_GND_1_o_interface1_bank_bus_adr[3]_mux_1199_OUT111                                                 | 7                | 18             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5623_inv                                                                                              | 8                | 32             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5633_inv                                                                                              | 3                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5645_inv                                                                                              | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5654_inv                                                                                              | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5661_inv                                                                                              | 2                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5668_inv                                                                                              | 2                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5716_inv                                                                                              | 4                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | _n5732_inv                                                                                              | 3                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | bankmachine0_state_FSM_FFd2-In3                                                                         | 3                | 13             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | bankmachine1_state_FSM_FFd2-In3                                                                         | 3                | 13             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | bankmachine2_state_FSM_FFd2-In3                                                                         | 3                | 13             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | bankmachine3_state_FSM_FFd2-In3                                                                         | 4                | 13             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank0_timer_time_cmp0_re                                                                             | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank0_timer_time_cmp1_re                                                                             | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank0_timer_time_cmp2_re                                                                             | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank0_timer_time_cmp4_re                                                                             | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank0_timer_time_cmp5_re                                                                             | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank0_timer_time_cmp6_re                                                                             | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank0_timer_time_cmp7_re                                                                             | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank1_scratch0_re                                                                                    | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank1_scratch1_re                                                                                    | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank1_scratch2_re                                                                                    | 1                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank1_scratch3_re                                                                                    | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_control0_re                                                                               | 1                | 4              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_address0_re                                                                           | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_address1_re                                                                           | 2                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_baddress0_re                                                                          | 1                | 2              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_command0_re                                                                           | 2                | 6              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_wrdata0_re                                                                            | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_wrdata1_re                                                                            | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_wrdata2_re                                                                            | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi0_wrdata3_re                                                                            | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi1_address0_re                                                                           | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi1_address1_re                                                                           | 1                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi1_baddress0_re                                                                          | 1                | 2              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi1_command0_re                                                                           | 2                | 6              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi1_wrdata0_re                                                                            | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi1_wrdata2_re                                                                            | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank2_dfii_pi1_wrdata3_re                                                                            | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_load0_re                                                                                       | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_load1_re                                                                                       | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_load2_re                                                                                       | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_load3_re                                                                                       | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_reload0_re                                                                                     | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_reload1_re                                                                                     | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_reload2_re                                                                                     | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank3_reload3_re                                                                                     | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank5_tuning_word0_re                                                                                | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank5_tuning_word1_re                                                                                | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank5_tuning_word2_re                                                                                | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | csrbank5_tuning_word3_re                                                                                | 2                | 8              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | new_master_rdata_valid5                                                                                 | 17               | 129            |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine0_cmd_buffer_lookahead_wrport_we                                              | 1                | 3              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine1_cmd_buffer_lookahead_wrport_we                                              | 1                | 3              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine2_cmd_buffer_lookahead_wrport_we                                              | 1                | 3              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine2_cmd_buffer_sink_ready                                                       | 6                | 21             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine2_cmd_buffer_sink_ready1                                                      | 2                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine3_cmd_buffer_lookahead_wrport_we                                              | 1                | 3              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine3_cmd_buffer_sink_ready                                                       | 6                | 21             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_bankmachine3_cmd_buffer_sink_ready1                                                      | 2                | 5              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_sdram_inti_p0_rddata_valid                                                                     | 15               | 64             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_soclinux_cpu_latch_re                                                                          | 26               | 128            |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_soclinux_timer_update_value_re                                                                 | 8                | 32             |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_soclinux_uart_rx_fifo_do_read                                                                  | 1                | 4              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_soclinux_uart_rx_fifo_wrport_we                                                                | 1                | 4              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_soclinux_uart_tx_fifo_do_read                                                                  | 1                | 4              |
+| sys_clk        | Reset_OR_DriverANDClockEnable                   |            | soclinux_soclinux_uart_tx_fifo_wrport_we                                                                | 1                | 4              |
+| sys_clk        | VexRiscv/IBusCachedPlugin_cache/_zz_13_         |            | VexRiscv/IBusCachedPlugin_cache/_zz_12_                                                                 | 2                | 8              |
+| sys_clk        | VexRiscv/Mcount__zz_232__val                    |            | soclinux_soclinux_cpu_dbus_ack                                                                          | 1                | 3              |
+| sys_clk        | VexRiscv/_n8860                                 |            |                                                                                                         | 2                | 4              |
+| sys_clk        | VexRiscv/dataCache_1_/io_cpu_memory_isStuck_inv |            | VexRiscv/memory_arbitration_haltItself                                                                  | 4                | 32             |
+| sys_clk        | VexRiscv/memory_DivPlugin_div_counter_value_val |            |                                                                                                         | 3                | 6              |
+| sys_clk        | por_rst                                         |            | n1184_inv                                                                                               | 3                | 11             |
+| sys_clk        | soclinux_soclinux_rx_busy_inv1_0                |            |                                                                                                         | 9                | 33             |
+| sys_clk        | soclinux_soclinux_tx_busy_inv_0                 |            |                                                                                                         | 9                | 33             |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            |                                                                                                         | 51               | 80             |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n10037_inv                                                                                    | 1                | 3              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n10083_inv                                                                                    | 3                | 3              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n10095_inv                                                                                    | 2                | 3              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n10107_inv                                                                                    | 9                | 32             |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n10111_inv                                                                                    | 10               | 32             |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n9796_inv                                                                                     | 25               | 30             |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n9827_inv                                                                                     | 3                | 3              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n9881_inv                                                                                     | 3                | 4              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n9927_inv                                                                                     | 3                | 3              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n9939_inv                                                                                     | 6                | 12             |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_n9987_inv                                                                                     | 3                | 3              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/_zz_231_                                                                                       | 1                | 3              |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | VexRiscv/dataCache_1_/io_cpu_writeBack_isStuck_inv                                                      | 19               | 42             |
+| sys_clk        | sys_rst_soclinux_soclinux_cpu_reset_OR_687_o    |            | soclinux_soclinux_cpu_ibus_ack                                                                          | 2                | 3              |
+| sys_clk        | user_btn_IBUF                                   |            |                                                                                                         | 1                | 2              |
+| sys_clk        | xilinxasyncresetsynchronizerimpl1               |            |                                                                                                         | 1                | 2              |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 13 - Utilization by Hierarchy
+-------------------------------------
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Module                   | Partition | Slices*       | Slice Reg     | LUTs          | LUTRAM        | BRAM/FIFO | DSP48A1 | BUFG  | BUFIO | BUFR  | DCM   | PLL_ADV   | Full Hierarchical Name               |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| top/                     |           | 952/2073      | 1759/3913     | 2156/4760     | 141/141       | 43/53     | 0/4     | 3/3   | 0/0   | 0/0   | 0/0   | 1/1       | top                                  |
+| +VexRiscv                |           | 896/1121      | 1780/2154     | 2264/2604     | 0/0           | 2/10      | 4/4     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | top/VexRiscv                         |
+| ++IBusCachedPlugin_cache |           | 42/42         | 100/100       | 33/33         | 0/0           | 3/3       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | top/VexRiscv/IBusCachedPlugin_cache  |
+| ++dataCache_1_           |           | 183/183       | 274/274       | 307/307       | 0/0           | 5/5       | 0/0     | 0/0   | 0/0   | 0/0   | 0/0   | 0/0       | top/VexRiscv/dataCache_1_            |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+* Slices can be packed with basic elements from multiple hierarchies.
+  Therefore, a slice will be counted in every hierarchical module
+  that each of its packed basic elements belong to.
+** For each column, there are two numbers reported <A>/<B>.
+   <A> is the number of elements that belong to that specific hierarchical module.
+   <B> is the total number of elements from that hierarchical module and any lower level
+   hierarchical modules below.
+*** The LUTRAM column counts all LUTs used as memory including RAM, ROM, and shift registers.

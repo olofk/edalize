@@ -36,6 +36,42 @@ class Reporting:
     table_sep: str = ";"
 
     @staticmethod
+    def period_to_freq(
+        p: float, in_unit: str = "ns", out_unit: str = "MHz"
+    ) -> Optional[float]:
+        period_map = {
+            "s": 1,
+            "ms": 1e-3,
+            "us": 1e-6,
+            "ns": 1e-9,
+            "ps": 1e-12,
+        }
+
+        freq_map = {
+            "hz": 1,
+            "khz": 1e3,
+            "mhz": 1e6,
+            "ghz": 1e9,
+        }
+
+        # Convert for case-insensitive matching
+        freq_exp = freq_map.get(out_unit.casefold())
+        period_exp = period_map.get(in_unit.casefold())
+
+        if period_exp is None:
+            raise ValueError("Unsupported period unit {}".format(in_unit))
+
+        if freq_exp is None:
+            raise ValueError("Unsupported frequency unit {}".format(out_unit))
+
+        # Try to handle a None or NaN period value (perhaps a missing value
+        # from a report) and numbers as strings ("123.432")
+        if p and not pd.isna(float(p)):
+            return 1 / (float(p) * period_exp * freq_exp)
+        else:
+            return None
+
+    @staticmethod
     def table_to_csv(
         table_str: str,
         sep: str = ";",

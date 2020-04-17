@@ -3,7 +3,7 @@
 
 import io
 import logging
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 import pyparsing as pp
 import pandas as pd
@@ -73,6 +73,8 @@ class VivadoReporting(Reporting):
         such as worst paths, etc. isn't parsed.
         """
 
+        # Make newlines widely significant but be careful not to effect others
+        saved_whitespace = pp.ParserElement.DEFAULT_WHITE_CHARS
         pp.ParserElement.setDefaultWhitespaceChars(" \t")
 
         # Extract table title ("Clock Summary") from a section heading like:
@@ -124,7 +126,7 @@ class VivadoReporting(Reporting):
         section = section_head + pp.lineEnd().suppress() + table
 
         # Restore whitespace characters
-        pp.ParserElement.setDefaultWhitespaceChars(pp.ParserElement.DEFAULT_WHITE_CHARS)
+        pp.ParserElement.setDefaultWhitespaceChars(saved_whitespace)
 
         table_dict = {x["title"]: x["table"] for x in section.searchString(time_rpt)}
 
@@ -145,24 +147,54 @@ class VivadoReporting(Reporting):
         # Convert the list of tables into a dictionary keyed with the title
         # and the value as a DataFrame.
         #
-        # These tables don't have delimiters other than two or more spaces.
-        # The comment argument allows ignoring the dashes separating headers
-        # from data.
-        df_dict = {
-            k: pd.read_csv(
-                io.StringIO(v), sep=r"\s{2,}", comment="---", engine="python"
+        # These tables don't have delimiters other than two or more spaces,
+        # but read_fwf seems to find the columns correctly. We'd like to
+        # eliminate the dashes that separate headings from data. The comment
+        # argument can do this, but that seems to prevent read_fwf from
+        # correctly guessing the column widths. Instead we'll just let them
+        # show up and then drop this row. It's row 0 in known examples, but
+        # this more carefully drops rows where all the column values are
+        # dashes.
+        #
+        # Currently read_fwf doesn't seem to be inferring data types
+        # correctly, leaving everything as objects and causing errors during
+        # arithmetic. The infer_objects() function doesn't seem to change
+        # anything, and convert_dtypes() just results in strings. Currently
+        # applying to_numeric to every column gives the best results.
+
+        df_dict = {}
+
+        for k, v in timing.items():
+            df = pd.read_fwf(io.StringIO(v))
+
+            # Drop the dashes separating the headers from data
+            #
+            # Find rows where all columns are dashes and get their indicies as
+            # a list
+            dash_row = df.apply(lambda s: s.str.match(r"^-+$", na=False)).all(
+                axis="columns"
             )
-            for k, v in timing.items()
-        }
+            dash_row_idx = dash_row[dash_row].index
+
+            # Drop the dashed rows and reset the index so that the separator
+            # rows don't leave holes in the index making indexing more
+            # difficult
+            df = df.drop(dash_row_idx).reset_index(drop=True)
+
+            # Convert numeric values that read_fwf doesn't seem to be
+            # handling, perhaps due to the dashes.
+            df = df.apply(pd.to_numeric, errors="ignore", raw=True)
+
+            df_dict[k] = df
 
         return df_dict
 
     @staticmethod
     def report_summary(
         resources: Dict[str, pd.DataFrame], timing: Dict[str, pd.DataFrame]
-    ) -> Dict[str, Union[int, float]]:
+    ) -> Dict[str, Union[int, float, Dict[str, Optional[float]]]]:
 
-        summary: Dict[str, Union[int, float]] = {}
+        summary: Dict[str, Union[int, float, Dict[str, Optional[float]]]] = {}
 
         # Vivado uses different tables and row values for different families.
         # This at least works with the Artix 7 and Kintex Ultrascale+
@@ -180,8 +212,8 @@ class VivadoReporting(Reporting):
             return summary
 
         df = resources[table].set_index("Site Type")
-        summary["lut"] = df.loc[lut, "Used"]
-        summary["reg"] = df.loc[reg, "Used"]
+        summary["lut"] = df.loc[lut, "Used"].item()
+        summary["reg"] = df.loc[reg, "Used"].item()
 
         if "Memory" in resources:
             table = "Memory"
@@ -192,7 +224,7 @@ class VivadoReporting(Reporting):
             return summary
 
         df = resources[table].set_index("Site Type")
-        summary["blkmem"] = df.loc["Block RAM Tile", "Used"]
+        summary["blkmem"] = df.loc["Block RAM Tile", "Used"].item()
 
         if "DSP" in resources:
             table = "DSP"
@@ -203,12 +235,24 @@ class VivadoReporting(Reporting):
             return summary
 
         df = resources[table].set_index("Site Type")
-        summary["dsp"] = df.loc["DSPs", "Used"]
+        summary["dsp"] = df.loc["DSPs", "Used"].item()
 
-        summary["constraint"] = timing["Clock Summary"].at[0, "Frequency(MHz)"]
-        summary["fmax"] = 1000.0 / (
-            timing["Clock Summary"].at[0, "Period(ns)"]
-            - timing["Design Timing Summary"].at[0, "WNS(ns)"]
-        )
+        # Return a dict indexed by the clock name
+        df = timing["Clock Summary"].set_index("Clock")
+
+        summary["constraint"] = df["Frequency(MHz)"].to_dict()
+
+        # Loadless clocks won't have a WNS entry which maps to NaN. This will
+        # be mapped to None by period_to_df which feels more appropriate.
+        # Pandas.Series.transform or apply feel like the most appropriate
+        # functions to use, but seem to interpret the returned None as a
+        # no-op, so the mapping is done when the returned dictionary is
+        # created.
+        period = timing["Clock Summary"].set_index("Clock")["Period(ns)"]
+        wns = timing["Intra Clock Table"].set_index("Clock")["WNS(ns)"]
+
+        summary["fmax"] = {
+            k: Reporting.period_to_freq(v) for k, v in (period - wns).to_dict().items()
+        }
 
         return summary

@@ -2,7 +2,7 @@
 """
 
 import logging
-from typing import Dict
+from typing import Dict, Any
 
 import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
@@ -21,13 +21,14 @@ class IseReporting(Reporting):
     table_sep = "|"
 
     @staticmethod
-    def _parse_twr(timing_str: str) -> pp.ParseResults:
-        """Parse ISE timing report
+    def _parse_twr_period(timing_str: str) -> pp.ParseResults:
+        """Parse period constraints from an ISE timing report
 
-        Very far from comprehensive. Only handles a single clock specified in MHz
+        Expects the default ISE verbose output from a command like:
+        trce -v 3 -n 3 -fastpaths top.ncd top.pcf -o top.twr
         """
         # Look for a section of the report like the following and extract the
-        # constraint and minimum period.
+        # constraint, path information, and minimum period.
         #
         # ================================================================================
         # Timing constraint: TS_clk = PERIOD TIMEGRP "clk" 150 MHz HIGH 50%;
@@ -37,23 +38,113 @@ class IseReporting(Reporting):
         # 632 timing errors detected. (632 setup errors, 0 hold errors, 0 component switching limit errors)
         # Minimum period is  10.877ns.
         # --------------------------------------------------------------------------------
+        #
+        # or
+        #
+        # ================================================================================
+        # Timing constraint: TS_soclinux_crg_pll_sdram_half_b = PERIOD TIMEGRP
+        # "soclinux_crg_pll_sdram_half_b" TS_soclinux_crg_clk50b / 3.33333333
+        # PHASE 4.16666667 ns HIGH 50%;
+        # For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+        #
+        #  0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+        #  0 timing errors detected. (0 component switching limit errors)
+        #  Minimum period is   1.730ns.
+        # --------------------------------------------------------------------------------
 
-        # This should support ns or spellings like Mhz but doesn't
-        clock = ppc.integer("constraint") + pp.Suppress("MHz")
         period = ppc.real("min period") + pp.Suppress("ns")
 
-        constraint = pp.Suppress("Timing constraint:" + pp.SkipTo(clock)) + clock
+        # Build up a case-insensitive match for any of the below units
+        units = ["ps", "ns", "micro", "ms", "%", "MHz", "GHz", "kHz"]
 
-        min_period = pp.Suppress("Minimum period is") + period
+        pp_units = pp.CaselessLiteral(units[0])
+        for u in units[1:]:
+            pp_units |= pp.CaselessLiteral(u)
 
-        top = pp.Suppress(pp.SkipTo(constraint))
-        mid = pp.Suppress(pp.SkipTo(min_period))
+        hl = pp.Literal("HIGH") | pp.Literal("LOW")
+        num = ppc.number + pp.Optional(pp_units)
+        jitter = pp.Optional("INPUT_JITTER" + num)
 
-        report = top + constraint + mid + min_period
+        # Remove leading and trailing whitespace and any line breaks
+        #
+        # SkipTo in the below timespec parser will pickup whitespace including
+        # new lines if they are included in the report.
+        def remove_ws_and_newlines(s):
+            lines = [l.strip() for l in s.splitlines()]
+            return " ".join(lines)
 
-        result = report.parseString(timing_str)
+        timespec = (
+            pp.Suppress("Timing constraint:")
+            + pp.Word(pp.printables)("timespec")
+            + pp.Suppress("= PERIOD TIMEGRP")
+            + pp.Word(pp.printables)("timegroup")
+            + pp.SkipTo(hl)("constraint").setParseAction(
+                pp.tokenMap(remove_ws_and_newlines)
+            )
+            + pp.Suppress(hl + num + jitter + ";")
+        )
+
+        # Parse the path information from the report like:
+        #
+        # 0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+        # 0 timing errors detected. (0 component switching limit errors)
+        #
+        # or
+        #
+        # 266 paths analyzed, 235 endpoints analyzed, 0 failing endpoints
+        # 0 timing errors detected. (0 setup errors, 0 hold errors, 0 component switching limit errors)
+        stats = (
+            ppc.integer("paths")
+            + pp.Suppress("paths analyzed,")
+            + ppc.integer("endpoints")
+            + pp.Suppress("endpoints analyzed,")
+            + ppc.integer("failing")
+            + pp.Suppress("failing endpoints")
+            + ppc.integer("timing errors")
+            + pp.Suppress("timing errors detected. (")
+            + pp.Optional(
+                ppc.integer("setup errors")
+                + pp.Suppress("setup errors,")
+                + ppc.integer("hold errors")
+                + pp.Suppress("hold errors,")
+            )
+            + ppc.integer("switching limit errors")
+            + pp.Suppress("component switching limit errors)")
+        )
+
+        # It's not clear why this doesn't show up for one timing constraint in
+        # the LiteX Linux VexRISCV example
+        min_period = pp.Optional(pp.Suppress("Minimum period is") + period)
+
+        constraint = timespec + pp.Suppress(pp.SkipTo(stats)) + stats + min_period
+
+        result = constraint.searchString(timing_str)
 
         return result
+
+    @staticmethod
+    def _parse_twr_stats(report_str: str) -> pp.ParseResults:
+        """Parse the design statistics from an ISE timing report
+
+        Design statistics:
+           Minimum period:  11.343ns{1}   (Maximum frequency:  88.160MHz)
+        """
+
+        header = pp.Suppress(pp.SkipTo("Design statistics:", include=True))
+        period = (
+            pp.Suppress("Minimum period:")
+            + ppc.number("min period")
+            + pp.Suppress("ns{1}")
+        )
+        freq = (
+            pp.Suppress("(Maximum frequency:")
+            + ppc.number("max clock")
+            + pp.Suppress("MHz)")
+        )
+
+        stat = header + period + freq
+
+        return stat.parseString(report_str)
 
     @staticmethod
     def _parse_map_tables(report_str: str) -> Dict[str, str]:
@@ -82,16 +173,28 @@ class IseReporting(Reporting):
         # +-------------------------------+
         hline = pp.lineStart() + pp.Word("+", "+-") + pp.lineEnd()
 
-        # Grab everything until the next horizontal lines. The first data is the
-        # column headings, the second the values
-        data = pp.SkipTo(hline, failOn=pp.lineEnd() * 2, include=True)
+        # Most tables will have the format
+        # +-----------------------+
+        # | Col 1 | Col 2 | Col 3 |
+        # +-----------------------+
+        # | D1    | D2    | D3    |
+        # ...
+        # +-----------------------+
+        #
+        # However "Control Set Information" appears to use horizontal lines to
+        # separate clocks within the data section. Therefore, just grab
+        # everything until a horizontal line followed by a blank line rather
+        # than something more precise.
 
-        table = title + sec_hline + pp.Combine(hline + data * 2)("body")
+        table = pp.Combine(hline + pp.SkipTo(hline + pp.LineEnd(), include=True))(
+            "body"
+        )
+        table_section = title + sec_hline + table
 
         # Make line endings significant
-        table.setWhitespaceChars(" \t")
+        table_section.setWhitespaceChars(" \t")
 
-        result = {t.title: t.body for t in table.searchString(report_str)}
+        result = {t.title: t.body for t in table_section.searchString(report_str)}
 
         return result
 
@@ -107,23 +210,33 @@ class IseReporting(Reporting):
         return cls._report_to_df(cls._parse_map_tables, report_file)
 
     @classmethod
-    def report_timing(cls, report_file: str) -> pd.Series:
-        """Report clock constraint, minimum period, and computed maximum frequency
+    def report_timing(cls, report_file: str) -> Dict[str, Any]:
+        """Report period constraints, and overall minimum period and maximum frequency
         """
 
         report = open(report_file, "r").read()
 
-        data = cls._parse_twr(report)
+        period = cls._parse_twr_period(report)
+        stats = cls._parse_twr_stats(report)
 
-        timing = data.asDict()
-        timing["max clock"] = 1000.0 / timing["min period"]
+        # Return the "min period" and "max clock" values from the statistics
+        # along with a "constraint" key that has a dictionary with some
+        # information about the constraints that were found. For now the key
+        # is the time group name with and quotes removed and the string
+        # constraint value
 
-        return pd.Series(timing)
+        timing = stats.asDict()
+
+        timing["constraint"] = {}
+        for p in period:
+            v = p.asDict()
+            k = v.pop("timegroup").strip('"')
+            timing["constraint"][k] = v
+
+        return timing
 
     @staticmethod
-    def report_summary(
-        resources: Dict[str, pd.DataFrame], timing: Dict[str, pd.DataFrame]
-    ) -> Dict[str, int]:
+    def report_summary(resources: Dict[str, pd.DataFrame], timing: Dict[str, Any]):
 
         util = resources["Utilization by Hierarchy"]
 
@@ -141,7 +254,9 @@ class IseReporting(Reporting):
             "dsp": dsp_col[0],
         }
 
-        summary = {}
+        # The basic resource data is ints, but the timing information is more
+        # complex
+        summary: Dict[str, Any] = {}
 
         # Resources in this table are of the form 123/456 and we want the
         # second (total) number
@@ -149,7 +264,12 @@ class IseReporting(Reporting):
             cell = util.iloc[0].at[resource_buckets[k]]
             summary[k] = int(str(cell).split("/")[1])
 
-        summary["constraint"] = timing["constraint"]
-        summary["fmax"] = timing["max clock"]
+        summary["constraint"] = {}
+        summary["fmax"] = {}
+
+        # Report the constraint and Fmax value for each timegroup
+        for k, v in timing["constraint"].items():
+            summary["constraint"][k] = v["constraint"]
+            summary["fmax"][k] = Reporting.period_to_freq(v.get("min period"))
 
         return summary

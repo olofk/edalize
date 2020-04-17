@@ -1,0 +1,1240 @@
+--------------------------------------------------------------------------------
+Release 14.7 Trace  (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+/opt/fpga/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/trce -v 3 -n 3 -fastpaths
+-o top.twr top.ncd top.pcf
+
+Design file:              top.ncd
+Physical constraint file: top.pcf
+Device,package,speed:     xc6slx45,csg324,C,-3 (PRODUCTION 1.23 2013-10-13)
+Report level:             verbose report
+
+Environment Variable      Effect 
+--------------------      ------ 
+NONE                      No environment variables were set
+--------------------------------------------------------------------------------
+
+INFO:Timing:3386 - Intersecting Constraints found and resolved.  For more 
+   information, see the TSI report.  Please consult the Xilinx Command Line 
+   Tools User Guide for information on generating a TSI report.
+INFO:Timing:3412 - To improve timing, see the Timing Closure User Guide (UG612).
+INFO:Timing:2752 - To get complete path coverage, use the unconstrained paths 
+   option. All paths that are not constrained will be reported in the 
+   unconstrained paths section(s) of the report.
+INFO:Timing:3339 - The clock-to-out numbers in this timing report are based on 
+   a 50 Ohm transmission line loading model.  For the details of this model, 
+   and for more information on accounting for different loading conditions, 
+   please see the device datasheet.
+
+================================================================================
+Timing constraint: TSsys_clk = PERIOD TIMEGRP "PRDsys_clk" 12 ns HIGH 50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 component switching limit errors)
+ Minimum period is   3.124ns.
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TSsys_clk = PERIOD TIMEGRP "PRDsys_clk" 12 ns HIGH 50%;
+--------------------------------------------------------------------------------
+Slack: 8.876ns (period - min period limit)
+  Period: 12.000ns
+  Min period limit: 3.124ns (320.102MHz) (Trper_CLKA(Fmax))
+  Physical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKAWRCLK
+  Logical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKAWRCLK
+  Location pin: RAMB8_X2Y16.CLKAWRCLK
+  Clock network: sys_clk
+--------------------------------------------------------------------------------
+Slack: 8.876ns (period - min period limit)
+  Period: 12.000ns
+  Min period limit: 3.124ns (320.102MHz) (Trper_CLKB(Fmax))
+  Physical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKBRDCLK
+  Logical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKBRDCLK
+  Location pin: RAMB8_X2Y16.CLKBRDCLK
+  Clock network: sys_clk
+--------------------------------------------------------------------------------
+Slack: 8.876ns (period - min period limit)
+  Period: 12.000ns
+  Min period limit: 3.124ns (320.102MHz) (Trper_CLKA(Fmax))
+  Physical resource: Mram_mem10/CLKA
+  Logical resource: Mram_mem10/CLKA
+  Location pin: RAMB16_X0Y30.CLKA
+  Clock network: sys_clk
+--------------------------------------------------------------------------------
+
+================================================================================
+Timing constraint: TSclk50 = PERIOD TIMEGRP "PRDclk50" 20 ns HIGH 50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 component switching limit errors)
+ Minimum period is   0.925ns.
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TSclk50 = PERIOD TIMEGRP "PRDclk50" 20 ns HIGH 50%;
+--------------------------------------------------------------------------------
+Slack: 19.075ns (period - min period limit)
+  Period: 20.000ns
+  Min period limit: 0.925ns (1081.081MHz) (Tbufper_I)
+  Physical resource: BUFIO2/I
+  Logical resource: BUFIO2/I
+  Location pin: BUFIO2_X3Y10.I
+  Clock network: clk50_IBUF
+--------------------------------------------------------------------------------
+
+================================================================================
+Timing constraint: TS_soclinux_crg_clk50b = PERIOD TIMEGRP 
+"soclinux_crg_clk50b" TSclk50 HIGH         50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 component switching limit errors)
+ Minimum period is   5.000ns.
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TS_soclinux_crg_clk50b = PERIOD TIMEGRP "soclinux_crg_clk50b" TSclk50 HIGH
+        50%;
+--------------------------------------------------------------------------------
+Slack: 2.075ns (period - min period limit)
+  Period: 3.000ns
+  Min period limit: 0.925ns (1081.081MHz) (Tpllper_CLKOUT(Foutmax))
+  Physical resource: crg_pll_adv/CLKOUT0
+  Logical resource: crg_pll_adv/CLKOUT0
+  Location pin: PLL_ADV_X0Y1.CLKOUT0
+  Clock network: soclinux_crg_pll_sdram_full
+--------------------------------------------------------------------------------
+Slack: 3.501ns (period - min period limit)
+  Period: 6.000ns
+  Min period limit: 2.499ns (400.160MHz) (Tpllper_CLKOUT(Foutmax))
+  Physical resource: crg_pll_adv/CLKOUT3
+  Logical resource: crg_pll_adv/CLKOUT3
+  Location pin: PLL_ADV_X0Y1.CLKOUT3
+  Clock network: soclinux_crg_pll_sdram_half_b
+--------------------------------------------------------------------------------
+Slack: 9.501ns (period - min period limit)
+  Period: 12.000ns
+  Min period limit: 2.499ns (400.160MHz) (Tpllper_CLKOUT(Foutmax))
+  Physical resource: crg_pll_adv/CLKOUT5
+  Logical resource: crg_pll_adv/CLKOUT5
+  Location pin: PLL_ADV_X0Y1.CLKOUT5
+  Clock network: soclinux_crg_pll_sys
+--------------------------------------------------------------------------------
+
+================================================================================
+Timing constraint: TS_soclinux_crg_pll_sdram_half_b = PERIOD TIMEGRP         
+"soclinux_crg_pll_sdram_half_b" TS_soclinux_crg_clk50b / 3.33333333         
+PHASE 4.16666667 ns HIGH 50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 component switching limit errors)
+ Minimum period is   1.730ns.
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TS_soclinux_crg_pll_sdram_half_b = PERIOD TIMEGRP
+        "soclinux_crg_pll_sdram_half_b" TS_soclinux_crg_clk50b / 3.33333333
+        PHASE 4.16666667 ns HIGH 50%;
+--------------------------------------------------------------------------------
+Slack: 4.270ns (period - min period limit)
+  Period: 6.000ns
+  Min period limit: 1.730ns (578.035MHz) (Tbcper_I)
+  Physical resource: sdram_half_b_bufpll/I0
+  Logical resource: sdram_half_b_bufpll/I0
+  Location pin: BUFGMUX_X2Y3.I0
+  Clock network: soclinux_crg_pll_sdram_half_b
+--------------------------------------------------------------------------------
+Slack: 4.361ns (period - min period limit)
+  Period: 6.000ns
+  Min period limit: 1.639ns (610.128MHz) (Tockper)
+  Physical resource: ddram_clock_n_OBUF/CLK0
+  Logical resource: ODDR2_1/CK0
+  Location pin: OLOGIC_X0Y66.CLK0
+  Clock network: soclinux_crg_clk_sdram_half_shifted
+--------------------------------------------------------------------------------
+Slack: 4.361ns (period - min period limit)
+  Period: 6.000ns
+  Min period limit: 1.639ns (610.128MHz) (Tockper)
+  Physical resource: ddram_clock_p_OBUF/CLK0
+  Logical resource: ODDR2/CK0
+  Location pin: OLOGIC_X0Y67.CLK0
+  Clock network: soclinux_crg_clk_sdram_half_shifted
+--------------------------------------------------------------------------------
+
+================================================================================
+Timing constraint: TS_soclinux_crg_pll_sys = PERIOD TIMEGRP 
+"soclinux_crg_pll_sys"         TS_soclinux_crg_clk50b / 1.66666667 HIGH 50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 824701 paths analyzed, 19823 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 setup errors, 0 hold errors, 0 component switching limit errors)
+ Minimum period is  11.343ns.
+--------------------------------------------------------------------------------
+
+Paths for end point soclinux_ddrphy_phase_sys (SLICE_X1Y64.DX), 1 path
+--------------------------------------------------------------------------------
+Slack (setup path):     0.293ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               soclinux_ddrphy_phase_half (FF)
+  Destination:          soclinux_ddrphy_phase_sys (FF)
+  Requirement:          1.500ns
+  Data Path Delay:      0.865ns (Levels of Logic = 0)
+  Clock Path Skew:      -0.117ns (1.804 - 1.921)
+  Source Clock:         sdram_half_clk rising at 10.500ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: soclinux_ddrphy_phase_half to soclinux_ddrphy_phase_sys
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X0Y65.DQ       Tcko                  0.408   soclinux_ddrphy_phase_half
+                                                       soclinux_ddrphy_phase_half
+    SLICE_X1Y64.DX       net (fanout=3)        0.394   soclinux_ddrphy_phase_half
+    SLICE_X1Y64.CLK      Tdick                 0.063   soclinux_ddrphy_phase_sys
+                                                       soclinux_ddrphy_phase_sys
+    -------------------------------------------------  ---------------------------
+    Total                                      0.865ns (0.471ns logic, 0.394ns route)
+                                                       (54.5% logic, 45.5% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point VexRiscv/dataCache_1_/Mram_ways_0_tags (RAMB8_X2Y17.ADDRBRDADDR7), 127 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     0.657ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/decode_to_execute_SRC1_CTRL_0 (FF)
+  Destination:          VexRiscv/dataCache_1_/Mram_ways_0_tags (RAM)
+  Requirement:          12.000ns
+  Data Path Delay:      11.235ns (Levels of Logic = 5)
+  Clock Path Skew:      -0.003ns (0.244 - 0.247)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.105ns
+
+  Clock Uncertainty:          0.105ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/decode_to_execute_SRC1_CTRL_0 to VexRiscv/dataCache_1_/Mram_ways_0_tags
+    Location                 Delay type         Delay(ns)  Physical Resource
+                                                           Logical Resource(s)
+    -----------------------------------------------------  -------------------
+    SLICE_X50Y38.AMUX        Tshcko                0.455   VexRiscv/decode_to_execute_BYPASSABLE_EXECUTE_STAGE
+                                                           VexRiscv/decode_to_execute_SRC1_CTRL_0
+    SLICE_X56Y55.A4          net (fanout=96)       3.091   VexRiscv/decode_to_execute_SRC1_CTRL<0>
+    SLICE_X56Y55.A           Tilo                  0.203   VexRiscv/Sh111
+                                                           VexRiscv/Mmux__zz_174_261
+    SLICE_X56Y41.DX          net (fanout=11)       1.693   VexRiscv/_zz_174_<3>
+    SLICE_X56Y41.COUT        Tdxcy                 0.087   VexRiscv/Madd__zz_399__Madd_cy<3>
+                                                           VexRiscv/Madd__zz_399__Madd_cy<3>
+    SLICE_X56Y42.CIN         net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<3>
+    SLICE_X56Y42.DMUX        Tcind                 0.302   VexRiscv/Madd__zz_399__Madd_cy<7>
+                                                           VexRiscv/Madd__zz_399__Madd_cy<7>
+    SLICE_X58Y51.B4          net (fanout=1)        1.544   VexRiscv/_zz_399_<7>
+    SLICE_X58Y51.BMUX        Tilo                  0.251   VexRiscv/Mmux_decode_RS1303_FRB
+                                                           VexRiscv/Mmux_execute_SrcPlugin_addSub301
+    SLICE_X44Y42.C3          net (fanout=2)        1.926   VexRiscv/execute_SrcPlugin_addSub<7>
+    SLICE_X44Y42.C           Tilo                  0.204   VexRiscv/dataCache_1_/stage0_colisions_regNextWhen_0_BRB1
+                                                           VexRiscv/Mmux__zz_249_301
+    RAMB8_X2Y17.ADDRBRDADDR7 net (fanout=6)        1.126   VexRiscv/_zz_249_<7>
+    RAMB8_X2Y17.CLKBRDCLK    Trcck_ADDRB           0.350   VexRiscv/dataCache_1_/Mram_ways_0_tags
+                                                           VexRiscv/dataCache_1_/Mram_ways_0_tags
+    -----------------------------------------------------  ---------------------------
+    Total                                         11.235ns (1.852ns logic, 9.383ns route)
+                                                           (16.5% logic, 83.5% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     1.162ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/decode_to_execute_SRC1_CTRL_1 (FF)
+  Destination:          VexRiscv/dataCache_1_/Mram_ways_0_tags (RAM)
+  Requirement:          12.000ns
+  Data Path Delay:      10.694ns (Levels of Logic = 4)
+  Clock Path Skew:      -0.039ns (0.460 - 0.499)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.105ns
+
+  Clock Uncertainty:          0.105ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/decode_to_execute_SRC1_CTRL_1 to VexRiscv/dataCache_1_/Mram_ways_0_tags
+    Location                 Delay type         Delay(ns)  Physical Resource
+                                                           Logical Resource(s)
+    -----------------------------------------------------  -------------------
+    SLICE_X57Y56.CQ          Tcko                  0.391   VexRiscv/decode_to_execute_SRC1_CTRL<1>
+                                                           VexRiscv/decode_to_execute_SRC1_CTRL_1
+    SLICE_X53Y39.C1          net (fanout=96)       2.826   VexRiscv/decode_to_execute_SRC1_CTRL<1>
+    SLICE_X53Y39.C           Tilo                  0.259   VexRiscv/memory_to_writeBack_INSTRUCTION<10>
+                                                           VexRiscv/Mmux__zz_174_271
+    SLICE_X56Y42.AX          net (fanout=12)       1.440   VexRiscv/_zz_174_<4>
+    SLICE_X56Y42.DMUX        Taxd                  0.377   VexRiscv/Madd__zz_399__Madd_cy<7>
+                                                           VexRiscv/Madd__zz_399__Madd_cy<7>
+    SLICE_X58Y51.B4          net (fanout=1)        1.544   VexRiscv/_zz_399_<7>
+    SLICE_X58Y51.BMUX        Tilo                  0.251   VexRiscv/Mmux_decode_RS1303_FRB
+                                                           VexRiscv/Mmux_execute_SrcPlugin_addSub301
+    SLICE_X44Y42.C3          net (fanout=2)        1.926   VexRiscv/execute_SrcPlugin_addSub<7>
+    SLICE_X44Y42.C           Tilo                  0.204   VexRiscv/dataCache_1_/stage0_colisions_regNextWhen_0_BRB1
+                                                           VexRiscv/Mmux__zz_249_301
+    RAMB8_X2Y17.ADDRBRDADDR7 net (fanout=6)        1.126   VexRiscv/_zz_249_<7>
+    RAMB8_X2Y17.CLKBRDCLK    Trcck_ADDRB           0.350   VexRiscv/dataCache_1_/Mram_ways_0_tags
+                                                           VexRiscv/dataCache_1_/Mram_ways_0_tags
+    -----------------------------------------------------  ---------------------------
+    Total                                         10.694ns (1.832ns logic, 8.862ns route)
+                                                           (17.1% logic, 82.9% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     1.425ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/decode_to_execute_INSTRUCTION_18 (FF)
+  Destination:          VexRiscv/dataCache_1_/Mram_ways_0_tags (RAM)
+  Requirement:          12.000ns
+  Data Path Delay:      10.466ns (Levels of Logic = 5)
+  Clock Path Skew:      -0.004ns (0.244 - 0.248)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.105ns
+
+  Clock Uncertainty:          0.105ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/decode_to_execute_INSTRUCTION_18 to VexRiscv/dataCache_1_/Mram_ways_0_tags
+    Location                 Delay type         Delay(ns)  Physical Resource
+                                                           Logical Resource(s)
+    -----------------------------------------------------  -------------------
+    SLICE_X57Y41.CQ          Tcko                  0.391   VexRiscv/decode_to_execute_INSTRUCTION<19>
+                                                           VexRiscv/decode_to_execute_INSTRUCTION_18
+    SLICE_X56Y55.A2          net (fanout=8)        2.386   VexRiscv/decode_to_execute_INSTRUCTION<18>
+    SLICE_X56Y55.A           Tilo                  0.203   VexRiscv/Sh111
+                                                           VexRiscv/Mmux__zz_174_261
+    SLICE_X56Y41.DX          net (fanout=11)       1.693   VexRiscv/_zz_174_<3>
+    SLICE_X56Y41.COUT        Tdxcy                 0.087   VexRiscv/Madd__zz_399__Madd_cy<3>
+                                                           VexRiscv/Madd__zz_399__Madd_cy<3>
+    SLICE_X56Y42.CIN         net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<3>
+    SLICE_X56Y42.DMUX        Tcind                 0.302   VexRiscv/Madd__zz_399__Madd_cy<7>
+                                                           VexRiscv/Madd__zz_399__Madd_cy<7>
+    SLICE_X58Y51.B4          net (fanout=1)        1.544   VexRiscv/_zz_399_<7>
+    SLICE_X58Y51.BMUX        Tilo                  0.251   VexRiscv/Mmux_decode_RS1303_FRB
+                                                           VexRiscv/Mmux_execute_SrcPlugin_addSub301
+    SLICE_X44Y42.C3          net (fanout=2)        1.926   VexRiscv/execute_SrcPlugin_addSub<7>
+    SLICE_X44Y42.C           Tilo                  0.204   VexRiscv/dataCache_1_/stage0_colisions_regNextWhen_0_BRB1
+                                                           VexRiscv/Mmux__zz_249_301
+    RAMB8_X2Y17.ADDRBRDADDR7 net (fanout=6)        1.126   VexRiscv/_zz_249_<7>
+    RAMB8_X2Y17.CLKBRDCLK    Trcck_ADDRB           0.350   VexRiscv/dataCache_1_/Mram_ways_0_tags
+                                                           VexRiscv/dataCache_1_/Mram_ways_0_tags
+    -----------------------------------------------------  ---------------------------
+    Total                                         10.466ns (1.788ns logic, 8.678ns route)
+                                                           (17.1% logic, 82.9% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point VexRiscv/Mmux_decode_RS1183_FRB (SLICE_X55Y55.A4), 549 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     0.662ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/decode_to_execute_SRC1_CTRL_0 (FF)
+  Destination:          VexRiscv/Mmux_decode_RS1183_FRB (FF)
+  Requirement:          12.000ns
+  Data Path Delay:      11.232ns (Levels of Logic = 7)
+  Clock Path Skew:      -0.001ns (0.473 - 0.474)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.105ns
+
+  Clock Uncertainty:          0.105ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/decode_to_execute_SRC1_CTRL_0 to VexRiscv/Mmux_decode_RS1183_FRB
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X50Y38.AMUX    Tshcko                0.455   VexRiscv/decode_to_execute_BYPASSABLE_EXECUTE_STAGE
+                                                       VexRiscv/decode_to_execute_SRC1_CTRL_0
+    SLICE_X57Y56.A4      net (fanout=96)       3.332   VexRiscv/decode_to_execute_SRC1_CTRL<0>
+    SLICE_X57Y56.A       Tilo                  0.259   VexRiscv/decode_to_execute_SRC1_CTRL<1>
+                                                       VexRiscv/Mmux__zz_174_101
+    SLICE_X56Y45.CX      net (fanout=10)       2.046   VexRiscv/_zz_174_<18>
+    SLICE_X56Y45.COUT    Tcxcy                 0.093   VexRiscv/Madd__zz_399__Madd_cy<19>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<19>
+    SLICE_X56Y46.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<19>
+    SLICE_X56Y46.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<23>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<23>
+    SLICE_X56Y47.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<23>
+    SLICE_X56Y47.BMUX    Tcinb                 0.292   VexRiscv/Madd__zz_399__Madd_cy<27>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<27>
+    SLICE_X56Y34.D3      net (fanout=1)        1.175   VexRiscv/_zz_399_<25>
+    SLICE_X56Y34.CMUX    Topdc                 0.368   VexRiscv/CsrPlugin_mscratch<25>
+                                                       VexRiscv/Mmux__zz_42_182_F
+                                                       VexRiscv/Mmux__zz_42_182
+    SLICE_X53Y45.B1      net (fanout=1)        1.409   VexRiscv/Mmux__zz_42_181
+    SLICE_X53Y45.B       Tilo                  0.259   VexRiscv/decode_to_execute_RS2_25_BRB5
+                                                       VexRiscv/Mmux__zz_42_183
+    SLICE_X55Y55.A4      net (fanout=2)        1.140   VexRiscv/_zz_42_<25>
+    SLICE_X55Y55.CLK     Tas                   0.322   VexRiscv/Mmux_decode_RS1183_FRB
+                                                       VexRiscv/Mmux_decode_RS1183
+                                                       VexRiscv/Mmux_decode_RS1183_FRB
+    -------------------------------------------------  ---------------------------
+    Total                                     11.232ns (2.124ns logic, 9.108ns route)
+                                                       (18.9% logic, 81.1% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     1.002ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/decode_to_execute_SRC1_CTRL_0 (FF)
+  Destination:          VexRiscv/Mmux_decode_RS1183_FRB (FF)
+  Requirement:          12.000ns
+  Data Path Delay:      10.892ns (Levels of Logic = 11)
+  Clock Path Skew:      -0.001ns (0.473 - 0.474)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.105ns
+
+  Clock Uncertainty:          0.105ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/decode_to_execute_SRC1_CTRL_0 to VexRiscv/Mmux_decode_RS1183_FRB
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X50Y38.AMUX    Tshcko                0.455   VexRiscv/decode_to_execute_BYPASSABLE_EXECUTE_STAGE
+                                                       VexRiscv/decode_to_execute_SRC1_CTRL_0
+    SLICE_X56Y55.A4      net (fanout=96)       3.091   VexRiscv/decode_to_execute_SRC1_CTRL<0>
+    SLICE_X56Y55.A       Tilo                  0.203   VexRiscv/Sh111
+                                                       VexRiscv/Mmux__zz_174_261
+    SLICE_X56Y41.DX      net (fanout=11)       1.693   VexRiscv/_zz_174_<3>
+    SLICE_X56Y41.COUT    Tdxcy                 0.087   VexRiscv/Madd__zz_399__Madd_cy<3>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<3>
+    SLICE_X56Y42.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<3>
+    SLICE_X56Y42.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<7>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<7>
+    SLICE_X56Y43.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<7>
+    SLICE_X56Y43.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<11>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<11>
+    SLICE_X56Y44.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<11>
+    SLICE_X56Y44.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<15>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<15>
+    SLICE_X56Y45.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<15>
+    SLICE_X56Y45.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<19>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<19>
+    SLICE_X56Y46.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<19>
+    SLICE_X56Y46.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<23>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<23>
+    SLICE_X56Y47.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<23>
+    SLICE_X56Y47.BMUX    Tcinb                 0.292   VexRiscv/Madd__zz_399__Madd_cy<27>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<27>
+    SLICE_X56Y34.D3      net (fanout=1)        1.175   VexRiscv/_zz_399_<25>
+    SLICE_X56Y34.CMUX    Topdc                 0.368   VexRiscv/CsrPlugin_mscratch<25>
+                                                       VexRiscv/Mmux__zz_42_182_F
+                                                       VexRiscv/Mmux__zz_42_182
+    SLICE_X53Y45.B1      net (fanout=1)        1.409   VexRiscv/Mmux__zz_42_181
+    SLICE_X53Y45.B       Tilo                  0.259   VexRiscv/decode_to_execute_RS2_25_BRB5
+                                                       VexRiscv/Mmux__zz_42_183
+    SLICE_X55Y55.A4      net (fanout=2)        1.140   VexRiscv/_zz_42_<25>
+    SLICE_X55Y55.CLK     Tas                   0.322   VexRiscv/Mmux_decode_RS1183_FRB
+                                                       VexRiscv/Mmux_decode_RS1183
+                                                       VexRiscv/Mmux_decode_RS1183_FRB
+    -------------------------------------------------  ---------------------------
+    Total                                     10.892ns (2.366ns logic, 8.526ns route)
+                                                       (21.7% logic, 78.3% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     1.481ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/decode_to_execute_SRC1_CTRL_1 (FF)
+  Destination:          VexRiscv/Mmux_decode_RS1183_FRB (FF)
+  Requirement:          12.000ns
+  Data Path Delay:      10.399ns (Levels of Logic = 10)
+  Clock Path Skew:      -0.015ns (0.231 - 0.246)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.105ns
+
+  Clock Uncertainty:          0.105ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.000ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/decode_to_execute_SRC1_CTRL_1 to VexRiscv/Mmux_decode_RS1183_FRB
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X57Y56.CQ      Tcko                  0.391   VexRiscv/decode_to_execute_SRC1_CTRL<1>
+                                                       VexRiscv/decode_to_execute_SRC1_CTRL_1
+    SLICE_X53Y39.C1      net (fanout=96)       2.826   VexRiscv/decode_to_execute_SRC1_CTRL<1>
+    SLICE_X53Y39.C       Tilo                  0.259   VexRiscv/memory_to_writeBack_INSTRUCTION<10>
+                                                       VexRiscv/Mmux__zz_174_271
+    SLICE_X56Y42.AX      net (fanout=12)       1.440   VexRiscv/_zz_174_<4>
+    SLICE_X56Y42.COUT    Taxcy                 0.199   VexRiscv/Madd__zz_399__Madd_cy<7>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<7>
+    SLICE_X56Y43.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<7>
+    SLICE_X56Y43.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<11>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<11>
+    SLICE_X56Y44.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<11>
+    SLICE_X56Y44.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<15>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<15>
+    SLICE_X56Y45.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<15>
+    SLICE_X56Y45.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<19>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<19>
+    SLICE_X56Y46.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<19>
+    SLICE_X56Y46.COUT    Tbyp                  0.076   VexRiscv/Madd__zz_399__Madd_cy<23>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<23>
+    SLICE_X56Y47.CIN     net (fanout=1)        0.003   VexRiscv/Madd__zz_399__Madd_cy<23>
+    SLICE_X56Y47.BMUX    Tcinb                 0.292   VexRiscv/Madd__zz_399__Madd_cy<27>
+                                                       VexRiscv/Madd__zz_399__Madd_cy<27>
+    SLICE_X56Y34.D3      net (fanout=1)        1.175   VexRiscv/_zz_399_<25>
+    SLICE_X56Y34.CMUX    Topdc                 0.368   VexRiscv/CsrPlugin_mscratch<25>
+                                                       VexRiscv/Mmux__zz_42_182_F
+                                                       VexRiscv/Mmux__zz_42_182
+    SLICE_X53Y45.B1      net (fanout=1)        1.409   VexRiscv/Mmux__zz_42_181
+    SLICE_X53Y45.B       Tilo                  0.259   VexRiscv/decode_to_execute_RS2_25_BRB5
+                                                       VexRiscv/Mmux__zz_42_183
+    SLICE_X55Y55.A4      net (fanout=2)        1.140   VexRiscv/_zz_42_<25>
+    SLICE_X55Y55.CLK     Tas                   0.322   VexRiscv/Mmux_decode_RS1183_FRB
+                                                       VexRiscv/Mmux_decode_RS1183
+                                                       VexRiscv/Mmux_decode_RS1183_FRB
+    -------------------------------------------------  ---------------------------
+    Total                                     10.399ns (2.394ns logic, 8.005ns route)
+                                                       (23.0% logic, 77.0% route)
+
+--------------------------------------------------------------------------------
+
+Hold Paths: TS_soclinux_crg_pll_sys = PERIOD TIMEGRP "soclinux_crg_pll_sys"
+        TS_soclinux_crg_clk50b / 1.66666667 HIGH 50%;
+--------------------------------------------------------------------------------
+
+Paths for end point OSERDES2_1 (OLOGIC_X0Y48.D1), 6 paths
+--------------------------------------------------------------------------------
+Slack (hold path):      0.064ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record2_wrdata_1_BRB2 (FF)
+  Destination:          OSERDES2_1 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.096ns (Levels of Logic = 1)
+  Clock Path Skew:      0.032ns (0.264 - 0.232)
+  Source Clock:         sys_clk rising at 12.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Slow Process Corner: soclinux_ddrphy_record2_wrdata_1_BRB2 to OSERDES2_1
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X3Y55.AQ       Tcko                  0.368   soclinux_ddrphy_record2_wrdata_1_BRB4
+                                                       soclinux_ddrphy_record2_wrdata_1_BRB2
+    SLICE_X2Y55.B6       net (fanout=1)        0.113   soclinux_ddrphy_record2_wrdata_1_BRB2
+    SLICE_X2Y55.B        Tilo                  0.191   N2524
+                                                       mux1201111
+    OLOGIC_X0Y48.D1      net (fanout=1)        0.737   soclinux_ddrphy_record2_wrdata<1>
+    OLOGIC_X0Y48.CLKDIV  Tosckd_D    (-Th)     1.313   OSERDES2_1
+                                                       OSERDES2_1
+    -------------------------------------------------  ---------------------------
+    Total                                      0.096ns (-0.754ns logic, 0.850ns route)
+                                                       (-785.4% logic, 885.4% route)
+
+--------------------------------------------------------------------------------
+Slack (hold path):      0.587ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record2_wrdata_1_BRB4 (FF)
+  Destination:          OSERDES2_1 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.619ns (Levels of Logic = 1)
+  Clock Path Skew:      0.032ns (0.264 - 0.232)
+  Source Clock:         sys_clk rising at 12.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Slow Process Corner: soclinux_ddrphy_record2_wrdata_1_BRB4 to OSERDES2_1
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X3Y55.BQ       Tcko                  0.368   soclinux_ddrphy_record2_wrdata_1_BRB4
+                                                       soclinux_ddrphy_record2_wrdata_1_BRB4
+    SLICE_X2Y55.B2       net (fanout=1)        0.636   soclinux_ddrphy_record2_wrdata_1_BRB4
+    SLICE_X2Y55.B        Tilo                  0.191   N2524
+                                                       mux1201111
+    OLOGIC_X0Y48.D1      net (fanout=1)        0.737   soclinux_ddrphy_record2_wrdata<1>
+    OLOGIC_X0Y48.CLKDIV  Tosckd_D    (-Th)     1.313   OSERDES2_1
+                                                       OSERDES2_1
+    -------------------------------------------------  ---------------------------
+    Total                                      0.619ns (-0.754ns logic, 1.373ns route)
+                                                       (-121.8% logic, 221.8% route)
+
+--------------------------------------------------------------------------------
+Slack (hold path):      0.878ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record2_wrdata_1_BRB5 (FF)
+  Destination:          OSERDES2_1 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.907ns (Levels of Logic = 1)
+  Clock Path Skew:      0.029ns (0.264 - 0.235)
+  Source Clock:         sys_clk rising at 12.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Slow Process Corner: soclinux_ddrphy_record2_wrdata_1_BRB5 to OSERDES2_1
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X2Y57.AQ       Tcko                  0.421   interface2_bank_bus_dat_r_0_BRB0
+                                                       soclinux_ddrphy_record2_wrdata_1_BRB5
+    SLICE_X2Y55.B1       net (fanout=1)        0.871   soclinux_ddrphy_record2_wrdata_1_BRB5
+    SLICE_X2Y55.B        Tilo                  0.191   N2524
+                                                       mux1201111
+    OLOGIC_X0Y48.D1      net (fanout=1)        0.737   soclinux_ddrphy_record2_wrdata<1>
+    OLOGIC_X0Y48.CLKDIV  Tosckd_D    (-Th)     1.313   OSERDES2_1
+                                                       OSERDES2_1
+    -------------------------------------------------  ---------------------------
+    Total                                      0.907ns (-0.701ns logic, 1.608ns route)
+                                                       (-77.3% logic, 177.3% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point OSERDES2_4 (OLOGIC_X0Y57.D3), 6 paths
+--------------------------------------------------------------------------------
+Slack (hold path):      0.073ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record3_wrdata_4_BRB4 (FF)
+  Destination:          OSERDES2_4 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.096ns (Levels of Logic = 1)
+  Clock Path Skew:      0.023ns (0.269 - 0.246)
+  Source Clock:         sys_clk rising at 12.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Slow Process Corner: soclinux_ddrphy_record3_wrdata_4_BRB4 to OSERDES2_4
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X6Y63.BQ       Tcko                  0.421   soclinux_ddrphy_record3_wrdata_4_BRB4
+                                                       soclinux_ddrphy_record3_wrdata_4_BRB4
+    SLICE_X6Y63.B5       net (fanout=1)        0.177   soclinux_ddrphy_record3_wrdata_4_BRB4
+    SLICE_X6Y63.B        Tilo                  0.191   soclinux_ddrphy_record3_wrdata_4_BRB4
+                                                       mux1201581
+    OLOGIC_X0Y57.D3      net (fanout=1)        0.626   soclinux_ddrphy_record3_wrdata<4>
+    OLOGIC_X0Y57.CLKDIV  Tosckd_D    (-Th)     1.319   OSERDES2_4
+                                                       OSERDES2_4
+    -------------------------------------------------  ---------------------------
+    Total                                      0.096ns (-0.707ns logic, 0.803ns route)
+                                                       (-736.5% logic, 836.5% route)
+
+--------------------------------------------------------------------------------
+Slack (hold path):      0.134ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record3_wrdata_4_BRB5 (FF)
+  Destination:          OSERDES2_4 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.176ns (Levels of Logic = 1)
+  Clock Path Skew:      0.042ns (0.640 - 0.598)
+  Source Clock:         sys_clk rising at 12.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Slow Process Corner: soclinux_ddrphy_record3_wrdata_4_BRB5 to OSERDES2_4
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X7Y65.AQ       Tcko                  0.368   soclinux_ddrphy_record3_wrdata_4_BRB5
+                                                       soclinux_ddrphy_record3_wrdata_4_BRB5
+    SLICE_X6Y63.B6       net (fanout=1)        0.310   soclinux_ddrphy_record3_wrdata_4_BRB5
+    SLICE_X6Y63.B        Tilo                  0.191   soclinux_ddrphy_record3_wrdata_4_BRB4
+                                                       mux1201581
+    OLOGIC_X0Y57.D3      net (fanout=1)        0.626   soclinux_ddrphy_record3_wrdata<4>
+    OLOGIC_X0Y57.CLKDIV  Tosckd_D    (-Th)     1.319   OSERDES2_4
+                                                       OSERDES2_4
+    -------------------------------------------------  ---------------------------
+    Total                                      0.176ns (-0.760ns logic, 0.936ns route)
+                                                       (-431.8% logic, 531.8% route)
+
+--------------------------------------------------------------------------------
+Slack (hold path):      0.323ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record3_wrdata_4_BRB2 (FF)
+  Destination:          OSERDES2_4 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.346ns (Levels of Logic = 1)
+  Clock Path Skew:      0.023ns (0.269 - 0.246)
+  Source Clock:         sys_clk rising at 12.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Slow Process Corner: soclinux_ddrphy_record3_wrdata_4_BRB2 to OSERDES2_4
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X6Y63.AQ       Tcko                  0.421   soclinux_ddrphy_record3_wrdata_4_BRB4
+                                                       soclinux_ddrphy_record3_wrdata_4_BRB2
+    SLICE_X6Y63.B2       net (fanout=1)        0.427   soclinux_ddrphy_record3_wrdata_4_BRB2
+    SLICE_X6Y63.B        Tilo                  0.191   soclinux_ddrphy_record3_wrdata_4_BRB4
+                                                       mux1201581
+    OLOGIC_X0Y57.D3      net (fanout=1)        0.626   soclinux_ddrphy_record3_wrdata<4>
+    OLOGIC_X0Y57.CLKDIV  Tosckd_D    (-Th)     1.319   OSERDES2_4
+                                                       OSERDES2_4
+    -------------------------------------------------  ---------------------------
+    Total                                      0.346ns (-0.707ns logic, 1.053ns route)
+                                                       (-204.3% logic, 304.3% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point OSERDES2_8 (OLOGIC_X0Y47.T2), 1 path
+--------------------------------------------------------------------------------
+Slack (hold path):      0.078ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_drive_dq_n1 (FF)
+  Destination:          OSERDES2_8 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.109ns (Levels of Logic = 0)
+  Clock Path Skew:      0.031ns (0.268 - 0.237)
+  Source Clock:         sys_clk rising at 12.000ns
+  Destination Clock:    sys_clk rising at 12.000ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Slow Process Corner: soclinux_ddrphy_drive_dq_n1 to OSERDES2_8
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X3Y53.DQ       Tcko                  0.368   soclinux_ddrphy_drive_dq_n1
+                                                       soclinux_ddrphy_drive_dq_n1
+    OLOGIC_X0Y47.T2      net (fanout=48)       1.019   soclinux_ddrphy_drive_dq_n1
+    OLOGIC_X0Y47.CLKDIV  Tosckd_T    (-Th)     1.278   OSERDES2_8
+                                                       OSERDES2_8
+    -------------------------------------------------  ---------------------------
+    Total                                      0.109ns (-0.910ns logic, 1.019ns route)
+                                                       (-834.9% logic, 934.9% route)
+
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TS_soclinux_crg_pll_sys = PERIOD TIMEGRP "soclinux_crg_pll_sys"
+        TS_soclinux_crg_clk50b / 1.66666667 HIGH 50%;
+--------------------------------------------------------------------------------
+Slack: 8.876ns (period - min period limit)
+  Period: 12.000ns
+  Min period limit: 3.124ns (320.102MHz) (Trper_CLKA(Fmax))
+  Physical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKAWRCLK
+  Logical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKAWRCLK
+  Location pin: RAMB8_X2Y16.CLKAWRCLK
+  Clock network: sys_clk
+--------------------------------------------------------------------------------
+Slack: 8.876ns (period - min period limit)
+  Period: 12.000ns
+  Min period limit: 3.124ns (320.102MHz) (Trper_CLKB(Fmax))
+  Physical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKBRDCLK
+  Logical resource: VexRiscv/IBusCachedPlugin_cache/Mram_ways_0_tags/CLKBRDCLK
+  Location pin: RAMB8_X2Y16.CLKBRDCLK
+  Clock network: sys_clk
+--------------------------------------------------------------------------------
+Slack: 8.876ns (period - min period limit)
+  Period: 12.000ns
+  Min period limit: 3.124ns (320.102MHz) (Trper_CLKA(Fmax))
+  Physical resource: Mram_mem10/CLKA
+  Logical resource: Mram_mem10/CLKA
+  Location pin: RAMB16_X0Y30.CLKA
+  Clock network: sys_clk
+--------------------------------------------------------------------------------
+
+================================================================================
+Timing constraint: TS_soclinux_crg_pll_sdram_full = PERIOD TIMEGRP 
+"soclinux_crg_pll_sdram_full"         TS_soclinux_crg_clk50b / 6.66666667 HIGH 
+50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 0 paths analyzed, 0 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 component switching limit errors)
+--------------------------------------------------------------------------------
+
+================================================================================
+Timing constraint: TS_soclinux_crg_pll_sdram_half_a = PERIOD TIMEGRP         
+"soclinux_crg_pll_sdram_half_a" TS_soclinux_crg_clk50b / 3.33333333         
+PHASE 4.5 ns HIGH 50%;
+For more information, see Period Analysis in the Timing Closure User Guide (UG612).
+
+ 266 paths analyzed, 235 endpoints analyzed, 0 failing endpoints
+ 0 timing errors detected. (0 setup errors, 0 hold errors, 0 component switching limit errors)
+ Minimum period is   5.800ns.
+--------------------------------------------------------------------------------
+
+Paths for end point soclinux_ddrphy_record0_we_n_BRB3 (SLICE_X19Y54.B6), 3 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     0.150ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/_zz_141__6 (FF)
+  Destination:          soclinux_ddrphy_record0_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      4.002ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.123ns (1.794 - 1.917)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/_zz_141__6 to soclinux_ddrphy_record0_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y52.AQ      Tcko                  0.408   VexRiscv/_zz_141_<9>
+                                                       VexRiscv/_zz_141__6
+    SLICE_X10Y54.C4      net (fanout=8)        2.058   VexRiscv/_zz_141_<6>
+    SLICE_X10Y54.C       Tilo                  0.204   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear11
+    SLICE_X19Y54.B6      net (fanout=9)        1.010   soclinux_soclinux_timer_zero_clear1
+    SLICE_X19Y54.CLK     Tas                   0.322   soclinux_ddrphy_record0_we_n_BRB6
+                                                       csrbank3_load1_re11
+                                                       soclinux_ddrphy_record0_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      4.002ns (0.934ns logic, 3.068ns route)
+                                                       (23.3% logic, 76.7% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     0.458ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               grant_1 (FF)
+  Destination:          soclinux_ddrphy_record0_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.687ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.130ns (1.794 - 1.924)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: grant_1 to soclinux_ddrphy_record0_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X27Y48.DQ      Tcko                  0.391   grant_1
+                                                       grant_1
+    SLICE_X10Y54.C5      net (fanout=3)        1.760   grant_1
+    SLICE_X10Y54.C       Tilo                  0.204   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear11
+    SLICE_X19Y54.B6      net (fanout=9)        1.010   soclinux_soclinux_timer_zero_clear1
+    SLICE_X19Y54.CLK     Tas                   0.322   soclinux_ddrphy_record0_we_n_BRB6
+                                                       csrbank3_load1_re11
+                                                       soclinux_ddrphy_record0_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.687ns (0.917ns logic, 2.770ns route)
+                                                       (24.9% logic, 75.1% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     0.747ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/_zz_140_ (FF)
+  Destination:          soclinux_ddrphy_record0_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.425ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.103ns (1.794 - 1.897)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/_zz_140_ to soclinux_ddrphy_record0_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X31Y52.BQ      Tcko                  0.391   VexRiscv/_zz_140_
+                                                       VexRiscv/_zz_140_
+    SLICE_X10Y54.C6      net (fanout=43)       1.498   VexRiscv/_zz_140_
+    SLICE_X10Y54.C       Tilo                  0.204   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear11
+    SLICE_X19Y54.B6      net (fanout=9)        1.010   soclinux_soclinux_timer_zero_clear1
+    SLICE_X19Y54.CLK     Tas                   0.322   soclinux_ddrphy_record0_we_n_BRB6
+                                                       csrbank3_load1_re11
+                                                       soclinux_ddrphy_record0_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.425ns (0.917ns logic, 2.508ns route)
+                                                       (26.8% logic, 73.2% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point soclinux_ddrphy_record1_we_n_BRB3 (SLICE_X10Y54.B5), 3 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     0.274ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/_zz_144__2 (FF)
+  Destination:          soclinux_ddrphy_record1_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.910ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.091ns (1.793 - 1.884)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/_zz_144__2 to soclinux_ddrphy_record1_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X27Y40.AQ      Tcko                  0.391   VexRiscv/_zz_144_<2>
+                                                       VexRiscv/_zz_144__2
+    SLICE_X19Y54.D6      net (fanout=18)       1.678   VexRiscv/_zz_144_<2>
+    SLICE_X19Y54.D       Tilo                  0.259   soclinux_ddrphy_record0_we_n_BRB6
+                                                       VexRiscv/Mmux_dBusWishbone_ADR<2>11
+    SLICE_X10Y54.B5      net (fanout=15)       1.293   soclinux_soclinux_cpu_dbus_adr<2>
+    SLICE_X10Y54.CLK     Tas                   0.289   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear621
+                                                       soclinux_ddrphy_record1_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.910ns (0.939ns logic, 2.971ns route)
+                                                       (24.0% logic, 76.0% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     0.806ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/_zz_141__4 (FF)
+  Destination:          soclinux_ddrphy_record1_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.339ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.130ns (1.793 - 1.923)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/_zz_141__4 to soclinux_ddrphy_record1_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X22Y48.CQ      Tcko                  0.447   VexRiscv/_zz_141_<5>
+                                                       VexRiscv/_zz_141__4
+    SLICE_X19Y54.D5      net (fanout=6)        1.051   VexRiscv/_zz_141_<4>
+    SLICE_X19Y54.D       Tilo                  0.259   soclinux_ddrphy_record0_we_n_BRB6
+                                                       VexRiscv/Mmux_dBusWishbone_ADR<2>11
+    SLICE_X10Y54.B5      net (fanout=15)       1.293   soclinux_soclinux_cpu_dbus_adr<2>
+    SLICE_X10Y54.CLK     Tas                   0.289   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear621
+                                                       soclinux_ddrphy_record1_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.339ns (0.995ns logic, 2.344ns route)
+                                                       (29.8% logic, 70.2% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     0.807ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/_zz_232__2 (FF)
+  Destination:          soclinux_ddrphy_record1_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.344ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.124ns (1.793 - 1.917)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/_zz_232__2 to soclinux_ddrphy_record1_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X24Y52.AMUX    Tshcko                0.455   VexRiscv/_zz_232_<1>
+                                                       VexRiscv/_zz_232__2
+    SLICE_X19Y54.D3      net (fanout=7)        1.048   VexRiscv/_zz_232_<2>
+    SLICE_X19Y54.D       Tilo                  0.259   soclinux_ddrphy_record0_we_n_BRB6
+                                                       VexRiscv/Mmux_dBusWishbone_ADR<2>11
+    SLICE_X10Y54.B5      net (fanout=15)       1.293   soclinux_soclinux_cpu_dbus_adr<2>
+    SLICE_X10Y54.CLK     Tas                   0.289   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear621
+                                                       soclinux_ddrphy_record1_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.344ns (1.003ns logic, 2.341ns route)
+                                                       (30.0% logic, 70.0% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point soclinux_ddrphy_record1_we_n_BRB3 (SLICE_X10Y54.B3), 3 paths
+--------------------------------------------------------------------------------
+Slack (setup path):     0.473ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/_zz_141__6 (FF)
+  Destination:          soclinux_ddrphy_record1_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.678ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.124ns (1.793 - 1.917)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/_zz_141__6 to soclinux_ddrphy_record1_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X28Y52.AQ      Tcko                  0.408   VexRiscv/_zz_141_<9>
+                                                       VexRiscv/_zz_141__6
+    SLICE_X10Y54.C4      net (fanout=8)        2.058   VexRiscv/_zz_141_<6>
+    SLICE_X10Y54.C       Tilo                  0.204   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear11
+    SLICE_X10Y54.B3      net (fanout=9)        0.719   soclinux_soclinux_timer_zero_clear1
+    SLICE_X10Y54.CLK     Tas                   0.289   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear621
+                                                       soclinux_ddrphy_record1_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.678ns (0.901ns logic, 2.777ns route)
+                                                       (24.5% logic, 75.5% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     0.781ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               grant_1 (FF)
+  Destination:          soclinux_ddrphy_record1_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.363ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.131ns (1.793 - 1.924)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: grant_1 to soclinux_ddrphy_record1_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X27Y48.DQ      Tcko                  0.391   grant_1
+                                                       grant_1
+    SLICE_X10Y54.C5      net (fanout=3)        1.760   grant_1
+    SLICE_X10Y54.C       Tilo                  0.204   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear11
+    SLICE_X10Y54.B3      net (fanout=9)        0.719   soclinux_soclinux_timer_zero_clear1
+    SLICE_X10Y54.CLK     Tas                   0.289   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear621
+                                                       soclinux_ddrphy_record1_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.363ns (0.884ns logic, 2.479ns route)
+                                                       (26.3% logic, 73.7% route)
+
+--------------------------------------------------------------------------------
+Slack (setup path):     1.070ns (requirement - (data path - clock path skew + uncertainty))
+  Source:               VexRiscv/_zz_140_ (FF)
+  Destination:          soclinux_ddrphy_record1_we_n_BRB3 (FF)
+  Requirement:          4.500ns
+  Data Path Delay:      3.101ns (Levels of Logic = 2)
+  Clock Path Skew:      -0.104ns (1.793 - 1.897)
+  Source Clock:         sys_clk rising at 0.000ns
+  Destination Clock:    sdram_half_clk rising at 4.500ns
+  Clock Uncertainty:    0.225ns
+
+  Clock Uncertainty:          0.225ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter (TSJ):  0.070ns
+    Discrete Jitter (DJ):       0.197ns
+    Phase Error (PE):           0.120ns
+
+  Maximum Data Path at Slow Process Corner: VexRiscv/_zz_140_ to soclinux_ddrphy_record1_we_n_BRB3
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X31Y52.BQ      Tcko                  0.391   VexRiscv/_zz_140_
+                                                       VexRiscv/_zz_140_
+    SLICE_X10Y54.C6      net (fanout=43)       1.498   VexRiscv/_zz_140_
+    SLICE_X10Y54.C       Tilo                  0.204   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear11
+    SLICE_X10Y54.B3      net (fanout=9)        0.719   soclinux_soclinux_timer_zero_clear1
+    SLICE_X10Y54.CLK     Tas                   0.289   ddram_we_n_BRB3
+                                                       soclinux_soclinux_timer_zero_clear621
+                                                       soclinux_ddrphy_record1_we_n_BRB3
+    -------------------------------------------------  ---------------------------
+    Total                                      3.101ns (0.884ns logic, 2.217ns route)
+                                                       (28.5% logic, 71.5% route)
+
+--------------------------------------------------------------------------------
+
+Hold Paths: TS_soclinux_crg_pll_sdram_half_a = PERIOD TIMEGRP
+        "soclinux_crg_pll_sdram_half_a" TS_soclinux_crg_clk50b / 3.33333333
+        PHASE 4.5 ns HIGH 50%;
+--------------------------------------------------------------------------------
+
+Paths for end point soclinux_ddrphy_phase_half (SLICE_X0Y65.D6), 1 path
+--------------------------------------------------------------------------------
+Slack (hold path):      0.412ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_phase_half (FF)
+  Destination:          soclinux_ddrphy_phase_half (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.412ns (Levels of Logic = 1)
+  Clock Path Skew:      0.000ns
+  Source Clock:         sdram_half_clk rising at 10.500ns
+  Destination Clock:    sdram_half_clk rising at 10.500ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Fast Process Corner: soclinux_ddrphy_phase_half to soclinux_ddrphy_phase_half
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X0Y65.DQ       Tcko                  0.200   soclinux_ddrphy_phase_half
+                                                       soclinux_ddrphy_phase_half
+    SLICE_X0Y65.D6       net (fanout=3)        0.022   soclinux_ddrphy_phase_half
+    SLICE_X0Y65.CLK      Tah         (-Th)    -0.190   soclinux_ddrphy_phase_half
+                                                       Mcount_soclinux_ddrphy_phase_half_xor<0>11_INV_0
+                                                       soclinux_ddrphy_phase_half
+    -------------------------------------------------  ---------------------------
+    Total                                      0.412ns (0.390ns logic, 0.022ns route)
+                                                       (94.7% logic, 5.3% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point ddram_ras_n_BRB7 (SLICE_X22Y53.D5), 1 path
+--------------------------------------------------------------------------------
+Slack (hold path):      0.473ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record0_we_n_BRB9 (FF)
+  Destination:          ddram_ras_n_BRB7 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.475ns (Levels of Logic = 1)
+  Clock Path Skew:      0.002ns (0.036 - 0.034)
+  Source Clock:         sdram_half_clk rising at 10.500ns
+  Destination Clock:    sdram_half_clk rising at 10.500ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Fast Process Corner: soclinux_ddrphy_record0_we_n_BRB9 to ddram_ras_n_BRB7
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X23Y53.CQ      Tcko                  0.198   soclinux_ddrphy_record0_we_n_BRB10
+                                                       soclinux_ddrphy_record0_we_n_BRB9
+    SLICE_X22Y53.D5      net (fanout=2)        0.080   soclinux_ddrphy_record0_we_n_BRB9
+    SLICE_X22Y53.CLK     Tah         (-Th)    -0.197   ddram_ras_n_BRB7
+                                                       csrbank2_sel<13>
+                                                       ddram_ras_n_BRB7
+    -------------------------------------------------  ---------------------------
+    Total                                      0.475ns (0.395ns logic, 0.080ns route)
+                                                       (83.2% logic, 16.8% route)
+
+--------------------------------------------------------------------------------
+
+Paths for end point ddram_a_1 (SLICE_X0Y64.A5), 1 path
+--------------------------------------------------------------------------------
+Slack (hold path):      0.482ns (requirement - (clock path skew + uncertainty - data path))
+  Source:               soclinux_ddrphy_record0_address_1 (FF)
+  Destination:          ddram_a_1 (FF)
+  Requirement:          0.000ns
+  Data Path Delay:      0.494ns (Levels of Logic = 1)
+  Clock Path Skew:      0.012ns (0.277 - 0.265)
+  Source Clock:         sdram_half_clk rising at 10.500ns
+  Destination Clock:    sdram_half_clk rising at 10.500ns
+  Clock Uncertainty:    0.000ns
+
+  Minimum Data Path at Fast Process Corner: soclinux_ddrphy_record0_address_1 to ddram_a_1
+    Location             Delay type         Delay(ns)  Physical Resource
+                                                       Logical Resource(s)
+    -------------------------------------------------  -------------------
+    SLICE_X0Y63.BQ       Tcko                  0.200   soclinux_ddrphy_record0_address<5>
+                                                       soclinux_ddrphy_record0_address_1
+    SLICE_X0Y64.A5       net (fanout=1)        0.173   soclinux_ddrphy_record0_address<1>
+    SLICE_X0Y64.CLK      Tah         (-Th)    -0.121   ddram_a_7
+                                                       Mmux_array_muxed051
+                                                       ddram_a_1
+    -------------------------------------------------  ---------------------------
+    Total                                      0.494ns (0.321ns logic, 0.173ns route)
+                                                       (65.0% logic, 35.0% route)
+
+--------------------------------------------------------------------------------
+
+Component Switching Limit Checks: TS_soclinux_crg_pll_sdram_half_a = PERIOD TIMEGRP
+        "soclinux_crg_pll_sdram_half_a" TS_soclinux_crg_clk50b / 3.33333333
+        PHASE 4.5 ns HIGH 50%;
+--------------------------------------------------------------------------------
+Slack: 4.270ns (period - min period limit)
+  Period: 6.000ns
+  Min period limit: 1.730ns (578.035MHz) (Tbcper_I)
+  Physical resource: sdram_half_a_bufpll/I0
+  Logical resource: sdram_half_a_bufpll/I0
+  Location pin: BUFGMUX_X3Y13.I0
+  Clock network: soclinux_crg_pll_sdram_half_a
+--------------------------------------------------------------------------------
+Slack: 4.361ns (period - min period limit)
+  Period: 6.000ns
+  Min period limit: 1.639ns (610.128MHz) (Tockper)
+  Physical resource: soclinux_ddrphy_dqs_o<0>/CLK0
+  Logical resource: ODDR2_2/CK0
+  Location pin: OLOGIC_X0Y53.CLK0
+  Clock network: sdram_half_clk
+--------------------------------------------------------------------------------
+Slack: 4.361ns (period - min period limit)
+  Period: 6.000ns
+  Min period limit: 1.639ns (610.128MHz) (Tockper)
+  Physical resource: soclinux_ddrphy_dqs_o<1>/CLK0
+  Logical resource: ODDR2_4/CK0
+  Location pin: OLOGIC_X0Y43.CLK0
+  Clock network: sdram_half_clk
+--------------------------------------------------------------------------------
+
+
+Derived Constraint Report
+Derived Constraints for TSclk50
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|                               |   Period    |       Actual Period       |      Timing Errors        |      Paths Analyzed       |
+|           Constraint          | Requirement |-------------+-------------|-------------+-------------|-------------+-------------|
+|                               |             |   Direct    | Derivative  |   Direct    | Derivative  |   Direct    | Derivative  |
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|TSclk50                        |     20.000ns|      0.925ns|     19.333ns|            0|            0|            0|       824967|
+| TS_soclinux_crg_clk50b        |     20.000ns|      5.000ns|     19.333ns|            0|            0|            0|       824967|
+|  TS_soclinux_crg_pll_sdram_hal|      6.000ns|      1.730ns|          N/A|            0|            0|            0|            0|
+|  f_b                          |             |             |             |             |             |             |             |
+|  TS_soclinux_crg_pll_sys      |     12.000ns|     11.343ns|          N/A|            0|            0|       824701|            0|
+|  TS_soclinux_crg_pll_sdram_ful|      3.000ns|          N/A|          N/A|            0|            0|            0|            0|
+|  l                            |             |             |             |             |             |             |             |
+|  TS_soclinux_crg_pll_sdram_hal|      6.000ns|      5.800ns|          N/A|            0|            0|          266|            0|
+|  f_a                          |             |             |             |             |             |             |             |
++-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+
+All constraints were met.
+
+
+Data Sheet report:
+-----------------
+All values displayed in nanoseconds (ns)
+
+Clock to Setup on destination clock clk50
+---------------+---------+---------+---------+---------+
+               | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+---------------+---------+---------+---------+---------+
+clk50          |   11.343|         |    2.501|         |
+---------------+---------+---------+---------+---------+
+
+
+Timing summary:
+---------------
+
+Timing errors: 0  Score: 0  (Setup/Max: 0, Hold: 0)
+
+Constraints cover 824967 paths, 0 nets, and 29901 connections
+
+Design statistics:
+   Minimum period:  11.343ns{1}   (Maximum frequency:  88.160MHz)
+
+
+------------------------------------Footnotes-----------------------------------
+1)  The minimum period statistic assumes all single cycle delays.
+
+Analysis completed Tue Mar 24 11:17:43 2020 
+--------------------------------------------------------------------------------
+
+Trace Settings:
+-------------------------
+Trace Settings 
+
+Peak Memory Usage: 559 MB
+
+
+

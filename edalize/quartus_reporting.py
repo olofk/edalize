@@ -6,6 +6,7 @@ from typing import Dict, Union
 
 import pyparsing as pp
 import pandas as pd
+import numpy as np
 
 from edalize.reporting import Reporting
 
@@ -51,7 +52,6 @@ class QuartusReporting(Reporting):
 
         return result
 
-
     @classmethod
     def report_timing(cls, report_file: str) -> Dict[str, pd.DataFrame]:
         return cls._report_to_df(cls._parse_tables, report_file)
@@ -59,7 +59,6 @@ class QuartusReporting(Reporting):
     @classmethod
     def report_resources(cls, report_file: str) -> Dict[str, pd.DataFrame]:
         return cls._report_to_df(cls._parse_tables, report_file)
-
 
     @staticmethod
     def report_summary(
@@ -71,7 +70,7 @@ class QuartusReporting(Reporting):
         resource_buckets = {
             "lut": ["Logic Cells", "Combinational ALUTs"],
             "reg": ["Dedicated Logic Registers"],
-            "blkmem": ["M9Ks", "M20Ks"],
+            "blkmem": ["M9Ks", "M10Ks", "M20Ks"],
             "dsp": ["DSP Elements", "DSP Blocks"],
         }
 
@@ -85,8 +84,9 @@ class QuartusReporting(Reporting):
             summary[k] = int(str(cell).split()[0])
 
         # Get a frequency like 175.0 MHz and just return the numeric part
-        summary["constraint"] = float(
-            timing["Clocks"].iloc[0].at["Frequency"].split()[0]
+        freq = timing["Clocks"].set_index("Clock Name")["Frequency"]
+        summary["constraint"] = (
+            freq.str.split(expand=True)[0].astype(np.float).to_dict()
         )
 
         # Find the Fmax summary table for the slowest corner, such as "Slow
@@ -97,8 +97,8 @@ class QuartusReporting(Reporting):
         slow_idx = titles.index("Clocks") + 1
         slow_title = titles[slow_idx]
 
-        summary["fmax"] = float(
-            timing[slow_title].iloc[0].at["Restricted Fmax"].split()[0]
-        )
+        fmax = timing[slow_title].set_index("Clock Name")["Restricted Fmax"]
+        series = fmax.str.split(expand=True)[0].astype(np.float)
+        summary["fmax"] = series.to_dict()
 
         return summary
