@@ -6,6 +6,10 @@ logger = logging.getLogger(__name__)
 
 # This is a list of simulators where VHDL libraries are supported in cocotb
 sims_with_vhdl_lib_support = ['ghdl']
+# Minor hack to deal with verilog include directories. Patching cocotb to do the
+# simulator specifics maybe better long term. Basing this off cocotb
+# axi-lite-slave example Makefile.
+verilog_include_prefix = {'icarus': '-I', 'default': '+incdir+'}
 
 
 class Cocotb(Edatool):
@@ -103,20 +107,26 @@ class Cocotb(Edatool):
 
         return ' '.join(verilog_sources), ' '.join(vhdl_sources), joined_vhdl_lib_sources
 
-    def _get_verilog_include_dirs(self):
+    def _get_verilog_include_args(self):
         (src_files, incdirs) = self._get_fileset_files()
-        verilog_include_dirs = [os.path.join('$(PWD)', dir) for dir in incdirs]
-        
-        return verilog_include_dirs
+
+        if self.tool_options['sim'] in verilog_include_prefix:
+            prefix = verilog_include_prefix[self.tool_options['sim']]
+        else:
+            prefix = verilog_include_prefix['default']
+
+        verilog_include_args = [prefix + os.path.join('$(PWD)', dir) for dir in incdirs]
+
+        return ' '.join(verilog_include_args)
 
     def configure_main(self):
         python_path = self._create_python_path()
         (verilog_sources, vhdl_sources, vhdl_lib_sources) = self._get_sources()
-        verilog_include_dirs = self._get_verilog_include_dirs()
+        verilog_include_args = self._get_verilog_include_args()
 
         self.render_template(self.makefile_template, 'Makefile', {
             'verilog_sources': verilog_sources,
-            'verilog_include_dirs': verilog_include_dirs,
+            'verilog_include_args': verilog_include_args,
             'vhdl_sources': vhdl_sources,
             'vhdl_lib_sources': vhdl_lib_sources,
             'python_path': python_path,

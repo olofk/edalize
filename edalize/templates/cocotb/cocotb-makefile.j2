@@ -15,6 +15,9 @@ WAVES := {{tool_options.waves}}
 {% if verilog_sources != "" %}
 VERILOG_SOURCES := {{verilog_sources}}
 {% endif %}
+{% if verilog_include_args != "" %}
+VERILOG_INCLUDE_ARGS := {{verilog_include_args}}
+{% endif %}
 {% if vhdl_sources != "" %}
 VHDL_SOURCES := {{vhdl_sources}}
 {% endif %}
@@ -24,15 +27,6 @@ VHDL_SOURCES_{{lib}} := {{sources}}
 {% if tool_options.rtl_library is defined %}
 RTL_LIBRARY := {{tool_options.rtl_library}}
 {% endif %}
-
-# Verilog includes - copying method from Cocotb axi_lite_slave example
-{% for dir in verilog_include_dirs %}
-ifeq ($(SIM),icarus)
-VERILOG_INCLUDE_ARGS += -I{{dir}}
-else
-VERILOG_INCLUDE_ARGS += +incdir+{{dir}}
-endif
-{% endfor %}
 
 # HDL top level configuration
 TOPLEVEL := {{toplevel}}
