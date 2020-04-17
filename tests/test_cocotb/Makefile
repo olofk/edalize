@@ -9,16 +9,10 @@ WAVES := 1
 
 # HDL sources
 VERILOG_SOURCES := $(PWD)/sv_file.sv $(PWD)/vlog_file.v $(PWD)/vlog05_file.v
+VERILOG_INCLUDE_ARGS := +incdir+$(PWD)/.
 VHDL_SOURCES := $(PWD)/vhdl_file.vhd $(PWD)/vhdl2008_file
 VHDL_SOURCES_libx := $(PWD)/vhdl_lfile
 RTL_LIBRARY := my_lib
-
-# Verilog includes - copying method from Cocotb axi_lite_slave example
-ifeq ($(SIM),icarus)
-VERILOG_INCLUDE_ARGS += -I$(PWD)/.
-else
-VERILOG_INCLUDE_ARGS += +incdir+$(PWD)/.
-endif
 
 # HDL top level configuration
 TOPLEVEL := top_module
