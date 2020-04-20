@@ -30,6 +30,9 @@ class Vivado(Edatool):
         if api_ver == 0:
             return {'description' : "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA",
                     'members' : [
+                        {'name' : 'vivado-settings',
+                         'type' : 'String',
+                         'desc' : 'Path to vivado settings (e.g. /opt/Xilinx/Vivado/2017.2/settings64.sh)'},
                         {'name' : 'part',
                          'type' : 'String',
                          'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)'},
@@ -143,12 +146,16 @@ class Vivado(Edatool):
             self.render_template('vivado-synth.tcl.j2',
                                  self.name+"_synth.tcl")
 
+        vivado_settings = self.tool_options.get('vivado-settings', None)
+        vivado_command = "source {} && vivado".format(vivado_settings) if vivado_settings else "vivado"
+
         self.render_template('vivado-makefile.j2',
                              'Makefile',
                              {'name' : self.name,
                               'part' : self.tool_options.get('part', ""),
                               'bitstream' : self.name+'.bit',
-                              'yosys' : True if self.synth_tool == 'yosys' else None
+                              'yosys' : True if self.synth_tool == 'yosys' else None,
+                              'vivado_command': vivado_command
                               })
 
         self.render_template('vivado-program.tcl.j2',
