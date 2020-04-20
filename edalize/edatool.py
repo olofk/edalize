@@ -218,10 +218,10 @@ class Edatool(object):
         for key, value in vars(parser.parse_args(args)).items():
             if value is None:
                 continue
-            if type(value) == bool:
-                _value = value
-            else:
+            if type(value) == list:
                 _value = value[0]
+            else:
+                _value = value
             args_dict[key] = _value
         return args_dict
 
