@@ -21,6 +21,7 @@ class Diamond(Edatool):
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files()
         lpf_file = None
+        prj_name = self.name.replace('.','_')
         for f in src_files:
             if f.file_type == 'LPF':
                 if lpf_file:
@@ -33,7 +34,7 @@ class Diamond(Edatool):
 prj_project new -name {} -dev {}{} -synthesis synplify
 prj_impl option top {}
 """
-            f.write(TCL_TEMPLATE.format(self.name,
+            f.write(TCL_TEMPLATE.format(prj_name,
                                         self.tool_options['part'],
                                         " -lpf "+lpf_file if lpf_file else "",
                                         self.toplevel,
@@ -70,7 +71,7 @@ prj_run Synthesis
 prj_run Export -task Bitgen
 prj_project save
 prj_project close
-""".format(self.name))
+""".format(prj_name))
     def src_file_filter(self, f):
 
         def _vhdl_source(f):
