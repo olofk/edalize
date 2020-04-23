@@ -1,4 +1,4 @@
-edalize
+Modules
 =======
 
 .. toctree::

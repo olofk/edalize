@@ -10,8 +10,9 @@ Welcome to Edalize's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   edam/api.rst
-   source/modules.rst
+   edam/api
+   source/modules
+   source/tests
 
 
 Indices and tables
