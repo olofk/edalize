@@ -1,0 +1,2 @@
+test_diamond_0.tcl
+test_diamond_0_run.tcl
