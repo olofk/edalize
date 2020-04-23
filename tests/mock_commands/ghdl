@@ -13,4 +13,5 @@ if sys.argv[1] == '-i':
             std = arg.split('=')[1]
             output_file = 'work-obj'+std+'.cf'
             with open(output_file, 'a'):
+                # set the access and modified times to the current time
                 os.utime(output_file, None)

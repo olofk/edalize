@@ -2,8 +2,11 @@
 import os
 import sys
 
+# output_file is the argument to the option `-o`
 output_file = sys.argv[sys.argv.index('-o')+1]
 
+# output_file, when executed, will record the arguments it has been called with
+# in a file `run.cmd`
 with open(output_file, 'w') as f:
     s = """#!/usr/bin/env python
 import sys
@@ -11,7 +14,10 @@ with open('run.cmd', 'w') as f:
     f.write(' '.join(sys.argv[1:]) + '\\n')
 """
     f.write(s)
+
+# make file executable
 os.chmod(output_file, 0o755)
 
+# write out the arguments this mock has been called with to `vcs.cmd`
 with open('vcs.cmd', 'w') as f:
     f.write(' '.join(sys.argv[1:]) + '\n')

@@ -4,6 +4,7 @@ import sys
 
 output_file = sys.argv[2]
 with open(output_file, 'a'):
+    # set the access and modified times to the current time
     os.utime(output_file, None)
 
 with open('icepack.cmd', 'w') as f:

@@ -6,6 +6,12 @@ from edalize import get_edatool
 tests_dir = os.path.dirname(__file__)
 
 def compare_files(ref_dir, work_root, files):
+    """Check that all *files* in *work_root* match those in *ref_dir*.
+
+    If the environment variable :envvar:`GOLDEN_RUN` is set,
+    the *files* in *work_root* are copied to *ref_dir* to become the new reference.
+    """
+
     import os.path
     import shutil
 
@@ -23,6 +29,8 @@ def compare_files(ref_dir, work_root, files):
 
 
 def param_gen(paramtypes):
+    """Generate dictionary of definitions in *paramtypes* list."""
+
     defs = {}
     for paramtype in paramtypes:
         for datatype in ['bool', 'int', 'str']:
@@ -39,20 +47,35 @@ def param_gen(paramtypes):
                 'paramtype'   : paramtype}
     return defs
 
+
 def setup_backend_minimal(name, tool, files):
+    """Set up a minimal backend.
+
+    The backend is called *name*, is set up for *tool* and uses *files*.
+    """
+
+    # prepend directory `mock_commands` to PATH environment variable
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
 
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
     edam = {'name'         : name,
-               'files'        : files,
-               'toplevel'     : 'top_module',
+            'files'        : files,
+            'toplevel'     : 'top_module',
     }
     return (get_edatool(tool)(edam=edam,
                               work_root=work_root), work_root)
 
 
 def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
+    """Set up a backend.
+
+    The backend is called *name*, is set up for *tool* with *tool_options*,
+    *paramtypes*, and, if *use_vpi* is ``True``, definitions from :attr:`VPI`.
+    Files are taken from :attr:`FILES`.
+    """
+
+    # prepend directory `mock_commands` to PATH environment variable
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     parameters = param_gen(paramtypes)
 
@@ -60,8 +83,8 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
 
     _vpi = []
     if use_vpi:
-        _vpi = vpi
-        for v in vpi:
+        _vpi = VPI
+        for v in VPI:
             for f in v['src_files']:
                 _f = os.path.join(work_root, f)
                 if not os.path.exists(os.path.dirname(_f)):
@@ -70,16 +93,17 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
                     os.utime(_f, None)
 
     edam = {'name'         : name,
-               'files'        : files,
-               'parameters'   : parameters,
-               'tool_options' : {tool : tool_options},
-               'toplevel'     : 'top_module',
-               'vpi'          :  _vpi}
+            'files'        : FILES,
+            'parameters'   : parameters,
+            'tool_options' : {tool : tool_options},
+            'toplevel'     : 'top_module',
+            'vpi'          :  _vpi}
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
     return (backend, work_root)
 
-files = [
+
+FILES = [
     {'name' : 'qip_file.qip' , 'file_type' : 'QIP'},
     {'name' : 'qsys_file'    , 'file_type' : 'QSYS'},
     {'name' : 'sdc_file'     , 'file_type' : 'SDC'},
@@ -103,8 +127,10 @@ files = [
     {'name' : 'c_header.h'   , 'file_type' : 'cSource', 'is_include_file' : True},
     {'name' : 'c_header.h'   , 'file_type' : 'cppSource', 'is_include_file' : True},
 ]
+"""Files of all supported file types."""
 
-vpi = [
+
+VPI = [
     {'src_files': ['src/vpi_1/f1',
                    'src/vpi_1/f3'],
      'include_dirs': ['src/vpi_1/'],
@@ -114,3 +140,4 @@ vpi = [
      'include_dirs': [],
      'libs': [],
      'name': 'vpi2'}]
+"""Predefined VPI modules to build."""
