@@ -51,7 +51,7 @@ class Yosys(Edatool):
         for key, value in self.vlogparam.items():
             if type(value) is str:
                 value = "{\"" + value + "\"}"
-            _s = r"chparam -set {} {} \$abstract\{}"
+            _s = r"chparam -set {} {} {}"
             verilog_params.append(_s.format(key,
                 self._param_value_str(value),
                 self.toplevel))

@@ -28,9 +28,9 @@ foreach f ${file_table} {
   }
 }
 
-chparam -set vlogparam_bool 1 \$abstract\top_module
-chparam -set vlogparam_int 42 \$abstract\top_module
-chparam -set vlogparam_str {"hello"} \$abstract\top_module
+chparam -set vlogparam_bool 1 top_module
+chparam -set vlogparam_int 42 top_module
+chparam -set vlogparam_str {"hello"} top_module
 verilog_defaults -pop
 
 synth_ice40 some yosys_synth_options -top top_module
