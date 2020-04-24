@@ -2,7 +2,6 @@
 
 from vunit.ui import Library
 from vunit import VUnit
-from typing import Mapping, Collection
 
 
 class VUnitHooks(object):
