@@ -1,5 +1,6 @@
 import os.path
 import tempfile
+from collections import OrderedDict
 
 from edalize import get_edatool
 
@@ -31,7 +32,7 @@ def compare_files(ref_dir, work_root, files):
 def param_gen(paramtypes):
     """Generate dictionary of definitions in *paramtypes* list."""
 
-    defs = {}
+    defs = OrderedDict()
     for paramtype in paramtypes:
         for datatype in ['bool', 'int', 'str']:
             if datatype == 'int':
