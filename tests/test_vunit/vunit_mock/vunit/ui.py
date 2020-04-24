@@ -1,5 +1,4 @@
 from unittest.mock import MagicMock
-from typing import Mapping, Collection
 
 class Library(MagicMock):
     def add_source_files(self, file):
