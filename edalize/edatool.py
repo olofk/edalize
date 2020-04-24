@@ -74,7 +74,7 @@ class Edatool(object):
         self.generic     = OrderedDict()
         self.cmdlinearg  = OrderedDict()
 
-        args = {}
+        args = OrderedDict()
         for k, v in self.parameters.items():
             args[k] = v.get('default')
         self._apply_parameters(args)
