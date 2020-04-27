@@ -1,9 +1,6 @@
 import os
 import sys
 import logging
-from shutil import copy
-from os.path import splitext
-from functools import partial
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
