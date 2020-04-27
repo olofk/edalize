@@ -74,11 +74,11 @@ def test_vunit_hooks():
 
             backend.build()
 
-            hooks_constructor.assert_called_once()
-            hooks.create.assert_called_once()
+            hooks_constructor.assert_called_once_with()
+            hooks.create.assert_called_once_with()
 
             vu_mock.add_library.assert_called_with("libx")
-            hooks.create.assert_called_once()
+            hooks.create.assert_called_once_with()
             hooks.handle_library.assert_called_with('libx', vu_library)
             hooks.main.assert_called_with(vu_mock)
 
@@ -92,10 +92,10 @@ def test_vunit_hooks():
 
             backend.run()
 
-            hooks_constructor.assert_called_once()
-            hooks.create.assert_called_once()
+            hooks_constructor.assert_called_once_with()
+            hooks.create.assert_called_once_with()
             vu_mock.add_library.assert_called_with("libx")
-            hooks.create.assert_called_once()
+            hooks.create.assert_called_once_with()
             hooks.handle_library.assert_called_with('libx', vu_library)
             hooks.main.assert_called_with(vu_mock)
 
