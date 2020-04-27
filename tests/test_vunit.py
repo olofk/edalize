@@ -19,23 +19,17 @@ def test_vunit_codegen():
     compare_files(ref_dir, work_root, ['run.py'])
 
 
-
 def test_vunit_hooks():
-    from edalize_common import compare_files, setup_backend, tests_dir
+    from edalize_common import tests_dir
 
     import subprocess
-    import os
-    import shutil
     import tempfile
     import sys
-    import os
     import importlib.util
     from unittest import mock
     from edalize import get_edatool
-    from edalize_common import compare_files, tests_dir
 
     sys.path = [os.path.join(tests_dir, __name__, 'vunit_mock')] + sys.path
-
 
     ref_dir = os.path.join(tests_dir, __name__, 'minimal')
     tool = 'vunit'
@@ -55,6 +49,7 @@ def test_vunit_hooks():
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
 
     original_impl = subprocess.check_call
+
     def subprocess_intercept(args, **kwargs):
         if len(args) > 1 and args[1].endswith('run.py'):
             import sys
@@ -69,7 +64,6 @@ def test_vunit_hooks():
     with mock.patch('subprocess.check_call', new=subprocess_intercept):
         backend.configure()
 
-        import edalize.vunit_hooks
         with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor:
             hooks = MagicMock()
             vu_library = MagicMock()
@@ -105,9 +99,9 @@ def test_vunit_hooks():
             hooks.handle_library.assert_called_with('libx', vu_library)
             hooks.main.assert_called_with(vu_mock)
 
+
 if __name__ == '__main__':
     from os.path import dirname
     import sys
     sys.path.append(dirname(dirname(__file__)))
     pytest.main(args=[__file__])
-
