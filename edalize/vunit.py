@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+from collections import OrderedDict
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -54,17 +55,16 @@ class Vunit(Edatool):
             "src_file_vhdl_standard_filter"
         ] = self.src_file_vhdl_standard_filter
 
-        library_names = [f.logical_name for f in src_files]
-
         # vunit does not allow empty library name or 'work', so we use `vunit_test_runner_lib`:
-        libraries = {
-            lib
-            if lib != ""
-            else "vunit_test_runner_lib": [
-                file for file in src_files if file.logical_name == lib
-            ]
-            for lib in library_names
-        }
+        libraries = OrderedDict()
+
+        for f in src_files:
+            lib = f.logical_name if f.logical_name else "vunit_test_runner_lib"
+
+            if lib in libraries:
+                libraries[lib].append(f)
+            else:
+                libraries[lib] = [f]
 
         escaped_name = self.name.replace(".", "_")
         add_libraries = self.tool_options.get("add_libraries", [])
