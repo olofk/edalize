@@ -53,4 +53,6 @@ setup(
     tests_require=[
         'vunit_hdl>=4.0.8'
     ],
+    # Supported Python versions: 3.5+
+    python_requires=">=3.5, <4",
 )
