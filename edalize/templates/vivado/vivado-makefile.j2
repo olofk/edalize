@@ -9,8 +9,8 @@ $(NAME).edif: $(NAME).mk
 	$(MAKE) -f $<
 {%- endif %}
 
-$(BITSTREAM):  $(NAME)_run.tcl $(NAME).xpr
-	{{ vivado_command }} -notrace -mode batch -source $^
+$(BITSTREAM): $(NAME)_run.tcl $(NAME).xpr synth
+	{{ vivado_command }} -notrace -mode batch -source $< $(NAME).xpr
 
 {% if yosys -%}
 $(NAME).xpr: $(NAME).tcl synth
@@ -24,13 +24,13 @@ $(NAME).xpr: $(NAME).tcl
 build-gui: $(NAME).xpr
 	{{ vivado_command }} $<
 
-$(NAME).runs/synth_1: $(NAME)_synth.tcl $(NAME).xpr
+$(NAME).runs/synth_1/top.dcp: $(NAME)_synth.tcl $(NAME).xpr
 	{{ vivado_command }} -notrace -mode batch -source $^
 
 {% if yosys -%}
 synth: $(NAME).edif
 {% else %}
-synth: $(NAME).runs/synth_1
+synth: $(NAME).runs/synth_1/top.dcp
 {%- endif %}
 
 
