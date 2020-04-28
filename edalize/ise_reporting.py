@@ -256,7 +256,7 @@ class IseReporting(Reporting):
 
         # The basic resource data is ints, but the timing information is more
         # complex
-        summary: Dict[str, Any] = {}
+        summary = {}  # type: Dict[str, Any]
 
         # Resources in this table are of the form 123/456 and we want the
         # second (total) number

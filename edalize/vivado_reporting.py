@@ -194,7 +194,7 @@ class VivadoReporting(Reporting):
         resources: Dict[str, pd.DataFrame], timing: Dict[str, pd.DataFrame]
     ) -> Dict[str, Union[int, float, Dict[str, Optional[float]]]]:
 
-        summary: Dict[str, Union[int, float, Dict[str, Optional[float]]]] = {}
+        summary = {}  # type: Dict[str, Union[int, float, Dict[str, Optional[float]]]]
 
         # Vivado uses different tables and row values for different families.
         # This at least works with the Artix 7 and Kintex Ultrascale+

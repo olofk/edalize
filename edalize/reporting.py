@@ -26,14 +26,14 @@ class Reporting:
     # Static variables to be overridden by subclasses.
 
     # Glob patterns to find resource and timing reports in a directory
-    resource_rpt_pattern: str = "*_resource_report.txt"
-    timing_rpt_pattern: str = "*_timing_report.txt"
+    resource_rpt_pattern = "*_resource_report.txt"  # type: str
+    timing_rpt_pattern = "*_timing_report.txt"  # type: str
 
     # The text encoding needed to properly open reports
-    report_encoding: Optional[str] = None
+    report_encoding = None  # type: Optional[str]
 
     # The separator used in report tables
-    table_sep: str = ";"
+    table_sep = ";"  # type: str
 
     @staticmethod
     def period_to_freq(
@@ -219,7 +219,7 @@ class Reporting:
                 clean_cell = cell.strip()
                 # Quote the cell if it contains the new separator
                 if new_sep in clean_cell:
-                    clean_cell = f'"{clean_cell}"'
+                    clean_cell = '"{}"'.format(clean_cell)
                 new_line.append(clean_cell)
 
             csv_lines.append(new_sep.join(new_line))

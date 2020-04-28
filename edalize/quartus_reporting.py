@@ -2,6 +2,7 @@
 """
 
 import logging
+import re
 from typing import Dict, Union
 
 import pyparsing as pp
@@ -74,7 +75,7 @@ class QuartusReporting(Reporting):
             "dsp": ["DSP Elements", "DSP Blocks"],
         }
 
-        summary: Dict[str, Union[int, float]] = {}
+        summary = {}  # type: Dict[str, Union[int, float]]
 
         # Resources in this table are mostly of the form 345.5 (123.3) and we
         # want the first (total) number
@@ -91,11 +92,15 @@ class QuartusReporting(Reporting):
 
         # Find the Fmax summary table for the slowest corner, such as "Slow
         # 1200mV 85C Model Fmax Summary". The voltage and temperature will
-        # depend on the device, but the slow corner should be right after the
-        # "Clocks" table
-        titles = list(timing.keys())
-        slow_idx = titles.index("Clocks") + 1
-        slow_title = titles[slow_idx]
+        # depend on the device, so find the match with the highest
+        # temperature.
+
+        slow_fmax = re.compile(r"Slow (?P<voltage>\d+)mV (?P<temp>\d+)C Model Fmax Summary")
+        title_matches = [slow_fmax.match(title) for title in timing.keys()]
+
+        slow_title = max(
+            [t for t in title_matches if t], key=lambda x: x.group("temp")
+        ).string
 
         fmax = timing[slow_title].set_index("Clock Name")["Restricted Fmax"]
         series = fmax.str.split(expand=True)[0].astype(np.float)

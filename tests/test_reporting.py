@@ -151,8 +151,8 @@ def test_picorv32_quartus_cylone4_resources(picorv32_cyclone4_data):
 
     tables = list(rpt.keys())
     assert len(tables) == 31
-    assert tables[0] == "Fitter Summary"
-    assert tables[-1] == "Estimated Delay Added for Hold Timing Details"
+    assert "Fitter Summary" in tables
+    assert "Estimated Delay Added for Hold Timing Details" in tables
 
 
 def test_picorv32_quartus_cylone4_timing(picorv32_cyclone4_data):
@@ -281,9 +281,9 @@ def test_picorv32_ise_spartan6_resources(picorv32_s6_data):
 
     rpt = picorv32_s6_data["resources"]
 
-    assert list(rpt.keys()) == [
-        "IOB Properties",
+    assert list(sorted(rpt.keys())) == [
         "Control Set Information",
+        "IOB Properties",
         "Utilization by Hierarchy",
     ]
 
@@ -698,14 +698,14 @@ def test_linux_on_litex_vexriscv_pipistrello_timing(
     assert rpt["min period"] == 11.343
     assert rpt["max clock"] == 88.16
 
-    assert list(rpt["constraint"].keys()) == [
-        "PRDsys_clk",
+    assert list(sorted(rpt["constraint"].keys())) == [
         "PRDclk50",
+        "PRDsys_clk",
         "soclinux_crg_clk50b",
-        "soclinux_crg_pll_sdram_half_b",
-        "soclinux_crg_pll_sys",
         "soclinux_crg_pll_sdram_full",
         "soclinux_crg_pll_sdram_half_a",
+        "soclinux_crg_pll_sdram_half_b",
+        "soclinux_crg_pll_sys",
     ]
 
     assert rpt["constraint"]["soclinux_crg_pll_sys"] == {
