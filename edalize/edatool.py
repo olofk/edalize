@@ -330,8 +330,8 @@ class Edatool(object):
             _s = "Command '{}' not found. Make sure it is in $PATH"
             raise RuntimeError(_s.format(cmd))
         except subprocess.CalledProcessError as e:
-            _s = "'{}' exited with an error code\n" + e.output.decode()
-            raise RuntimeError(_s.format(cmd))
+            _s = "'{}' exited with an error code\n{}"
+            raise RuntimeError(_s.format(cmd, e.output.decode()))
 
     def _filter_verilog_files(src_file):
         ft = src_file.file_type
