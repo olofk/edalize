@@ -70,7 +70,7 @@ class Symbiflow(Edatool):
                 }
 
         nextpnr = getattr(import_module("edalize.nextpnr"), 'Nextpnr')(nextpnr_edam, self.work_root)
-        nextpnr.configure(self.args)
+        nextpnr.configure()
 
         builddir = self.tool_options.get('builddir', 'build')
 

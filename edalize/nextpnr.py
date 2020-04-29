@@ -86,7 +86,7 @@ class Nextpnr(Edatool):
                 }
 
         yosys = getattr(import_module("edalize.yosys"), 'Yosys')(yosys_edam, self.work_root)
-        yosys.configure(self.args)
+        yosys.configure()
 
         part_of_toolchain = self.tool_options.get('nextpnr_as_subtool', False)
 
