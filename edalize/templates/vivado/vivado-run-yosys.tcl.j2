@@ -1,10 +1,10 @@
 read_edif {{ edif_file }}
 
+link_design -top {{ name }} -part {{ tool_options.part }}
+
 {% if xdc_file -%}
 read_xdc {{ xdc_file }}
 {%- endif %}
-
-link_design -top {{ name }} -part {{ tool_options.part }}
 
 # Vivado will raise an error if impl_1 is launched when it is already done. So
 # check the progress first and only launch if its not complete.
