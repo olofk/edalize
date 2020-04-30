@@ -1,0 +1,4 @@
+#!/usr/bin/env python
+import pathlib
+
+print(pathlib.Path(__file__).resolve().parent)

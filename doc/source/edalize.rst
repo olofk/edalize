@@ -132,6 +132,14 @@ edalize.vunit_hooks module
     :undoc-members:
     :show-inheritance:
 
+edalize.xcelium module
+----------------------
+
+.. automodule:: edalize.xcelium
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 edalize.xsim module
 -------------------
 

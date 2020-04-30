@@ -113,6 +113,7 @@ vcs             String                Options for Synopsys VCS_
 verilator       String                Options for Verilator_
 vivado          String                Options for Xilinx Vivado_
 vunit           String                Options for VUnit_
+xcelium         String                Options for Cadence Xcelium_
 xsim            String                Options for Xilinx XSim_
 =============== ===================== ===========
 
@@ -257,7 +258,7 @@ part             String                Device identifier. e.g. *xc7a35tcsg324-1*
 ================ ===================== ===========
 
 vunit
-~~~~~~
+~~~~~
 
 ================ ===================== ===========
 Field Name       Type                  Description
@@ -312,7 +313,17 @@ For this to work, the Python script must export a ``class VUnitRunner(vunit_hook
             vu.main(post_run=post_run_handler)
 
 
+xcelium
+~~~~~~~
 
+================ ===================== ===========
+Field Name       Type                  Description
+================ ===================== ===========
+xmvlog_options   List of String        Extra options for compilation with `xmvlog`
+xmvhdl_options   List of String        Extra options for compilation with `xmvhdl`
+xmsim_options    List of String        Extra options for running simulation with with `xsim`
+xrun_options     List of String        Extra options for invocation with with `xrun`
+================ ===================== ===========
 
 xsim
 ~~~~

@@ -1,0 +1,1 @@
+-q -f edalize_main.f plenty of xrun_options -xmsimargs 'a few xmsim_options' -defparam vlogparam_bool=1 -defparam vlogparam_int=42 -defparam vlogparam_str=hello +plusarg_bool=1 +plusarg_int=42 +plusarg_str=hello -top top_module
