@@ -10,7 +10,7 @@ from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
-""" Symbiflow backtend
+""" Symbiflow backend
 
 A core (usually the system core) can add the following files:
 
@@ -61,7 +61,7 @@ class Symbiflow(Edatool):
             symbiflow_members = symbiflow_help["members"]
 
             return {
-                "description": "The Symbilow backend executes Yosys sythesis tool and VPR place and route. It can target multiple different FPGA vendors",
+                "description": "The Symbiflow backend executes Yosys sythesis tool and VPR place and route. It can target multiple different FPGA vendors",
                 "members": symbiflow_members,
             }
 
@@ -116,12 +116,13 @@ class Symbiflow(Edatool):
     def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
-        has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
+        has_vhdl = [x.name for x in src_files if x.file_type.startsWith("vhdlSource")]
 
-        assert (
-            not has_vhdl and not has_vhdl2008
-        ), "VHDL files are not supported in Yosys"
+        if has_vhdl:
+            logger.error(
+                "VHDL files are not supported in Yosys: {}".format(", ".join(has_vhdl))
+            )
+
         file_list = []
         timing_constraints = []
         pins_constraints = []
@@ -149,8 +150,10 @@ class Symbiflow(Edatool):
         part = self.tool_options.get("part", None)
         package = self.tool_options.get("package", None)
 
-        assert part is not None, 'Missing required "part" parameter'
-        assert package is not None, 'Missing required "package" parameter'
+        if part is None:
+            logger.error("Missing required 'part' parameter")
+        if package is None:
+            logger.error("Missing required 'package' parameter")
 
         if "xc7a" in part:
             bitstream_device = "artix7"

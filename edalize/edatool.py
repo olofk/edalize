@@ -111,7 +111,7 @@ class Edatool(object):
         # this function to provide custom args checking logic.
 
         if unknown:
-            raise Exception(f'Unknown command line option {unknown[0]}')
+            raise NotImplementedError("Unknown command line option {}".format(unknown[0]))
 
     def configure(self, args=[]):
         if args:
