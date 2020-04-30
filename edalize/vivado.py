@@ -100,17 +100,14 @@ class Vivado(Edatool):
 
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
 
-        has_vhdl = [x.name for x in src_files if x.file_type.startsWith("vhdlSource")]
+        has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
+        has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
         has_xci = "xci" in [x.file_type for x in src_files]
 
         self.synth_tool = self.tool_options.get("synth", "vivado")
         if self.synth_tool == "yosys":
-            if has_vhdl:
-                logger.error(
-                    "VHDL files are not supported in Yosys: {}".format(
-                        ", ".join(has_vhdl)
-                    )
-                )
+            if has_vhdl or has_vhdl2008:
+                logger.error("VHDL files are not supported in Yosys.")
 
             yosys_synth_options = self.tool_options.get("yosys_synth_options", "")
             yosys_edam = {

@@ -116,7 +116,7 @@ class Symbiflow(Edatool):
     def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        has_vhdl = [x.name for x in src_files if x.file_type.startsWith("vhdlSource")]
+        has_vhdl = [x.name for x in src_files if x.file_type.startswith("vhdlSource")]
 
         if has_vhdl:
             logger.error(
