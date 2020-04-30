@@ -30,6 +30,11 @@ def test_xcelium():
     os.environ['PATH'] = '{}:{}'.format(os.path.join(tests_dir, 'mock_commands/xcelium'),
                                         os.environ['PATH'])
 
+    # For some strange reason, writing to os.environ['PATH'] doesn't update the environment. This
+    # leads to test fails, but only when running multiple tests. When running this test by itself,
+    # everything works fine without the 'putenv'.
+    os.putenv('PATH', os.environ['PATH'])
+
     backend.build()
     os.makedirs(os.path.join(work_root, 'work'))
 
