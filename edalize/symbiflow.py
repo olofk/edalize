@@ -90,8 +90,10 @@ class Symbiflow(Edatool):
         part = self.tool_options.get("part", None)
         package = self.tool_options.get("package", None)
 
-        assert part is not None, 'Missing required "part" parameter'
-        assert package is not None, 'Missing required "package" parameter'
+        if part is None:
+            logger.error("Missing required 'part' parameter")
+        if package is None:
+            logger.error("Missing required 'package' parameter")
 
         partname = part + package
 
