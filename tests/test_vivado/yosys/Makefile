@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 NAME := test_vivado_yosys_0
 BITSTREAM := test_vivado_yosys_0.bit
-PART := xc7z010clg400-1
+PART := xc7a35tcsg324-1
 
 all: $(BITSTREAM)
 $(NAME).edif: $(NAME).mk

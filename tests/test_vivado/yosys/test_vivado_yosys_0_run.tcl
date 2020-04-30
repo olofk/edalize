@@ -1,6 +1,6 @@
 read_edif test_vivado_yosys_0.edif
 
-link_design -top test_vivado_yosys_0 -part xc7z010clg400-1
+link_design -top test_vivado_yosys_0 -part xc7a35tcsg324-1
 
 
 # Vivado will raise an error if impl_1 is launched when it is already done. So

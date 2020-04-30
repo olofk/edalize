@@ -19,6 +19,7 @@ def test_vivado():
     compare_files(ref_dir, work_root, [
         'Makefile',
         name+'.tcl',
+        name+'_synth.tcl',
         name+'_run.tcl',
         name+'_pgm.tcl',
     ])
@@ -28,7 +29,9 @@ def test_vivado():
         'vivado.cmd',
     ])
 
-def test_vivado_minimal():
+
+@pytest.mark.parametrize("params", [("minimal", "vivado"), ("yosys", "yosys")])
+def test_vivado_minimal(params):
     import os
     import shutil
     import tempfile
@@ -37,13 +40,16 @@ def test_vivado_minimal():
 
     from edalize_common import compare_files, tests_dir
 
-    ref_dir      = os.path.join(tests_dir, __name__, 'minimal')
+    test_name, synth_tool = params
+
+    ref_dir      = os.path.join(tests_dir, __name__, test_name)
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     tool = 'vivado'
     tool_options = {
         'part' : 'xc7a35tcsg324-1',
+        'synth': synth_tool,
     }
-    name = 'test_vivado_minimal_0'
+    name = 'test_vivado_{}_0'.format(test_name)
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
     edam = {'name'         : name,
@@ -53,48 +59,25 @@ def test_vivado_minimal():
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
     backend.configure()
 
-    compare_files(ref_dir, work_root, [
+    config_file_list = [
         'Makefile',
         name+'.tcl',
         name+'_run.tcl',
         name+'_pgm.tcl',
-    ])
+    ]
+
+    if synth_tool == "yosys":
+        config_file_list.append(name+'.mk')
+        config_file_list.append('yosys.tcl')
+    else:
+        config_file_list.append(name+'_synth.tcl')
+
+    compare_files(ref_dir, work_root, config_file_list)
+
+    build_file_list = ['vivado.cmd']
+
+    if synth_tool == "yosys":
+        build_file_list.append('yosys.cmd')
 
     backend.build()
-    compare_files(ref_dir, work_root, [
-        'vivado.cmd',
-    ])
-
-def test_vivado_yosys():
-    import os
-    import shutil
-    import tempfile
-
-    from edalize import get_edatool
-
-    from edalize_common import compare_files, tests_dir
-
-    ref_dir      = os.path.join(tests_dir, __name__, 'yosys')
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    tool = 'vivado'
-    tool_options = {
-        'part' : 'xc7z010clg400-1',
-        'synth': 'yosys',
-    }
-    name = 'test_vivado_yosys_0'
-    work_root = tempfile.mkdtemp(prefix=tool+'_')
-
-    edam = {'name'         : name,
-            'tool_options' : {'vivado' : tool_options}
-    }
-
-    backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    backend.configure()
-
-    compare_files(ref_dir, work_root, [
-        'Makefile',
-        name+'.tcl',
-        name+'_run.tcl',
-        name+'_pgm.tcl',
-        'yosys.tcl',
-    ])
+    compare_files(ref_dir, work_root, build_file_list)

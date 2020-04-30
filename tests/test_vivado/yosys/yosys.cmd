@@ -1,0 +1,1 @@
+-l yosys.log -p tcl yosys.tcl
