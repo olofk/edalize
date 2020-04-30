@@ -64,3 +64,37 @@ def test_vivado_minimal():
     compare_files(ref_dir, work_root, [
         'vivado.cmd',
     ])
+
+def test_vivado_yosys():
+    import os
+    import shutil
+    import tempfile
+
+    from edalize import get_edatool
+
+    from edalize_common import compare_files, tests_dir
+
+    ref_dir      = os.path.join(tests_dir, __name__, 'yosys')
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    tool = 'vivado'
+    tool_options = {
+        'part' : 'xc7z010clg400-1',
+        'synth': 'yosys',
+    }
+    name = 'test_vivado_yosys_0'
+    work_root = tempfile.mkdtemp(prefix=tool+'_')
+
+    edam = {'name'         : name,
+            'tool_options' : {'vivado' : tool_options}
+    }
+
+    backend = get_edatool(tool)(edam=edam, work_root=work_root)
+    backend.configure()
+
+    compare_files(ref_dir, work_root, [
+        'Makefile',
+        name+'.tcl',
+        name+'_run.tcl',
+        name+'_pgm.tcl',
+        'yosys.tcl',
+    ])
