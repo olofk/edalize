@@ -2,7 +2,7 @@ Edalize
 =======
 
 .. image:: https://github.com/olofk/edalize/workflows/CI/badge.svg
-        :target: https://github.com/olofk/edalize/workflows/CI/badge.svg
+        :target: https://github.com/olofk/edalize/actions?query=workflow%3ACI
         :alt: CI status
 
 .. image:: https://readthedocs.org/projects/edalize/badge/?version=latest
@@ -103,11 +103,11 @@ Create the directory and the project files::
 
   os.makedirs(work_root)
   backend.configure()
-  
+
 At this point, we still haven't run the actual EDA tool and the files in the ``work_root`` directory can be used without edalize if that is preferred. But let's continue the example with Edalize.
 
 Build the simulation model::
-  
+
   backend.build()
 
 And finally run it, with our arguments. Some types of parameters (e.g. plusargs) are defined aat runtime, and at this point we can change their value by passing the name and new value to ``run()``. Or we could skip it altogether, and the default value from the configure stage would be used. Let's run with VCD logging enabled::
