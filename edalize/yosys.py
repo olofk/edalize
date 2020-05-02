@@ -49,7 +49,7 @@ class Yosys(Edatool):
                 continue
             argname = arg.strip('-')
             if argname not in yosys_args:
-                raise Exception(f'Unknown command line option {arg}')
+                raise Exception('Unknown command line option {}'.format(arg))
 
     def check_args(self, unknown):
         part_of_toolchain = self.tool_options.get('yosys_as_subtool', False)
