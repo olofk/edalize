@@ -1,6 +1,7 @@
 import os
 import logging
 
+from collections import OrderedDict
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -93,7 +94,8 @@ XSIM_OPTIONS  = {xsim_options}
                 _s = "Common values for vlogparam and generic: {}"
                 logger.warning(_s.format(common_vals))
 
-            gen_param = {**self.vlogparam, **self.generic}
+            gen_param = OrderedDict(self.vlogparam)
+            gen_param.update(self.generic)
             gen_param_args = " ".join(
                 [
                     "--generic_top {}={}".format(k, self._param_value_str(v))
