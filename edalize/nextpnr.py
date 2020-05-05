@@ -1,11 +1,13 @@
+import logging
 import os.path
 
 from edalize.edatool import Edatool
 from edalize.yosys import Yosys
 from importlib import import_module
 
+logger = logging.getLogger(__name__)
 
-class NextpnrXilinx(Edatool):
+class Nextpnr(Edatool):
 
     argtypes = []
 
@@ -123,7 +125,8 @@ class NextpnrXilinx(Edatool):
             else:
                 continue
 
-        assert chipdb and xdc, "Missing required files."
+        if chipdb is None or xdc is None:
+            logger.error("ERROR: missing required files (either XDC or chipdb).")
 
         template_vars = {
             "arch": arch,
