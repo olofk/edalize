@@ -27,6 +27,8 @@ read_mem bootrom.mem
 add_files -norecurse c_file.c
 add_files -norecurse cpp_file.cpp
 add_files -norecurse config.vbl
+add_files -norecurse chipdb.bin
+add_files -norecurse synth.json
 
 set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]
