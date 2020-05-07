@@ -49,6 +49,9 @@ setup(
         # which was fixed in 2.11.2 and later.
         # https://github.com/pallets/jinja/issues/1138
         'Jinja2 >=2.8, !=2.11.0, !=2.11.1',
+        'pyparsing',
+        'numpy',
+        'pandas',
     ],
     tests_require=[
         'vunit_hdl>=4.0.8'
