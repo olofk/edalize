@@ -28,7 +28,6 @@ Different EDA tools handle different subsets of files and are expected to ignore
 - QIP : Intel Quartus IP file
 - UCF : Xilinx ISE constraint file
 - verilogSource-2005 : Verilog 200 source
-- systemVerilogSource : SystemVerilog 2009/2017 source
 - vhdlSource-2008 : VHDL 2008 source
 - xci : Xilinx Vivado IP file
 - xdc : Xilinx Vivado constraint file
