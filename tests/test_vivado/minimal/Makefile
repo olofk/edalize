@@ -10,7 +10,7 @@ $(NAME).runs/synth_1/__synthesis_is_complete__: $(NAME)_synth.tcl $(NAME).xpr
 
 synth: $(NAME).runs/synth_1/__synthesis_is_complete__
 
-$(BITSTREAM): $(NAME)_run.tcl synth
+$(BITSTREAM): $(NAME)_run.tcl $(NAME).xpr
 	vivado -notrace -mode batch -source $< $(NAME).xpr
 
 $(NAME).xpr: $(NAME).tcl
