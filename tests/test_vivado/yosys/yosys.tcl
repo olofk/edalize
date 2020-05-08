@@ -31,7 +31,7 @@ foreach f ${file_table} {
 
 verilog_defaults -pop
 
-synth_ice40  -top top_module
-write_blif test_icestorm_0.blif
-write_json test_icestorm_0.json
-write_edif  test_icestorm_0.edif
+synth_xilinx  -top []
+write_blif test_vivado_yosys_0.blif
+write_json test_vivado_yosys_0.json
+write_edif -pvector bra test_vivado_yosys_0.edif

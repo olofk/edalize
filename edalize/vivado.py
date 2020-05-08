@@ -5,6 +5,8 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
+from edalize.yosys import Yosys
+from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +30,15 @@ class Vivado(Edatool):
         if api_ver == 0:
             return {'description' : "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA",
                     'members' : [
+                        {'name' : 'vivado-settings',
+                         'type' : 'String',
+                         'desc' : 'Path to vivado settings (e.g. /opt/Xilinx/Vivado/2017.2/settings64.sh)'},
                         {'name' : 'part',
                          'type' : 'String',
                          'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)'},
+                        {'name' : 'synth',
+                         'type' : 'String',
+                         'desc' : 'Synthesis tool. Allowed values are vivado (default) and yosys.'},
                         {'name' : 'pnr',
                          'type' : 'String',
                          'desc' : 'P&R tool. Allowed values are vivado (default) and none (to just run synthesis)'},
@@ -70,10 +78,36 @@ class Vivado(Edatool):
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        self.jinja_env.filters['src_file_filter'] = self.src_file_filter
+        self.jinja_env.filters["src_file_filter"] = self.src_file_filter
 
-        has_vhdl2008 = 'vhdlSource-2008' in [x.file_type for x in src_files]
-        has_xci      = 'xci'             in [x.file_type for x in src_files]
+        has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
+        has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
+        has_xci = "xci" in [x.file_type for x in src_files]
+
+        self.synth_tool = self.tool_options.get("synth", "vivado")
+        if self.synth_tool == "yosys":
+            if has_vhdl or has_vhdl2008:
+                logger.error("VHDL files are not supported in Yosys.")
+
+            yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
+            yosys_edam = {
+                    'files'         : self.files,
+                    'name'          : self.name,
+                    'toplevel'      : self.toplevel,
+                    'parameters'    : self.parameters,
+                    'tool_options'  : {'yosys' : {
+                                            'arch' : 'xilinx',
+                                            'output_format' : 'edif',
+                                            'synth_options' : yosys_synth_options,
+                                            'yosys_as_subtool' : True,
+                                            'script_name'   : 'yosys.tcl',
+                                            }
+                                    }
+                    }
+
+            yosys = getattr(import_module("edalize.yosys"), 'Yosys')(yosys_edam, self.work_root)
+            yosys.configure()
+
 
         template_vars = {
             'name'         : self.name,
@@ -88,21 +122,43 @@ class Vivado(Edatool):
             'has_xci'      : has_xci,
         }
 
-        self.render_template('vivado-project.tcl.j2',
-                             self.name+'.tcl',
-                             template_vars)
+        if self.synth_tool == 'yosys':
+            xdc_file = next((f for f in src_files if f.file_type == 'xdc'), None)
+            if xdc_file is not None:
+                xdc_file = xdc_file.name
+            self.render_template('vivado-project-yosys.tcl.j2',
+                                 self.name+'.tcl',
+                                 {'name' : self.name,
+                                  'tool_options' : self.tool_options})
+
+            self.render_template('vivado-run-yosys.tcl.j2',
+                                 self.name+"_run.tcl",
+                                 {'edif_file' : self.name + '.edif',
+                                  'xdc_file' : xdc_file,
+                                  'name' : self.name,
+                                  'tool_options' : self.tool_options})
+        else:
+            self.render_template('vivado-project.tcl.j2',
+                                 self.name+'.tcl',
+                                 template_vars)
+
+            self.render_template('vivado-run.tcl.j2',
+                                 self.name+"_run.tcl")
+
+            self.render_template('vivado-synth.tcl.j2',
+                                 self.name+"_synth.tcl")
+
+        vivado_settings = self.tool_options.get('vivado-settings', None)
+        vivado_command = "source {} && vivado".format(vivado_settings) if vivado_settings else "vivado"
 
         self.render_template('vivado-makefile.j2',
                              'Makefile',
                              {'name' : self.name,
                               'part' : self.tool_options.get('part', ""),
-                              'bitstream' : self.name+'.bit'})
-
-        self.render_template('vivado-run.tcl.j2',
-                             self.name+"_run.tcl")
-
-        self.render_template('vivado-synth.tcl.j2',
-                             self.name+"_synth.tcl")
+                              'bitstream' : self.name+'.bit',
+                              'yosys' : True if self.synth_tool == 'yosys' else None,
+                              'vivado_command': vivado_command
+                              })
 
         self.render_template('vivado-program.tcl.j2',
                              self.name+"_pgm.tcl")

@@ -1,16 +1,16 @@
 SHELL=/bin/bash
-NAME := test_vivado_minimal_0
-BITSTREAM := test_vivado_minimal_0.bit
+NAME := test_vivado_yosys_0
+BITSTREAM := test_vivado_yosys_0.bit
 PART := xc7a35tcsg324-1
 
 all: $(BITSTREAM)
 
-$(NAME).runs/synth_1/__synthesis_is_complete__: $(NAME)_synth.tcl $(NAME).xpr
-	vivado -notrace -mode batch -source $^
+$(NAME).edif: $(NAME).mk
+	$(MAKE) -f $<
 
-synth: $(NAME).runs/synth_1/__synthesis_is_complete__
+synth: $(NAME).edif
 
-$(BITSTREAM): $(NAME)_run.tcl $(NAME).xpr
+$(BITSTREAM): $(NAME)_run.tcl $(NAME).xpr synth
 	vivado -notrace -mode batch -source $< $(NAME).xpr
 
 $(NAME).xpr: $(NAME).tcl
