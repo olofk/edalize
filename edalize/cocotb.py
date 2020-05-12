@@ -52,9 +52,9 @@ class Cocotb(Edatool):
                          'desc': 'Any argument to be passed to the “first” invocation of a simulator that runs via a TCL script'},
                         {'name': 'extra_args',
                          'type': 'String',
-                         'desc': 'Passed to both the compile and execute phases of simulators with'
-                         + ' two rules, or passed to the single compile and run command for simulators'
-                         + ' which don’t have a distinct compilation stage'},
+                         'desc': 'Passed to both the compile and execute phases of simulators with '
+                                 'two rules, or passed to the single compile and run command for simulators '
+                                 'which don’t have a distinct compilation stage'},
                         {'name': 'random_seed',
                          'type': 'String',
                          'desc': 'Seed the Python random module to recreate a previous test stimulus'},
