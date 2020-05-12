@@ -21,6 +21,7 @@ def test_symbiflow(pnr_tool):
         "package": "csg324-1",
         "vendor": "xilinx",
         "pnr": pnr_tool,
+        "options": "--fake_option"
     }
     name = "test_vivado_{}_0".format(pnr_tool)
     work_root = tempfile.mkdtemp(prefix=tool + "_")
