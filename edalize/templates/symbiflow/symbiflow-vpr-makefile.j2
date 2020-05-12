@@ -10,6 +10,10 @@ PCF	:= {{ pcf }}
 XDC	:= {{ xdc }}
 BUILDDIR:= {{ builddir }}
 
+{% if options -%}
+VPR_OPTIONS = VPR_OPTIONS="{{ options }}"
+{%- endif %}
+
 {% if xdc -%}
 XDC_OPTS = "-x ${XDC}"
 {%- endif %}
@@ -27,16 +31,16 @@ ${TOP}.eblif: | ${BUILDDIR}
 	cd ${BUILDDIR} && synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} ${XDC_OPTS}
 
 ${TOP}.net: ${TOP}.eblif
-	cd ${BUILDDIR} && pack -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
+	cd ${BUILDDIR} && ${VPR_OPTIONS} pack -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
 
 ${TOP}.place: ${TOP}.net
-	cd ${BUILDDIR} && place -e ${TOP}.eblif -d ${DEVICE} -p ${PCF} -n ${TOP}.net -P ${PARTNAME} ${SDC_OPTS}
+	cd ${BUILDDIR} && ${VPR_OPTIONS} place -e ${TOP}.eblif -d ${DEVICE} -p ${PCF} -n ${TOP}.net -P ${PARTNAME} ${SDC_OPTS}
 
 ${TOP}.route: ${TOP}.place
-	cd ${BUILDDIR} && route -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
+	cd ${BUILDDIR} && ${VPR_OPTIONS} route -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
 
 ${TOP}.fasm: ${TOP}.route
-	cd ${BUILDDIR} && write_fasm -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
+	cd ${BUILDDIR} && ${VPR_OPTIONS} write_fasm -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
 
 ${TOP}.bit: ${TOP}.fasm
 	cd ${BUILDDIR} && write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit
