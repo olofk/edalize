@@ -13,4 +13,4 @@ all: $(TARGET).blif
 	yosys -l yosys.log -p "tcl $?"
 
 clean:
-	rm -f $(TARGET).blif $(TARGET).json
+	rm -f $(TARGET).blif $(TARGET).json $(TARGET).edif
