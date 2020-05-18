@@ -49,6 +49,36 @@ def test_edam_files():
 
     assert incdirs == ['subdir', '.']
 
+def test_verilog_include_file_with_include_path():
+    from edalize import get_edatool
+    files = [{'name' : 'some_dir/some_file',
+              'file_type' : 'verilogSource',
+              'is_include_file' : True,
+              'include_path' : 'some_dir'}]
+    edam = {'files' : files,
+            'name' : 'test_edam_files'}
+
+    backend = get_edatool('icarus')(edam=edam)
+    (parsed_files, incdirs) = backend._get_fileset_files()
+
+    assert len(parsed_files) == 0
+    assert incdirs == ['.']
+
+def test_verilog_include_file_with_partial_include_path():
+    from edalize import get_edatool
+    files = [{'name' : 'some_dir/some_subdir/some_file',
+              'file_type' : 'verilogSource',
+              'is_include_file' : True,
+              'include_path' : 'some_dir'}]
+    edam = {'files' : files,
+            'name' : 'test_edam_files'}
+
+    backend = get_edatool('icarus')(edam=edam)
+    (parsed_files, incdirs) = backend._get_fileset_files()
+
+    assert len(parsed_files) == 0
+    assert incdirs == ['some_subdir']
+
 def test_edam_hooks():
     import os.path
     import tempfile
