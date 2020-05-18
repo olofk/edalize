@@ -268,6 +268,8 @@ class Edatool(object):
         for f in self.files:
             if 'is_include_file' in f and f['is_include_file']:
                 _incdir = os.path.dirname(f['name']) or '.'
+                if 'include_path' in f and f['include_path']:
+                    _incdir = os.path.relpath(_incdir, f['include_path'])
                 if force_slash:
                     _incdir = _incdir.replace('\\', '/')
                 if not _incdir in incdirs:
