@@ -42,6 +42,16 @@ class FileAction(argparse.Action):
         path = os.path.abspath(path)
         setattr(namespace, self.dest, [path])
 
+
+class File(object):
+
+    def __init__(self, name, *, file_type='', is_include_file=False, logical_name=''):
+        self.name = name
+        self.file_type = file_type
+        self.is_include_file = is_include_file
+        self.logical_name = logical_name
+
+
 class Edatool(object):
 
     def __init__(self, edam=None, work_root=None, eda_api=None):
@@ -56,7 +66,10 @@ class Edatool(object):
 
         self.tool_options = edam.get('tool_options', {}).get(_tool_name, {})
 
-        self.files       = edam.get('files', [])
+        self.files = []
+        for file in edam.get('files', []):
+            self.files.append(file if isinstance(file, File) else File(**file))
+
         self.toplevel    = edam.get('toplevel', [])
         self.vpi_modules = edam.get('vpi', [])
 
@@ -266,21 +279,19 @@ class Edatool(object):
         incdirs = []
         src_files = []
         for f in self.files:
-            if 'is_include_file' in f and f['is_include_file']:
-                _incdir = os.path.dirname(f['name']) or '.'
+            if f.is_include_file:
+                _incdir = os.path.dirname(f.name) or '.'
                 if force_slash:
                     _incdir = _incdir.replace('\\', '/')
                 if not _incdir in incdirs:
                     incdirs.append(_incdir)
             else:
-                _name = f['name']
+                _name = f.name
                 if force_slash:
                     _name = _name.replace('\\', '/')
-                file_type = f.get('file_type', '')
-                logical_name = f.get('logical_name', '')
                 src_files.append(File(_name,
-                                      file_type,
-                                      logical_name))
+                                      f.file_type,
+                                      f.logical_name))
         return (src_files, incdirs)
 
     def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):

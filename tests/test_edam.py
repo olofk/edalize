@@ -23,6 +23,35 @@ def test_incomplete_edam():
 
 def test_edam_files():
     from edalize import get_edatool
+    from edalize.edatool import File
+    files = [File('plain_file'),
+             File(name='subdir/plain_include_file',
+                  is_include_file=True),
+             File(name='file_with_args',
+                  file_type='verilogSource',
+                  logical_name='libx'),
+             File(name='include_file_with_args',
+                  is_include_file=True,
+                  file_type='verilogSource',
+                  logical_name='libx')]
+    edam = {'files' : files,
+            'name' : 'test_edam_files'}
+
+    backend = get_edatool('icarus')(edam=edam)
+    (parsed_files, incdirs) = backend._get_fileset_files()
+
+    assert len(parsed_files) == 2
+    assert parsed_files[0].name         == 'plain_file'
+    assert parsed_files[0].file_type    == ''
+    assert parsed_files[0].logical_name == ''
+    assert parsed_files[1].name         == 'file_with_args'
+    assert parsed_files[1].file_type    == 'verilogSource'
+    assert parsed_files[1].logical_name == 'libx'
+
+    assert incdirs == ['subdir', '.']
+
+def test_edam_files_as_dict():
+    from edalize import get_edatool
     files = [{'name' : 'plain_file'},
              {'name' : 'subdir/plain_include_file',
               'is_include_file' : True},
