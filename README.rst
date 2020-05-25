@@ -31,8 +31,8 @@ It can be directly integrated as a library for your existing Python-powered HDL 
 Install it
 ----------
 
-Edalize is a python module. Then once downloaded we can install it with
-following python command::
+Edalize is a Python module. Then once downloaded we can install it with
+following Python command::
 
     $ cd edalize
     $ python -m pip install -e .
@@ -46,22 +46,22 @@ Ok, this sounds great. Now, how do I get started?
 Assume we have a project that consists of a Verilog source file called ``blinky.v``.
 Then there's also a testbench called ``blinky_tb.v`` and a constraints file for synthesis called ``constraints.sdc``.
 You can get those files from `blinky <https://github.com/fusesoc/blinky>`_ and for
-``vlog_tb_utils.v`` in `orpsoc-cores <https://github.com/fusesoc/vlog_tb_utils/blob/master/vlog_tb_utils.v>`_
+``vlog_tb_utils.v`` in `orpsoc-cores <https://github.com/fusesoc/vlog_tb_utils/blob/master/vlog_tb_utils.v>`_.
 
 For a simulation, we want to use the two Verilog files, build it in a subdirectory called ``build``, and then run it with a parameter to control simulated clock frequency.
 
-Edalize is a python tool, then we can run it inside a python script file or
-directly in python console.
+Edalize is a Python tool, then we can run it inside a Python script file or
+directly in the Python console.
 
-First we have to import edalize objects::
+First we have to import Edalize objects::
 
   from edalize import *
 
-os module is also required for this tutorial::
+The os module is also required for this tutorial::
 
   import os
 
-then register the files to use::
+Then register the files to use::
 
   work_root = 'build'
 
@@ -74,7 +74,7 @@ then register the files to use::
      'file_type' : 'verilogSource'}
   ]
 
-The design has a toplevel verilog parameter with the name ``clk_freq_hz``
+The design has a toplevel Verilog parameter with the name ``clk_freq_hz``
 that accepts integers. We set its default value to ``1000``. The testbench also
 has an option to enable waveform dumping by setting a plusarg called ``vcd``::
 
@@ -104,7 +104,7 @@ Create the directory and the project files::
   os.makedirs(work_root)
   backend.configure()
 
-At this point, we still haven't run the actual EDA tool and the files in the ``work_root`` directory can be used without edalize if that is preferred. But let's continue the example with Edalize.
+At this point, we still haven't run the actual EDA tool and the files in the ``work_root`` directory can be used without Edalize if that is preferred. But let's continue the example with Edalize.
 
 Build the simulation model::
 
