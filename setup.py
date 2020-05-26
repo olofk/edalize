@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "edalize",
-    version = "0.2.0",
+    version = "0.2.1",
     packages=['edalize'],
     package_data = {'edalize' : [
         'templates/yosys/yosys-makefile.j2',
