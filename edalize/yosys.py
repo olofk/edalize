@@ -23,7 +23,6 @@ class Yosys(Edatool):
                         {'name' : 'makefile_name',
                          'type' : 'String',
                          'desc' : 'Generated makefile name, defaults to $name.mk'},
-
                         {'name' : 'script_name',
                          'type' : 'String',
                          'desc' : 'Generated tcl script filename, defaults to $name.mk'},
@@ -74,7 +73,7 @@ class Yosys(Edatool):
         script_name = self. tool_options.get('script_name', self.name + '.tcl')
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
-				'verilog_params'	  : "\n".join(verilog_params),
+                'verilog_params'      : "\n".join(verilog_params),
                 'file_table'          : "{" + " ".join(file_table) + "}",
                 'incdirs'             : ' '.join(['-I'+d for d in incdirs]),
                 'top'                 : self.toplevel,

@@ -8,34 +8,31 @@ BITSTREAM_DEVICE := artix7
 SDC	:= 
 PCF	:= 
 XDC	:= top.xdc
-BUILDDIR:= build
 
-VPR_OPTIONS = VPR_OPTIONS="--fake_option"
-XDC_OPTS = "-x ${XDC}"
+VPR_OPTIONS_OPTS = --additional_vpr_options "--fake_option 1000"
+
+XDC_OPTS = -x ${XDC}
 
 all: ${TOP}.bit
 
-${BUILDDIR}:
-	mkdir ${BUILDDIR}
-
-${TOP}.eblif: | ${BUILDDIR}
-	cd ${BUILDDIR} && synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} ${XDC_OPTS}
+${TOP}.eblif:
+	symbiflow_synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} ${XDC_OPTS}
 
 ${TOP}.net: ${TOP}.eblif
-	cd ${BUILDDIR} && ${VPR_OPTIONS} pack -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
+	symbiflow_pack -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.place: ${TOP}.net
-	cd ${BUILDDIR} && ${VPR_OPTIONS} place -e ${TOP}.eblif -d ${DEVICE} -p ${PCF} -n ${TOP}.net -P ${PARTNAME} ${SDC_OPTS}
+	symbiflow_place -e ${TOP}.eblif -d ${DEVICE} -n ${TOP}.net -P ${PARTNAME} ${SDC_OPTS} ${PCF_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.route: ${TOP}.place
-	cd ${BUILDDIR} && ${VPR_OPTIONS} route -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
+	symbiflow_route -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.fasm: ${TOP}.route
-	cd ${BUILDDIR} && ${VPR_OPTIONS} write_fasm -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS}
+	symbiflow_write_fasm -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.bit: ${TOP}.fasm
-	cd ${BUILDDIR} && write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit
+	symbiflow_write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit
 
 clean:
-	rm -rf ${BUILDDIR}
+	rm -rf *.log *.rpt *.place *.bit *.eblif *.fasm *.json *.ioplace *.net *.route
 

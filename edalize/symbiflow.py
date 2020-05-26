@@ -41,11 +41,6 @@ class Symbiflow(Edatool):
                         "desc": "FPGA part type (e.g. xc7a50t)",
                     },
                     {
-                        "name": "builddir",
-                        "type": "String",
-                        "desc": 'directory where all the intermediate files will be stored (default "build")',
-                    },
-                    {
                         "name": "vendor",
                         "type": "String",
                         "desc": 'Target architecture. Currently only "xilinx" is supported',
@@ -53,12 +48,12 @@ class Symbiflow(Edatool):
                     {
                         "name": "pnr",
                         "type": "String",
-                        "desc": 'Place and Route tool. Currently only "vpr" and "nextpnr" are supported',
+                        "desc": 'Place and Route tool. Currently only "vpr" is supported',
                     },
                     {
-                        "name": "options",
+                        "name": "vpr_options",
                         "type": "String",
-                        "desc": "Tool options. If not used, default options for the tool will be used",
+                        "desc": "Additional vpr tool options. If not used, default options for the tool will be used",
                     },
                 ]
             }
@@ -66,7 +61,7 @@ class Symbiflow(Edatool):
             symbiflow_members = symbiflow_help["members"]
 
             return {
-                "description": "The Symbilow backend executes Yosys sythesis tool and VPR place and route. It can target multiple different FPGA vendors",
+                "description": "The Symbiflow backend executes Yosys sythesis tool and VPR place and route. It can target multiple different FPGA vendors",
                 "members": symbiflow_members,
             }
 
@@ -79,9 +74,8 @@ class Symbiflow(Edatool):
         has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
         has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
 
-        assert (
-            not has_vhdl and not has_vhdl2008
-        ), "VHDL files are not supported in Yosys"
+        if has_vhdl or has_vhdl2008:
+            logger.error("VHDL files are not supported in Yosys")
         file_list = []
         timing_constraints = []
         pins_constraints = []
@@ -100,17 +94,13 @@ class Symbiflow(Edatool):
             if f.file_type in ["user"]:
                 user_files.append(f.name)
 
-        builddir = self.tool_options.get("builddir", "build")
-
-        # copy user files to builddir
-        for f in user_files:
-            shutil.copy(f, self.work_root + "/" + builddir)
-
         part = self.tool_options.get("part", None)
         package = self.tool_options.get("package", None)
 
-        assert part is not None, 'Missing required "part" parameter'
-        assert package is not None, 'Missing required "package" parameter'
+        if not part:
+            logger.error('Missing required "part" parameter')
+        if not package:
+            logger.error('Missing required "package" parameter')
 
         if "xc7a" in part:
             bitstream_device = "artix7"
@@ -126,7 +116,7 @@ class Symbiflow(Edatool):
         if part == "xc7a35t":
             part = "xc7a50t"
 
-        options = self.tool_options.get("options", None)
+        vpr_options = self.tool_options.get("vpr_options", None)
 
         makefile_params = {
             "top": self.toplevel,
@@ -137,8 +127,7 @@ class Symbiflow(Edatool):
             "sdc": " ".join(timing_constraints),
             "pcf": " ".join(pins_constraints),
             "xdc": " ".join(placement_constraints),
-            "builddir": builddir,
-            "options": options,
+            "vpr_options": vpr_options,
         }
         self.render_template("symbiflow-vpr-makefile.j2", "Makefile", makefile_params)
 
