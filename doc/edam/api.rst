@@ -39,6 +39,7 @@ Field Name      Type                  Description
 name            String                **Required** File name with (absolute or relative) path
 file_type       String                **Required** File type
 is_include_file Bool                  Indicates if this file should be treated as an include file (default false)
+include_path    String                When is_include_file is true, the directory containing the file will be added to the include path. include_path allows setting an explicit directory to use instead
 logical_name    String                Logical name (e.g. VHDL/SystemVerilog library) of the file
 =============== ===================== ===========
 

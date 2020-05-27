@@ -62,14 +62,14 @@ def test_verilog_include_file_with_include_path():
     (parsed_files, incdirs) = backend._get_fileset_files()
 
     assert len(parsed_files) == 0
-    assert incdirs == ['.']
+    assert incdirs == ['some_dir']
 
 def test_verilog_include_file_with_partial_include_path():
     from edalize import get_edatool
-    files = [{'name' : 'some_dir/some_subdir/some_file',
+    files = [{'name' : '../some_dir/some_subdir/some_file',
               'file_type' : 'verilogSource',
               'is_include_file' : True,
-              'include_path' : 'some_dir'}]
+              'include_path' : '../some_dir'}]
     edam = {'files' : files,
             'name' : 'test_edam_files'}
 
@@ -77,7 +77,7 @@ def test_verilog_include_file_with_partial_include_path():
     (parsed_files, incdirs) = backend._get_fileset_files()
 
     assert len(parsed_files) == 0
-    assert incdirs == ['some_subdir']
+    assert incdirs == ['../some_dir']
 
 def test_edam_hooks():
     import os.path
