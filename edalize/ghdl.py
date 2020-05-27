@@ -63,7 +63,7 @@ VHDL_SOURCES = {vhdl_sources}
 all: work-obj{standard}.cf
 
 run: $(TOPLEVEL)
-\tghdl -r $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+\tghdl -r $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
 \tghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
