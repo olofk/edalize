@@ -143,7 +143,7 @@ class Cocotb:
         pythonpath = self._create_python_path()
 
         if 'PYTHONPATH' in os.environ:
-            os.environ['PYTHONPATH'] += ':' + pythonpath
+            os.environ['PYTHONPATH'] += os.pathsep + pythonpath
         else:
             os.environ['PYTHONPATH'] = pythonpath
 
