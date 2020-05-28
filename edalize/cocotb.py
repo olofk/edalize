@@ -28,9 +28,8 @@ class CocotbConfig:
             raise RuntimeError('GHDL only supports VHDL')
 
         ghdl_cocotb_lib = pathlib.Path(os.path.dirname(cocotb.__file__)) / 'libs' / 'libcocotbvpi_ghdl.so'
-        args = f"--vpi={ghdl_cocotb_lib}"
 
-        return args
+        return [f"--vpi={ghdl_cocotb_lib}"]
 
     @staticmethod
     def get_icarus_args(toplevel_lang):
@@ -38,9 +37,8 @@ class CocotbConfig:
             raise RuntimeError('Icarus only supports Verilog')
 
         cocotb_lib_dir = pathlib.Path(os.path.dirname(cocotb.__file__)) / 'libs'
-        args = f"-M {cocotb_lib_dir} -m libcocotbvpi_icarus"
 
-        return args
+        return ['-M', str(cocotb_lib_dir), '-m', 'libcocotbvpi_icarus']
 
 
 # Don't inherit from Edatool so we can delegate methods to simulator backend with getattr
@@ -81,9 +79,9 @@ class Cocotb:
         cocotb_args = CocotbConfig.get_simulator_args(simulator_name, toplevel_lang)
         simulator_options = self.tool_options.get('tool_options', {})
         if self.option_name[simulator_name] in simulator_options:
-            simulator_options[self.option_name[simulator_name]] += [cocotb_args]
+            simulator_options[self.option_name[simulator_name]] += cocotb_args
         else:
-            simulator_options[self.option_name[simulator_name]] = [cocotb_args]
+            simulator_options[self.option_name[simulator_name]] = cocotb_args
 
         edam['tool_options'][simulator_name] = simulator_options
 
