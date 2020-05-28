@@ -1,13 +1,10 @@
 import logging
 import os
-
-from os.path import dirname
-from pathlib import Path
+import pathlib
 
 import cocotb
 
 from edalize import get_edatool
-
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +27,7 @@ class CocotbConfig:
         if toplevel_lang != 'vhdl':
             raise RuntimeError('GHDL only supports VHDL')
 
-        ghdl_cocotb_lib = Path(dirname(cocotb.__file__)) / 'libs' / 'libcocotbvpi_ghdl.so'
+        ghdl_cocotb_lib = pathlib.Path(os.path.dirname(cocotb.__file__)) / 'libs' / 'libcocotbvpi_ghdl.so'
         args = f"--vpi={ghdl_cocotb_lib}"
 
         return args
@@ -40,7 +37,7 @@ class CocotbConfig:
         if toplevel_lang != 'verilog':
             raise RuntimeError('Icarus only supports Verilog')
 
-        cocotb_lib_dir = Path(dirname(cocotb.__file__)) / 'libs'
+        cocotb_lib_dir = pathlib.Path(os.path.dirname(cocotb.__file__)) / 'libs'
         args = f"-M {cocotb_lib_dir} -m libcocotbvpi_icarus"
 
         return args
@@ -111,7 +108,7 @@ class Cocotb:
                          'type': 'String',
                          'desc': 'Language of top level HDL module (required)'},
                         {'name': 'random_seed',
-                         'type': 'String',
+                         'type': 'Integer',
                          'desc': 'Seed the Python random module to recreate a previous test stimulus'},
                         {'name': 'testcase',
                          'type': 'String',
@@ -122,6 +119,11 @@ class Cocotb:
                     ]
                     }
 
+    # This creates a python path that contains the parent directory of every
+    # python file in the fileset. This is not ideal because several directories
+    # in a hierarchical tree may be added, which allows a given module to be
+    # imported in several ways. One way to fix this in future might be to allow
+    # path components to be passed into Edalize from FuseSoC as well as files.
     def _create_python_path(self):
         (src_files, incdirs) = self._get_fileset_files()
         path_components = []
@@ -144,3 +146,12 @@ class Cocotb:
             os.environ['PYTHONPATH'] += ':' + pythonpath
         else:
             os.environ['PYTHONPATH'] = pythonpath
+
+        if 'random_seed' in self.tool_options:
+            os.environ['RANDOM_SEED'] = str(self.tool_options['random_seed'])
+
+        if 'testcase' in self.tool_options:
+            os.environ['TESTCASE'] = self.tool_options['testcase']
+
+        if 'cocotb_results_file' in self.tool_options:
+            os.environ['COCOTB_RESULTS_FILE'] = self.tool_options['cocotb_results_file']

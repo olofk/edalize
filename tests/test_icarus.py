@@ -10,7 +10,8 @@ def test_icarus():
     name         = 'test_icarus_0'
     tool         = 'icarus'
     tool_options = {
-        'iverilog_options' : ['some', 'iverilog_options'],
+        'iverilog_options': ['some', 'iverilog_options'],
+        'vpp_options': ['some', 'vpp_options'],
         'timescale'        : '1ns/1ns',
     }
 

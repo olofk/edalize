@@ -9,7 +9,7 @@ VHDL_SOURCES =  vhdl_file.vhd vhdl_lfile vhdl2008_file
 all: work-obj08.cf
 
 run: $(TOPLEVEL)
-	ghdl -r $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+	ghdl -r $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj08.cf
 	ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
