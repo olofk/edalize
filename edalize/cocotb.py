@@ -134,7 +134,7 @@ class Cocotb:
                 if component not in path_components:
                     path_components.append(component)
 
-        return ':'.join(path_components)
+        return os.pathsep.join(path_components)
 
     def _configure_environment(self):
         os.environ['MODULE'] = self.tool_options['module']
