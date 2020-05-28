@@ -309,10 +309,18 @@ class Edatool(object):
         logger.debug("Running " + cmd)
         logger.debug("args  : " + ' '.join(args))
 
+        # This looks a little odd, but it is necessary in case the environment
+        # sometimes gets updated after the backend is instantiated. Making the
+        # handling of environments consistent across backends could resolve
+        # this.
+        env = self.env
+        env.update(os.environ)
+
         try:
             subprocess.check_call([cmd] + args,
                                   cwd = self.work_root,
-                                  stdin=subprocess.PIPE),
+                                  stdin=subprocess.PIPE,
+                                  env=env),
         except FileNotFoundError:
             _s = "Command '{}' not found. Make sure it is in $PATH"
             raise RuntimeError(_s.format(cmd))

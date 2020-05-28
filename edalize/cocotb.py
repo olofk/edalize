@@ -91,7 +91,8 @@ class Cocotb:
         self.simulator = get_edatool(simulator_name)(edam, work_root)
 
         # Run methods that rely on delegation to simulator backend
-        self._configure_environment()
+        extra_env = self._create_environment()
+        self.simulator.env.update(extra_env)
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -136,22 +137,26 @@ class Cocotb:
 
         return os.pathsep.join(path_components)
 
-    def _configure_environment(self):
-        os.environ['MODULE'] = self.tool_options['module']
-        os.environ['TOPLEVEL_LANG'] = self.tool_options['toplevel_lang']
+    def _create_environment(self):
+        extra_env = {}
+
+        extra_env['MODULE'] = self.tool_options['module']
+        extra_env['TOPLEVEL_LANG'] = self.tool_options['toplevel_lang']
 
         pythonpath = self._create_python_path()
 
         if 'PYTHONPATH' in os.environ:
-            os.environ['PYTHONPATH'] += os.pathsep + pythonpath
+            extra_env['PYTHONPATH'] += os.pathsep + pythonpath
         else:
-            os.environ['PYTHONPATH'] = pythonpath
+            extra_env['PYTHONPATH'] = pythonpath
 
         if 'random_seed' in self.tool_options:
-            os.environ['RANDOM_SEED'] = str(self.tool_options['random_seed'])
+            extra_env['RANDOM_SEED'] = str(self.tool_options['random_seed'])
 
         if 'testcase' in self.tool_options:
-            os.environ['TESTCASE'] = self.tool_options['testcase']
+            extra_env['TESTCASE'] = self.tool_options['testcase']
 
         if 'cocotb_results_file' in self.tool_options:
-            os.environ['COCOTB_RESULTS_FILE'] = self.tool_options['cocotb_results_file']
+            extra_env['COCOTB_RESULTS_FILE'] = self.tool_options['cocotb_results_file']
+
+        return extra_env
