@@ -1,36 +1,79 @@
 import logging
 import os
 
-from edalize.helpers.cocotb_args import get_cocotb_args
+from os.path import dirname
+from pathlib import Path
+
+import cocotb
 
 from edalize import get_edatool
-from edalize.edatool import Edatool
+
 
 logger = logging.getLogger(__name__)
 
 
-class Cocotb(Edatool):
+# This class could be replaced by calls to cocotb-config. Knowledge of these
+# simulator arguments belongs in the cocotb codebase.
+class CocotbConfig:
+
+    @staticmethod
+    def get_simulator_args(simulator, toplevel_lang):
+        if simulator == 'ghdl':
+            return CocotbConfig.get_ghdl_args(toplevel_lang)
+        elif simulator == 'icarus':
+            return CocotbConfig.get_icarus_args(toplevel_lang)
+        else:
+            raise RuntimeError('Simulator ' + simulator + ' is not supported by cocotb backend')
+
+    @staticmethod
+    def get_ghdl_args(toplevel_lang):
+        if toplevel_lang != 'vhdl':
+            raise RuntimeError('GHDL only supports VHDL')
+
+        ghdl_cocotb_lib = Path(dirname(cocotb.__file__)) / 'libs' / 'libcocotbvpi_ghdl.so'
+        args = f"--vpi={ghdl_cocotb_lib}"
+
+        return args
+
+    @staticmethod
+    def get_icarus_args(toplevel_lang):
+        if toplevel_lang != 'verilog':
+            raise RuntimeError('Icarus only supports Verilog')
+
+        cocotb_lib_dir = Path(dirname(cocotb.__file__)) / 'libs'
+        args = f"-M {cocotb_lib_dir} -m libcocotbvpi_icarus"
+
+        return args
+
+
+# Don't inherit from Edatool so we can delegate methods to simulator backend with getattr
+class Cocotb:
 
     argtypes = []
+
+    # Name of tool_option where cocotb library arguments are added
+    option_name = {
+        'ghdl': 'run_options',
+        'icarus': 'vpp_options'
+    }
+
+    # Delegate undefined calls to wrapped simulator
+    def __getattr__(self, k):
+        return getattr(self.simulator, k)
 
     def __init__(self, edam=None, work_root=None, eda_api=None):
         _tool_name = self.__class__.__name__.lower()
 
         if not edam:
             edam = eda_api
-        try:
-            self.name = edam['name']
-        except KeyError:
-            raise RuntimeError("Missing required parameter 'name'")
 
         self.tool_options = edam.get('tool_options', {}).pop(_tool_name, {})
-        self.files = edam.get('files', [])
         self.work_root = work_root
 
         try:
-            simulator_name = self.tool_options['sim']
+            simulator_name = self.tool_options['simulator']
         except KeyError:
-            raise RuntimeError("Missing required parameter 'sim' in cocotb options")
+            raise RuntimeError("Missing required parameter 'simulator' in cocotb options")
 
         try:
             toplevel_lang = self.tool_options['toplevel_lang']
@@ -38,28 +81,29 @@ class Cocotb(Edatool):
             raise RuntimeError("Missing required parameter 'toplevel_lang' in cocotb options")
 
         # Add options to edam for simulator backend
-        (option_name, args) = get_cocotb_args(simulator_name, toplevel_lang)
+        cocotb_args = CocotbConfig.get_simulator_args(simulator_name, toplevel_lang)
         simulator_options = self.tool_options.get('tool_options', {})
-        if option_name in simulator_options:
-            simulator_options[option_name] += [args]
+        if self.option_name[simulator_name] in simulator_options:
+            simulator_options[self.option_name[simulator_name]] += [cocotb_args]
         else:
-            simulator_options[option_name] = [args]
+            simulator_options[self.option_name[simulator_name]] = [cocotb_args]
 
         edam['tool_options'][simulator_name] = simulator_options
 
-        self._configure_environment()
-
         # Instantiate the required simulator backend
         self.simulator = get_edatool(simulator_name)(edam, work_root)
+
+        # Run methods that rely on delegation to simulator backend
+        self._configure_environment()
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description': 'cocotb - see <https://docs.cocotb.org/> for additional documentation on options',
                     'members': [
-                        {'name': 'sim',
+                        {'name': 'simulator',
                          'type': 'String',
-                         'desc': 'The simulator to use(required)'},
+                         'desc': 'The simulator backend to use to run Cocotb (required)'},
                         {'name': 'module',
                          'type': 'String',
                          'desc': 'Comma-separated list of the Python modules to search for test functions (required)'},
@@ -75,7 +119,7 @@ class Cocotb(Edatool):
                         {'name': 'cocotb_results_file',
                          'type': 'String',
                          'desc': 'The file name where xUnit XML tests results are stored'},
-                        ]
+                    ]
                     }
 
     def _create_python_path(self):
@@ -100,32 +144,3 @@ class Cocotb(Edatool):
             os.environ['PYTHONPATH'] += ':' + pythonpath
         else:
             os.environ['PYTHONPATH'] = pythonpath
-
-    # Delegate all configure, build and run methods to simulator object
-
-    def configure_pre(self):
-        self.simulator.configure_pre()
-
-    def configure_main(self):
-        self.simulator.configure_main()
-
-    def configure_post(self):
-        self.simulator.configure_post()
-
-    def build_pre(self):
-        self.simulator.build_pre()
-
-    def build_main(self, target=None):
-        self.simulator.build_main(target)
-
-    def build_post(self):
-        self.simulator.build_post()
-
-    def run_pre(self, args=None):
-        self.simulator.run_pre(args)
-
-    def run_main(self):
-        self.simulator.run_main()
-
-    def run_post(self):
-        self.simulator.run_post()
