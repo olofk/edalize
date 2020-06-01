@@ -320,7 +320,7 @@ class Edatool(object):
             subprocess.check_call([cmd] + args,
                                   cwd = self.work_root,
                                   stdin=subprocess.PIPE,
-                                  env=env),
+                                  env=env)
         except FileNotFoundError:
             _s = "Command '{}' not found. Make sure it is in $PATH"
             raise RuntimeError(_s.format(cmd))
