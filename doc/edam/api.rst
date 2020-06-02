@@ -192,6 +192,7 @@ board_device_index  List of String        Specifies the FPGA's device number in 
 family              String                FPGA family e.g. *Cyclone IV E*
 device              String                Device identifier. e.g. *EP4CE55F23C8* or *5CSXFC6D6F31C8ES*
 quartus_options     List of String        Extra command-line options for Quartus
+dse_options         List of String        Command-line options for Design Space Explorer
 ================== ===================== ===========
 
 rivierapro
