@@ -34,6 +34,7 @@ def test_quartus():
         'family'          : 'Cyclone V',
         'device'          : '5CSXFC6D6F31C8ES',
         'quartus_options' : ['some', 'quartus_options'],
+        'dse_options'     : ['some', 'dse_options'],
     }
 
     # Test each edition of Quartus
