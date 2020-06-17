@@ -3,7 +3,10 @@ from os.path import dirname
 from pkgutil import walk_packages
 
 NON_TOOL_PACKAGES = [
-    'vunit_hooks'
+    'vunit_hooks',
+    'ise_reporting',
+    'vivado_reporting',
+    'quartus_reporting',
 ]
 
 def get_edatool(name):
