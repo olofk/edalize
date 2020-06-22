@@ -76,6 +76,14 @@ edalize.rivierapro module
     :undoc-members:
     :show-inheritance:
 
+edalize.symbiyosys module
+-------------------------
+
+.. automodule:: edalize.symbiyosys
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 edalize.spyglass module
 -----------------------
 
