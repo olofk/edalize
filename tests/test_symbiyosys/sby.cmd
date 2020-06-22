@@ -1,0 +1,1 @@
+-d build test.sby task0 task1

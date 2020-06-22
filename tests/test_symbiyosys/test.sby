@@ -1,0 +1,26 @@
+[tasks]
+prove pf
+cover cv
+
+[options]
+pf: mode prove
+pf: depth 3
+
+cv: mode cover
+cv: depth 32
+
+[engines]
+smtbmc boolector
+
+[script]
+read -sv -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str=hello -I. sv_file.sv
+read -sv -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str=hello -I. vlog_file.v
+read -sv -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str=hello -I. vlog05_file.v
+chparam -set vlogparam_bool 1 -set vlogparam_int 42 -set vlogparam_str "hello" top_module
+
+prep -top top_module
+
+[files]
+sv_file.sv
+vlog_file.v
+vlog05_file.v

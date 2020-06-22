@@ -1,0 +1,21 @@
+[tasks]
+prove pf
+cover cv
+
+[options]
+pf: mode prove
+pf: depth 3
+
+cv: mode cover
+cv: depth 32
+
+[engines]
+smtbmc boolector
+
+[script]
+{{"-sv"|gen_reads}}
+
+prep -top {{top_level}}
+
+[files]
+{{files}}
