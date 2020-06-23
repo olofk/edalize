@@ -4,7 +4,7 @@ TARGET   := test_icestorm_0
 PCF_FILE := pcf_file.pcf
 PNR      ?= arachne
 ARACHNE_PNR_OPTIONS := a few arachne_pnr_options
-NEXTPNR_OPTIONS     := 
+NEXTPNR_OPTIONS     :=
 DEVICE   := None
 
 all: $(TARGET).bin
@@ -20,7 +20,7 @@ stats: $(TARGET).stat
 %.json: %.mk
 	$(MAKE) -f $<
 %_next.asc: %.json
-	nextpnr-ice40 -l next.log -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
+	nextpnr-ice40 -l next.log $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
 %.bin: %_$(PNR).asc
 	icepack $< $@
 %.tim: %_$(PNR).asc
@@ -29,7 +29,7 @@ stats: $(TARGET).stat
 	icebox_stat $< > $@
 
 build-gui: $(TARGET).json
-	nextpnr-ice40 -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
+	nextpnr-ice40 $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
 
 clean:
 	rm -f $(TARGET).blif $(TARGET).json $(TARGET)_arachne.asc $(TARGET)_next.asc $(TARGET).bin
