@@ -313,7 +313,7 @@ class Edatool(object):
         # sometimes gets updated after the backend is instantiated. Making the
         # handling of environments consistent across backends could resolve
         # this.
-        env = self.env
+        env = self.env.copy()
         env.update(os.environ)
 
         try:
