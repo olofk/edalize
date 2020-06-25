@@ -78,10 +78,7 @@ class Cocotb:
         # Add options to edam for simulator backend
         cocotb_args = CocotbConfig.get_simulator_args(simulator_name, toplevel_lang)
         simulator_options = self.tool_options.get('tool_options', {})
-        if self.option_name[simulator_name] in simulator_options:
-            simulator_options[self.option_name[simulator_name]] += cocotb_args
-        else:
-            simulator_options[self.option_name[simulator_name]] = cocotb_args
+        simulator_options.setdefault(self.option_name[simulator_name], []).extend(cocotb_args)
 
         edam['tool_options'][simulator_name] = simulator_options
 
