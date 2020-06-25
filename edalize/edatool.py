@@ -309,10 +309,10 @@ class Edatool(object):
         logger.debug("Running " + cmd)
         logger.debug("args  : " + ' '.join(args))
 
-        # This looks a little odd, but it is necessary in case the environment
-        # sometimes gets updated after the backend is instantiated. Making the
-        # handling of environments consistent across backends could resolve
-        # this.
+        # This looks a little odd, but it is necessary in case the OS
+        # environment is updated after the backend is instantiated but before
+        # the tool runs, as in the tests. Making the handling of environments
+        # consistent across backends could resolve this.
         env = self.env.copy()
         env.update(os.environ)
 
