@@ -29,7 +29,7 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
             return 'true' if value else 'false'
         else:
             return '1' if value else '0'
-    elif type(value) == str or ((type(value) == bool) and bool_is_str):
+    elif type(value) == str:
         return str_quote_style + str(value) + str_quote_style
     else:
         return str(value)
