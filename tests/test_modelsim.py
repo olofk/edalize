@@ -1,42 +1,38 @@
-import pytest
-import copy
+import filecmp
+import os
+from edalize_common import make_edalize_test, tests_dir
 
-def test_modelsim():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
 
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam']
-    name         = 'test_modelsim_0'
-    tool         = 'modelsim'
+def test_modelsim(make_edalize_test):
     tool_options = {
-        'vcom_options' : ['various', 'vcom_options'],
-        'vlog_options' : ['some', 'vlog_options'],
-        'vsim_options' : ['a', 'few', 'vsim_options'],
+        'vcom_options': ['various', 'vcom_options'],
+        'vlog_options': ['some', 'vlog_options'],
+        'vsim_options': ['a', 'few', 'vsim_options'],
     }
 
-    #FIXME: Add VPI tests
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
-    backend.configure()
+    # FIXME: Add VPI tests
+    tf = make_edalize_test('modelsim',
+                           tool_options=tool_options)
 
-    compare_files(ref_dir, work_root, [
-        'Makefile',
-        'edalize_build_rtl.tcl',
-        'edalize_main.tcl',
-    ])
+    tf.backend.configure()
 
-    orig_env = copy.deepcopy(os.environ)
-    os.environ['MODEL_TECH'] = os.path.join(tests_dir, 'mock_commands')
+    tf.compare_files(['Makefile',
+                      'edalize_build_rtl.tcl',
+                      'edalize_main.tcl'])
 
-    backend.build()
-    os.makedirs(os.path.join(work_root, 'work'))
+    orig_env = os.environ.copy()
+    try:
+        os.environ['MODEL_TECH'] = os.path.join(tests_dir, 'mock_commands')
 
-    compare_files(ref_dir, work_root, ['vsim.cmd'])
+        tf.backend.build()
+        os.makedirs(os.path.join(tf.work_root, 'work'))
 
-    backend.run()
+        tf.compare_files(['vsim.cmd'])
 
-    with open(os.path.join(ref_dir, 'vsim2.cmd')) as fref, open(os.path.join(work_root, 'vsim.cmd')) as fgen:
-        assert fref.read() == fgen.read()
+        tf.backend.run()
 
-    os.environ = orig_env
+        assert filecmp.cmp(os.path.join(tf.ref_dir, 'vsim2.cmd'),
+                           os.path.join(tf.work_root, 'vsim.cmd'),
+                           shallow=False)
+    finally:
+        os.environ = orig_env

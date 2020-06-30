@@ -1,29 +1,19 @@
 import pytest
 import os.path
 from unittest.mock import patch, MagicMock
+from edalize_common import make_edalize_test
 
 
-def test_vunit_codegen():
-    from edalize_common import compare_files, setup_backend, tests_dir
-
-    ref_dir = os.path.join(tests_dir, __name__)
-    paramtypes = ['cmdlinearg']
-    name = 'test_vunit_0'
-    tool = 'vunit'
-    tool_options = {}
-
-    (backend, work_root) = setup_backend(
-        paramtypes, name, tool, tool_options, use_vpi=False)
-
-    backend.configure()
-    compare_files(ref_dir, work_root, ['run.py'])
+def test_vunit_codegen(make_edalize_test):
+    tf = make_edalize_test('vunit', param_types=['cmdlinearg'])
+    tf.backend.configure()
+    tf.compare_files(['run.py'])
 
 
-def test_vunit_hooks():
+def test_vunit_hooks(tmpdir):
     from edalize_common import tests_dir
 
     import subprocess
-    import tempfile
     import sys
     import importlib.util
     from unittest import mock
@@ -34,7 +24,7 @@ def test_vunit_hooks():
     ref_dir = os.path.join(tests_dir, __name__, 'minimal')
     tool = 'vunit'
     name = 'test_' + tool + '_minimal_0'
-    work_root = tempfile.mkdtemp(prefix = tool + '_')
+    work_root = str(tmpdir)
 
     files = [{'name' : os.path.join(ref_dir, 'vunit_runner_test.py'),
               'file_type' : 'pythonSource-3.7'},

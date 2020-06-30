@@ -1,40 +1,26 @@
 import pytest
+from edalize_common import make_edalize_test
 
-def test_vivado():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
 
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['generic', 'vlogdefine', 'vlogparam']
-    name         = 'test_vivado_0'
-    tool         = 'vivado'
-    tool_options = {
-        'part' : 'xc7a35tcsg324-1',
-    }
+def test_vivado(make_edalize_test):
+    tf = make_edalize_test('vivado',
+                           param_types=['generic', 'vlogdefine', 'vlogparam'],
+                           tool_options={'part': 'xc7a35tcsg324-1'})
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    backend.configure()
+    tf.backend.configure()
+    tf.compare_files(['Makefile',
+                      tf.test_name + '.tcl',
+                      tf.test_name + '_synth.tcl',
+                      tf.test_name + '_run.tcl',
+                      tf.test_name + '_pgm.tcl'])
 
-    compare_files(ref_dir, work_root, [
-        'Makefile',
-        name+'.tcl',
-        name+'_synth.tcl',
-        name+'_run.tcl',
-        name+'_pgm.tcl',
-    ])
-
-    backend.build()
-    compare_files(ref_dir, work_root, [
-        'vivado.cmd',
-    ])
+    tf.backend.build()
+    tf.compare_files(['vivado.cmd'])
 
 
 @pytest.mark.parametrize("params", [("minimal", "vivado"), ("yosys", "yosys")])
-def test_vivado_minimal(params):
+def test_vivado_minimal(params, tmpdir):
     import os
-    import shutil
-    import tempfile
 
     from edalize import get_edatool
 
@@ -50,7 +36,7 @@ def test_vivado_minimal(params):
         'synth': synth_tool,
     }
     name = 'test_vivado_{}_0'.format(test_name)
-    work_root = tempfile.mkdtemp(prefix=tool+'_')
+    work_root = str(tmpdir)
 
     edam = {'name'         : name,
             'tool_options' : {'vivado' : tool_options}

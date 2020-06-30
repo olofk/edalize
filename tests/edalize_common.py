@@ -1,21 +1,117 @@
-import os.path
-import tempfile
 from collections import OrderedDict
+import os.path
+import shutil
+
+import pytest
 
 from edalize import get_edatool
 
+
 tests_dir = os.path.dirname(__file__)
+
+
+class TestFixture:
+    '''A fixture that makes an edalize backend with work_root directory
+
+    Create this object using the make_edalize_test factory fixture. This passes
+    through its `tool_name` and sets up a temporary directory for `work_root`,
+    then passes its keyword arguments through to the TestFixture initializer.
+
+    Args:
+
+        tool_name: The name of the tool
+
+        work_root: The directory to treat as a work root
+
+        test_name: The name to call the backend. Defaults to
+                   `'test_<tool_name>_0'`
+
+        param_types: A list of parameter types. Defaults to `['plusarg',
+                    'vlogdefine', 'vlogparam']` (the parameter types supported
+                    by most simulators).
+
+        files: A list of files to use. Defaults to `None`, which means to use
+               :py:data:`FILES`.
+
+        tool_options: Dictionary passed to _setup_backend. Defaults to `{}`.
+
+        ref_dir: A reference directory relative to `test_<tool_name>`. Defaults
+                 to `'.'`
+
+        use_vpi: If true, set up backend with definitions from :attr:`VPI`.
+                 Defaults to `False`.
+
+    '''
+    def __init__(self,
+                 tool_name,
+                 work_root,
+                 test_name=None,
+                 param_types=['plusarg', 'vlogdefine', 'vlogparam'],
+                 files=None,
+                 tool_options={},
+                 ref_dir='.',
+                 use_vpi=False):
+
+        raw_ref_dir = os.path.join(tests_dir, 'test_' + tool_name, ref_dir)
+
+        self.test_name = ('test_{}_0'.format(tool_name)
+                          if test_name is None else test_name)
+        self.ref_dir = os.path.normpath(raw_ref_dir)
+        self.work_root = work_root
+        self.backend = _setup_backend(self.test_name, tool_name, param_types,
+                                      files, tool_options, work_root, use_vpi)
+
+    def compare_files(self, files, ref_subdir='.'):
+        '''Check some files in the work root match those in the ref directory
+
+        The files argument gives the list of files to check. These are
+        interpreted as paths relative to the work directory and relative to
+        self.ref_dir / ref_subdir.
+
+        This is a wrapper around edalize_common.compare_files: see its
+        documentation for how to use the :envvar:`GOLDEN_RUN` environment
+        variable to copy across a golden reference.
+
+        '''
+        ref_dir = os.path.normpath(os.path.join(self.ref_dir, ref_subdir))
+        return compare_files(ref_dir, self.work_root, files)
+
+    def copy_to_work_root(self, path):
+        shutil.copy(os.path.join(self.ref_dir, path),
+                    os.path.join(self.work_root, path))
+
+
+@pytest.fixture
+def make_edalize_test(monkeypatch, tmpdir):
+    '''A factory fixture to make an edalize backend with work_root directory
+
+    The returned factory method takes a `tool_name` (the name of the tool) and
+    the keyword arguments supported by :class:`TestFixture`. It returns a
+    :class:`TestFixture` object, whose `work_root` is a temporary directory.
+
+    '''
+    # Prepend directory `mock_commands` to PATH environment variable
+    monkeypatch.setenv('PATH', os.path.join(tests_dir, 'mock_commands'), ':')
+
+    created = []
+
+    def _fun(tool_name, **kwargs):
+        work_root = tmpdir / str(len(created))
+        work_root.mkdir()
+        fixture = TestFixture(tool_name, str(work_root), **kwargs)
+        created.append(fixture)
+        return fixture
+
+    return _fun
+
 
 def compare_files(ref_dir, work_root, files):
     """Check that all *files* in *work_root* match those in *ref_dir*.
 
-    If the environment variable :envvar:`GOLDEN_RUN` is set,
-    the *files* in *work_root* are copied to *ref_dir* to become the new reference.
+    If the environment variable :envvar:`GOLDEN_RUN` is set, the *files* in
+    *work_root* are copied to *ref_dir* to become the new reference.
+
     """
-
-    import os.path
-    import shutil
-
     for f in files:
         reference_file = os.path.join(ref_dir, f)
         generated_file = os.path.join(work_root, f)
@@ -49,38 +145,15 @@ def param_gen(paramtypes):
     return defs
 
 
-def setup_backend_minimal(name, tool, files):
-    """Set up a minimal backend.
-
-    The backend is called *name*, is set up for *tool* and uses *files*.
-    """
-
-    # prepend directory `mock_commands` to PATH environment variable
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-
-    work_root = tempfile.mkdtemp(prefix=tool+'_')
-
-    edam = {'name'         : name,
-            'files'        : files,
-            'toplevel'     : 'top_module',
-    }
-    return (get_edatool(tool)(edam=edam,
-                              work_root=work_root), work_root)
-
-
-def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
+def _setup_backend(name, tool, paramtypes, files,
+                   tool_options, work_root, use_vpi):
     """Set up a backend.
 
     The backend is called *name*, is set up for *tool* with *tool_options*,
     *paramtypes*, and, if *use_vpi* is ``True``, definitions from :attr:`VPI`.
-    Files are taken from :attr:`FILES`.
+    If *files* is None, files are taken from :attr:`FILES`.
     """
-
-    # prepend directory `mock_commands` to PATH environment variable
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     parameters = param_gen(paramtypes)
-
-    work_root = tempfile.mkdtemp(prefix=tool+'_')
 
     _vpi = []
     if use_vpi:
@@ -94,14 +167,13 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
                     os.utime(_f, None)
 
     edam = {'name'         : name,
-            'files'        : FILES,
+            'files'        : FILES if files is None else files,
             'parameters'   : parameters,
             'tool_options' : {tool : tool_options},
             'toplevel'     : 'top_module',
             'vpi'          :  _vpi}
 
-    backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    return (backend, work_root)
+    return get_edatool(tool)(edam=edam, work_root=work_root)
 
 
 FILES = [

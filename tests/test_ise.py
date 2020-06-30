@@ -1,53 +1,39 @@
+from edalize_common import make_edalize_test
 import pytest
 
-def test_ise():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
 
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['vlogdefine', 'vlogparam']
-    name         = 'test_ise_0'
-    tool         = 'ise'
+def test_ise(make_edalize_test):
+    name = 'test_ise_0'
     tool_options = {
-        'family'  : 'spartan6',
-        'device'  : 'xc6slx45',
-        'package' : 'csg324',
-        'speed'   : '-2'
+        'family': 'spartan6',
+        'device': 'xc6slx45',
+        'package': 'csg324',
+        'speed': '-2'
     }
+    tf = make_edalize_test('ise',
+                           test_name=name,
+                           param_types=['vlogdefine', 'vlogparam'],
+                           tool_options=tool_options)
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    backend.configure()
+    tf.backend.configure()
 
-    compare_files(ref_dir, work_root, ['Makefile',
-                                       'config.mk',
-                                       name+'.tcl',
-                                       name+'_run.tcl',
-    ])
+    tf.compare_files(['Makefile', 'config.mk',
+                      name + '.tcl', name + '_run.tcl'])
 
-    #f = os.path.join(work_root, 'pcf_file.pcf')
-    #with open(f, 'a'):
-    #    os.utime(f, None)
+    tf.backend.build()
+    tf.compare_files(['xtclsh.cmd'])
 
-    backend.build()
-    compare_files(ref_dir, work_root, ['xtclsh.cmd'])
 
-def test_ise_missing_options():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
-
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['vlogdefine', 'vlogparam']
-    name         = 'test_ise_0'
-    tool         = 'ise'
+def test_ise_missing_options(make_edalize_test):
     tool_options = {
-        'family'  : 'spartan6',
-        'device'  : 'xc6slx45',
-        'package' : 'csg324',
+        'family': 'spartan6',
+        'device': 'xc6slx45',
+        'package': 'csg324',
     }
+    tf = make_edalize_test('ise',
+                           param_types=['vlogdefine', 'vlogparam'],
+                           tool_options=tool_options)
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
     with pytest.raises(RuntimeError) as e:
-        backend.configure()
+        tf.backend.configure()
     assert "Missing required option 'speed'" in str(e.value)
