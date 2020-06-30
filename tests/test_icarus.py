@@ -1,39 +1,31 @@
-import pytest
+from edalize_common import make_edalize_test
 
-def test_icarus():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
 
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam']
-    name         = 'test_icarus_0'
-    tool         = 'icarus'
+def test_icarus(make_edalize_test):
+    name = 'test_icarus_0'
     tool_options = {
-        'iverilog_options' : ['some', 'iverilog_options'],
-        'timescale'        : '1ns/1ns',
+        'iverilog_options': ['some', 'iverilog_options'],
+        'timescale': '1ns/1ns',
     }
+    tf = make_edalize_test('icarus',
+                           test_name=name,
+                           tool_options=tool_options,
+                           use_vpi=True)
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=True)
-    backend.configure()
+    tf.backend.configure()
 
-    compare_files(ref_dir, work_root, ['Makefile',
-                                       name+'.scr',
-                                       'timescale.v',
-    ])
+    tf.compare_files(['Makefile', name + '.scr', 'timescale.v'])
 
-    backend.build()
-    compare_files(ref_dir, work_root, ['iverilog.cmd'])
-    compare_files(ref_dir, work_root, ['iverilog-vpi.cmd'])
+    tf.backend.build()
+    tf.compare_files(['iverilog.cmd', 'iverilog-vpi.cmd'])
 
-    backend.run()
+    tf.backend.run()
 
-    compare_files(ref_dir, work_root, ['vvp.cmd'])
+    tf.compare_files(['vvp.cmd'])
 
-def test_icarus_minimal():
+
+def test_icarus_minimal(tmpdir):
     import os
-    import shutil
-    import tempfile
 
     from edalize import get_edatool
 
@@ -43,7 +35,7 @@ def test_icarus_minimal():
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     tool = 'icarus'
     name = 'test_'+tool+'_minimal_0'
-    work_root = tempfile.mkdtemp(prefix=tool+'_')
+    work_root = str(tmpdir)
 
     edam = {'name'         : name,
                'toplevel' : 'top'}

@@ -1,14 +1,8 @@
-import pytest
+import os
+from edalize_common import make_edalize_test, tests_dir
 
-def test_xcelium():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
 
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam']
-    name         = 'test_xcelium_0'
-    tool         = 'xcelium'
+def test_xcelium(make_edalize_test):
     tool_options = {
         'xmvhdl_options' : ['various', 'xmvhdl_options'],
         'xmvlog_options' : ['some', 'xmvlog_options'],
@@ -17,29 +11,27 @@ def test_xcelium():
     }
 
     #FIXME: Add VPI tests
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
-    backend.configure()
+    tf = make_edalize_test('xcelium', tool_options=tool_options)
 
-    compare_files(ref_dir, work_root, [
-        'Makefile',
-        'edalize_build_rtl.f',
-        'edalize_main.f',
-    ])
+    tf.backend.configure()
+    tf.compare_files(['Makefile',
+                      'edalize_build_rtl.f',
+                      'edalize_main.f'])
 
     orig_env = os.environ.copy()
-    os.environ['PATH'] = '{}:{}'.format(os.path.join(tests_dir, 'mock_commands/xcelium'),
-                                        os.environ['PATH'])
+    try:
+        os.environ['PATH'] = '{}:{}'.format(os.path.join(tests_dir, 'mock_commands/xcelium'),
+                                            os.environ['PATH'])
 
-    # For some strange reason, writing to os.environ['PATH'] doesn't update the environment. This
-    # leads to test fails, but only when running multiple tests. When running this test by itself,
-    # everything works fine without the 'putenv'.
-    os.putenv('PATH', os.environ['PATH'])
+        # For some strange reason, writing to os.environ['PATH'] doesn't update the environment. This
+        # leads to test fails, but only when running multiple tests. When running this test by itself,
+        # everything works fine without the 'putenv'.
+        os.putenv('PATH', os.environ['PATH'])
 
-    backend.build()
-    os.makedirs(os.path.join(work_root, 'work'))
+        tf.backend.build()
+        os.makedirs(os.path.join(tf.work_root, 'work'))
 
-    backend.run()
-
-    compare_files(ref_dir, work_root, ['xrun.cmd'])
-
-    os.environ = orig_env
+        tf.backend.run()
+        tf.compare_files(['xrun.cmd'])
+    finally:
+        os.environ = orig_env

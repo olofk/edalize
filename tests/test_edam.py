@@ -1,5 +1,5 @@
 import pytest
-import shutil
+
 
 def test_empty_edam():
     import tempfile
@@ -79,9 +79,8 @@ def test_verilog_include_file_with_partial_include_path():
     assert len(parsed_files) == 0
     assert incdirs == ['../some_dir']
 
-def test_edam_hooks():
+def test_edam_hooks(tmpdir):
     import os.path
-    import tempfile
     from edalize import get_edatool
 
     tests_dir = os.path.dirname(__file__)
@@ -92,7 +91,7 @@ def test_edam_hooks():
         {'cmd' : ['sh', os.path.join(ref_dir, script)],
          'name' : script}]}
 
-    work_root = tempfile.mkdtemp(prefix='edam_hooks_')
+    work_root = str(tmpdir)
     edam = {'hooks' : hooks,
                'name' : script}
 

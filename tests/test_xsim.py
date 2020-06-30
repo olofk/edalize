@@ -1,29 +1,26 @@
-def test_xsim():
-    import os
-    from edalize_common import compare_files, setup_backend, tests_dir
+from edalize_common import make_edalize_test
+import os
 
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
-    name         = 'test_xsim_0'
-    tool         = 'xsim'
+
+def test_xsim(make_edalize_test):
     tool_options = {'xelab_options' : ['some', 'xelab_options'],
                     'xsim_options'  : ['a', 'few', 'xsim_options']}
+    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    backend.configure()
+    tf = make_edalize_test('xsim',
+                           tool_options=tool_options,
+                           param_types=paramtypes)
 
-    compare_files(ref_dir, work_root, ['config.mk',
-                                       'Makefile',
-                                       name+'.prj',
-    ])
+    tf.backend.configure()
+    tf.compare_files(['config.mk', 'Makefile', tf.test_name + '.prj'])
 
-    backend.build()
-    compare_files(ref_dir, work_root, ['xelab.cmd'])
+    tf.backend.build()
+    tf.compare_files(['xelab.cmd'])
 
-    xsimkdir = os.path.join(work_root, 'xsim.dir', name)
+    xsimkdir = os.path.join(tf.work_root, 'xsim.dir', tf.test_name)
     os.makedirs(xsimkdir)
     with open(os.path.join(xsimkdir, 'xsimk'), 'w') as f:
         f.write("I am a compiled simulation kernel\n")
-    backend.run()
+    tf.backend.run()
 
-    compare_files(ref_dir, work_root, ['xsim.cmd'])
+    tf.compare_files(['xsim.cmd'])
