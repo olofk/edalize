@@ -64,10 +64,8 @@ class Veriblelint(Edatool):
 
         lint_fail = False
         args = self._get_tool_args()
-        if len(config_files_filtered) > 1:
-            raise RuntimeError("Too many Verible lint rule files specified")
-        elif len(config_files_filtered) == 1:
-            args.append('--rules_config=' + config_files_filtered[0])
+        if config_files_filtered:
+            args.append('--rules_config=' + ','.join(config_files_filtered))
 
         for src_file in src_files_filtered:
             cmd = ['verilog_lint'] + args + [src_file]
