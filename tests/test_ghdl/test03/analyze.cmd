@@ -1,0 +1,2 @@
+-i --std=08 --ieee=synopsys -P./libx vhdl_file.vhd
+-i --std=08 --ieee=synopsys -P./libx --work=libx --workdir=./libx vhdl_lfile
