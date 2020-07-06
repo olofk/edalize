@@ -37,7 +37,7 @@ class Ghdl(Edatool):
                 break
 
         if m:
-          logger.warning("Analyze option "+ m.group() + " given, will overide any vhdlSource-xxxx specification\n")
+          logger.warning("Analyze option "+ m.group() + " given, will override any vhdlSource-xxxx specification\n")
           standard = m.group(1)  
         else:     
             # ghdl does not support mixing incompatible versions
