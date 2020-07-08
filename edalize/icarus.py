@@ -5,11 +5,7 @@ from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-class Icarus(Edatool):
-
-    argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
-
-    MAKEFILE_TEMPLATE = """
+MAKEFILE_TEMPLATE = """
 all: $(VPI_MODULES) $(TARGET)
 
 $(TARGET):
@@ -22,7 +18,7 @@ clean:
 	$(RM) $(VPI_MODULES) $(TARGET)
 """
 
-    VPI_MAKE_SECTION = """
+VPI_MAKE_SECTION = """
 {name}_LIBS := {libs}
 {name}_INCS := {incs}
 {name}_SRCS := {srcs}
@@ -33,6 +29,10 @@ clean:
 clean_{name}:
 	$(RM) {name}.vpi
 """
+
+class Icarus(Edatool):
+
+    argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -64,15 +64,19 @@ clean_{name}:
             with open(os.path.join(self.work_root, 'timescale.v'), 'w') as tsfile:
                 tsfile.write("`timescale {}\n".format(timescale))
             f.write('timescale.v\n')
+
+        supported_file_types = [
+            "verilogSource",
+            "verilogSource-95",
+            "verilogSource-2001",
+            "verilogSource-2005",
+            "systemVerilogSource",
+            "systemVerilogSource-3.0",
+            "systemVerilogSource-3.1",
+            "systemVerilogSource-3.1a",
+        ]
         for src_file in src_files:
-            if src_file.file_type in ["verilogSource",
-		                      "verilogSource-95",
-		                      "verilogSource-2001",
-		                      "verilogSource-2005",
-                                      "systemVerilogSource",
-			              "systemVerilogSource-3.0",
-			              "systemVerilogSource-3.1",
-			              "systemVerilogSource-3.1a"]:
+            if src_file.file_type in supported_file_types:
                 f.write(src_file.name+'\n')
             elif src_file.file_type == 'user':
                 pass
@@ -96,16 +100,16 @@ clean_{name}:
                     plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
                 f.write("EXTRA_OPTIONS    ?= {}\n".format(' '.join(plusargs)))
 
-            f.write(self.MAKEFILE_TEMPLATE)
+            f.write(MAKEFILE_TEMPLATE)
 
             for vpi_module in self.vpi_modules:
                 _incs = ['-I' + s for s in vpi_module['include_dirs']]
                 _libs = ['-l'+l for l in vpi_module['libs']]
                 _srcs = vpi_module['src_files']
-                f.write(self.VPI_MAKE_SECTION.format(name = vpi_module['name'],
-                                                     libs = ' '.join(_libs),
-                                                     incs = ' '.join(_incs),
-                                                     srcs = ' '.join(_srcs)))
+                f.write(VPI_MAKE_SECTION.format(name = vpi_module['name'],
+                                                libs = ' '.join(_libs),
+                                                incs = ' '.join(_incs),
+                                                srcs = ' '.join(_srcs)))
 
     def run_main(self):
         args = ['run']

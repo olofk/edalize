@@ -81,7 +81,7 @@ class Xcelium(Edatool):
                         {'name' : 'xmsim_options',
                          'type' : 'String',
                          'desc' : 'Additional run options for xmsim'},
-					    {'name' : 'xrun_options',
+                        {'name' : 'xrun_options',
                          'type' : 'String',
                          'desc' : 'Additional run options for xrun'},
                         ]}
@@ -103,7 +103,7 @@ class Xcelium(Edatool):
 
                 args += self.tool_options.get('xmvlog_options', [])
 
-				# Sort dictionary items, to ensure stable output, which makes testing easier
+                # Sort dictionary items, to ensure stable output, which makes testing easier
                 for k, v in self.vlogdefine.items():
                     args += ['+define+{}={}'.format(k,self._param_value_str(v))]
 
