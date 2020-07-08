@@ -1,2 +1,4 @@
+Sphinx
 vunit_hdl
 sphinx_rtd_theme
+sphinx-autodoc-typehints

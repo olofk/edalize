@@ -45,6 +45,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinx_autodoc_typehints',
     'sphinx.ext.intersphinx',
 ]
 
@@ -77,7 +78,6 @@ pygments_style = None
 
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'vunit': ('https://vunit.github.io/', None)}
-
 
 # -- Options for HTML output -------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
