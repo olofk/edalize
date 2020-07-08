@@ -162,7 +162,7 @@ class Quartus(Edatool):
             # Give QSYS files special attributes to make the logic in
             # the Jinja2 templates much simplier
             setattr(f, "simplename", os.path.basename(f.name).split('.qsys')[0])
-            setattr(f, "srcdir", os.path.dirname(f.name))
+            setattr(f, "srcdir", os.path.dirname(f.name) or '.')
             setattr(f, "dstdir", os.path.join('qsys', f.simplename))
         
         return name

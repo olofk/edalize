@@ -9,8 +9,8 @@ project: $(NAME).tcl
 	quartus_sh $(OPTIONS) -t $(NAME).tcl
 
 qsys: project
-	ip-generate --project-directory= --output-directory=qsys/qsys_file --report-file=bsf:qsys/qsys_file/qsys_file.bsf --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=/qsys_file.qsys
-	ip-generate --project-directory= --output-directory=qsys/qsys_file/synthesis --file-set=QUARTUS_SYNTH --report-file=sopcinfo:qsys/qsys_file/qsys_file.sopcinfo --report-file=html:qsys/qsys_file/qsys_file.html --report-file=qip:qsys/qsys_file/qsys_file.qip --report-file=cmp:qsys/qsys_file/qsys_file.cmp --report-file=svd --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=/qsys_file.qsys --language=VERILOG
+	ip-generate --project-directory= --output-directory=qsys/qsys_file --report-file=bsf:qsys/qsys_file/qsys_file.bsf --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=./qsys_file.qsys
+	ip-generate --project-directory= --output-directory=qsys/qsys_file/synthesis --file-set=QUARTUS_SYNTH --report-file=sopcinfo:qsys/qsys_file/qsys_file.sopcinfo --report-file=html:qsys/qsys_file/qsys_file.html --report-file=qip:qsys/qsys_file/qsys_file.qip --report-file=cmp:qsys/qsys_file/qsys_file.cmp --report-file=svd --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=./qsys_file.qsys --language=VERILOG
 
 syn: qsys
 	quartus_map $(OPTIONS) $(NAME)
