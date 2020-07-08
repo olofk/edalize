@@ -199,3 +199,6 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+
+# Take class documentation from both __init__(), and the class docstring.
+autoclass_content = "both"
