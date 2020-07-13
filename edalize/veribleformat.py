@@ -14,7 +14,7 @@ class Veribleformat(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "Verible format backend (verilog_format)",
+            return {'description' : "Verible format backend (verible-verilog-format)",
                     'lists': [
                          {'name' : 'verible_format_args',
                          'type' : 'String',
@@ -48,7 +48,7 @@ class Veribleformat(Edatool):
 
         fail = False
         for src_file in src_files_filtered:
-            cmd = ['verilog_format'] + self._get_tool_args() + [src_file]
+            cmd = ['verible-verilog-format'] + self._get_tool_args() + [src_file]
             logger.debug("Running " + ' '.join(cmd))
 
             try:
