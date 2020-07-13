@@ -10,4 +10,4 @@ def test_veriblelint_default(make_edalize_test):
     tf.backend.configure()
     tf.backend.build()
     tf.backend.run()
-    tf.compare_files(['verilog_lint.cmd'])
+    tf.compare_files(['verible-verilog-lint.cmd'])

@@ -10,4 +10,4 @@ def test_veribleformat_default(make_edalize_test):
     tf.backend.configure()
     tf.backend.build()
     tf.backend.run()
-    tf.compare_files(['verilog_format.cmd'])
+    tf.compare_files(['verible-verilog-format.cmd'])

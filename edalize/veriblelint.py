@@ -14,7 +14,7 @@ class Veriblelint(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "Verible lint backend (verilog_lint)",
+            return {'description' : "Verible lint backend (verible-verilog-lint)",
                     'members': [
                          {'name': 'ruleset',
                           'type': 'String',
@@ -75,7 +75,7 @@ class Veriblelint(Edatool):
             args.append('--waiver_files=' + ','.join(waiver_files_filtered))
 
         for src_file in src_files_filtered:
-            cmd = ['verilog_lint'] + args + [src_file]
+            cmd = ['verible-verilog-lint'] + args + [src_file]
             logger.debug("Running " + ' '.join(cmd))
 
             try:
