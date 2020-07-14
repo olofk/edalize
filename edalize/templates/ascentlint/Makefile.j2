@@ -2,10 +2,11 @@
 
 NAME := {{ name }}
 
+ASCENTLINT_OPTIONS ?= {{ ascentlint_options }}
 all: report-violations
 
 ascentlint.log: run-ascentlint.tcl sources.f
-	ascentlint -i run-ascentlint.tcl -log ascentlint.log
+	ascentlint -i run-ascentlint.tcl -log ascentlint.log $(ASCENTLINT_OPTIONS)
 	
 report-violations: ascentlint.log
 	@(egrep -q "(Found [0-9]+ info lint violations|No lint violations found)" \
