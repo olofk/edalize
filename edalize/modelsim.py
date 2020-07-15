@@ -177,6 +177,7 @@ class Modelsim(Edatool):
 
     def configure_main(self):
         tcl_main = open(os.path.join(self.work_root, "edalize_main.tcl"), 'w')
+        tcl_main.write("onerror { quit -code 1; }\n")
         tcl_main.write("do edalize_build_rtl.tcl\n")
 
         self._write_build_rtl_tcl_file(tcl_main)
