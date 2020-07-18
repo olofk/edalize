@@ -45,13 +45,13 @@ setup(
         "Topic :: Utilities",
     ],
     install_requires=[
-        'pytest>=3.3.0',
         # 2.11.0 and .1 introduced an incompatible change in template output,
         # which was fixed in 2.11.2 and later.
         # https://github.com/pallets/jinja/issues/1138
         'Jinja2 >=2.8, !=2.11.0, !=2.11.1',
     ],
     tests_require=[
+        'pytest>=3.3.0',
         'vunit_hdl>=4.0.8'
     ],
     # Supported Python versions: 3.5+
