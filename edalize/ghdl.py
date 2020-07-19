@@ -23,34 +23,53 @@ class Ghdl(Edatool):
 
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files()
-        # ghdl does not support mixing incompatible versions
-        # specifying 93c as std should allow 87 syntax
-        # 2008 can't be combined so try to parse everthing with 08 std
-        has87 = has93 = has08 = False
-        for f in src_files:
-            if f.file_type == "vhdlSource-87":
-                has87 = True
-            elif f.file_type == "vhdlSource-93":
-                has93 = True
-            elif f.file_type == "vhdlSource-2008":
-                has08 = True
-        stdarg = []
-        if has08:
-            if has87 or has93:
-                logger.warning("ghdl can't mix vhdlSource-2008 with other standard version\n"+
-                               "Trying with treating all as vhdlSource-2008"
-                )
-            stdarg = ['--std=08']
-        elif has87 and has93:
-            stdarg = ['--std=93c']
-        elif has87:
-            stdarg = ['--std=87']
-        elif has93:
-            stdarg = ['--std=93']
-        else:
-            stdarg = ['--std=93c']     ## added TH
-
         analyze_options = self.tool_options.get('analyze_options', '')
+
+        # Check of std=xx analyze option, this overyides the dynamic determination of vhdl standard
+        import re
+        rx = re.compile("^--std=([0-9]+)")
+        m = None
+        for o in analyze_options:
+            m = rx.match(o) 
+            if m:               
+                stdarg = [ m.group() ]
+                analyze_options.remove(o)
+                break
+
+        if m:
+          logger.warning("Analyze option "+ m.group() + " given, will overide any vhdlSource-xxxx specification\n")
+          standard = m.group(1)  
+        else:     
+            # ghdl does not support mixing incompatible versions
+            # specifying 93c as std should allow 87 syntax
+            # 2008 can't be combined so try to parse everthing with 08 std
+            
+
+            has87 = has93 = has08 = False
+            for f in src_files:
+                if f.file_type == "vhdlSource-87":
+                    has87 = True
+                elif f.file_type == "vhdlSource-93":
+                    has93 = True
+                elif f.file_type == "vhdlSource-2008":
+                    has08 = True
+            stdarg = []
+            if has08:
+                if has87 or has93:
+                    logger.warning("ghdl can't mix vhdlSource-2008 with other standard version\n"+
+                                   "Trying with treating all as vhdlSource-2008"
+                    )
+                stdarg = ['--std=08']
+            elif has87 and has93:
+                stdarg = ['--std=93c']
+            elif has87:
+                stdarg = ['--std=87']
+            elif has93:
+                stdarg = ['--std=93']
+            else:
+                stdarg = ['--std=93c']
+
+            standard =  rx.match(stdarg[0]).group(1)
       
 
         run_options = self.tool_options.get('run_options', [])
@@ -66,7 +85,7 @@ VHDL_SOURCES = {vhdl_sources}
 all: work-obj{standard}.cf
 
 run: $(TOPLEVEL)
-\tghdl -r $(ANALYZE_OPTIONS) $(STD) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+\tghdl -r $(STD) $(ANALYZE_OPTIONS)  $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
 \tghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
@@ -109,7 +128,7 @@ work-obj{standard}.cf: make_libraries_directories
             makefile.write(MAKEFILE_TEMPLATE.format(std=' '.join(stdarg),
                                                     toplevel=self.toplevel,
                                                     vhdl_sources=vhdl_sources,
-                                                    standard=stdarg[0].split("=")[1],
+                                                    standard=standard,
                                                     analyze_options=analyze_options,
                                                     run_options=' '.join(run_options),
                                                     make_libraries_directories=make_libraries_directories,
