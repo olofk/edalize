@@ -1,83 +1,49 @@
-import pytest
+from edalize_common import make_edalize_test
 
-def test_verilator_cc():
-    import os.path
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
 
+def test_verilator_cc(make_edalize_test):
     mode = 'cc'
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = ['cmdlinearg', 'plusarg', 'vlogdefine', 'vlogparam']
-    name         = 'test_verilator_0'
-    tool         = 'verilator'
     tool_options = {
         'libs' : ['-lelf'],
         'mode' : mode,
         'verilator_options' : ['-Wno-fatal', '--trace'],
         'make_options' : ['OPT_FAST=-O2'],
     }
+    tf = make_edalize_test('verilator',
+                           param_types=['cmdlinearg', 'plusarg',
+                                        'vlogdefine', 'vlogparam'],
+                           tool_options=tool_options)
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    tf.backend.configure()
 
-    backend.configure()
+    tf.compare_files(['Makefile'])
+    tf.compare_files(['config.mk', tf.test_name + '.vc'], ref_subdir=mode)
 
-    compare_files(ref_dir, work_root, ['Makefile'])
+    tf.copy_to_work_root('Vtop_module')
+    tf.backend.run()
 
-    compare_files(os.path.join(ref_dir, mode),
-                  work_root,
-                  ['config.mk', name+'.vc'])
+    tf.compare_files(['run.cmd'])
 
-    dummy_exe = 'Vtop_module'
-    shutil.copy(os.path.join(ref_dir, dummy_exe),
-                os.path.join(work_root, dummy_exe))
-    backend.run()
 
-    compare_files(ref_dir, work_root, ['run.cmd'])
-
-def test_verilator_sc():
-    import os.path
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
-
+def test_verilator_sc(make_edalize_test):
     mode = 'sc'
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = []
-    name         = 'test_verilator_0'
-    tool         = 'verilator'
-    tool_options = {
-        'mode' : mode,
-    }
+    tf = make_edalize_test('verilator',
+                           param_types=[],
+                           tool_options={'mode': mode})
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    tf.backend.configure()
 
-    backend.configure()
+    tf.compare_files(['Makefile'])
+    tf.compare_files(['config.mk', tf.test_name + '.vc'], ref_subdir=mode)
 
-    compare_files(ref_dir, work_root, ['Makefile'])
 
-    compare_files(os.path.join(ref_dir, mode),
-                  work_root,
-                  ['config.mk', name+'.vc'])
-
-def test_verilator_lint_only():
-    import os.path
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
-
+def test_verilator_lint_only(make_edalize_test):
     mode = 'lint-only'
-    ref_dir      = os.path.join(tests_dir, __name__)
-    paramtypes   = []
-    name         = 'test_verilator_0'
-    tool         = 'verilator'
-    tool_options = {
-        'mode' : mode,
-    }
+    tf = make_edalize_test('verilator',
+                           param_types=[],
+                           tool_options={'mode': mode})
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    tf.backend.configure()
 
-    backend.configure()
-
-    compare_files(ref_dir, work_root, ['Makefile'])
-
-    compare_files(os.path.join(ref_dir, mode),
-                  work_root,
-                  ['config.mk', name+'.vc'])
+    tf.compare_files(['Makefile'])
+    tf.compare_files(['config.mk', tf.test_name + '.vc'], ref_subdir=mode)

@@ -50,13 +50,16 @@ class Veriblelint(Edatool):
 
         src_files_filtered = []
         config_files_filtered = []
+        waiver_files_filtered = []
         for src_file in src_files:
             ft = src_file.file_type
 
             if ft.startswith("verilogSource") or ft.startswith("systemVerilogSource"):
                src_files_filtered.append(src_file.name)
-            elif ft.startswith("veribleLintRules"):
+            elif ft == "veribleLintRules":
                config_files_filtered.append(src_file.name)
+            elif ft == "veribleLintWaiver":
+               waiver_files_filtered.append(src_file.name)
 
         if len(src_files_filtered) == 0:
             logger.warning("No SystemVerilog source files to be processed.")
@@ -65,9 +68,11 @@ class Veriblelint(Edatool):
         lint_fail = False
         args = self._get_tool_args()
         if len(config_files_filtered) > 1:
-            raise RuntimeError("Too many Verible lint rule files specified")
+            raise RuntimeError("Verible lint only supports a single rules file (type veribleLintRules)")
         elif len(config_files_filtered) == 1:
             args.append('--rules_config=' + config_files_filtered[0])
+        if waiver_files_filtered:
+            args.append('--waiver_files=' + ','.join(waiver_files_filtered))
 
         for src_file in src_files_filtered:
             cmd = ['verilog_lint'] + args + [src_file]

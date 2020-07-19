@@ -1,23 +1,13 @@
-import pytest
+from edalize_common import make_edalize_test
 
 
-def test_veribleformat_default():
+def test_veribleformat_default(make_edalize_test):
     """ Test the format mode of Verible """
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
-
-    ref_dir = os.path.join(tests_dir, __name__, 'default')
-    paramtypes = ['vlogdefine', 'vlogparam']
-    name = 'test_verible'
-    tool = 'veribleformat'
-    tool_options = {}
-
-    (backend, work_root) = setup_backend(
-        paramtypes, name, tool, tool_options)
-    backend.configure()
-    backend.build()
-    backend.run()
-    compare_files(ref_dir, work_root, [
-        'verilog_format.cmd',
-    ])
+    tf = make_edalize_test('veribleformat',
+                           test_name='test_verible',
+                           param_types=['vlogdefine', 'vlogparam'],
+                           ref_dir='default')
+    tf.backend.configure()
+    tf.backend.build()
+    tf.backend.run()
+    tf.compare_files(['verilog_format.cmd'])

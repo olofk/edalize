@@ -1,29 +1,17 @@
-import pytest
+from edalize_common import make_edalize_test
 
 
-def test_ascentlint_defaults():
+def test_ascentlint_defaults(make_edalize_test):
     """ Test the default configuration of Ascent Lint """
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
+    tf = make_edalize_test('ascentlint',
+                           test_name='test_ascentlint',
+                           param_types=['vlogdefine', 'vlogparam'],
+                           ref_dir='defaults')
 
-    ref_dir = os.path.join(tests_dir, __name__, 'defaults')
-    paramtypes = ['vlogdefine', 'vlogparam']
-    name = 'test_ascentlint'
-    tool = 'ascentlint'
-    tool_options = {}
+    tf.backend.configure()
 
-    (backend, work_root) = setup_backend(
-        paramtypes, name, tool, tool_options)
-    backend.configure()
+    tf.compare_files(['Makefile', 'run-ascentlint.tcl', 'sources.f'])
 
-    compare_files(ref_dir, work_root, [
-        'Makefile',
-        'run-ascentlint.tcl',
-        'sources.f',
-    ])
+    tf.backend.build()
 
-    backend.build()
-    compare_files(ref_dir, work_root, [
-        'ascentlint.cmd',
-    ])
+    tf.compare_files(['ascentlint.cmd'])

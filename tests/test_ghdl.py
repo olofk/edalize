@@ -1,23 +1,31 @@
-import pytest
+import os
+from edalize_common import make_edalize_test
 
 
-def do(backend,ref_dir, work_root, files):
-    from edalize_common import compare_files
-    import os
 
-    for vhdl_file in files :
-        with open(os.path.join(work_root, vhdl_file), 'a'):
-            os.utime(os.path.join(work_root, vhdl_file), None)
+def test_ghdl_01(make_edalize_test):
+    tf = make_edalize_test('ghdl',
+                           ref_dir = "test01",
+                           param_types=['generic'],
+                           tool_options={
+                               'analyze_options': ['some', 'analyze_options'],
+                               'run_options': ['a', 'few', 'run_options']
+                           })
 
-    backend.configure()
+    for vhdl_file in ['vhdl_file.vhd', 'vhdl_lfile',  'vhdl2008_file']:
+        with open(os.path.join(tf.work_root, vhdl_file), 'a'):
+            os.utime(os.path.join(tf.work_root, vhdl_file), None)
 
-    compare_files(ref_dir, work_root, ['Makefile'])
+    tf.backend.configure()
 
-    backend.build()
-    compare_files(ref_dir, work_root, ['analyze.cmd'])
+    tf.compare_files(['Makefile'])
 
-    backend.run()
-    compare_files(ref_dir, work_root, ['elab-run.cmd'])
+    tf.backend.build()
+    tf.compare_files(['analyze.cmd'])
+
+    tf.backend.run()
+    tf.compare_files(['elab-run.cmd'])
+
 
 
 LOCAL_FILES = [
@@ -25,62 +33,56 @@ LOCAL_FILES = [
       {'name' : 'vhdl_lfile'   , 'file_type' : 'vhdlSource', 'logical_name' : 'libx'},
 ]
 
-
-def test_ghdl_01():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir
-
-    
-    ref_dir      = os.path.join(tests_dir, __name__,"test01")
-    paramtypes   = ['generic']
-    name         = 'test_ghdl'
-    tool         = 'ghdl'
-    tool_options = {'analyze_options' : ['some', 'analyze_options'],
-                    'run_options'     : ['a', 'few', 'run_options']}
-
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    
-
-    do(backend,ref_dir,work_root,['vhdl_file.vhd', 'vhdl_lfile',  'vhdl2008_file'])
-
 # Test 02 - no vhdl version specified
-def test_ghdl_02():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir    
+def test_ghdl_02(make_edalize_test):
+    tf = make_edalize_test('ghdl',
+                           ref_dir = "test02",
+                           test_name = "test_ghdl_02",
+                           param_types=['generic'],
+                           files = LOCAL_FILES,
+                           tool_options={
+                               'analyze_options': ['some', 'analyze_options'],
+                               'run_options': ['a', 'few', 'run_options']
+                           })
 
-   
-    
-    ref_dir =  ref_dir      = os.path.join(tests_dir, __name__,"test02")
-    paramtypes   = ['generic']
-    name         = 'test_ghdl_02'
-    tool         = 'ghdl'
-    tool_options = {'analyze_options' : ['some', 'analyze_options'],
-                    'run_options'     : ['a', 'few', 'run_options']}
+    for vhdl_file in ['vhdl_file.vhd', 'vhdl_lfile',  'vhdl2008_file']:
+        with open(os.path.join(tf.work_root, vhdl_file), 'a'):
+            os.utime(os.path.join(tf.work_root, vhdl_file), None)
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    # Overload file list with local version
-    backend.files = LOCAL_FILES
+    tf.backend.configure()
 
-    do(backend,ref_dir,work_root,['vhdl_file.vhd','vhdl_lfile'])
+    tf.compare_files(['Makefile'])
 
-# Test 03 - vhdl Version override 
-def test_ghdl_03():
-    import os
-    import shutil
-    from edalize_common import compare_files, setup_backend, tests_dir    
+    tf.backend.build()
+    tf.compare_files(['analyze.cmd'])
 
-  
-    ref_dir =  ref_dir      = os.path.join(tests_dir, __name__,"test03")
-    paramtypes   = ['generic']
-    name         = 'test_ghdl_03'
-    tool         = 'ghdl'
-    tool_options = {'analyze_options' : ['--std=08','--ieee=synopsys'],
-                    'run_options'     : ['a', 'few', 'run_options']}
+    tf.backend.run()
+    tf.compare_files(['elab-run.cmd'])
 
-    (backend, work_root) = setup_backend(paramtypes, name, tool, tool_options)
-    # Overload file list with local version
-    backend.files = LOCAL_FILES
-  
-    do(backend,ref_dir,work_root,['vhdl_file.vhd','vhdl_lfile'])    
+
+
+# Test 03 - vhdl Version override
+def test_ghdl_03(make_edalize_test):
+    tf = make_edalize_test('ghdl',
+                           ref_dir = "test03",
+                           test_name = "test_ghdl_03",
+                           param_types=['generic'],
+                           files = LOCAL_FILES,
+                           tool_options={
+                               'analyze_options': ['--std=08','--ieee=synopsys'],
+                               'run_options': ['a', 'few', 'run_options']
+                           })
+
+    for vhdl_file in ['vhdl_file.vhd', 'vhdl_lfile',  'vhdl2008_file']:
+        with open(os.path.join(tf.work_root, vhdl_file), 'a'):
+            os.utime(os.path.join(tf.work_root, vhdl_file), None)
+
+    tf.backend.configure()
+
+    tf.compare_files(['Makefile'])
+
+    tf.backend.build()
+    tf.compare_files(['analyze.cmd'])
+
+    tf.backend.run()
+    tf.compare_files(['elab-run.cmd'])
