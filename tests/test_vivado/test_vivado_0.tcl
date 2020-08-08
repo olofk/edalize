@@ -16,6 +16,7 @@ read_verilog -sv sv_file.sv
 add_files -norecurse pcf_file.pcf
 add_files -norecurse ucf_file.ucf
 source tcl_file.tcl
+add_files -norecurse waiver_file.waiver
 read_verilog vlog_file.v
 read_verilog vlog05_file.v
 read_vhdl vhdl_file.vhd
