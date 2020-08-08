@@ -186,6 +186,7 @@ FILES = [
     {"name": "ucf_file.ucf", "file_type": "UCF"},
     {"name": "user_file", "file_type": "user"},
     {"name": "tcl_file.tcl", "file_type": "tclSource"},
+    {"name": "waiver_file.waiver", "file_type": "waiver"},
     {"name": "vlog_file.v", "file_type": "verilogSource"},
     {"name": "vlog05_file.v", "file_type": "verilogSource-2005"},
     {"name": "vlog_incfile", "file_type": "verilogSource", "is_include_file": True},
