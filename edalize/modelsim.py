@@ -1,5 +1,6 @@
 import os
 import logging
+import shutil
 
 from edalize.edatool import Edatool
 
@@ -33,15 +34,18 @@ VPI_MODULES   := {modules}
 PARAMETERS    ?= {parameters}
 PLUSARGS      ?= {plusargs}
 VSIM_OPTIONS  ?= {vsim_options}
+SDF_OPTIONS   ?= {sdf_options}
 EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
+VPI_OPTIONS   := $(addprefix -pli ,$(VPI_MODULES))
+VSIM_ARGS     := $(VPI_OPTIONS) $(SDF_OPTIONS) $(EXTRA_OPTIONS) $(TOPLEVEL)
 
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
-	$(VSIM) -do "run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
+	$(VSIM) -do edalize_run.tcl -c $(VSIM_ARGS)
 
 run-gui: work $(VPI_MODULES)
-	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
+	$(VSIM) -gui $(VSIM_ARGS)
 
 work:
 	$(VSIM) -c -do "do edalize_main.tcl; exit"
@@ -68,6 +72,14 @@ class Modelsim(Edatool):
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam', 'generic']
 
+    run_template = "modelsim-run.tcl.j2"
+
+    sdf_map = {
+        "min": "-sdfmin",
+        "typ": "-sdftyp",
+        "max": "-sdfmax"
+    }
+
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
@@ -82,6 +94,9 @@ class Modelsim(Edatool):
                         {'name' : 'vsim_options',
                          'type' : 'String',
                          'desc' : 'Additional run options for vsim'},
+                        {'name' : 'logged_hdl_objs',
+                         'type' : 'String',
+                         'desc' : 'Pattern for HDL objects that should be logged as VCD/SAIF (e.g. "-r /my_tb/*" or "/tb/uut/s1 /tb/uut/q*")'},
                         ]}
 
     def _write_build_rtl_tcl_file(self, tcl_main):
@@ -90,6 +105,7 @@ class Modelsim(Edatool):
         (src_files, incdirs) = self._get_fileset_files()
         vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
 
+        self.sdf_options = []
         libs = []
         for f in src_files:
             if not f.logical_name:
@@ -128,6 +144,31 @@ class Modelsim(Edatool):
                 tcl_main.write("do {}\n".format(f.name))
             elif f.file_type == 'user':
                 cmd = None
+            elif f.file_type == 'SDF':
+
+                # Use sdf_type to determine whether to copy the SDF to the
+                # simulation directory (default) for use with the
+                # $sdf_annotate Verilog task or to add the SDF to the vsim
+                # command line using command line arguments of the form
+                #
+                # -sdf[min|typ|max] [optional instance=]file.sdf
+
+                cmd = None
+
+                if f.sdf_type == "copy":
+                    basename = os.path.basename(f.name)
+                    if not os.path.exists(os.path.join(self.work_root, basename)):
+                        shutil.copy(f.name, self.work_root)
+                elif f.sdf_type in self.sdf_map:
+                    self.sdf_options.append(self.sdf_map[f.sdf_type])
+                    if f.sdf_instance:
+                        self.sdf_options.append("{}={}".format(f.sdf_instance, f.name))
+                    else:
+                        self.sdf_options.append(f.name)
+                else:
+                    _s = "{} has unknown sdf_type '{}'"
+                    logger.warning(_s.format(f.name, f.sdf_type))
+
             else:
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(f.name, f.file_type))
@@ -158,7 +199,8 @@ class Modelsim(Edatool):
                                 plusargs = ' '.join(_plusargs),
                                 vsim_options = ' '.join(_vsim_options),
                                 modules = ' '.join(_modules),
-                                clean_targets = _clean_targets)
+                                clean_targets = _clean_targets,
+                                sdf_options = ' '.join(self.sdf_options))
         vpi_make.write(_s)
 
         for vpi_module in self.vpi_modules:
@@ -174,12 +216,27 @@ class Modelsim(Edatool):
 
         vpi_make.close()
 
+    def _write_do_file(self):
+        hdl_objs = self.tool_options.get("logged_hdl_objs", [])
+
+        # Use Jinja to render the TCL file to avoid a total mess of quoted braces.
+
+        # Handle cases like "top glbl" or just "top"
+        name = self.toplevel.split()[0]
+
+        self.render_template(
+            self.run_template,
+            "edalize_run.tcl",
+            {"name": name,
+             "logged_hdl_objs": hdl_objs})
+
     def configure_main(self):
         tcl_main = open(os.path.join(self.work_root, "edalize_main.tcl"), 'w')
         tcl_main.write("do edalize_build_rtl.tcl\n")
 
         self._write_build_rtl_tcl_file(tcl_main)
         self._write_makefile()
+        self._write_do_file()
         tcl_main.close()
 
     def run_main(self):

@@ -30,6 +30,8 @@ setup(
         'templates/trellis/trellis-makefile.j2',
         'templates/ascentlint/Makefile.j2',
         'templates/ascentlint/run-ascentlint.tcl.j2',
+        'templates/xsim/xsim-run.tcl.j2',
+        'templates/modelsim/modelsim-run.tcl.j2',
     ]},
     author = "Olof Kindgren",
     author_email = "olof.kindgren@gmail.com",

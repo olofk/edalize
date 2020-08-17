@@ -1,1 +1,1 @@
--do run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit -c a few vsim_options -gvlogparam_bool=1 -gvlogparam_int=42 -gvlogparam_str=hello +plusarg_bool=1 +plusarg_int=42 +plusarg_str=hello top_module
+-do edalize_run.tcl -c -sdfmin /tb/uut_min=min.sdf -sdfmax max.sdf -sdftyp typ.sdf a few vsim_options -gvlogparam_bool=1 -gvlogparam_int=42 -gvlogparam_str=hello +plusarg_bool=1 +plusarg_int=42 +plusarg_str=hello top_module

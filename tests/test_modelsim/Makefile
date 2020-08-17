@@ -26,15 +26,18 @@ VPI_MODULES   :=
 PARAMETERS    ?= vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello
 PLUSARGS      ?= plusarg_bool=1 plusarg_int=42 plusarg_str=hello
 VSIM_OPTIONS  ?= a few vsim_options
+SDF_OPTIONS   ?= -sdfmin /tb/uut_min=min.sdf -sdfmax max.sdf -sdftyp typ.sdf
 EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
+VPI_OPTIONS   := $(addprefix -pli ,$(VPI_MODULES))
+VSIM_ARGS     := $(VPI_OPTIONS) $(SDF_OPTIONS) $(EXTRA_OPTIONS) $(TOPLEVEL)
 
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
-	$(VSIM) -do "run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
+	$(VSIM) -do edalize_run.tcl -c $(VSIM_ARGS)
 
 run-gui: work $(VPI_MODULES)
-	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
+	$(VSIM) -gui $(VSIM_ARGS)
 
 work:
 	$(VSIM) -c -do "do edalize_main.tcl; exit"

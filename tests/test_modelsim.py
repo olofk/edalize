@@ -8,17 +8,21 @@ def test_modelsim(make_edalize_test):
         'vcom_options': ['various', 'vcom_options'],
         'vlog_options': ['some', 'vlog_options'],
         'vsim_options': ['a', 'few', 'vsim_options'],
+        'logged_hdl_objs': ["-r /tb/uut/module1", "/tb/uut/signal1"]
     }
 
     # FIXME: Add VPI tests
     tf = make_edalize_test('modelsim',
-                           tool_options=tool_options)
+                           tool_options=tool_options,
+                           use_sdf=True)
 
     tf.backend.configure()
 
     tf.compare_files(['Makefile',
                       'edalize_build_rtl.tcl',
-                      'edalize_main.tcl'])
+                      'edalize_main.tcl',
+                      'edalize_run.tcl',
+                      'copy.sdf'])
 
     orig_env = os.environ.copy()
     try:

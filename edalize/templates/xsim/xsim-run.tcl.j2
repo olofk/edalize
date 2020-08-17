@@ -1,0 +1,34 @@
+{# We want to allow HDL objects to be logged recursively with something like
+   "-r /tb/uut" while also allowing simpler cases like "/tb/sig*" The logged
+   objects will therefore be passed as a TCL list that can be used with multiple
+   "log_vcd" and "log_saif" commands
+#}
+proc run_cmd {cmd_list arg_str} {
+    set cmd [concat $cmd_list [split $arg_str]]
+    eval $cmd
+}
+
+set logged_hdl_objs { {% for o in logged_hdl_objs %} "{{o}}" {% endfor %} }
+set logging_enabled [llength $logged_hdl_objs]
+
+if {$logging_enabled} {
+
+    open_vcd {{name}}.vcd
+    open_saif {{name}}.saif
+
+    foreach o $logged_hdl_objs {
+        set objects [run_cmd [list get_objects] $o]
+        log_vcd $objects
+        log_saif $objects
+    }
+}
+
+run -all
+
+if {$logging_enabled} {
+    flush_vcd
+    close_vcd
+    close_saif
+}
+
+quit

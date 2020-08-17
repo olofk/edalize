@@ -259,10 +259,13 @@ class Edatool(object):
 
     def _get_fileset_files(self, force_slash=False):
         class File:
-            def __init__(self, name, file_type, logical_name):
+            def __init__(self, name, file_type, logical_name, sdf_type, sdf_instance):
                 self.name         = name
                 self.file_type    = file_type
                 self.logical_name = logical_name
+                self.sdf_type     = sdf_type
+                self.sdf_instance = sdf_instance
+
         incdirs = []
         src_files = []
         for f in self.files:
@@ -278,9 +281,13 @@ class Edatool(object):
                     _name = _name.replace('\\', '/')
                 file_type = f.get('file_type', '')
                 logical_name = f.get('logical_name', '')
+                sdf_type = f.get('sdf_type', 'copy')
+                sdf_instance = f.get('sdf_instance', '')
                 src_files.append(File(_name,
                                       file_type,
-                                      logical_name))
+                                      logical_name,
+                                      sdf_type,
+                                      sdf_instance))
         return (src_files, incdirs)
 
     def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):

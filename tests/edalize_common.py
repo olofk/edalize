@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import os.path
 import shutil
+import pathlib
 
 import pytest
 
@@ -41,6 +42,9 @@ class TestFixture:
         use_vpi: If true, set up backend with definitions from :attr:`VPI`.
                  Defaults to `False`.
 
+        use_sdf: If true, set up backend with definitions from :attr:`SDF`.
+                 Defaults to `False`.
+
     '''
     def __init__(self,
                  tool_name,
@@ -50,7 +54,8 @@ class TestFixture:
                  files=None,
                  tool_options={},
                  ref_dir='.',
-                 use_vpi=False):
+                 use_vpi=False,
+                 use_sdf=False):
 
         raw_ref_dir = os.path.join(tests_dir, 'test_' + tool_name, ref_dir)
 
@@ -59,7 +64,7 @@ class TestFixture:
         self.ref_dir = os.path.normpath(raw_ref_dir)
         self.work_root = work_root
         self.backend = _setup_backend(self.test_name, tool_name, param_types,
-                                      files, tool_options, work_root, use_vpi)
+                                      files, tool_options, work_root, use_vpi, use_sdf)
 
     def compare_files(self, files, ref_subdir='.'):
         '''Check some files in the work root match those in the ref directory
@@ -146,12 +151,13 @@ def param_gen(paramtypes):
 
 
 def _setup_backend(name, tool, paramtypes, files,
-                   tool_options, work_root, use_vpi):
+                   tool_options, work_root, use_vpi, use_sdf):
     """Set up a backend.
 
     The backend is called *name*, is set up for *tool* with *tool_options*,
-    *paramtypes*, and, if *use_vpi* is ``True``, definitions from :attr:`VPI`.
-    If *files* is None, files are taken from :attr:`FILES`.
+    *paramtypes*, and, if *use_vpi* or *use_sdf* are ``True``, definitions from
+    :attr:`VPI` or :attr:`SDF`.  If *files* is None, files are taken from
+    :attr:`FILES`.
     """
     parameters = param_gen(paramtypes)
 
@@ -166,8 +172,16 @@ def _setup_backend(name, tool, paramtypes, files,
                 with open(_f, 'a'):
                     os.utime(_f, None)
 
+    _files = FILES.copy() if files is None else files
+    if use_sdf:
+        _files.extend(SDF)
+        for s in SDF:
+            _f = pathlib.Path(work_root) / (s["sdf_type"] + ".sdf")
+            _f.parent.mkdir(parents=True, exist_ok=True)
+            _f.write_text("Bogus {} SDF file\n".format(s["sdf_type"]))
+
     edam = {'name'         : name,
-            'files'        : FILES if files is None else files,
+            'files'        : _files,
             'parameters'   : parameters,
             'tool_options' : {tool : tool_options},
             'toplevel'     : 'top_module',
@@ -218,3 +232,20 @@ VPI = [
      'libs': [],
      'name': 'vpi2'}]
 """Predefined VPI modules to build."""
+
+
+SDF = [
+    {
+        "name": "min.sdf",
+        "file_type": "SDF",
+        "sdf_type": "min",
+        "sdf_instance": "/tb/uut_min",
+    }
+] + [
+    {"name": sdf_type + ".sdf", "file_type": "SDF", "sdf_type": sdf_type}
+    for sdf_type in ["max", "typ", "copy"]
+]
+"""Predefined SDF files.
+
+Test sdf_instance for the min case and use default settings for the others
+"""

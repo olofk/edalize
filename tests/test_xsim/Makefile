@@ -4,10 +4,10 @@ include config.mk
 all: xsim.dir/$(TARGET)/xsimk
 
 xsim.dir/$(TARGET)/xsimk:
-	xelab $(TOPLEVEL) -prj $(TARGET).prj -snapshot $(TARGET) $(VLOG_DEFINES) $(VLOG_INCLUDES) $(GEN_PARAMS) $(XELAB_OPTIONS)
+	xelab $(TOPLEVEL) -prj $(TARGET).prj -snapshot $(TARGET) $(XELAB_ARGS)
 
 run: xsim.dir/$(TARGET)/xsimk
-	xsim -R $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
+	xsim --tclbatch edalize_run.tcl $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
 
 run-gui: xsim.dir/$(TARGET)/xsimk
 	xsim --gui $(XSIM_OPTIONS) $(TARGET) $(EXTRA_OPTIONS)
