@@ -5,13 +5,35 @@ import logging
 import re
 from typing import Dict, Union
 
-import pyparsing as pp
-import pandas as pd
-import numpy as np
-
 from edalize.reporting import Reporting
 
 logger = logging.getLogger(__name__)
+
+# Reporting is an optional Edalize feature and its required packages may not
+# be installed unless Edalize was installed as edalize[reporting]. There is
+# currently reduced-functionality feedback, so if the module is used without
+# being properly installed log a hopefully helpful error before throwing the
+# exception.
+import_msg = "Missing package %s. Was edalize installed with the reporting option? (pip install 'edalize[reporting]')"
+
+# This would perhaps be cleaner but more complex with importlib
+try:
+    import pyparsing as pp
+except ImportError as e:
+    logger.exception(import_msg, "pyparsing")
+    raise e
+
+try:
+    import numpy as np
+except ImportError as e:
+    logger.exception(import_msg, "numpy")
+    raise e
+
+try:
+    import pandas as pd
+except ImportError as e:
+    logger.exception(import_msg, "pandas")
+    raise e
 
 
 class QuartusReporting(Reporting):
@@ -95,7 +117,9 @@ class QuartusReporting(Reporting):
         # depend on the device, so find the match with the highest
         # temperature.
 
-        slow_fmax = re.compile(r"Slow (?P<voltage>\d+)mV (?P<temp>\d+)C Model Fmax Summary")
+        slow_fmax = re.compile(
+            r"Slow (?P<voltage>\d+)mV (?P<temp>\d+)C Model Fmax Summary"
+        )
         title_matches = [slow_fmax.match(title) for title in timing.keys()]
 
         slow_title = max(

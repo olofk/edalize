@@ -49,13 +49,15 @@ setup(
         # which was fixed in 2.11.2 and later.
         # https://github.com/pallets/jinja/issues/1138
         'Jinja2 >=2.8, !=2.11.0, !=2.11.1',
-        'pyparsing',
-        'numpy',
-        'pandas',
     ],
     tests_require=[
         'vunit_hdl>=4.0.8'
     ],
+    # The reporting modules have dependencies that shouldn't be required for
+    # all Edalize users.
+    extras_require={
+        "reporting": ["pyparsing", "numpy", "pandas"],
+    },
     # Supported Python versions: 3.5+
     python_requires=">=3.5, <4",
 )

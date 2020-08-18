@@ -14,9 +14,21 @@ import logging
 import pathlib
 from typing import Dict, Union, Callable, Optional
 
-import pandas as pd
 
 logger = logging.getLogger(__name__)
+
+# Reporting is an optional Edalize feature and its required packages may not
+# be installed unless Edalize was installed as edalize[reporting]. There is
+# currently reduced-functionality feedback, so if the module is used without
+# being properly installed log a hopefully helpful error before throwing the
+# exception.
+import_msg = "Missing package %s. Was edalize installed with the reporting option? (pip install 'edalize[reporting]')"
+
+try:
+    import pandas as pd
+except ImportError as e:
+    logger.exception(import_msg, "pandas")
+    raise e
 
 
 class Reporting:
