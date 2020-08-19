@@ -37,6 +37,10 @@ following python command::
     $ cd edalize
     $ python -m pip install -e .
 
+The reporting modules have been made optional due to their use of a number of
+dependencies for data analysis. These can be installed with
+
+    $ python -m pip install -e ".[reporting]"
 
 How to use it?
 --------------

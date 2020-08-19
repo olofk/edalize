@@ -7,8 +7,12 @@ analysis.
 
 This module includes the base Reporting class with children for supported
 tools in separate modules.
+
+The tests in :mod:`tests/test_reporting.py` are the current best reference
+for use of the reporting modules.
 """
 
+import abc
 import io
 import logging
 import pathlib
@@ -31,26 +35,30 @@ except ImportError as e:
     raise e
 
 
-class Reporting:
+class Reporting(abc.ABC):
     """Base class providing defaults and common functionality for tool-specific reporting classes
     """
 
     # Static variables to be overridden by subclasses.
 
     # Glob patterns to find resource and timing reports in a directory
-    resource_rpt_pattern = "*_resource_report.txt"  # type: str
-    timing_rpt_pattern = "*_timing_report.txt"  # type: str
+    _resource_rpt_pattern = "*_resource_report.txt"  # type: str
+    _timing_rpt_pattern = "*_timing_report.txt"  # type: str
 
     # The text encoding needed to properly open reports
-    report_encoding = None  # type: Optional[str]
+    _report_encoding = None  # type: Optional[str]
 
     # The separator used in report tables
-    table_sep = ";"  # type: str
+    _table_sep = ";"  # type: str
 
     @staticmethod
     def period_to_freq(
         p: float, in_unit: str = "ns", out_unit: str = "MHz"
     ) -> Optional[float]:
+
+        """Convert a clock period to a freqency
+        """
+
         period_map = {
             "s": 1,
             "ms": 1e-3,
@@ -94,96 +102,99 @@ class Reporting:
 
         """Convert report tables to CSV
 
-        Keyword arguments:
+        :param table_str: The table to be converted
+        :type table_str: str
+        :param sep: The cell separator used in the original table (default ";")
+        :param new_sep: The cell separator to use in the CSV table (default ",")
+        :param hline: Character(s) marking the start of a horizontal line (default "+")
+        :param header_threshold: Heuristic to differentiate between tables with only a header and only data
 
-        table_str -- A string containing the table to be converted
-        sep -- The cell separator used in the original table (default ";")
-        new_sep -- The cell separator to use in the CSV table (default ",")
-        hline -- Character(s) marking the start of a horizontal line (default "+")
-        header_threshold -- Heuristic to differentiate between tables with only a header and only data
+        :return: A dict with the keys
 
-        Example
-        -------
+            "header"
+                :vartype bool: indicating whether the parsed table had a header
+            "csv"
+                :vartype str: containing the CSV version of the table
+        :rtype: dict(str, bool or str)
 
-        In the following table from a Quartus fit report
+        **Example**
 
-        +---------------------------------------------------------------------------------+
-        ; Global & Other Fast Signals Summary                                             ;
-        +------+----------+---------+-------------+----------------+----------------------+
-        ; Name ; Location ; Fan-Out ; Signal Type ; Promotion Type ; Global Resource Used ;
-        +------+----------+---------+-------------+----------------+----------------------+
-        ; clk  ; PIN_AA7  ; 713     ; Global      ; Automatic      ; Global Clock Region  ;
-        +------+----------+---------+-------------+----------------+----------------------+
+        In the following table from a Quartus fit report::
+
+            +---------------------------------------------------------------------------------+
+            ; Global & Other Fast Signals Summary                                             ;
+            +------+----------+---------+-------------+----------------+----------------------+
+            ; Name ; Location ; Fan-Out ; Signal Type ; Promotion Type ; Global Resource Used ;
+            +------+----------+---------+-------------+----------------+----------------------+
+            ; clk  ; PIN_AA7  ; 713     ; Global      ; Automatic      ; Global Clock Region  ;
+            +------+----------+---------+-------------+----------------+----------------------+
 
         the Quartus parsing routines will remove the title section, resulting
-        in this method getting
+        in this method getting::
 
-        +------+----------+---------+-------------+----------------+----------------------+
-        ; Name ; Location ; Fan-Out ; Signal Type ; Promotion Type ; Global Resource Used ;
-        +------+----------+---------+-------------+----------------+----------------------+
-        ; clk  ; PIN_AA7  ; 713     ; Global      ; Automatic      ; Global Clock Region  ;
-        +------+----------+---------+-------------+----------------+----------------------+
+            +------+----------+---------+-------------+----------------+----------------------+
+            ; Name ; Location ; Fan-Out ; Signal Type ; Promotion Type ; Global Resource Used ;
+            +------+----------+---------+-------------+----------------+----------------------+
+            ; clk  ; PIN_AA7  ; 713     ; Global      ; Automatic      ; Global Clock Region  ;
+            +------+----------+---------+-------------+----------------+----------------------+
 
         The decorative horizontal lines are removed. The ";" delimiters at the beginning and end of
         each remaining row are also removed along with other whitespace. The
         delimiters and whitespace between cells are replaced with the new
-        delimiter resulting in
+        delimiter resulting in::
 
-        Name,Location,Fan-Out,Signal Type,Promotion Type,Global Resource Used
-        clk,PIN_AA7,713,Global,Automatic,Global Clock Region
+            Name,Location,Fan-Out,Signal Type,Promotion Type,Global Resource Used
+            clk,PIN_AA7,713,Global,Automatic,Global Clock Region
 
-        Header detection
-        ----------------
+        **Header detection**
 
         This routine attempts to detect the uncommon case of a table with no
-        header row like the following:
+        header row like the following: ::
 
-        +------------------------------------+---------------------------------------------+
-        ; Fitter Status                      ; Successful - Wed Dec  4 13:37:55 2019       ;
-        ; Quartus Prime Version              ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
-        ; Revision Name                      ; picorv32_wrap_0_1                           ;
-        ; Top-level Entity Name              ; picorv32                                    ;
-        ; Family                             ; Cyclone IV E                                ;
-        ; Device                             ; EP4CE22F17C6                                ;
-        ; Timing Models                      ; Final                                       ;
-        ; Total logic elements               ; 1,632 / 22,320 ( 7 % )                      ;
-        ;     Total combinational functions  ; 1,584 / 22,320 ( 7 % )                      ;
-        ;     Dedicated logic registers      ; 649 / 22,320 ( 3 % )                        ;
-        ; Total registers                    ; 649                                         ;
-        ; Total pins                         ; 1 / 154 ( < 1 % )                           ;
-        ; Total virtual pins                 ; 408                                         ;
-        ; Total memory bits                  ; 2,048 / 608,256 ( < 1 % )                   ;
-        ; Embedded Multiplier 9-bit elements ; 0 / 132 ( 0 % )                             ;
-        ; Total PLLs                         ; 0 / 4 ( 0 % )                               ;
-        +------------------------------------+---------------------------------------------+
+            +------------------------------------+---------------------------------------------+
+            ; Fitter Status                      ; Successful - Wed Dec  4 13:37:55 2019       ;
+            ; Quartus Prime Version              ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
+            ; Revision Name                      ; picorv32_wrap_0_1                           ;
+            ; Top-level Entity Name              ; picorv32                                    ;
+            ; Family                             ; Cyclone IV E                                ;
+            ; Device                             ; EP4CE22F17C6                                ;
+            ; Timing Models                      ; Final                                       ;
+            ; Total logic elements               ; 1,632 / 22,320 ( 7 % )                      ;
+            ;     Total combinational functions  ; 1,584 / 22,320 ( 7 % )                      ;
+            ;     Dedicated logic registers      ; 649 / 22,320 ( 3 % )                        ;
+            ; Total registers                    ; 649                                         ;
+            ; Total pins                         ; 1 / 154 ( < 1 % )                           ;
+            ; Total virtual pins                 ; 408                                         ;
+            ; Total memory bits                  ; 2,048 / 608,256 ( < 1 % )                   ;
+            ; Embedded Multiplier 9-bit elements ; 0 / 132 ( 0 % )                             ;
+            ; Total PLLs                         ; 0 / 4 ( 0 % )                               ;
+            +------------------------------------+---------------------------------------------+
 
         However, there may also be similar tables with just a header and no
-        data rows like the following:
+        data rows like the following: ::
 
-        +----------+------+
-        | Ref Name | Used |
-        +----------+------+
+            +----------+------+
+            | Ref Name | Used |
+            +----------+------+
 
         This method guesses that a table with only leading and trailing
-        horizontal lines with less than or equal to `header_threshold` rows
+        horizontal lines with less than or equal to ``header_threshold`` rows
         has a header (and no data rows)
 
-        Multirow Headers
-        ----------------
+        **Multirow Headers**
 
-        Table-reading routines like Pandas read_csv don't like the header
-        being spread over multiple rows as in
+        Table-reading routines like Pandas ``read_csv`` don't like the header
+        being spread over multiple rows as in ::
 
-        +-------------------------------------...-+
-        | IOB Name | Type | Diff | Drive    | ... |
-        |          |      | Term | Strength | ... |
-        +-----------------------------------------+
-        ...
+            +-------------------------------------...-+
+            | IOB Name | Type | Diff | Drive    | ... |
+            |          |      | Term | Strength | ... |
+            +-----------------------------------------+
+            ...
 
         This method joins the header columns to a single row
 
-        Alternatives
-        ------------
+        **Alternatives**
 
         A library routine may be more robust. For example, the Astropy package
         includes many routines for ASCII table I/O (astropy.io.ascii). The
@@ -266,25 +277,23 @@ class Reporting:
     ) -> Dict[str, pd.DataFrame]:
         """Helper for reports returning a number of tables
 
-        Args:
-
-            parser (function): The function to be used to parse the report
+        :param parser: The function to be used to parse the report
             string. Should return a dictionary with keys containing the table
             name and values containing the table
+        :type parser: func
+        :param report_file: Report file name
+        :type report_file: str
 
-            report_file (str): report file name
-
-        Returns:
-
-            A dictionary with the table names as keys and values containing a
+        :return: A dictionary with the table names as keys and values containing a
             Pandas DataFrame with the data from the ASCII table.
+        :rtype: dict
         """
 
-        report = open(report_file, "r", encoding=cls.report_encoding).read()
+        report = open(report_file, "r", encoding=cls._report_encoding).read()
 
         tables = {}
         for k, v in parser(report).items():
-            table = cls.table_to_csv(v, sep=cls.table_sep)
+            table = cls.table_to_csv(v, sep=cls._table_sep)
 
             header = "infer" if table["header"] else None
 
@@ -300,26 +309,24 @@ class Reporting:
         return tables
 
     @classmethod
+    @abc.abstractmethod
     def report_summary(cls, resources, timing):
         """Resource summary in a backend-independent format
 
-        This virtual method should be overridden by each backend.
+        This abstract method should be overridden by each backend.
 
-        Args:
+        :param resources: Detailed resource information for summarising.
+        :param timing: Detailed timing information for summarising
 
-            resources: Detailed resource information for summarising.
-            timing: Detailed timing information for summarizing
+        :return: A dictionary with the keys
 
-        Returns:
-
-            A dictionary with the keys
-
-                "constraint": Clock constraint in MHz
-                "fmax": Maximum clock in MHz
-                "lut": Number of look-up tables used
-                "reg": Number of registers used
-                "blkmem": Number of embedded memory blocks used
-                "dsp": Number of DSP blocks used
+            * "constraint": Clock constraint in MHz
+            * "fmax": Maximum clock in MHz
+            * "lut": Number of look-up tables used
+            * "reg": Number of registers used
+            * "blkmem": Number of embedded memory blocks used
+            * "dsp": Number of DSP blocks used
+        :rtype: dict
 
         Summarises a subset of the available timing and resource information,
         meant to provide a backend-independent way to get some information.
@@ -329,31 +336,30 @@ class Reporting:
         to the above resource categories.
         """
 
-        raise NotImplementedError
+        pass
 
     @classmethod
     def report_resources(cls, report_file: str):
         """Detailed device-dependent resource information
 
-        This virtual method should be overridden by each backend.
+        This abstract method should be overridden by each backend.
 
-        Args:
+        :param report_file: The file name for the resource report to be parsed
+        :type report_file: str
 
-            report_file: The file name for the resource report to be parsed
-
-        Returns:
-
-            Detailed backend and device-specific resource information. The current classes
-            report this as a dictionary where the keys are the title of the table from the
-            resource report and the values are Pandas DataFrames.
+        :return: Detailed backend and device-specific resource information. The
+            current classes report this as a dictionary where the keys are the
+            title of the table from the resource report and the values are Pandas
+            DataFrames.
         """
-        raise NotImplementedError
+        pass
 
     @classmethod
+    @abc.abstractmethod
     def report_timing(cls, report_file: str):
         """Detailed device-dependent timing information
 
-        This virtual method should be overridden by each backend.
+        This abstract method should be overridden by each backend.
 
         Args:
 
@@ -363,44 +369,41 @@ class Reporting:
 
             Detailed backend and device-specific timing information.
         """
-        raise NotImplementedError
+        pass
 
     @classmethod
     def report(cls, dir: str) -> Dict[str, pd.DataFrame]:
-        """Report a common summary format along with device-specific resource and timing information
+        """Report a common summary format along with device-specific resource
+        and timing information
 
-        Args:
+        The :func:`report_summary`, :func:`report_resources`, and
+        :func:`report_timing` methods may be used to access the data for each
+        key individually.
 
-            dir: The directory containing the resource and timing reports
+        :param dir: The directory containing the resource and timing reports
+        :type dir: str
 
-        Returns:
-
-            A dictionary with the following keys:
+        :return: A dictionary with the following keys:
 
             "summary"
-
-            Summarisation from report_summary method
+                Summarisation from report_summary method
 
             "resources"
-
-            Detailed backend and device-specific resource information.
-            The current classes report this as a dictionary where the
-            keys are the title of the table from the resource report
-            and the values are Pandas DataFrames.
+                Detailed backend and device-specific resource information.
+                The current classes report this as a dictionary where the
+                keys are the title of the table from the resource report
+                and the values are Pandas DataFrames.
 
             "timing"
-
-            Detailed backend and device-specific timing information.
-
-            The report_summary, report_resources, and report_timing methods
-            may be used to access the data for each key individually.
+                Detailed backend and device-specific timing information.
+        :rtype: dict(str, pandas.DataFrame)
         """
 
         result = {"summary": None, "resources": None, "timing": None}
 
         report_dir = pathlib.Path(dir)
-        resource_rpt = list(report_dir.glob(cls.resource_rpt_pattern))
-        timing_rpt = list(report_dir.glob(cls.timing_rpt_pattern))
+        resource_rpt = list(report_dir.glob(cls._resource_rpt_pattern))
+        timing_rpt = list(report_dir.glob(cls._timing_rpt_pattern))
 
         # For now we'll be inflexible an expect one match for each type of
         # report

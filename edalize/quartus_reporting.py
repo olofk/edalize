@@ -39,9 +39,9 @@ except ImportError as e:
 class QuartusReporting(Reporting):
 
     # Override non-default class variables
-    resource_rpt_pattern = "*.fit.rpt"
-    timing_rpt_pattern = "*.sta.rpt"
-    report_encoding = "ISO-8859-1"
+    _resource_rpt_pattern = "*.fit.rpt"
+    _timing_rpt_pattern = "*.sta.rpt"
+    _report_encoding = "ISO-8859-1"
 
     @staticmethod
     def _parse_tables(report_str: str) -> Dict[str, str]:

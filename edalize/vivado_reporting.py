@@ -34,9 +34,9 @@ except ImportError as e:
 class VivadoReporting(Reporting):
 
     # Override non-default class variables
-    resource_rpt_pattern = "*_utilization_placed.rpt"
-    timing_rpt_pattern = "*_timing_summary_routed.rpt"
-    table_sep = "|"
+    _resource_rpt_pattern = "*_utilization_placed.rpt"
+    _timing_rpt_pattern = "*_timing_summary_routed.rpt"
+    _table_sep = "|"
 
     @staticmethod
     def _parse_utilization_tables(util_str: str) -> Dict[str, str]:

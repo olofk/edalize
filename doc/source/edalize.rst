@@ -148,6 +148,37 @@ edalize.xsim module
     :undoc-members:
     :show-inheritance:
 
+edalize.reporting module
+------------------------
+
+.. automodule:: edalize.reporting
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+edalize.vivado_reporting module
+-------------------------------
+
+.. automodule:: edalize.vivado_reporting
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+edalize.quartus_reporting module
+--------------------------------
+
+.. automodule:: edalize.quartus_reporting
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+edalize.ise_reporting module
+--------------------------------
+
+.. automodule:: edalize.ise_reporting
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 Module contents
 ---------------

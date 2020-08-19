@@ -34,16 +34,16 @@ except ImportError as e:
 class IseReporting(Reporting):
 
     # Override class variables
-    resource_rpt_pattern = "*_map.mrp"
-    timing_rpt_pattern = "*.twr"
-    table_sep = "|"
+    _resource_rpt_pattern = "*_map.mrp"
+    _timing_rpt_pattern = "*.twr"
+    _table_sep = "|"
 
     @staticmethod
     def _parse_twr_period(timing_str: str) -> pp.ParseResults:
         """Parse period constraints from an ISE timing report
 
-        Expects the default ISE verbose output from a command like:
-        trce -v 3 -n 3 -fastpaths top.ncd top.pcf -o top.twr
+        Expects the default ISE verbose output from a command like: ::
+            trce -v 3 -n 3 -fastpaths top.ncd top.pcf -o top.twr
         """
         # Look for a section of the report like the following and extract the
         # constraint, path information, and minimum period.
@@ -144,7 +144,7 @@ class IseReporting(Reporting):
     def _parse_twr_stats(report_str: str) -> pp.ParseResults:
         """Parse the design statistics from an ISE timing report
 
-        Design statistics:
+        Design statistics: ::
            Minimum period:  11.343ns{1}   (Maximum frequency:  88.160MHz)
         """
 
