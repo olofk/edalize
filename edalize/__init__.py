@@ -4,6 +4,7 @@ from pkgutil import walk_packages
 
 NON_TOOL_PACKAGES = [
     'vunit_hooks',
+    'reporting',
     'ise_reporting',
     'vivado_reporting',
     'quartus_reporting',
