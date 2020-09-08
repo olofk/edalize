@@ -1,6 +1,9 @@
+import logging
 import os.path
 
 from edalize.edatool import Edatool
+
+logger = logging.getLogger(__name__)
 
 class Yosys(Edatool):
 
