@@ -1,0 +1,2 @@
+test_radiant_minimal_0.tcl
+test_radiant_minimal_0_run.tcl
