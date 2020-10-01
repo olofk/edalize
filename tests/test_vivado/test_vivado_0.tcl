@@ -31,6 +31,7 @@ add_files -norecurse config.vbl
 add_files -norecurse verible_waiver.vbw
 add_files -norecurse verible_waiver2.vbw
 add_files -norecurse config.sby.j2
+add_files -norecurse chipdb.bin
 
 set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]

@@ -204,6 +204,7 @@ FILES = [
     {"name": "verible_waiver.vbw", "file_type": "veribleLintWaiver"},
     {"name": "verible_waiver2.vbw", "file_type": "veribleLintWaiver"},
     {'name': 'config.sby.j2', 'file_type': 'sbyConfigTemplate'},
+    {'name' : 'chipdb.bin'   , 'file_type' : 'chipDataBase'},
 ]
 """Files of all supported file types."""
 

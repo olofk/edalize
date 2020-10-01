@@ -31,6 +31,7 @@ Different EDA tools handle different subsets of files and are expected to ignore
 - vhdlSource-2008 : VHDL 2008 source
 - xci : Xilinx Vivado IP file
 - xdc : Xilinx Vivado constraint file
+- chipDataBase : Nextpnr chip data binary file
 
 
 =============== ===================== ===========

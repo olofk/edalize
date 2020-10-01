@@ -31,6 +31,7 @@ setup(
         'templates/ascentlint/Makefile.j2',
         'templates/ascentlint/run-ascentlint.tcl.j2',
         'templates/symbiflow/symbiflow-vpr-makefile.j2',
+        'templates/nextpnr_xilinx/nextpnr-xilinx-makefile.j2',
     ]},
     author = "Olof Kindgren",
     author_email = "olof.kindgren@gmail.com",
