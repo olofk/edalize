@@ -11,22 +11,10 @@ verilog_defaults -push
 verilog_defaults -add -defer
 
 verilog_defaults -add -I.
-set file_table {{sv_file.sv -sv} {vlog_file.v }}
-
-foreach f ${file_table} {
-  set file_path [lindex $f 0]
-  set opts ""
-  if {[llength $f] == 2} {
-    set opts [lindex $f 1]
-  }
-
-  # Yosys does not like empty $opt variables
-  if {$opts eq ""} {
-    read_verilog $file_path
-  } else {
-    read_verilog $opts $file_path
-  }
-}
+read_verilog -sv {sv_file.sv}
+source {tcl_file.tcl}
+read_verilog {vlog_file.v}
+read_verilog {vlog05_file.v}
 
 chparam -set vlogparam_bool 1 top_module
 chparam -set vlogparam_int 42 top_module

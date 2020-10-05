@@ -43,15 +43,17 @@ class Yosys(Edatool):
 
         file_table = []
         for f in src_files:
-            switch = ""
-            if f.file_type in ['verilogSource']:
-                switch = ""
-            elif f.file_type in ['systemVerilogSource']:
-                switch = "-sv"
+            cmd = ""
+            if f.file_type.startswith('verilogSource'):
+                cmd = 'read_verilog'
+            elif f.file_type.startswith('systemVerilogSource'):
+                cmd = 'read_verilog -sv'
+            elif f.file_type == 'tclSource':
+                cmd = 'source'
             else:
                 continue
 
-            file_table.append('{{{file} {switch}}}'.format(file=f.name, switch=switch))
+            file_table.append(cmd + ' {' + f.name + '}')
 
         verilog_defines = []
         for key, value in self.vlogdefine.items():
@@ -77,7 +79,7 @@ class Yosys(Edatool):
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
                 'verilog_params'      : "\n".join(verilog_params),
-                'file_table'          : "{" + " ".join(file_table) + "}",
+                'file_table'          : "\n".join(file_table),
                 'incdirs'             : ' '.join(['-I'+d for d in incdirs]),
                 'top'                 : self.toplevel,
                 'synth_command'       : "synth_" + arch,
