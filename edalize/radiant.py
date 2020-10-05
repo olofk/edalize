@@ -91,6 +91,8 @@ prj_close
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
             return file_types[_file_type] + f.name + _work_source(f)
+        elif _file_type == 'tclSource':
+            return "source " + f.name
         elif _file_type in ['user', 'LPF']:
             return ''
         else:
