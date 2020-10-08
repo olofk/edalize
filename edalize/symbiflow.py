@@ -55,6 +55,11 @@ class Symbiflow(Edatool):
                         "type": "String",
                         "desc": "Additional vpr tool options. If not used, default options for the tool will be used",
                     },
+                    {
+                        "name" : "environment_script",
+                        "type" : "String",
+                        "desc" : "Optional bash script that will be sourced before each build step."
+                    },
                 ]
             }
 
@@ -94,29 +99,46 @@ class Symbiflow(Edatool):
             if f.file_type in ["user"]:
                 user_files.append(f.name)
 
-        part = self.tool_options.get("part", None)
-        package = self.tool_options.get("package", None)
+        part = self.tool_options.get('part', None)
+        package = self.tool_options.get('package', None)
+        vendor = self.tool_options.get('vendor', None)
 
         if not part:
             logger.error('Missing required "part" parameter')
         if not package:
             logger.error('Missing required "package" parameter')
 
-        if "xc7a" in part:
-            bitstream_device = "artix7"
-        if "xc7z" in part:
-            bitstream_device = "zynq7"
-        if "xc7k" in part:
-            bitstream_device = "kintex7"
+        if vendor == 'xilinx':
+            if 'xc7a' in part:
+                bitstream_device = 'artix7'
+            if 'xc7z' in part:
+                bitstream_device = 'zynq7'
+            if 'xc7k' in part:
+                bitstream_device = 'kintex7'
 
-        partname = part + package
+            partname = part + package
 
-        # a35t are in fact a50t
-        # leave partname with 35 so we access correct DB
-        if part == "xc7a35t":
-            part = "xc7a50t"
+            # a35t are in fact a50t
+            # leave partname with 35 so we access correct DB
+            if part == 'xc7a35t':
+                part = 'xc7a50t'
+            device_suffix = 'test'
+            toolchain_prefix = 'symbiflow_'
+        elif vendor == 'quicklogic':
+            partname = package
+            device_suffix = 'wlcsp'
+            bitstream_device = part + "_" + device_suffix
+            # Newest Quicklogic toolchain release do not have any toolchain_prefix
+            # if if will change in the future this variable should be adjusted.
+            toolchain_prefix = ''
 
         vpr_options = self.tool_options.get("vpr_options", None)
+
+
+        # Optional script that will be sourced right before executing each build step in Makefile
+        # This script can for example setup enviroment variables or conda enviroment.
+        # This file needs to be a bash file
+        environment_script = self.tool_options.get('environment_script', None)
 
         makefile_params = {
             "top": self.toplevel,
@@ -128,6 +150,10 @@ class Symbiflow(Edatool):
             "pcf": " ".join(pins_constraints),
             "xdc": " ".join(placement_constraints),
             "vpr_options": vpr_options,
+            "device_suffix": device_suffix,
+            "toolchain_prefix": toolchain_prefix,
+            "environment_script": environment_script,
+            "vendor": vendor,
         }
         self.render_template("symbiflow-vpr-makefile.j2", "Makefile", makefile_params)
 
