@@ -33,6 +33,7 @@ add_files -norecurse verible_waiver2.vbw
 add_files -norecurse config.sby.j2
 read_verilog -sv another_sv_file.sv
 add_files -norecurse pdc_constraint_file.pdc
+add_files -norecurse lpf_file.lpf
 
 set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]
