@@ -27,6 +27,9 @@ class Icestorm(Edatool):
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
                          'desc' : 'Additional options for the synth_ice40 command'},
+                        {'name' : 'environment_script',
+                         'type' : 'String',
+                         'desc' : 'Optional bash script that will be sourced before each build step.'},
                         ]}
 
             combined_members = icestorm_help['members']
@@ -82,6 +85,12 @@ class Icestorm(Edatool):
         # Write Makefile
         arachne_pnr_options = self.tool_options.get('arachne_pnr_options', [])
         nextpnr_options     = self.tool_options.get('nextpnr_options', [])
+
+        # Optional script that will be sourced right before executing each build step in Makefile
+        # This script can for example setup enviroment variables or conda enviroment.
+        # This file needs to be a bash file
+        environment_script = self.tool_options.get('environment_script', None)
+
         template_vars = {
             'name'                : self.name,
             'pcf_file'            : pcf_files[0],
@@ -90,6 +99,7 @@ class Icestorm(Edatool):
             'nextpnr_options'     : nextpnr_options,
             'default_target'      : 'json' if pnr == 'none' else 'bin',
             'device'              : part,
+            'environment_script'  : environment_script,
         }
         self.render_template('icestorm-makefile.j2',
                              'Makefile',
