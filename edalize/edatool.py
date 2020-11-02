@@ -295,15 +295,25 @@ class Edatool(object):
             logger.debug("Environment: " + str(_env))
             logger.debug("Working directory: " + self.work_root)
             try:
-                subprocess.check_call(script['cmd'],
-                                      cwd = self.work_root,
-                                      env = _env)
+                cp = subprocess.run(script['cmd'],
+                                    cwd = self.work_root,
+                                    env = _env,
+				    capture_output=True,
+                                    check = True)
             except FileNotFoundError as e:
                 msg = "Unable to run {} script '{}': {}"
                 raise RuntimeError(msg.format(hook_name, script['name'], str(e)))
             except subprocess.CalledProcessError as e:
-                msg = "{} script '{}' exited with error code {}"
-                raise RuntimeError(msg.format(hook_name, script['name'], e.returncode))
+                msg = f"{hook_name} script '{script['name']}': {e.cmd} exited with error code {e.returncode}"
+                logger.debug(_s)
+
+                if p.stderr:
+                    logger.debug("=== STDERR ===")
+                    logger.debug(p.stderr)
+
+                msg = f"{hook_name} script '{script['name']}': {e.cmd exited with error code {e.returncode}"
+                raise RuntimeError(msg)
+            return (cp.returncode, cp.stdout, cp.stderr)
 
     def _run_tool(self, cmd, args=[]):
         logger.debug("Running " + cmd)
