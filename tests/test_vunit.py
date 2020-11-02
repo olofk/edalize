@@ -2,6 +2,7 @@ import pytest
 import os.path
 from unittest.mock import patch, MagicMock
 from edalize_common import make_edalize_test
+import edalize.edatool
 
 
 def test_vunit_codegen(make_edalize_test):
@@ -38,7 +39,7 @@ def test_vunit_hooks(tmpdir):
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
 
-    original_impl = subprocess.check_call
+    original_impl = edalize.edatool.run
 
     def subprocess_intercept(args, **kwargs):
         if len(args) > 1 and args[1].endswith('run.py'):
@@ -47,11 +48,12 @@ def test_vunit_hooks(tmpdir):
                 spec = importlib.util.spec_from_file_location("__main__", args[1])
                 runner_script = importlib.util.module_from_spec(spec)
 
-                spec.loader.exec_module(runner_script)
+                returncode = spec.loader.exec_module(runner_script)
+                return subprocess.CompletedProcess(args, returncode)
         else:
-            original_impl(args, **kwargs)
+            return original_impl(args, **kwargs)
 
-    with mock.patch('subprocess.check_call', new=subprocess_intercept):
+    with mock.patch('edalize.edatool.run', new=subprocess_intercept):
         backend.configure()
 
         with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor:
