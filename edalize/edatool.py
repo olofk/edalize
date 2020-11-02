@@ -311,7 +311,7 @@ class Edatool(object):
                     logger.debug("=== STDERR ===")
                     logger.debug(p.stderr)
 
-                msg = f"{hook_name} script '{script['name']}': {e.cmd exited with error code {e.returncode}"
+                msg = f"{hook_name} script '{script['name']}': {e.cmd} exited with error code {e.returncode}"
                 raise RuntimeError(msg)
             return (cp.returncode, cp.stdout, cp.stderr)
 
