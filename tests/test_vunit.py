@@ -38,7 +38,7 @@ def test_vunit_hooks(tmpdir):
 
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
 
-    original_impl = subprocess.check_call
+    original_impl = subprocess.run
 
     def subprocess_intercept(args, **kwargs):
         if len(args) > 1 and args[1].endswith('run.py'):
@@ -51,7 +51,7 @@ def test_vunit_hooks(tmpdir):
         else:
             original_impl(args, **kwargs)
 
-    with mock.patch('subprocess.check_call', new=subprocess_intercept):
+    with mock.patch('subprocess.run', new=subprocess_intercept):
         backend.configure()
 
         with mock.patch('edalize.vunit_hooks.VUnitRunner') as hooks_constructor:
