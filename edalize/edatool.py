@@ -310,15 +310,24 @@ class Edatool(object):
         logger.debug("args  : " + ' '.join(args))
 
         try:
-            subprocess.check_call([cmd] + args,
-                                  cwd = self.work_root,
-                                  stdin=subprocess.PIPE),
+            cp = subprocess.run([cmd] + args,
+				cwd = self.work_root,
+				stdin=subprocess.PIPE,
+				capture_output=True,
+				check=True)
         except FileNotFoundError:
-            _s = "Command '{}' not found. Make sure it is in $PATH"
-            raise RuntimeError(_s.format(cmd))
-        except subprocess.CalledProcessError:
-            _s = "'{}' exited with an error code"
-            raise RuntimeError(_s.format(cmd))
+            _s = f"Command '{cmd}' not found. Make sure it is in $PATH"
+            raise RuntimeError(_s)
+        except subprocess.CalledProcessError as p:
+            _s = f"'{p.cmd}' exited with an error: {p.returncode}"
+            logger.debug(_s)
+
+            if p.stderr:
+                logger.debug("=== STDERR ===")
+                logger.debug(p.stderr)
+            
+            raise RuntimeError(_s)
+        return cp.returncode, cp.stdout, cp.stderr
 
     def _filter_verilog_files(src_file):
         ft = src_file.file_type
