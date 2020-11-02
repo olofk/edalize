@@ -295,15 +295,23 @@ class Edatool(object):
             logger.debug("Environment: " + str(_env))
             logger.debug("Working directory: " + self.work_root)
             try:
-                subprocess.check_call(script['cmd'],
-                                      cwd = self.work_root,
-                                      env = _env)
+                cp = subprocess.run(script['cmd'],
+                                    cwd = self.work_root,
+                                    env = _env,
+				    capture_output=True,
+                                    check = True)
             except FileNotFoundError as e:
                 msg = "Unable to run {} script '{}': {}"
                 raise RuntimeError(msg.format(hook_name, script['name'], str(e)))
             except subprocess.CalledProcessError as e:
-                msg = "{} script '{}' exited with error code {}"
-                raise RuntimeError(msg.format(hook_name, script['name'], e.returncode))
+                msg = "{} script '{}': {} exited with error code {}".format(hook_name, script['name'], e.cmd, e.returncode)
+                logger.debug(msg)
+                if e.stderr:
+                    logger.debug("=== STDERR ===")
+                    logger.debug(e.stderr)
+                raise RuntimeError(msg)
+
+            return (cp.returncode, cp.stdout, cp.stderr)
 
     def _run_tool(self, cmd, args=[]):
         logger.debug("Running " + cmd)
@@ -316,15 +324,15 @@ class Edatool(object):
 				capture_output=True,
 				check=True)
         except FileNotFoundError:
-            _s = f"Command '{cmd}' not found. Make sure it is in $PATH"
+            _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
             raise RuntimeError(_s)
-        except subprocess.CalledProcessError as p:
-            _s = f"'{p.cmd}' exited with an error: {p.returncode}"
+        except subprocess.CalledProcessError as e:
+            _s = "'{}' exited with an error: {}".format(e.cmd, e.returncode)
             logger.debug(_s)
 
-            if p.stderr:
+            if e.stderr:
                 logger.debug("=== STDERR ===")
-                logger.debug(p.stderr)
+                logger.debug(e.stderr)
             
             raise RuntimeError(_s)
         return cp.returncode, cp.stdout, cp.stderr
