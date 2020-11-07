@@ -10,6 +10,59 @@ logger = logging.getLogger(__name__)
 
 if sys.version[0] == '2':
     FileNotFoundError = OSError
+try:
+    import msvcrt
+    _mswindows = True
+except ImportError:
+    _mswindows = False
+
+def subprocess_run_3_9(*popenargs,
+                        input=None, capture_output=False, timeout=None,
+                        check=False, **kwargs):
+    if input is not None:
+        if kwargs.get('stdin') is not None:
+            raise ValueError('stdin and input arguments may not both be used.')
+        kwargs['stdin'] = subprocess.PIPE
+
+    if capture_output:
+        if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+            raise ValueError('stdout and stderr arguments may not be used '
+                             'with capture_output.')
+        kwargs['stdout'] = subprocess.PIPE
+        kwargs['stderr'] = subprocess.PIPE
+
+    with subprocess.Popen(*popenargs, **kwargs) as process:
+        try:
+            stdout, stderr = process.communicate(input, timeout=timeout)
+        except TimeoutExpired as exc:
+            process.kill()
+            if _mswindows:
+                # Windows accumulates the output in a single blocking
+                # read() call run on child threads, with the timeout
+                # being done in a join() on those threads.  communicate()
+                # _after_ kill() is required to collect that and add it
+                # to the exception.
+                exc.stdout, exc.stderr = process.communicate()
+            else:
+                # POSIX _communicate already populated the output so
+                # far into the TimeoutExpired exception.
+                process.wait()
+            raise
+        except:  # Including KeyboardInterrupt, communicate handled that.
+            process.kill()
+            # We don't call process.wait() as .__exit__ does that for us.
+            raise
+        retcode = process.poll()
+        if check and retcode:
+            raise subprocess.CalledProcessError(retcode, process.args,
+                                     output=stdout, stderr=stderr)
+    return subprocess.CompletedProcess(process.args, retcode, stdout, stderr)
+
+
+if sys.version_info < (3, 7):
+    run = subprocess_run_3_9
+else:
+    run = subprocess.run
 
 # Jinja2 tests and filters, available in all templates
 def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
@@ -295,30 +348,47 @@ class Edatool(object):
             logger.debug("Environment: " + str(_env))
             logger.debug("Working directory: " + self.work_root)
             try:
-                subprocess.check_call(script['cmd'],
-                                      cwd = self.work_root,
-                                      env = _env)
+                cp = run(script['cmd'],
+                                    cwd = self.work_root,
+                                    env = _env,
+				    capture_output=True,
+                                    check = True)
             except FileNotFoundError as e:
                 msg = "Unable to run {} script '{}': {}"
                 raise RuntimeError(msg.format(hook_name, script['name'], str(e)))
             except subprocess.CalledProcessError as e:
-                msg = "{} script '{}' exited with error code {}"
-                raise RuntimeError(msg.format(hook_name, script['name'], e.returncode))
+                msg = "{} script '{}': {} exited with error code {}".format(hook_name, script['name'], e.cmd, e.returncode)
+                logger.debug(msg)
+                if e.stderr:
+                    logger.debug("=== STDERR ===")
+                    logger.debug(e.stderr)
+                raise RuntimeError(msg)
+
+            return (cp.returncode, cp.stdout, cp.stderr)
 
     def _run_tool(self, cmd, args=[]):
         logger.debug("Running " + cmd)
         logger.debug("args  : " + ' '.join(args))
 
         try:
-            subprocess.check_call([cmd] + args,
-                                  cwd = self.work_root,
-                                  stdin=subprocess.PIPE),
+            cp = run([cmd] + args,
+				cwd = self.work_root,
+				stdin=subprocess.PIPE,
+				capture_output=True,
+				check=True)
         except FileNotFoundError:
-            _s = "Command '{}' not found. Make sure it is in $PATH"
-            raise RuntimeError(_s.format(cmd))
-        except subprocess.CalledProcessError:
-            _s = "'{}' exited with an error code"
-            raise RuntimeError(_s.format(cmd))
+            _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
+            raise RuntimeError(_s)
+        except subprocess.CalledProcessError as e:
+            _s = "'{}' exited with an error: {}".format(e.cmd, e.returncode)
+            logger.debug(_s)
+
+            if e.stderr:
+                logger.debug("=== STDERR ===")
+                logger.debug(e.stderr)
+            
+            raise RuntimeError(_s)
+        return cp.returncode, cp.stdout, cp.stderr
 
     def _filter_verilog_files(src_file):
         ft = src_file.file_type
