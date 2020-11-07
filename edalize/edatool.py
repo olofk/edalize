@@ -351,7 +351,7 @@ class Edatool(object):
                 cp = run(script['cmd'],
                                     cwd = self.work_root,
                                     env = _env,
-				    capture_output=True,
+				    capture_output=False,
                                     check = True)
             except FileNotFoundError as e:
                 msg = "Unable to run {} script '{}': {}"
@@ -374,7 +374,7 @@ class Edatool(object):
             cp = run([cmd] + args,
 				cwd = self.work_root,
 				stdin=subprocess.PIPE,
-				capture_output=True,
+				capture_output=False,
 				check=True)
         except FileNotFoundError:
             _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
