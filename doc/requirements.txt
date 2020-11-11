@@ -1,4 +1,4 @@
-Sphinx
+Sphinx>=3.0
 vunit_hdl
 sphinx_rtd_theme
 sphinx-autodoc-typehints
