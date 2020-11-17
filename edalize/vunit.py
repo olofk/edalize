@@ -83,7 +83,7 @@ class Vunit(Edatool):
     def build_main(self):
         vunit_options = self.tool_options.get("vunit_options", [])
         testrunner = os.path.join(self.work_root, self.testrunner)
-        self._run_tool(sys.executable, [testrunner, "--compile", "-k"] + vunit_options)
+        self._run_tool(sys.executable, [testrunner, "--compile", "-k"] + vunit_options, quiet=True)
 
     def run_main(self):
         vunit_options = self.tool_options.get("vunit_options", [])

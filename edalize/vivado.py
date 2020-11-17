@@ -202,7 +202,7 @@ class Vivado(Edatool):
                 pass
             elif self.tool_options['pnr'] == 'none':
                 args.append('synth')
-        self._run_tool('make', args)
+        self._run_tool('make', args, quiet=True)
 
     """ Program the FPGA
 

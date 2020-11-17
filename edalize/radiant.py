@@ -102,8 +102,8 @@ prj_close
         return ''
 
     def build_main(self):
-        self._run_tool('radiantc', [self.name+'.tcl'])
-        self._run_tool('radiantc', [self.name+'_run.tcl'])
+        self._run_tool('radiantc', [self.name+'.tcl'], quiet=True)
+        self._run_tool('radiantc', [self.name+'_run.tcl'], quiet=True)
 
     def run_main(self):
         pass

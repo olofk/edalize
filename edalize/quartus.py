@@ -230,7 +230,7 @@ class Quartus(Edatool):
                 args.append('dse')
             elif self.tool_options['pnr'] == 'none':
                 args.append('syn')
-        self._run_tool('make', args)
+        self._run_tool('make', args, quiet=True)
 
     """ Program the FPGA
     """

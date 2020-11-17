@@ -97,8 +97,12 @@ class FileAction(argparse.Action):
 
 class Edatool(object):
 
-    def __init__(self, edam=None, work_root=None, eda_api=None):
+    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
         _tool_name = self.__class__.__name__.lower()
+
+        self.verbose = verbose
+        self.stdout=None
+        self.stderr=None
 
         if not edam:
             edam = eda_api
@@ -185,7 +189,7 @@ class Edatool(object):
 
     def build_main(self, target=None):
         logger.info("Building{}".format("" if target is None else "target " + " ".join(target)))
-        self._run_tool('make', [] if target is None else [target])
+        self._run_tool('make', [] if target is None else [target], quiet=True)
 
     def build_post(self):
         if 'post_build' in self.hooks:
@@ -351,7 +355,7 @@ class Edatool(object):
                 cp = run(script['cmd'],
                                     cwd = self.work_root,
                                     env = _env,
-				    capture_output=False,
+				    capture_output=not self.verbose,
                                     check = True)
             except FileNotFoundError as e:
                 msg = "Unable to run {} script '{}': {}"
@@ -359,23 +363,29 @@ class Edatool(object):
             except subprocess.CalledProcessError as e:
                 msg = "{} script '{}': {} exited with error code {}".format(hook_name, script['name'], e.cmd, e.returncode)
                 logger.debug(msg)
+                if e.stdout:
+                    logger.info(e.stdout.decode())
                 if e.stderr:
+                    logger.error(e.stderr.decode())
                     logger.debug("=== STDERR ===")
                     logger.debug(e.stderr)
                 raise RuntimeError(msg)
 
             return (cp.returncode, cp.stdout, cp.stderr)
 
-    def _run_tool(self, cmd, args=[]):
+    def _run_tool(self, cmd, args=[], quiet=False):
         logger.debug("Running " + cmd)
         logger.debug("args  : " + ' '.join(args))
 
+        capture_output = quiet and not (self.verbose or self.stdout or self.stderr)
         try:
             cp = run([cmd] + args,
-				cwd = self.work_root,
-				stdin=subprocess.PIPE,
-				capture_output=False,
-				check=True)
+		     cwd = self.work_root,
+		     stdin=subprocess.PIPE,
+                     stdout=self.stdout,
+                     stderr=self.stderr,
+		     capture_output=capture_output,
+		     check=True)
         except FileNotFoundError:
             _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
             raise RuntimeError(_s)
@@ -383,7 +393,10 @@ class Edatool(object):
             _s = "'{}' exited with an error: {}".format(e.cmd, e.returncode)
             logger.debug(_s)
 
+            if e.stdout:
+                logger.info(e.stdout.decode())
             if e.stderr:
+                logger.error(e.stderr.decode())
                 logger.debug("=== STDERR ===")
                 logger.debug(e.stderr)
             

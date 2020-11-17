@@ -167,7 +167,7 @@ class Rivierapro(Edatool):
 
     def build_main(self):
         args = ['-c', '-do', 'do edalize_main.tcl; exit']
-        self._run_tool('vsim', args)
+        self._run_tool('vsim', args, quiet=True)
 
     def run_main(self):
         if not os.getenv('ALDEC_PATH'):

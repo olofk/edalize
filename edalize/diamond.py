@@ -99,8 +99,8 @@ prj_project close
         return ''
 
     def build_main(self):
-        self._run_tool('diamondc', [self.name+'.tcl'])
-        self._run_tool('diamondc', [self.name+'_run.tcl'])
+        self._run_tool('diamondc', [self.name+'.tcl'], quiet=True)
+        self._run_tool('diamondc', [self.name+'_run.tcl'], quiet=True)
 
     def run_main(self):
         pass
