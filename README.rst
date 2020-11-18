@@ -9,6 +9,10 @@ Edalize
         :target: https://edalize.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
+.. image:: https://img.shields.io/pypi/dm/edalize.svg?label=PyPI%20downloads
+        :target: https://pypi.org/project/edalize/
+        :alt: PyPI downloads
+
 What's this?
 ------------
 
