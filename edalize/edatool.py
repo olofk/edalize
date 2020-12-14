@@ -371,8 +371,6 @@ class Edatool(object):
                     logger.debug(e.stderr)
                 raise RuntimeError(msg)
 
-            return (cp.returncode, cp.stdout, cp.stderr)
-
     def _run_tool(self, cmd, args=[], quiet=False):
         logger.debug("Running " + cmd)
         logger.debug("args  : " + ' '.join(args))
