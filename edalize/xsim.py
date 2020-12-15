@@ -84,7 +84,7 @@ XSIM_OPTIONS  = {xsim_options}
                     f.write('{} {} {}\n'.format(cmd, lib, src_file.name))
 
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as f:
-            vlog_defines  = ' '.join(['--define {}={}'.format(k,v) for k,v, in self.vlogdefine.items()])
+            vlog_defines  = ' '.join(['--define {}={}'.format(k,self._param_value_str(v)) for k,v, in self.vlogdefine.items()])
             vlog_includes = ' '.join(['-i '+k for k in self.incdirs])
 
             # Both parameters and generics use the same --generic_top argument
