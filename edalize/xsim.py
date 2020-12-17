@@ -41,6 +41,10 @@ XSIM_OPTIONS  = {xsim_options}
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : "XSim simulator from the Xilinx Vivado suite",
+                    'members' : [
+                        {'name' : 'compilation_mode',
+                         'type' : 'String',
+                         'desc' : 'Common or separate compilation, sep - for separate compilation, common - for common compilation'}],
                     'lists' : [
                         {'name' : 'xelab_options',
                          'type' : 'String',
@@ -59,7 +63,9 @@ XSIM_OPTIONS  = {xsim_options}
             logger.error('VPI modules not supported by Xsim: %s' % ', '.join(modules))
 
     def _write_config_files(self):
+        mfc = self.tool_options.get('compilation_mode') == 'common'
         with open(os.path.join(self.work_root, self.name+'.prj'),'w') as f:
+            mfcu = []
             (src_files, self.incdirs) = self._get_fileset_files()
             for src_file in src_files:
                 cmd = ""
@@ -70,7 +76,10 @@ XSIM_OPTIONS  = {xsim_options}
                 elif src_file.file_type.startswith("vhdlSource"):
                     cmd = 'vhdl'
                 elif src_file.file_type.startswith("systemVerilogSource"):
-                    cmd = 'sv'
+                    if mfc:
+                        mfcu.append(src_file.name)
+                    else:
+                        cmd = 'sv'
                 elif src_file.file_type in ["user"]:
                     pass
                 else:
@@ -82,6 +91,8 @@ XSIM_OPTIONS  = {xsim_options}
                     else:
                         lib = 'work'
                     f.write('{} {} {}\n'.format(cmd, lib, src_file.name))
+            if mfc:
+                f.write('sv work ' + ' '.join(mfcu))
 
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as f:
             vlog_defines  = ' '.join(['--define {}={}'.format(k,self._param_value_str(v)) for k,v, in self.vlogdefine.items()])
