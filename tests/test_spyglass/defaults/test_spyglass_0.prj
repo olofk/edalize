@@ -23,6 +23,7 @@ read_file -type verilog vlog05_file.v
 read_file -type vhdl vhdl_file.vhd
 read_file -type vhdl -library libx vhdl_lfile
 read_file -type vhdl vhdl2008_file
+read_file -type verilog another_sv_file.sv
 
 set_option param {top_module.vlogparam_bool=1 top_module.vlogparam_int=42 top_module.vlogparam_str=hello }
 set_option define {vlogdefine_bool=1 vlogdefine_int=42 vlogdefine_str=hello }

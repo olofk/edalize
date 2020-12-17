@@ -16,6 +16,7 @@ smtbmc boolector
 read -sv -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str=hello -I. sv_file.sv
 read -sv -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str=hello -I. vlog_file.v
 read -sv -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str=hello -I. vlog05_file.v
+read -sv -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str=hello -I. another_sv_file.sv
 chparam -set vlogparam_bool 1 -set vlogparam_int 42 -set vlogparam_str "hello" top_module
 
 prep -top top_module
@@ -24,3 +25,4 @@ prep -top top_module
 sv_file.sv
 vlog_file.v
 vlog05_file.v
+another_sv_file.sv

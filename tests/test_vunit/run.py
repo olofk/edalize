@@ -25,6 +25,7 @@ lib.add_source_files("vlog_file.v")
 lib.add_source_files("vlog05_file.v")
 lib.add_source_files("vhdl_file.vhd")
 lib.add_source_files("vhdl2008_file", vhdl_standard="2008")
+lib.add_source_files("another_sv_file.sv")
 # Override this hook to customize the library, e.g. compile-flags etc.
 # This allows full access to vunit.ui.Library interface:
 runner.handle_library("vunit_test_runner_lib", lib)

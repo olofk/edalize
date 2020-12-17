@@ -13,5 +13,6 @@ prj_src add -format Verilog vlog05_file.v
 prj_src add -format VHDL vhdl_file.vhd
 prj_src add -format VHDL -work libx vhdl_lfile
 prj_src add -format VHDL vhdl2008_file
+prj_src add -format Verilog another_sv_file.sv
 prj_project save
 exit
