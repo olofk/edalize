@@ -1,3 +1,7 @@
+# Copyright edalize contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
 from importlib import import_module
 from os.path import dirname
 from pkgutil import walk_packages

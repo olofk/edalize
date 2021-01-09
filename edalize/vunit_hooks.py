@@ -1,3 +1,7 @@
+# Copyright edalize contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
 """This module exports :class:`VUnitHooks` which can be used to implement advanced VUnit test cases."""
 
 from vunit.ui import Library
