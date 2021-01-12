@@ -15,7 +15,7 @@ $(TOPLEVEL): $(VHDL_SOURCES) work-obj93.cf
 	ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
 
 make_libraries_directories:
-	echo "Creating libraries directories"
+	@echo "Creating libraries directories"
 	mkdir -p libx
 
 work-obj93.cf: make_libraries_directories
