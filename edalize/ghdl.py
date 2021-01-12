@@ -22,7 +22,7 @@ $(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
 \tghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
 
 make_libraries_directories:
-\techo "Creating libraries directories"
+\t@echo "Creating libraries directories"
 {make_libraries_directories}
 work-obj{standard}.cf: make_libraries_directories
 {ghdlimport}
