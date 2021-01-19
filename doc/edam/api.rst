@@ -257,6 +257,7 @@ vivado
 Field Name       Type                  Description
 ================ ===================== ===========
 part             String                Device identifier. e.g. *xc7a35tcsg324-1*
+jobs             Integer               Number of jobs. Useful for parallelizing OOC (Out Of Context) syntheses.
 ================ ===================== ===========
 
 vunit

@@ -46,6 +46,9 @@ class Vivado(Edatool):
                         {'name' : 'pnr',
                          'type' : 'String',
                          'desc' : 'P&R tool. Allowed values are vivado (default) and none (to just run synthesis)'},
+                        {'name' : 'jobs',
+                         'type' : 'Integer',
+                         'desc' : 'Number of jobs. Useful for parallelizing OOC (Out Of Context) syntheses.'},
                         {'name' : 'jtag_freq',
                         'type' : 'Integer',
                         'desc' : 'The frequency for jtag communication'},
@@ -149,11 +152,23 @@ class Vivado(Edatool):
                                  self.name+'.tcl',
                                  template_vars)
 
+            jobs = self.tool_options.get('jobs', None)
+
+            run_template_vars = {
+                'jobs' : ' -jobs ' + str(jobs) if jobs is not None else ''
+            }
+
             self.render_template('vivado-run.tcl.j2',
-                                 self.name+"_run.tcl")
+                                 self.name+"_run.tcl",
+                                 run_template_vars)
+
+            synth_template_vars = {
+                'jobs' : ' -jobs ' + str(jobs) if jobs is not None else ''
+            }
 
             self.render_template('vivado-synth.tcl.j2',
-                                 self.name+"_synth.tcl")
+                                 self.name+"_synth.tcl",
+                                 synth_template_vars)
 
         vivado_settings = self.tool_options.get('vivado-settings', None)
         vivado_command = "source {} && vivado".format(vivado_settings) if vivado_settings else "vivado"
