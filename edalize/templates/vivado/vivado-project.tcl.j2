@@ -39,7 +39,7 @@ set_property include_dirs [list {{ incdirs|join(' ') }}] [get_filesets sources_1
 
 {% if toplevel -%}
 set_property top {{ toplevel }} [current_fileset]
-set_property source_mgmt_mode None [current_project]
+set_property source_mgmt_mode {{ tool_options.source_mgmt_mode if tool_options.source_mgmt_mode else "None" }} [current_project]
 
 {%- endif %}
 
