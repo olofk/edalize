@@ -36,7 +36,10 @@ class Libero(Edatool):
                          'desc' : 'FPGA temperature range (e.g. IND)'},
                         {'name' : 'defiostd',
                          'type' : 'String',
-                         'desc' : 'FPGA default IO std (e.g. "LVCMOS 1.8V"'}
+                         'desc' : 'FPGA default IO std (e.g. "LVCMOS 1.8V"'},
+                        {'name' : 'hdl',
+                         'type' : 'String',
+                         'desc' : 'Default HDL (e.g. "VERILOG"'}
                     ]
             }
 
@@ -47,6 +50,7 @@ class Libero(Edatool):
          'dievoltage': '1.0',
          'range': 'IND',
          'defiostd': 'LVCMOS 1.8V',
+         'hdl': 'VERILOG',
     }
 
 
@@ -101,9 +105,13 @@ class Libero(Edatool):
 
         # Render the TCL project file
         self.render_template('libero-project.tcl.j2',
-                             escaped_name + '.tcl',
+                             escaped_name + '-project.tcl',
                              template_vars)
 
+        # Render the TCL run file
+        self.render_template('libero-run.tcl.j2',
+                             escaped_name + '-run.tcl',
+                             template_vars)
 
     def src_file_filter(self, f):
         file_types = {

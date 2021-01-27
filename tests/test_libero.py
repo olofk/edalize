@@ -2,7 +2,7 @@ from edalize_common import make_edalize_test
 
 def test_libero(make_edalize_test):
     """ Test passing tool options to the Libero backend """
-    name = 'libero-project'
+    name = 'libero-test'
     tool_options = {
         'family'          : 'Polarfire',
         'die'             : 'MPF300TS_ES',
@@ -14,4 +14,4 @@ def test_libero(make_edalize_test):
                            tool_options=tool_options)
 
     tf.backend.configure()
-    tf.compare_files([name + '.tcl'])
+    tf.compare_files([name + '-project.tcl',name + '-run.tcl',])
