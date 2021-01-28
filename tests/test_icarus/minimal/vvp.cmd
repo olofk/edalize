@@ -1,1 +1,1 @@
--M. -l icarus.log test_icarus_minimal_0 -fst
+-n -M. -l icarus.log test_icarus_minimal_0 -fst
