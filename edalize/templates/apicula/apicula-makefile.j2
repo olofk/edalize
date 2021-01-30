@@ -3,19 +3,21 @@
 TARGET   := {{ name }}
 CST_FILE := {{ cst_file }}
 NEXTPNR_OPTIONS     := {{ nextpnr_options|join(' ') }}
+DEVICE := {{ device|join('') }}
+
 
 all: $(TARGET).fs
 
 %.json: %.mk
 	$(MAKE) -f $<
 %.pack: %.json
-	nextpnr-gowin -l next.log --device $(DEVICE)  $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@
+	nextpnr-gowin -l next.log --device $(DEVICE) $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@
 %.fs: %.pack
-	gowin_pack -d GW1N-1 -o  $@ $^
+	gowin_pack -d $(DEVICE) -o  $@ $^
 
 build-gui: $(TARGET).json
-	nextpnr-gowin --device $(DEVICE) $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@ --gui
+	nextpnr-gowin  $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@ --gui
 
 clean:
 	rm -f  $(TARGET).json  $(TARGET).pack $(TARGET).fs
-	#
+	

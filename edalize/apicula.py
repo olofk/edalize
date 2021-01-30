@@ -14,6 +14,9 @@ class Apicula(Edatool):
             yosys_help = Yosys.get_doc(api_ver)
             apicula_help = {
                     'lists' : [
+                    	{'name' : 'device',
+                         'type' : 'String',
+                         'desc' : 'Required device option for nextpnr-gowin and gowin_pack command (e.g. GW1N-LV1QN48C6/I5)'},
                         {'name' : 'nextpnr_options',
                          'type' : 'String',
                          'desc' : 'Additional options for nextpnr'},
@@ -38,7 +41,7 @@ class Apicula(Edatool):
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files()
         yosys_synth_options =  self.tool_options.get('yosys_synth_options',[])
-        yosys_synth_options = ["-json " + self.name +".json" + " -top " + self.toplevel + " " ] + yosys_synth_options  #Need to add -json and -top after synth_gowin 
+        yosys_synth_options = ["-json " + self.name +".json"  + " " ] + yosys_synth_options  #Need to add -json after synth_gowin 
         yosys_edam = {
                 'files'         : self.files,
                 'name'          : self.name,
@@ -59,7 +62,6 @@ class Apicula(Edatool):
         for f in src_files:
             if f.file_type == 'CST':
                 cst_files.append(f.name)
-            elif f.file_type == 'user':
                 pass
 
         if not cst_files:
@@ -71,10 +73,16 @@ class Apicula(Edatool):
 
         # Write Makefile
         nextpnr_options     = self.tool_options.get('nextpnr_options', [])
+        device       = self.tool_options.get('device', [])
+        
+        if not device:
+          raise RuntimeError("Missing required option device for tools apicula ")
+        		
         template_vars = {
             'name'                : self.name,
             'cst_file'            : cst_files[0],
             'nextpnr_options'     : nextpnr_options,
+            'device'		  : device,	
         }
         self.render_template('apicula-makefile.j2',
                              'Makefile',
