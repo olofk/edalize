@@ -16,7 +16,7 @@ all: $(TARGET).fs
 	gowin_pack -d $(DEVICE) -o  $@ $^
 
 build-gui: $(TARGET).json
-	nextpnr-gowin  $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@ --gui
+	nextpnr-gowin --device $(DEVICE) $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@ --gui
 
 clean:
 	rm -f  $(TARGET).json  $(TARGET).pack $(TARGET).fs
