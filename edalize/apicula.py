@@ -13,10 +13,12 @@ class Apicula(Edatool):
         if api_ver == 0:
             yosys_help = Yosys.get_doc(api_ver)
             apicula_help = {
-                    'lists' : [
-                    	{'name' : 'device',
+            	    'members' : [
+                        {'name' : 'device',
                          'type' : 'String',
                          'desc' : 'Required device option for nextpnr-gowin and gowin_pack command (e.g. GW1N-LV1QN48C6/I5)'},
+                         ], 	
+                    'lists' : [
                         {'name' : 'nextpnr_options',
                          'type' : 'String',
                          'desc' : 'Additional options for nextpnr'},
@@ -25,7 +27,7 @@ class Apicula(Edatool):
                          'desc' : 'Additional options for the synth_gowin command'},
                         ]}
 
-            combined_members = []
+            combined_members = apicula_help['members']
             combined_lists = apicula_help['lists']
             yosys_members = yosys_help['members']
             yosys_lists = yosys_help['lists']
@@ -73,7 +75,7 @@ class Apicula(Edatool):
 
         # Write Makefile
         nextpnr_options     = self.tool_options.get('nextpnr_options', [])
-        device       = self.tool_options.get('device', [])
+        device       = self.tool_options.get('device','')
         
         if not device:
           raise RuntimeError("Missing required option device for tools apicula ")

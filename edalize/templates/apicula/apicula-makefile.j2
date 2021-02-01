@@ -3,7 +3,7 @@
 TARGET   := {{ name }}
 CST_FILE := {{ cst_file }}
 NEXTPNR_OPTIONS     := {{ nextpnr_options|join(' ') }}
-DEVICE := {{ device|join('') }}
+DEVICE := {{ device }}
 
 
 all: $(TARGET).fs
