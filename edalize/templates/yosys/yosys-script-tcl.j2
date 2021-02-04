@@ -26,6 +26,13 @@ verilog_defaults -add {{ incdirs }}
 verilog_defaults -pop
 
 {{ synth_command }} {{ synth_options }} -top {{ top }}
+{% if tech_lib -%}
+dfflibmap -liberty {{ tech_lib }}
+abc -liberty {{ tech_lib }}
+clean
+stat -top {{ top }} -liberty {{ tech_lib }}
+{% endif %}
 write_blif {{ name }}.blif
 write_json {{ name }}.json
 write_edif {{ edif_opts }} {{ name }}.edif
+write_verilog {{ name }}.v

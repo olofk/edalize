@@ -20,3 +20,4 @@ synth_xilinx  -top []
 write_blif test_vivado_yosys_0.blif
 write_json test_vivado_yosys_0.json
 write_edif -pvector bra test_vivado_yosys_0.edif
+write_verilog test_vivado_yosys_0.v

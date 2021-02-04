@@ -16,10 +16,10 @@ class Yosys(Edatool):
                     'members' : [
                         {'name' : 'arch',
                          'type' : 'String',
-                         'desc' : 'Target architecture. Legal values are *xilinx*, *ice40* and *ecp5*'},
+                         'desc' : 'Target architecture. Legal values are *xilinx*, *ice40*, *ecp5* and *stdcell*'},
                         {'name' : 'output_format',
                          'type' : 'String',
-                         'desc' : 'Output file format. Legal values are *json*, *edif*, *blif*'},
+                         'desc' : 'Output file format. Legal values are *json*, *edif*, *blif*, *verilog*'},
                         {'name' : 'yosys_as_subtool',
                          'type' : 'bool',
                          'desc' : 'Determines if Yosys is run as a part of bigger toolchain, or as a standalone tool'},
@@ -29,6 +29,9 @@ class Yosys(Edatool):
                         {'name' : 'script_name',
                          'type' : 'String',
                          'desc' : 'Generated tcl script filename, defaults to $name.mk'},
+                        {'name' : 'tech_lib',
+                         'type' : 'String',
+                         'desc' : 'The standard cell technology file to use (Liberty format)'},
                         ],
                     'lists' : [
                         {'name' : 'yosys_synth_options',
@@ -70,9 +73,19 @@ class Yosys(Edatool):
 
         output_format = self.tool_options.get('output_format', 'blif')
         arch = self.tool_options.get('arch', None)
+        tech_lib = self.tool_options.get('tech_lib', None)
 
         if not arch:
             logger.error("ERROR: arch is not defined.")
+
+        if arch == 'stdcell':
+            synth_command = 'synth'
+            if not tech_lib:
+                raise RuntimeError(
+                    "Yosys arch is set to 'stdcell' but no 'tech_lib' has been defined"
+                )
+        else:
+            synth_command = 'synth_' + arch
 
         makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
         script_name = self. tool_options.get('script_name', self.name + '.tcl')
@@ -82,13 +95,14 @@ class Yosys(Edatool):
                 'file_table'          : "\n".join(file_table),
                 'incdirs'             : ' '.join(['-I'+d for d in incdirs]),
                 'top'                 : self.toplevel,
-                'synth_command'       : "synth_" + arch,
+                'synth_command'       : synth_command,
                 'synth_options'       : " ".join(self.tool_options.get('yosys_synth_options', '')),
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
                 'script_name'         : script_name,
-                'name'                : self.name
+                'name'                : self.name,
+                'tech_lib'            : tech_lib
         }
 
         self.render_template('yosys-script-tcl.j2',

@@ -22,8 +22,12 @@ chparam -set vlogparam_int 42 top_module
 chparam -set vlogparam_str {"hello"} top_module
 verilog_defaults -pop
 
-synth_ice40 some yosys_synth_options -top top_module
-write_blif test_icestorm_0.blif
-write_json test_icestorm_0.json
-write_edif  test_icestorm_0.edif
-write_verilog test_icestorm_0.v
+synth  -top top_module
+dfflibmap -liberty /some/path/to/your/tech.lib
+abc -liberty /some/path/to/your/tech.lib
+clean
+stat -top top_module -liberty /some/path/to/your/tech.lib
+write_blif test_yosys_0.blif
+write_json test_yosys_0.json
+write_edif  test_yosys_0.edif
+write_verilog test_yosys_0.v
