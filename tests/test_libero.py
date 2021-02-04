@@ -15,4 +15,5 @@ def test_libero(make_edalize_test):
                            tool_options=tool_options)
 
     tf.backend.configure()
-    tf.compare_files([name + '-project.tcl', name + '-run.tcl', ])
+    tf.compare_files([name + '-project.tcl', name +
+                      '-run.tcl', name + '-syn-user.tcl', ])

@@ -2,17 +2,9 @@
 # Microsemi Tcl Script
 # Libero
 
-new_project -location {{op}}{{prj_root}}{{cl}} -name {{name}} -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {{op}}{{tool_options.hdl}}{{cl}} -family {{op}}{{tool_options.family}}{{cl}} -die {{op}}{{tool_options.die}}{{cl}} -package {{op}}{{tool_options.package}}{{cl}} -speed {{op}}{{tool_options.speed}}{{cl}} -die_voltage {{op}}{{tool_options.dievoltage}}{{cl}} -part_range {{op}}{{tool_options.range}}{{cl}} -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:{{tool_options.range}}{{cl}} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:{{tool_options.range}}{{cl}}
+new_project -location {{op}}{{prj_root}}{{cl}} -name {{name}} -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {{op}}{{tool_options.hdl}}{{cl}} -family {{op}}{{tool_options.family}}{{cl}} -die {{op}}{{tool_options.die}}{{cl}} -package {{op}}{{tool_options.package}}{{cl}} {% if tool_options.speed -%} -speed {{op}}{{tool_options.speed}}{{cl}}{{sp}}{%- endif %}{% if tool_options.dievoltage -%} -die_voltage {{op}}{{tool_options.dievoltage}}{{cl}}{{sp}}{%- endif %}{% if tool_options.range -%} -part_range {{op}}{{tool_options.range}}{{cl}}{{sp}}{%- endif %}{% if tool_options.defiostd -%} -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}}{{sp}}{%- endif %}-adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:{{tool_options.range}}{{cl}} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:{{tool_options.range}}{{cl}}
 
-set_device -family {{op}}{{tool_options.family}}{{cl}} -die {{op}}{{tool_options.die}}{{cl}} -package {{op}}{{tool_options.package}}{{cl}} -speed {{op}}{{tool_options.speed}}{{cl}} -die_voltage {{op}}{{tool_options.dievoltage}}{{cl}} -part_range {{op}}{{tool_options.range}}{{cl}} -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:{{tool_options.range}}{{cl}} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:{{tool_options.range}}{{cl}}
-
-# Link directly to source files
-create_links \
-         -convert_EDN_to_HDL 0 \
-         -hdl_source_folder {../src} \
-         -library {work}
-
-# Only import constraints
+# Import HDL sources and constraints
 import_files \
         -convert_EDN_to_HDL 0 \
 {% for src_file in src_files if src_file|src_file_filter%}
@@ -21,6 +13,10 @@ import_files \
 
 build_design_hierarchy
 set_root -module {{op}}{{toplevel}}::work{{cl}}
+
+configure_tool   \
+  -name {SYNTHESIZE} \
+  -params {SYNPLIFY_TCL_FILE:../../{{name}}-syn-user.tcl}
 
 {% for src_file in src_files if src_file|pdc_file_filter%}
 organize_tool_files -tool {PLACEROUTE} -file {{op}}{{prj_root}}/{{src_file|pdc_file_filter}}{{cl}} -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}

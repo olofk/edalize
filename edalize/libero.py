@@ -1,11 +1,5 @@
 import logging
-import os.path
 import os
-import platform
-import subprocess
-import re
-import xml.etree.ElementTree as ET
-from functools import partial
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -46,11 +40,10 @@ class Libero(Edatool):
 
     argtypes = ['vlogdefine', 'vlogparam']
 
+    mandatory_options = ['family', 'die', 'package', 'range']
+
     tool_options_defaults = {
-        'speed': '-1',
-        'dievoltage': '1.0',
         'range': 'IND',
-        'defiostd': 'LVCMOS 1.8V',
         'hdl': 'VERILOG',
     }
 
@@ -61,17 +54,14 @@ class Libero(Edatool):
                             % (key, str(default_value)))
                 self.tool_options[key] = default_value
 
-    """ Initial setup of the class
-
-    This calls the parent constructor, but also identifies whether
-    the current system is using a Standard or Pro edition of Quartus.
-    """
-
-    def __init__(self, edam=None, work_root=None, eda_api=None):
-        if not edam:
-            edam = eda_api
-
-        super(Libero, self).__init__(edam, work_root)
+    def _check_mandatory_options(self):
+        shouldExit = 0
+        for key in self.mandatory_options:
+            if not key in self.tool_options:
+                logger.error("Libero option \"%s\" must be defined", key)
+                shouldExit = 1
+        if shouldExit:
+            exit(1)
 
     """ Configuration is the first phase of the build
 
@@ -82,6 +72,7 @@ class Libero(Edatool):
 
     def configure_main(self):
         self._set_tool_options_defaults()
+        self._check_mandatory_options()
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
         self.jinja_env.filters['pdc_file_filter'] = self.pdc_file_filter
@@ -92,12 +83,15 @@ class Libero(Edatool):
             'name': escaped_name,
             'src_files': src_files,
             'incdirs': incdirs,
+            'vlogparam': self.vlogparam,
+            'vlogdefine': self.vlogdefine,
             'tool_options': self.tool_options,
             'toplevel': self.toplevel,
             'generic': self.generic,
-            'prj_root': "../prj",
+            'prj_root': "./prj",
             'op': "{",
-            'cl': "}"
+            'cl': "}",
+            'sp': " "
         }
 
         # Render the TCL project file
@@ -110,9 +104,20 @@ class Libero(Edatool):
                              escaped_name + '-run.tcl',
                              template_vars)
 
+        # Render the Synthesize TCL file
+        self.render_template('libero-syn-user.tcl.j2',
+                             escaped_name + '-syn-user.tcl',
+                             template_vars)
+
+        logger.info("Cores and Libero TCL Scripts generated.")
+
     def src_file_filter(self, f):
         file_types = {
+            'verilogSource': '-hdl_source {',
+            'systemVerilogSource': '-hdl_source {',
+            'vhdlSource': "-hdl_source {",
             'PDC': '-io_pdc {',
+            'SDC': '-sdc {',
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
@@ -130,7 +135,10 @@ class Libero(Edatool):
         return ''
 
     def build_main(self):
-        logger.info("Libero TCL Scripts generated.")
+        logger.info("Executing Libero TCL Scripts.")
+        escaped_name = self.name.replace(".", "_")
+        self._run_tool('libero', ['SCRIPT:' + escaped_name + '-project.tcl'])
+        self._run_tool('libero', ['SCRIPT:' + escaped_name + '-run.tcl'])
 
     def run_main(self):
         pass

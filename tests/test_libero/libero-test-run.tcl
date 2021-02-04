@@ -2,6 +2,8 @@
 # Microsemi Tcl Script
 # Libero
 
+open_project -file {./prj/libero-test.prjx}
+
 run_tool -name {SYNTHESIZE}
 run_tool -name {PLACEROUTE}
 run_tool -name {GENERATEPROGRAMMINGDATA}
