@@ -1,5 +1,6 @@
 import logging
 import os.path
+import sys
 
 from edalize.edatool import Edatool
 
@@ -99,8 +100,13 @@ prj_project close
         return ''
 
     def build_main(self):
-        self._run_tool('diamondc', [self.name+'.tcl'], quiet=True)
-        self._run_tool('diamondc', [self.name+'_run.tcl'], quiet=True)
+        if sys.platform == 'win32':
+            tcl = 'pnmainc'
+        else:
+            tcl = 'diamondc'
+
+        self._run_tool(tcl, [self.name+'.tcl'], quiet=True)
+        self._run_tool(tcl, [self.name+'_run.tcl'], quiet=True)
 
     def run_main(self):
         pass
