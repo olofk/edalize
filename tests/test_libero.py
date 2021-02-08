@@ -19,7 +19,7 @@ def test_libero(make_edalize_test):
                       '-run.tcl', name + '-syn-user.tcl', ])
 
 
-def test_libero_all_params(make_edalize_test):
+def test_libero_with_params(make_edalize_test):
     """ Test passing tool options to the Libero backend """
     name = 'libero-test-all'
     tool_options = {
@@ -31,6 +31,31 @@ def test_libero_all_params(make_edalize_test):
         'range': 'EXT',
         'defiostd': 'LVCMOS 1.8V',
         'hdl': 'VHDL',
+    }
+
+    tf = make_edalize_test('libero',
+                           test_name=name,
+                           tool_options=tool_options)
+
+    tf.backend.configure()
+    tf.compare_files([name + '-project.tcl', name +
+                      '-run.tcl', name + '-syn-user.tcl', ])
+
+
+def test_libero_synth_pnr_params(make_edalize_test):
+    """ Test passing tool options to the Libero backend """
+    name = 'libero-test-opts'
+    tool_options = {
+        'family': 'PolarFire',
+        'die': 'MPF300TS_ES',
+        'package': 'FCG1152',
+        'speed': '-1',
+        'dievoltage': '1.0',
+        'range': 'EXT',
+        'defiostd': 'LVCMOS 1.8V',
+        'hdl': 'VHDL',
+        'synth_options': 'RETIMING:true,CLOCK_GLOBAL:2',
+        'pnr_options': 'REPAIR_MIN_DELAY:true,TDPR:true',
     }
 
     tf = make_edalize_test('libero',

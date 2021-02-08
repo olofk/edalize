@@ -3,7 +3,7 @@
 # Libero
 
 # Create a new project with device parameters
-new_project -location {./prj} -name libero-test-all -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {VHDL} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:EXT} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:EXT}
+new_project -location {./prj} -name libero-test-opts -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {VHDL} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:EXT} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:EXT}
 
 # Import HDL sources and constraints
 import_files \
@@ -24,14 +24,26 @@ puts "Setting top level module to: {top_module::work}"
 set_root -module {top_module::work}
 
 # Configure Synthesize tool to use the generated Synplify TCL script and user parameters
+puts "------------------------- Synthesize params ------------------------------"
+puts "Configured: RETIMING:true"
+puts "Configured: CLOCK_GLOBAL:2"
 
 configure_tool -name {SYNTHESIZE} \
-        -params {SYNPLIFY_TCL_FILE:../../libero-test-all-syn-user.tcl}
+        -params {RETIMING:true} \
+        -params {CLOCK_GLOBAL:2} \
+        -params {SYNPLIFY_TCL_FILE:../../libero-test-opts-syn-user.tcl}
 
-puts "Configured Synthesize tool to use script: libero-test-all-syn-user.tcl"
+puts "Configured Synthesize tool to use script: libero-test-opts-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"
 puts "- ../../."
 
+# Configure Place and Route tool to use user parameters
+puts "----------------------- Place and Route params ---------------------------"
+puts "Configured: REPAIR_MIN_DELAY:true"
+puts "Configured: TDPR:true"
+configure_tool -name {PLACEROUTE} \
+        -params {REPAIR_MIN_DELAY:true} \
+        -params {TDPR:true} \
 
 puts "----------------------- Synthesize Constraints ---------------------------"
 puts "File: ./prj/constraint/sdc_file"

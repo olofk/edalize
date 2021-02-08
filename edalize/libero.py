@@ -34,17 +34,28 @@ class Libero(Edatool):
                          'desc': 'FPGA default IO std (e.g. "LVCMOS 1.8V"'},
                         {'name': 'hdl',
                          'type': 'String',
-                         'desc': 'Default HDL (e.g. "VERILOG"'}
+                         'desc': 'Default HDL (e.g. "VERILOG"'},
+                        {'name': 'synth_options',
+                         'type': 'String',
+                         'desc': 'Additional Synthesize tool options separated by commas (e.g. "RETIMING:true,CLOCK_GLOBAL:2")'},
+                        {'name': 'pnr_options',
+                         'type': 'String',
+                         'desc': 'Additional Place and Route tool options separated by commas (e.g. "REPAIR_MIN_DELAY:true,TDPR:true")'},
                     ]
                     }
 
     argtypes = ['vlogdefine', 'vlogparam']
-
     mandatory_options = ['family', 'die', 'package', 'range']
 
     tool_options_defaults = {
         'range': 'IND',
     }
+
+    def _get_tool_params(self, params):
+        d = dict()
+        for p in params.split(","):
+            d[p.split(":")[0]] = p.split(":")[1]
+        return d
 
     def _set_tool_options_defaults(self):
         for key, default_value in self.tool_options_defaults.items():
@@ -77,6 +88,10 @@ class Libero(Edatool):
         self.jinja_env.filters['constraint_file_filter'] = self.constraint_file_filter
 
         escaped_name = self.name.replace(".", "_")
+        synth_opts = self._get_tool_params(
+            self.tool_options['synth_options']) if 'synth_options' in self.tool_options else ''
+        pnr_opts = self._get_tool_params(
+            self.tool_options['pnr_options']) if 'pnr_options' in self.tool_options else ''
 
         template_vars = {
             'name': escaped_name,
@@ -85,6 +100,8 @@ class Libero(Edatool):
             'vlogparam': self.vlogparam,
             'vlogdefine': self.vlogdefine,
             'tool_options': self.tool_options,
+            'synth_options': synth_opts,
+            'pnr_options': pnr_opts,
             'toplevel': self.toplevel,
             'generic': self.generic,
             'prj_root': "./prj",

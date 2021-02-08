@@ -2,6 +2,7 @@
 # Microsemi Tcl Script
 # Libero
 
+# Create a new project with device parameters
 new_project -location {./prj} -name libero-test -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {VERILOG} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -part_range {IND} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:IND} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:IND}
 
 # Import HDL sources and constraints
@@ -19,26 +20,43 @@ import_files \
 
 # Build design hierarchy and set the top module
 build_design_hierarchy
+puts "Setting top level module to: {top_module::work}"
 set_root -module {top_module::work}
 
-# Configure Synthesize step to use the generated Synplify TCL script.
+# Configure Synthesize tool to use the generated Synplify TCL script and user parameters
+
 configure_tool -name {SYNTHESIZE} \
         -params {SYNPLIFY_TCL_FILE:../../libero-test-syn-user.tcl}
 
-# Configure Synthesize step to use the project constraints
+puts "Configured Synthesize tool to use script: libero-test-syn-user.tcl"
+puts "Configured Synthesize tool to include dirs:"
+puts "- ../../."
+
+
+puts "----------------------- Synthesize Constraints ---------------------------"
+puts "File: ./prj/constraint/sdc_file"
+# Configure Synthesize tool to use the project constraints
 organize_tool_files -tool {SYNTHESIZE} \
         -file {./prj/constraint/sdc_file} \
         -module {top_module::work} -input_type {constraint}
 
-# Configure PnR step to use the project constraints
+# Configure Place and Route tool to use the project constraints
+puts "----------------------- Place and Route Constraints ----------------------"
+puts "File: ./prj/constraint/sdc_file"
+puts "File: ./prj/constraint/io/pdc_constraint_file.pdc"
+
 organize_tool_files -tool {PLACEROUTE} \
         -file {./prj/constraint/sdc_file} \
         -file {./prj/constraint/io/pdc_constraint_file.pdc} \
         -module {top_module::work} -input_type {constraint}
 
-# Configure Verify Timing step to use the project constraints
+# Configure Verify Timing tool to use the project constraints
+puts "----------------------- Verify Timings Constraints -----------------------"
+puts "File: ./prj/constraint/sdc_file"
 organize_tool_files -tool {VERIFYTIMING} \
         -file {./prj/constraint/sdc_file} \
         -module {top_module::work} -input_type {constraint}
 
 save_project
+
+puts "----------------------- Finished -----------------------------------------"
