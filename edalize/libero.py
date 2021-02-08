@@ -44,7 +44,6 @@ class Libero(Edatool):
 
     tool_options_defaults = {
         'range': 'IND',
-        'hdl': 'VERILOG',
     }
 
     def _set_tool_options_defaults(self):
@@ -75,7 +74,7 @@ class Libero(Edatool):
         self._check_mandatory_options()
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
-        self.jinja_env.filters['pdc_file_filter'] = self.pdc_file_filter
+        self.jinja_env.filters['constraint_file_filter'] = self.constraint_file_filter
 
         escaped_name = self.name.replace(".", "_")
 
@@ -93,6 +92,23 @@ class Libero(Edatool):
             'cl': "}",
             'sp': " "
         }
+
+        # Set preferred HDL language based on file type amount if not user defined.
+        # According to docs, projects can be mixed but one language must be
+        # defined as preferred
+        if not "hdl" in self.tool_options:
+            verilogFiles = 0
+            VHDLFiles = 0
+            for f in src_files:
+                t = f.file_type.split('-')[0]
+                if t == "verilogSource" or t == "systemVerilogSource":
+                    verilogFiles += 1
+                elif t == "vhdlSource":
+                    VHDLFiles += 1
+            if verilogFiles >= VHDLFiles:
+                self.tool_options["hdl"] = "VERILOG"
+            else:
+                self.tool_options["hdl"] = "VHDL"
 
         # Render the TCL project file
         self.render_template('libero-project.tcl.j2',
@@ -124,14 +140,18 @@ class Libero(Edatool):
             return file_types[_file_type] + f.name
         return ''
 
-    def pdc_file_filter(self, f):
+    def constraint_file_filter(self, f, type="ALL"):
         file_types = {
             'PDC': 'constraint/io/',
+            'SDC': 'constraint/',
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
             filename = f.name.split("/")[-1]
-            return file_types[_file_type] + filename
+            if type == "ALL":
+                return file_types[_file_type] + filename
+            elif _file_type == type:
+                return file_types[_file_type] + filename
         return ''
 
     def build_main(self):

@@ -2,7 +2,7 @@
 # Microsemi Tcl Script
 # Libero
 
-new_project -location {./prj} -name libero-test -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {VERILOG} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -part_range {IND} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:IND} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:IND}
+new_project -location {./prj} -name libero-test-all -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {VHDL} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V} -adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:EXT} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:EXT}
 
 # Import HDL sources and constraints
 import_files \
@@ -23,7 +23,7 @@ set_root -module {top_module::work}
 
 # Configure Synthesize step to use the generated Synplify TCL script.
 configure_tool -name {SYNTHESIZE} \
-        -params {SYNPLIFY_TCL_FILE:../../libero-test-syn-user.tcl}
+        -params {SYNPLIFY_TCL_FILE:../../libero-test-all-syn-user.tcl}
 
 # Configure Synthesize step to use the project constraints
 organize_tool_files -tool {SYNTHESIZE} \
