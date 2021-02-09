@@ -1,5 +1,6 @@
 import logging
 import os
+from collections import defaultdict
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -35,12 +36,6 @@ class Libero(Edatool):
                         {'name': 'hdl',
                          'type': 'String',
                          'desc': 'Default HDL (e.g. "VERILOG"'},
-                        {'name': 'synth_options',
-                         'type': 'String',
-                         'desc': 'Additional Synthesize tool options separated by commas (e.g. "RETIMING:true,CLOCK_GLOBAL:2")'},
-                        {'name': 'pnr_options',
-                         'type': 'String',
-                         'desc': 'Additional Place and Route tool options separated by commas (e.g. "REPAIR_MIN_DELAY:true,TDPR:true")'},
                     ]
                     }
 
@@ -50,12 +45,6 @@ class Libero(Edatool):
     tool_options_defaults = {
         'range': 'IND',
     }
-
-    def _get_tool_params(self, params):
-        d = dict()
-        for p in params.split(","):
-            d[p.split(":")[0]] = p.split(":")[1]
-        return d
 
     def _set_tool_options_defaults(self):
         for key, default_value in self.tool_options_defaults.items():
@@ -71,7 +60,7 @@ class Libero(Edatool):
                 logger.error("Libero option \"%s\" must be defined", key)
                 shouldExit = 1
         if shouldExit:
-            exit(1)
+            raise RuntimeError("Missing required tool options")
 
     """ Configuration is the first phase of the build
 
@@ -86,22 +75,27 @@ class Libero(Edatool):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
         self.jinja_env.filters['constraint_file_filter'] = self.constraint_file_filter
+        self.jinja_env.filters['tcl_file_filter'] = self.tcl_file_filter
 
         escaped_name = self.name.replace(".", "_")
-        synth_opts = self._get_tool_params(
-            self.tool_options['synth_options']) if 'synth_options' in self.tool_options else ''
-        pnr_opts = self._get_tool_params(
-            self.tool_options['pnr_options']) if 'pnr_options' in self.tool_options else ''
+
+        # Add Edalize working dir to Synthesys includes removing duplicates
+        incdirs = list(set(incdirs.__add__(["."])))
+
+        # Build source files that are part of libraries
+        library_files = defaultdict(list)
+        for f in src_files:
+            if f.logical_name:
+                library_files[f.logical_name].append(f.name)
 
         template_vars = {
             'name': escaped_name,
             'src_files': src_files,
+            'library_files': library_files,
             'incdirs': incdirs,
             'vlogparam': self.vlogparam,
             'vlogdefine': self.vlogdefine,
             'tool_options': self.tool_options,
-            'synth_options': synth_opts,
-            'pnr_options': pnr_opts,
             'toplevel': self.toplevel,
             'generic': self.generic,
             'prj_root': "./prj",
@@ -151,6 +145,18 @@ class Libero(Edatool):
             'vhdlSource': "-hdl_source {",
             'PDC': '-io_pdc {',
             'SDC': '-sdc {',
+        }
+        _file_type = f.file_type.split('-')[0]
+        if _file_type in file_types:
+            # Do not return library files here
+            if f.logical_name:
+                return ''
+            return file_types[_file_type] + f.name
+        return ''
+
+    def tcl_file_filter(self, f):
+        file_types = {
+            'tclSource': 'source ',
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:

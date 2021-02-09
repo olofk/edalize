@@ -3,31 +3,40 @@
 # Libero
 
 # Create a new project with device parameters
-new_project -location {{op}}{{prj_root}}{{cl}} -name {{name}} -project_description {} -block_mode 0 -standalone_peripheral_initialization 0 -instantiate_in_smartdesign 1 -ondemand_build_dh 1 -hdl {{op}}{{tool_options.hdl}}{{cl}} -family {{op}}{{tool_options.family}}{{cl}} -die {{op}}{{tool_options.die}}{{cl}} -package {{op}}{{tool_options.package}}{{cl}} {% if tool_options.speed -%} -speed {{op}}{{tool_options.speed}}{{cl}}{{sp}}{%- endif %}{% if tool_options.dievoltage -%} -die_voltage {{op}}{{tool_options.dievoltage}}{{cl}}{{sp}}{%- endif %}{% if tool_options.range -%} -part_range {{op}}{{tool_options.range}}{{cl}}{{sp}}{%- endif %}{% if tool_options.defiostd -%} -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}}{{sp}}{%- endif %}-adv_options {RESTRICTPROBEPINS:1} -adv_options {RESTRICTSPIPINS:0} -adv_options {SYSTEM_CONTROLLER_SUSPEND_MODE:0} -adv_options {TEMPR:{{tool_options.range}}{{cl}} -adv_options {VCCI_1.2_VOLTR:EXT} -adv_options {VCCI_1.5_VOLTR:EXT} -adv_options {VCCI_1.8_VOLTR:EXT} -adv_options {VCCI_2.5_VOLTR:EXT} -adv_options {VCCI_3.3_VOLTR:EXT} -adv_options {VOLTR:{{tool_options.range}}{{cl}}
+new_project -location {{op}}{{prj_root}}{{cl}} -name {{name}} -project_description {} -hdl {{op}}{{tool_options.hdl}}{{cl}} -family {{op}}{{tool_options.family}}{{cl}} -die {{op}}{{tool_options.die}}{{cl}} -package {{op}}{{tool_options.package}}{{cl}} {% if tool_options.speed -%} -speed {{op}}{{tool_options.speed}}{{cl}}{{sp}}{%- endif %}{% if tool_options.dievoltage -%} -die_voltage {{op}}{{tool_options.dievoltage}}{{cl}}{{sp}}{%- endif %}{% if tool_options.range -%}-part_range {{op}}{{tool_options.range}}{{cl}}{{sp}}{%- endif %}{% if tool_options.defiostd -%} -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}}{% endif %}
+
 
 # Import HDL sources and constraints
 import_files \
-        -convert_EDN_to_HDL 0 \
         {% for src_file in src_files if src_file|src_file_filter%}
         {{src_file|src_file_filter}}{{cl}} \
         {% endfor %}
+
+# Import HDL sources on libraries (logical_names)
+{% for library in library_files.items() %}
+{% set lib = library[0] %}
+{% set files = library[1] %}
+import_files \
+        -library {{op}}{{lib}}{{cl}} \
+        {% for f in files %}
+        -hdl_source {{op}}{{f}}{{cl}} \
+        {% endfor %}
+
+{% endfor %}
 
 # Build design hierarchy and set the top module
 build_design_hierarchy
 puts "Setting top level module to: {{op}}{{toplevel}}::work{{cl}}"
 set_root -module {{op}}{{toplevel}}::work{{cl}}
 
-# Configure Synthesize tool to use the generated Synplify TCL script and user parameters
-{%+ if synth_options -%}
-puts "------------------------- Synthesize params ------------------------------"
-{% for k,v in synth_options.items() %}
-puts "Configured: {{k}}:{{v}}"
-{% endfor %}{% endif %}
+# Source user defined TCL scripts
+{% for src_file in src_files if src_file|tcl_file_filter%}
+puts "---------- Executing User TCL script: {{src_file|tcl_file_filter|replace("source", "")|trim}} ----------"
+{{src_file|tcl_file_filter}}
+{% endfor %}
 
+# Configure Synthesize tool to use the generated Synplify TCL script
 configure_tool -name {SYNTHESIZE} \
-        {% if synth_options -%}{%- for k,v in synth_options.items() %}
-        -params {{op}}{{k}}:{{v}}{{cl}} \
-        {% endfor -%}{%- endif %}
         -params {SYNPLIFY_TCL_FILE:../../{{name}}-syn-user.tcl}
 
 puts "Configured Synthesize tool to use script: {{name}}-syn-user.tcl"
@@ -35,19 +44,6 @@ puts "Configured Synthesize tool to include dirs:"
 {% if incdirs -%}{%- for dir in incdirs %}
 puts "- ../../{{dir}}"
 {% endfor -%}{% endif %}
-
-{%+ if pnr_options -%}
-# Configure Place and Route tool to use user parameters
-puts "----------------------- Place and Route params ---------------------------"
-{% for k,v in pnr_options.items() %}
-puts "Configured: {{k}}:{{v}}"
-{% endfor -%}
-
-configure_tool -name {PLACEROUTE} \
-        {% for k,v in pnr_options.items() %}
-        -params {{op}}{{k}}:{{v}}{{cl}} \
-        {% endfor -%}
-{% endif %}
 
 {% set ns = namespace(SDC=false) %}{# If SDC files are present #}
 {% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
