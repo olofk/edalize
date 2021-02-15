@@ -8,6 +8,12 @@ set_option -hdl_param -set {{k}}={{v}}
 {% if vlogdefine -%}{%- for k,v in vlogdefine.items() %}
 set_option -hdl_define -set {{k}}={{v}}
 {% endfor -%}{%- endif %}
+{% if generic -%}
+set_option -hdl_param -set {
+  {%- for k, v in generic.items() %}{{ k }}={{ v|generic_value_str(bool_is_str = True) }} {% endfor -%}
+  }
+{%- endif %}
+
 {% if incdirs -%}{%- for dir in incdirs %}
 set_option -include_path {{op}}../../{{dir}}{{cl}}
 {% endfor -%}{%- endif %}

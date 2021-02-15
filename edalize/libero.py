@@ -39,7 +39,7 @@ class Libero(Edatool):
                     ]
                     }
 
-    argtypes = ['vlogdefine', 'vlogparam']
+    argtypes = ['vlogdefine', 'vlogparam', 'generic']
     mandatory_options = ['family', 'die', 'package', 'range']
 
     tool_options_defaults = {
@@ -95,6 +95,7 @@ class Libero(Edatool):
             'incdirs': incdirs,
             'vlogparam': self.vlogparam,
             'vlogdefine': self.vlogdefine,
+            'generic': self.generic,
             'tool_options': self.tool_options,
             'toplevel': self.toplevel,
             'generic': self.generic,

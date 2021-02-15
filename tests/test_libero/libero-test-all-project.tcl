@@ -2,6 +2,7 @@
 # Microsemi Tcl Script
 # Libero
 
+puts "----------------- Creating project libero-test-all ------------------------------"
 # Create a new project with device parameters
 new_project -location {./prj} -name libero-test-all -project_description {} -hdl {VHDL} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V}
 
@@ -65,4 +66,5 @@ organize_tool_files -tool {VERIFYTIMING} \
 
 save_project
 
-puts "----------------------- Finished -----------------------------------------"
+puts "If desired, execute the libero-test-all-run.tcl script to run the generation flow."
+puts "----------------- Finished Importing project -----------------------------"
