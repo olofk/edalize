@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+from pathlib import Path
 from collections import defaultdict
 from edalize.edatool import Edatool
 
@@ -181,8 +183,13 @@ class Libero(Edatool):
     def build_main(self):
         logger.info("Executing Libero TCL Scripts.")
         escaped_name = self.name.replace(".", "_")
-        self._run_tool('libero', ['SCRIPT:' + escaped_name + '-project.tcl'])
-        self._run_tool('libero', ['SCRIPT:' + escaped_name + '-run.tcl'])
+        if shutil.which("libero"):
+            self._run_tool('libero', ['SCRIPT:' + escaped_name + '-run.tcl'])
+        else:
+            filePath = os.path.join(Path(self.work_root).relative_to(
+                os.getcwd()), escaped_name + '-run.tcl')
+            logger.warn(
+                "Libero not found on path, execute manually the script \"" + filePath + "\"")
 
     def run_main(self):
         pass
