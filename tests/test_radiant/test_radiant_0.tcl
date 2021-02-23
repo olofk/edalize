@@ -11,5 +11,6 @@ prj_add_source vlog05_file.v -work work
 prj_add_source vhdl_file.vhd -work work
 prj_add_source vhdl_lfile -work libx
 prj_add_source vhdl2008_file -work work
+prj_add_source pdc_constraint_file.pdc -work work
 prj_save
 prj_close

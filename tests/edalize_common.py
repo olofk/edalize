@@ -205,6 +205,7 @@ FILES = [
     {"name": "verible_waiver2.vbw", "file_type": "veribleLintWaiver"},
     {'name': 'config.sby.j2', 'file_type': 'sbyConfigTemplate'},
     {"name": "another_sv_file.sv", "file_type": "systemVerilogSource"},
+    {"name": "pdc_constraint_file.pdc", "file_type": "PDC"},
 ]
 """Files of all supported file types."""
 
