@@ -3,6 +3,7 @@ import os.path
 from edalize.edatool import Edatool
 from edalize.yosys import Yosys
 from importlib import import_module
+from pathlib import Path
 
 class Trellis(Edatool):
 
@@ -13,6 +14,14 @@ class Trellis(Edatool):
         if api_ver == 0:
             yosys_help = Yosys.get_doc(api_ver)
             trellis_help = {
+                    'members' : [
+                        {'name' : 'use_containers',
+                         'type' : 'String',
+                         'desc' : 'Use containers for EDA tools (true or false, defaults to false)'},
+                        {'name' : 'container_daemon',
+                        'type' : 'String',
+                        'desc' : 'Which container daemon to use (defaults to Docker)'},
+                    ],
                     'lists' : [
                         {'name' : 'nextpnr_options',
                          'type' : 'String',
@@ -75,7 +84,15 @@ class Trellis(Edatool):
             'name'                : self.name,
             'lpf_file'            : lpf_files[0],
             'nextpnr_options'     : nextpnr_options,
+            'use_containers'      : self.tool_options.get('use_containers', 'false'),
+            'container_daemon'    : self.tool_options.get('container_daemon', 'docker'),
+            'workspace_path'      : Path(self.work_root).parents[2],
+            'project_path'        : Path(self.work_root).relative_to(Path(self.work_root).parents[2])
         }
         self.render_template('trellis-makefile.j2',
                              'Makefile',
                              template_vars)
+
+        self.render_template('container_tools.mk.j2',
+                             'container_tools.mk',
+                             template_vars, "common")

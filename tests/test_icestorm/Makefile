@@ -7,6 +7,8 @@ ARACHNE_PNR_OPTIONS := a few arachne_pnr_options
 NEXTPNR_OPTIONS     := 
 DEVICE   := None
 
+include container_tools.mk
+
 all: $(TARGET).bin
 timing: $(TARGET).tim
 stats: $(TARGET).stat
@@ -20,16 +22,16 @@ stats: $(TARGET).stat
 %.json: %.mk
 	$(MAKE) -f $<
 %_next.asc: %.json
-	nextpnr-ice40 -l next.log $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
+	$(NEXTPNR-ICE40) -l next.log $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
 %.bin: %_$(PNR).asc
-	icepack $< $@
+	$(ICEPACK) $< $@
 %.tim: %_$(PNR).asc
-	icetime -tmd $(DEVICE) $< > $@
+	$(ICETIME) -tmd $(DEVICE) $< > $@
 %.stat: %_$(PNR).asc
-	icebox_stat $< > $@
+	$(ICESTAT) $< > $@
 
 build-gui: $(TARGET).json
-	nextpnr-ice40 $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
+	$(NEXTPNR-ICE40) $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
 
 clean:
 	rm -f $(TARGET).blif $(TARGET).json $(TARGET)_arachne.asc $(TARGET)_next.asc $(TARGET).bin

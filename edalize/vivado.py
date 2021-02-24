@@ -3,6 +3,7 @@ import os.path
 import platform
 import re
 import subprocess
+from pathlib import Path
 
 from edalize.edatool import Edatool
 from edalize.yosys import Yosys
@@ -51,6 +52,12 @@ class Vivado(Edatool):
                         {'name' : 'hw_target',
                         'type' : 'Description',
                         'desc' : 'Board identifier (e.g. */xilinx_tcf/Digilent/123456789123A'},
+                        {'name' : 'use_containers',
+                        'type' : 'String',
+                        'desc' : 'Use containers for open source EDA tools (true or false, defaults to false)'},
+                        {'name' : 'container_daemon',
+                        'type' : 'String',
+                        'desc' : 'Which container daemon to use (defaults to Docker)'},
                     ]}
 
     """ Get tool version
@@ -113,16 +120,21 @@ class Vivado(Edatool):
 
 
         template_vars = {
-            'name'         : self.name,
-            'src_files'    : src_files,
-            'incdirs'      : incdirs+['.'],
-            'tool_options' : self.tool_options,
-            'toplevel'     : self.toplevel,
-            'vlogparam'    : self.vlogparam,
-            'vlogdefine'   : self.vlogdefine,
-            'generic'      : self.generic,
-            'has_vhdl2008' : has_vhdl2008,
-            'has_xci'      : has_xci,
+            'name'                : self.name,
+            'src_files'           : src_files,
+            'incdirs'             : incdirs+['.'],
+            'tool_options'        : self.tool_options,
+            'toplevel'            : self.toplevel,
+            'vlogparam'           : self.vlogparam,
+            'vlogdefine'          : self.vlogdefine,
+            'generic'             : self.generic,
+            'has_vhdl2008'        : has_vhdl2008,
+            'has_xci'             : has_xci,
+            'use_containers'      : self.tool_options.get('use_containers', 'false'),
+            'container_daemon'    : self.tool_options.get('container_daemon', 'docker'),
+            'workspace_path'      : Path(self.work_root).parents[2],
+            'project_path'        : Path(self.work_root).relative_to(Path(self.work_root).parents[2])
+
         }
 
         if self.synth_tool == 'yosys':
@@ -140,6 +152,11 @@ class Vivado(Edatool):
                                   'xdc_file' : xdc_file,
                                   'name' : self.name,
                                   'tool_options' : self.tool_options})
+
+            self.render_template('container_tools.mk.j2',
+                        'container_tools.mk',
+                             template_vars, "common")
+
         else:
             self.render_template('vivado-project.tcl.j2',
                                  self.name+'.tcl',

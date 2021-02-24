@@ -1,5 +1,6 @@
 import logging
 import os.path
+from pathlib import Path
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -11,15 +12,17 @@ TOPLEVEL = {toplevel}
 ANALYZE_OPTIONS = {analyze_options}
 RUN_OPTIONS = {run_options}
 
+include container_tools.mk
+
 VHDL_SOURCES = {vhdl_sources}
 
 all: work-obj{standard}.cf
 
 run: $(TOPLEVEL)
-\tghdl -r $(STD) $(ANALYZE_OPTIONS)  $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+\t$(GHDL) -r $(STD) $(ANALYZE_OPTIONS)  $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj{standard}.cf
-\tghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
+\t$(GHDL) -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
 
 make_libraries_directories:
 \techo "Creating libraries directories"
@@ -36,6 +39,14 @@ class Ghdl(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : "GHDL is an open source VHDL simulator, which fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and partially the 1076-2008 version of VHDL",
+                    'members' : [
+                        {'name' : 'use_containers',
+                         'type' : 'String',
+                         'desc' : 'Use containers for EDA tools (true or false, defaults to false)'},
+                        {'name' : 'container_daemon',
+                        'type' : 'String',
+                        'desc' : 'Which container daemon to use (defaults to Docker)'},
+                    ],
                     'lists' : [
                         {'name' : 'analyze_options',
                          'type' : 'String',
@@ -133,7 +144,21 @@ class Ghdl(Edatool):
                                                     analyze_options=analyze_options,
                                                     run_options=' '.join(run_options),
                                                     make_libraries_directories=make_libraries_directories,
-                                                    ghdlimport=ghdlimport))
+                                                    ghdlimport=ghdlimport,
+                                                    use_containers=self.tool_options.get('use_containers', 'false'),
+                                                    container_daemon=self.tool_options.get('container_daemon', 'docker'),
+            ))
+        template_vars = {
+            'name'                : self.name,
+            'use_containers'      : self.tool_options.get('use_containers', 'false'),
+            'container_daemon'    : self.tool_options.get('container_daemon', 'docker'),
+            'workspace_path'      : Path(self.work_root).parents[2],
+            'project_path'        : Path(self.work_root).relative_to(Path(self.work_root).parents[2])
+        }
+
+        self.render_template('container_tools.mk.j2',
+                             'container_tools.mk',
+                             template_vars, "common")
 
     def run_main(self):
         cmd = 'make'

@@ -1,9 +1,11 @@
 import logging
 import os.path
+from pathlib import Path
 
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
+
 
 class Yosys(Edatool):
 
@@ -29,6 +31,12 @@ class Yosys(Edatool):
                         {'name' : 'script_name',
                          'type' : 'String',
                          'desc' : 'Generated tcl script filename, defaults to $name.mk'},
+                        {'name' : 'use_containers',
+                        'type' : 'String',
+                        'desc' : 'Use containers for EDA tools (true or false, defaults to false)'},
+                        {'name' : 'container_daemon',
+                        'type' : 'String',
+                        'desc' : 'Which container daemon to use (defaults to Docker)'},
                         ],
                     'lists' : [
                         {'name' : 'yosys_synth_options',
@@ -88,7 +96,11 @@ class Yosys(Edatool):
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
                 'script_name'         : script_name,
-                'name'                : self.name
+                'name'                : self.name,
+                'use_containers'      : self.tool_options.get('use_containers', 'false'),
+                'container_daemon'    : self.tool_options.get('container_daemon', 'docker'),
+                'workspace_path'      : Path(self.work_root).parents[2],
+                'project_path'        : Path(self.work_root).relative_to(Path(self.work_root).parents[2])
         }
 
         self.render_template('yosys-script-tcl.j2',
@@ -100,3 +112,6 @@ class Yosys(Edatool):
                              makefile_name,
                              template_vars)
 
+        self.render_template('container_tools.mk.j2',
+                             'container_tools.mk',
+                             template_vars, "common")

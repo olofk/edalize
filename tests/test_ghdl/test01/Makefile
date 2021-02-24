@@ -4,15 +4,17 @@ TOPLEVEL = top_module
 ANALYZE_OPTIONS = some analyze_options -P./libx
 RUN_OPTIONS = a few run_options
 
+include container_tools.mk
+
 VHDL_SOURCES =  vhdl_file.vhd vhdl_lfile vhdl2008_file
 
 all: work-obj08.cf
 
 run: $(TOPLEVEL)
-	ghdl -r $(STD) $(ANALYZE_OPTIONS)  $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+	$(GHDL) -r $(STD) $(ANALYZE_OPTIONS)  $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj08.cf
-	ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
+	$(GHDL) -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL)
 
 make_libraries_directories:
 	echo "Creating libraries directories"

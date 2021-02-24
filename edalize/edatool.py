@@ -302,13 +302,14 @@ class Edatool(object):
             paramtype = self.parameters[key]['paramtype']
             getattr(self, paramtype)[key] = value
 
-    def render_template(self, template_file, target_file, template_vars = {}):
+    def render_template(self, template_file, target_file, template_vars = {}, template_dir = None):
         """
         Render a Jinja2 template for the backend
 
         The template file is expected in the directory templates/BACKEND_NAME.
         """
-        template_dir = str(self.__class__.__name__).lower()
+        if template_dir == None:
+            template_dir = str(self.__class__.__name__).lower()
         template = self.jinja_env.get_template('/'.join([template_dir, template_file]))
         file_path = os.path.join(self.work_root, target_file)
         with open(file_path, 'w') as f:
