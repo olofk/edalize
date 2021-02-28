@@ -80,7 +80,7 @@ Example snippet of a CAPI2 description file for VCS:
             'plusargs'          : plusargs
         }
 
-        self.render_template('Makefile.j2', os.path.join(self.work_root, 'Makefile'), template_vars)
+        self.render_template('Makefile.j2', 'Makefile', template_vars)
 
     def run_main(self):
         args = ['run']
