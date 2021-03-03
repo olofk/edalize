@@ -37,5 +37,14 @@ add_files -norecurse pdc_constraint_file.pdc
 set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]
 set_property source_mgmt_mode None [current_project]
-upgrade_ip [get_ips]
-generate_target all [get_ips]
+# Vivado treats IP integrator entities as nested sub-designs and prevents core
+# generation from the base project in non-GUI flow raising
+# ERROR: [Vivado 12-3563] The Nested sub-design '...xci' can only be generated
+#   by its parent sub-design.
+# These cores are created and generated separately by Tcl scripts.
+# exported from IP integrator. To prevent this error, Ip cores that are part of
+# a block design must be excluded from generation at the top level. This can be
+# done using `get_ips -filter {SCOPE !~ "*.bd"}`. In Vivado >= 2019.1 the same
+# can be achieved using `get_ips -exclude_bd_ips`
+upgrade_ip [get_ips -filter {SCOPE !~ "*.bd"}]
+generate_target all [get_ips -filter {SCOPE !~ "*.bd"}]
