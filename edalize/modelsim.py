@@ -111,6 +111,17 @@ class Modelsim(Edatool):
                 if f.file_type.startswith("systemVerilogSource"):
                     args += ['-sv']
                 args += vlog_include_dirs
+            # XXX: C/CPP DPI sources can also be passed to vlog
+            # workaround until we have proper DPI support
+            # (https://github.com/olofk/fusesoc/issues/311).
+            elif f.file_type.startswith("cSource") or \
+                 f.file_type.startswith("cppSource"):
+                cmd = 'vlog'
+                if f.file_type.startswith("cppSource"):
+                    args = ['-ccflags -x c++' ]
+                args += ['-ccflags "-I'+d.replace('\\','/')+'"' for d in incdirs]
+                args += self.tool_options.get('vlog_options', [])
+            # XXX
             elif f.file_type.startswith("vhdlSource"):
                 cmd = 'vcom'
                 if f.file_type.endswith("-87"):
