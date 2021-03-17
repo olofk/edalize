@@ -13,6 +13,10 @@ Edalize
         :target: https://pypi.org/project/edalize/
         :alt: PyPI downloads
 
+.. image:: https://www.librecores.org/olofk/edalize/badge.svg?style=flat
+        :target: https://www.librecores.org/olofk/edalize
+        :alt: LibreCores
+   
 What's this?
 ------------
 
