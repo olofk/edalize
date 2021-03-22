@@ -3,7 +3,7 @@ import pytest
 from edalize_common import make_edalize_test
 
 
-def run_icestorm_test(tf, pnr_cmdfile='arachne-pnr.cmd'):
+def run_icestorm_test(tf, pnr_cmdfile='nextpnr-ice40.cmd'):
     tf.backend.configure()
 
     tf.compare_files(['Makefile', tf.test_name + '.tcl'])
@@ -84,4 +84,4 @@ def test_icestorm_invalid_pnr(make_edalize_test):
 
     with pytest.raises(RuntimeError) as e:
         tf.backend.configure()
-    assert "nvalid pnr option 'invalid'. Valid values are 'arachne' for Arachne-pnr or 'next' for nextpnr" in str(e.value)
+    assert "Invalid pnr option 'invalid'. Valid values are 'arachne' for Arachne-pnr, 'next' for nextpnr or 'none' to only perform synthesis" in str(e.value)

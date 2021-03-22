@@ -16,7 +16,7 @@ class Icestorm(Edatool):
                     'members' : [
                         {'name' : 'pnr',
                          'type' : 'String',
-                         'desc' : 'Select Place & Route tool. Legal values are *arachne* for Arachne-PNR or *next* for nextpnr. Default is arachne'}],
+                         'desc' : 'Select Place & Route tool. Legal values are *arachne* for Arachne-PNR, *next* for nextpnr or *none* to only perform synthesis. Default is next'}],
                     'lists' : [
                         {'name' : 'arachne_pnr_options',
                          'type' : 'String',
@@ -75,10 +75,10 @@ class Icestorm(Edatool):
         elif len(pcf_files) > 1:
             raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
 
-        pnr = self.tool_options.get('pnr', 'arachne')
+        pnr = self.tool_options.get('pnr', 'next')
         part = self.tool_options.get('part', None)
         if not pnr in ['arachne', 'next', 'none']:
-            raise RuntimeError("Invalid pnr option '{}'. Valid values are 'arachne' for Arachne-pnr or 'next' for nextpnr".format(pnr))
+            raise RuntimeError("Invalid pnr option '{}'. Valid values are 'arachne' for Arachne-pnr, 'next' for nextpnr or 'none' to only perform synthesis".format(pnr))
         # Write Makefile
         arachne_pnr_options = self.tool_options.get('arachne_pnr_options', [])
         nextpnr_options     = self.tool_options.get('nextpnr_options', [])

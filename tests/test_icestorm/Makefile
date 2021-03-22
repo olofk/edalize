@@ -2,7 +2,7 @@
 
 TARGET   := test_icestorm_0
 PCF_FILE := pcf_file.pcf
-PNR      ?= arachne
+PNR      ?= next
 ARACHNE_PNR_OPTIONS := a few arachne_pnr_options
 NEXTPNR_OPTIONS     := 
 DEVICE   := None
