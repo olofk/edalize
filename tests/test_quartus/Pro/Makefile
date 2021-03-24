@@ -6,27 +6,27 @@ DSE_OPTIONS := some dse_options
 all: sta
 
 project: $(NAME).tcl
-	quartus_sh $(OPTIONS) -t $(NAME).tcl
+	$(EDALIZE_LAUNCHER) quartus_sh $(OPTIONS) -t $(NAME).tcl
 
 qsys: project
 	qsys-generate qsys_file --synthesis=VERILOG --family="Cyclone V" --part=5CSXFC6D6F31C8ES --quartus-project=$(NAME)
 
 syn: qsys
-	quartus_syn $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_syn $(OPTIONS) $(NAME)
 
 fit: syn
-	quartus_fit $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_fit $(OPTIONS) $(NAME)
 
 asm: fit
-	quartus_asm $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_asm $(OPTIONS) $(NAME)
 
 sta: asm
-	quartus_sta $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_sta $(OPTIONS) $(NAME)
 
 dse: syn
-	quartus_dse $(NAME) $(DSE_OPTIONS)
+	$(EDALIZE_LAUNCHER) quartus_dse $(NAME) $(DSE_OPTIONS)
 
 clean:
-	rm -rf *.* qdb tmp-clearbox
+	$(EDALIZE_LAUNCHER) rm -rf *.* qdb tmp-clearbox
 
 .PHONY: all project qsys syn fit asm sta dse clean

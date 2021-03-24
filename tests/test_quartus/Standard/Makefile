@@ -6,28 +6,28 @@ DSE_OPTIONS := some dse_options
 all: sta
 
 project: $(NAME).tcl
-	quartus_sh $(OPTIONS) -t $(NAME).tcl
+	$(EDALIZE_LAUNCHER) quartus_sh $(OPTIONS) -t $(NAME).tcl
 
 qsys: project
-	ip-generate --project-directory=. --output-directory=qsys/qsys_file --report-file=bsf:qsys/qsys_file/qsys_file.bsf --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=./qsys_file.qsys
-	ip-generate --project-directory=. --output-directory=qsys/qsys_file/synthesis --file-set=QUARTUS_SYNTH --report-file=sopcinfo:qsys/qsys_file/qsys_file.sopcinfo --report-file=html:qsys/qsys_file/qsys_file.html --report-file=qip:qsys/qsys_file/qsys_file.qip --report-file=cmp:qsys/qsys_file/qsys_file.cmp --report-file=svd --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=./qsys_file.qsys --language=VERILOG
+	$(EDALIZE_LAUNCHER) ip-generate --project-directory=. --output-directory=qsys/qsys_file --report-file=bsf:qsys/qsys_file/qsys_file.bsf --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=./qsys_file.qsys
+	$(EDALIZE_LAUNCHER) ip-generate --project-directory=. --output-directory=qsys/qsys_file/synthesis --file-set=QUARTUS_SYNTH --report-file=sopcinfo:qsys/qsys_file/qsys_file.sopcinfo --report-file=html:qsys/qsys_file/qsys_file.html --report-file=qip:qsys/qsys_file/qsys_file.qip --report-file=cmp:qsys/qsys_file/qsys_file.cmp --report-file=svd --system-info=DEVICE_FAMILY="Cyclone V" --system-info=DEVICE=5CSXFC6D6F31C8ES --component-file=./qsys_file.qsys --language=VERILOG
 
 syn: qsys
-	quartus_map $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_map $(OPTIONS) $(NAME)
 
 fit: syn
-	quartus_fit $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_fit $(OPTIONS) $(NAME)
 
 asm: fit
-	quartus_asm $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_asm $(OPTIONS) $(NAME)
 
 sta: asm
-	quartus_sta $(OPTIONS) $(NAME)
+	$(EDALIZE_LAUNCHER) quartus_sta $(OPTIONS) $(NAME)
 
 dse: syn
-	quartus_dse $(NAME) $(DSE_OPTIONS)
+	$(EDALIZE_LAUNCHER) quartus_dse $(NAME) $(DSE_OPTIONS)
 
 clean:
-	rm -rf *.* db incremental_db
+	$(EDALIZE_LAUNCHER) rm -rf *.* db incremental_db
 
 .PHONY: all project qsys syn fit asm sta dse clean

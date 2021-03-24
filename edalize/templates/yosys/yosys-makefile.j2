@@ -6,11 +6,11 @@ all: $(TARGET).{{ default_target }}
 
 
 %.blif: {{ script_name }}
-	yosys -l yosys.log -p "tcl $?"
+	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
 %.json: {{ script_name }}
-	yosys -l yosys.log -p "tcl $?"
+	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
 %.edif: {{ script_name }}
-	yosys -l yosys.log -p "tcl $?"
+	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
 
 clean:
 	rm -f $(TARGET).blif $(TARGET).json $(TARGET).edif

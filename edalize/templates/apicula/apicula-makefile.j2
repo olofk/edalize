@@ -11,13 +11,13 @@ all: $(TARGET).fs
 %.json: %.mk
 	$(MAKE) -f $<
 %.pack: %.json
-	nextpnr-gowin -l next.log --device $(DEVICE) $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@
+	$(EDALIZE_LAUNCHER) nextpnr-gowin -l next.log --device $(DEVICE) $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@
 %.fs: %.pack
-	gowin_pack -d $(DEVICE) -o  $@ $^
+	$(EDALIZE_LAUNCHER) gowin_pack -d $(DEVICE) -o  $@ $^
 
 build-gui: $(TARGET).json
-	nextpnr-gowin --device $(DEVICE) $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@ --gui
+	$(EDALIZE_LAUNCHER) nextpnr-gowin --device $(DEVICE) $(NEXTPNR_OPTIONS) --cst $(CST_FILE) --json $? --write $@ --gui
 
 clean:
-	rm -f  $(TARGET).json  $(TARGET).pack $(TARGET).fs
+	$(EDALIZE_LAUNCHER) rm -f  $(TARGET).json  $(TARGET).pack $(TARGET).fs
 	

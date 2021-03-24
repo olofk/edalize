@@ -16,20 +16,20 @@ stats: $(TARGET).stat
 %.blif: %.mk
 	$(MAKE) -f $<
 %_arachne.asc: $(PCF_FILE) %.blif
-	arachne-pnr $(ARACHNE_PNR_OPTIONS) -q -p $? -o $@
+	$(EDALIZE_LAUNCHER) arachne-pnr $(ARACHNE_PNR_OPTIONS) -q -p $? -o $@
 %.json: %.mk
 	$(MAKE) -f $<
 %_next.asc: %.json
-	nextpnr-ice40 -l next.log $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
+	$(EDALIZE_LAUNCHER) nextpnr-ice40 -l next.log $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
 %.bin: %_$(PNR).asc
-	icepack $< $@
+	$(EDALIZE_LAUNCHER) icepack $< $@
 %.tim: %_$(PNR).asc
-	icetime -tmd $(DEVICE) $< > $@
+	$(EDALIZE_LAUNCHER) icetime -tmd $(DEVICE) $< > $@
 %.stat: %_$(PNR).asc
-	icebox_stat $< > $@
+	$(EDALIZE_LAUNCHER) icebox_stat $< > $@
 
 build-gui: $(TARGET).json
-	nextpnr-ice40 $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
+	$(EDALIZE_LAUNCHER) nextpnr-ice40 $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
 
 clean:
-	rm -f $(TARGET).blif $(TARGET).json $(TARGET)_arachne.asc $(TARGET)_next.asc $(TARGET).bin
+	$(EDALIZE_LAUNCHER) rm -f $(TARGET).blif $(TARGET).json $(TARGET)_arachne.asc $(TARGET)_next.asc $(TARGET).bin

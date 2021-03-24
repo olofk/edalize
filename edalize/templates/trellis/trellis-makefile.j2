@@ -9,12 +9,12 @@ all: $(TARGET).bit
 %.json: %.mk
 	$(MAKE) -f $<
 %.config: %.json
-	nextpnr-ecp5 -l next.log $(NEXTPNR_OPTIONS) --lpf $(LPF_FILE) --json $? --textcfg $@
+	$(EDALIZE_LAUNCHER) nextpnr-ecp5 -l next.log $(NEXTPNR_OPTIONS) --lpf $(LPF_FILE) --json $? --textcfg $@
 %.bit: %.config
-	ecppack $< $@
+	$(EDALIZE_LAUNCHER) ecppack $< $@
 
 build-gui: $(TARGET).json
-	nextpnr-ecp5 $(NEXTPNR_OPTIONS) --json $? --textcfg $@ --gui
+	$(EDALIZE_LAUNCHER) nextpnr-ecp5 $(NEXTPNR_OPTIONS) --json $? --textcfg $@ --gui
 
 clean:
-	rm -f  $(TARGET).json $(TARGET).config $(TARGET).bit
+	$(EDALIZE_LAUNCHER) rm -f  $(TARGET).json $(TARGET).config $(TARGET).bit

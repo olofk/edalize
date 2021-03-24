@@ -12,7 +12,7 @@ $(NAME).edif: $(NAME).mk
 synth: $(NAME).edif
 {% else %}
 $(NAME).runs/synth_1/__synthesis_is_complete__: $(NAME)_synth.tcl $(NAME).xpr
-	{{ vivado_command }} -notrace -mode batch -source $^
+	$(EDALIZE_LAUNCHER) {{ vivado_command }} -notrace -mode batch -source $^
 
 synth: $(NAME).runs/synth_1/__synthesis_is_complete__
 {% endif %}
@@ -22,15 +22,15 @@ $(BITSTREAM): $(NAME)_run.tcl $(NAME).xpr synth
 {% else %}
 $(BITSTREAM): $(NAME)_run.tcl $(NAME).xpr
 {% endif %}
-	{{ vivado_command }} -notrace -mode batch -source $< $(NAME).xpr
+	$(EDALIZE_LAUNCHER) {{ vivado_command }} -notrace -mode batch -source $< $(NAME).xpr
 
 $(NAME).xpr: $(NAME).tcl
-	{{ vivado_command }} -notrace -mode batch -source $<
+	$(EDALIZE_LAUNCHER) {{ vivado_command }} -notrace -mode batch -source $<
 
 build-gui: $(NAME).xpr
-	{{ vivado_command }} $<
+	$(EDALIZE_LAUNCHER) {{ vivado_command }} $<
 
 pgm: $(NAME)_pgm.tcl $(BITSTREAM)
 	export HW_TARGET=$(HW_TARGET); \
 	export JTAG_FREQ=$(JTAG_FREQ); \
-	{{ vivado_command }} -quiet -nolog -notrace -mode batch -source $< -tclargs $(PART) $(BITSTREAM)
+	$(EDALIZE_LAUNCHER) {{ vivado_command }} -quiet -nolog -notrace -mode batch -source $< -tclargs $(PART) $(BITSTREAM)

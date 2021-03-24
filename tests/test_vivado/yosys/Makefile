@@ -11,15 +11,15 @@ $(NAME).edif: $(NAME).mk
 synth: $(NAME).edif
 
 $(BITSTREAM): $(NAME)_run.tcl $(NAME).xpr synth
-	vivado -notrace -mode batch -source $< $(NAME).xpr
+	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source $< $(NAME).xpr
 
 $(NAME).xpr: $(NAME).tcl
-	vivado -notrace -mode batch -source $<
+	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source $<
 
 build-gui: $(NAME).xpr
-	vivado $<
+	$(EDALIZE_LAUNCHER) vivado $<
 
 pgm: $(NAME)_pgm.tcl $(BITSTREAM)
 	export HW_TARGET=$(HW_TARGET); \
 	export JTAG_FREQ=$(JTAG_FREQ); \
-	vivado -quiet -nolog -notrace -mode batch -source $< -tclargs $(PART) $(BITSTREAM)
+	$(EDALIZE_LAUNCHER) vivado -quiet -nolog -notrace -mode batch -source $< -tclargs $(PART) $(BITSTREAM)
