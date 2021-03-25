@@ -52,7 +52,7 @@ setup(
         # 2.11.0 and .1 introduced an incompatible change in template output,
         # which was fixed in 2.11.2 and later.
         # https://github.com/pallets/jinja/issues/1138
-        'Jinja2 >=2.8, !=2.11.0, !=2.11.1',
+        'Jinja2>=2.11.3',
     ],
     tests_require=[
         'pytest>=3.3.0',
