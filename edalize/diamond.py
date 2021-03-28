@@ -24,6 +24,10 @@ class Diamond(Edatool):
                     ]}
 
     def configure_main(self):
+        part = self.tool_options.get('part')
+        if not part:
+            raise RuntimeError("Missing required option 'part' for diamond backend")
+
         (src_files, incdirs) = self._get_fileset_files()
         has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
             
@@ -43,7 +47,7 @@ prj_impl option top {}
 {}
 """
             f.write(TCL_TEMPLATE.format(prj_name,
-                                        self.tool_options['part'],
+                                        part,
                                         " -lpf "+lpf_file if lpf_file else "",
                                         self.toplevel,
                                         "prj_strgy set_value -strategy Strategy1 syn_vhdl2008=True" if has_vhdl2008 else ""
