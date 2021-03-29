@@ -1,6 +1,10 @@
 Edalize
 =======
 
+.. image:: https://badges.gitter.im/librecores/edalize.svg
+   :alt: Join the chat at https://gitter.im/librecores/edalize
+   :target: https://gitter.im/librecores/edalize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. image:: https://github.com/olofk/edalize/workflows/CI/badge.svg
         :target: https://github.com/olofk/edalize/actions?query=workflow%3ACI
         :alt: CI status
