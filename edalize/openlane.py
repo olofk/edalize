@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 class Openlane(Edatool):
 
+    argtypes = []
+
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
