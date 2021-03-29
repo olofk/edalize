@@ -30,6 +30,7 @@ class Openlane(Edatool):
         template_vars = {
             'top' : self.toplevel,
             'file_table' : file_table,
+            'work_root' : os.path.split(self.work_root)[1],
         }
 
         script_name = 'config.tcl'
