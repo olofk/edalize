@@ -1,3 +1,7 @@
+# Copyright edalize contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
 import logging
 import os.path
 from edalize.edatool import Edatool
@@ -13,8 +17,8 @@ class Openlane(Edatool):
                     'members': [],
                     'lists' : []}
 
-# At a minimum, we need our source Verilog files and locations to run Openlane
-# For a minimal example, we can leave everything else as default (to be changed later)
+    # At a minimum, we need our source Verilog files and locations to run Openlane
+    # For a minimal example, we can leave everything else as default (to be changed later)
     def configure_main(self):
         file_table = ""
         (src_files, incdirs) = self._get_fileset_files()
