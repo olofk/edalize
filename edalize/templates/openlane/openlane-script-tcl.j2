@@ -3,12 +3,9 @@
 set ::env(DESIGN_NAME) {{top}}
 set ::env(VERILOG_FILES) [list {{file_table}}]
 
-set ::env(CLOCK_PERIOD) "{{clk_period}}"
-set ::env(CLOCK_PORT) "{{clk_name}}"
-set ::env(DIE_AREA) "0 0 200 200"
-set ::env(FP_SIZING) absolute
-set ::env(DESIGN_IS_CORE) 0
-set ::env(GLB_RT_MAXLAYER) 5
+{% if tcl_params != "" %}
+source {{tcl_params}}
+{% endif %}
 
 set filename $::env(DESIGN_DIR)/$::env(PDK)_$::env(STD_CELL_LIBRARY)_config.tcl
 if { [file exists $filename] == 1} {
