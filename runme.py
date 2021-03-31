@@ -20,5 +20,6 @@ if 'flow.tcl' in sys.argv[1]:
               "-v", f"{build_root}:/project",
               "-e", f"PDK_ROOT={pdk_root}",
               "-u", f"{os.getuid()}:{os.getgid()}",
-              image, 'sh', '-c']
+              "-w", f"/project/{work}",
+              image]
     subprocess.call(prefix+sys.argv[1:])
