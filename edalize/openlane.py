@@ -16,24 +16,37 @@ class Openlane(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : "Open source flow for ASIC synthesis, placement and routing",
-                    'members': [],
+                    'members': [
+                        {'name' : 'interactive_name',
+                         'type' : 'String',
+                         'desc' : 'Optional name of interactive tcl script.'},
+                    ],
                     'lists' : []}
 
     def configure_main(self):
         file_table = ""
+        blackbox_table = ""
         tcl_params = ""
+        tcl_interactive = ""
         (src_files, incdirs) = self._get_fileset_files()
         for f in src_files:
             if f.file_type.startswith('verilogSource'):
                 file_table = file_table + f.name + " "
-            elif f.file_type.startswith('tclSource'):
+            elif f.file_type.startswith('verilogBlackbox'):
+                blackbox_table = blackbox_table + f.name + " "
+            elif f.name.endswith('params.tcl'):
                 tcl_params = f.name
+            elif self.tool_options.get('interactive_name') != None:
+                if f.name.endswith(self.tool_options.get('interactive_name')):
+                    tcl_interactive = f.name
 
         template_vars = {
             'top' : self.toplevel,
             'file_table' : file_table,
+            'blackbox_table' : blackbox_table,
             'work_root' : os.path.split(self.work_root)[1],
             'tcl_params' : tcl_params,
+            'tcl_interactive' : tcl_interactive,
         }
 
         script_name = 'config.tcl'
