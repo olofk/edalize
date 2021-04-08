@@ -50,7 +50,8 @@ class TestFixture:
                  files=None,
                  tool_options={},
                  ref_dir='.',
-                 use_vpi=False):
+                 use_vpi=False,
+                 toplevel='top_module'):
 
         raw_ref_dir = os.path.join(tests_dir, 'test_' + tool_name, ref_dir)
 
@@ -59,7 +60,7 @@ class TestFixture:
         self.ref_dir = os.path.normpath(raw_ref_dir)
         self.work_root = work_root
         self.backend = _setup_backend(self.test_name, tool_name, param_types,
-                                      files, tool_options, work_root, use_vpi)
+                                      files, tool_options, work_root, use_vpi, toplevel)
 
     def compare_files(self, files, ref_subdir='.'):
         '''Check some files in the work root match those in the ref directory
@@ -146,7 +147,7 @@ def param_gen(paramtypes):
 
 
 def _setup_backend(name, tool, paramtypes, files,
-                   tool_options, work_root, use_vpi):
+                   tool_options, work_root, use_vpi, toplevel):
     """Set up a backend.
 
     The backend is called *name*, is set up for *tool* with *tool_options*,
@@ -170,7 +171,7 @@ def _setup_backend(name, tool, paramtypes, files,
             'files'        : FILES if files is None else files,
             'parameters'   : parameters,
             'tool_options' : {tool : tool_options},
-            'toplevel'     : 'top_module',
+            'toplevel'     : toplevel,
             'vpi'          :  _vpi}
 
     return get_edatool(tool)(edam=edam, work_root=work_root)
