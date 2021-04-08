@@ -82,18 +82,34 @@ class Ghdl(Edatool):
         analyze_options=' '.join(analyze_options)
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
-        libraries = set()
+
+        libraries = {}
+        library_options = "--work={lib} --workdir=./{lib}"
         ghdlimport = ""
         vhdl_sources = ""
+
+        # GHDL doesn't support the dot notation used by other tools (e.g.
+        # my_lib.top_design) for the top level so work around this if the user
+        # has specified the top level in this manner.
+        top = self.toplevel.split(".")
+
+        if len(top) > 2:
+            logger.error("Invalid dot notation in toplevel: {}".format(self.toplevel))
+
+        top_libraries = ""
+
+        if len(top) > 1:
+            libraries[top[0]] = []
+            top_libraries = library_options.format(lib=top[0])
+
+        top_unit = top[-1]
+
         for f in src_files:
             if f.file_type in _vhdltypes:
-                lib = ""
-                lib_dir = ""
-                if f.logical_name:
-                    lib = ' --work='+f.logical_name
-                    lib_dir = ' --workdir=./'+f.logical_name
-                    libraries.add(f.logical_name)
-                ghdlimport += ("\tghdl -i $(STD) $(ANALYZE_OPTIONS){lib} {lib_dir} {file}\n".format(lib=lib, lib_dir=lib_dir, file=f.name))
+                # Files without a specified library will by added to
+                # libraries[None] which is perhaps poor form but avoids
+                # conflicts with user generated names
+                libraries[f.logical_name] = libraries.get(f.logical_name, []) + [f.name]
                 vhdl_sources += (" {file}".format(file=f.name))
             elif f.file_type in ["user"]:
                 pass
@@ -101,23 +117,30 @@ class Ghdl(Edatool):
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(f.name, f.file_type))
 
+        ghdlimport = ""
         make_libraries_directories = ""
-        for l in libraries:
-            make_libraries_directories += '\tmkdir -p '+l+'\n'
-            analyze_options += ' -P./'+l
+
+        for lib, files in libraries.items():
+            lib_opts = ""
+            if lib:
+                analyze_options += " -P./{}".format(lib)
+                make_libraries_directories += "\tmkdir -p {}\n".format(lib)
+                lib_opts = library_options.format(lib=lib)
+            ghdlimport += "\tghdl -i $(STD) $(ANALYZE_OPTIONS) {} {}\n".format(lib_opts, " ".join(files))
 
         self.render_template(
             'Makefile.j2',
             'Makefile',
             {
                 'std' : ' '.join(stdarg),
-                'toplevel' : self.toplevel,
+                'toplevel' : top_unit,
                 'vhdl_sources' : vhdl_sources,
                 'standard' : standard,
                 'analyze_options' : analyze_options,
                 'run_options' : ' '.join(run_options),
                 'make_libraries_directories' : make_libraries_directories,
-                'ghdlimport' : ghdlimport
+                'ghdlimport' : ghdlimport,
+                'top_libraries': top_libraries
             }
         )
 

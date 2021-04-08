@@ -86,3 +86,29 @@ def test_ghdl_03(make_edalize_test):
 
     tf.backend.run()
     tf.compare_files(['elab-run.cmd'])
+
+
+# Test 04 - Top level includes library
+def test_ghdl_04(make_edalize_test):
+    tf = make_edalize_test('ghdl',
+                           ref_dir = "test04",
+                           param_types=['generic'],
+                           tool_options={
+                               'analyze_options': ['some', 'analyze_options'],
+                               'run_options': ['a', 'few', 'run_options']
+                           },
+                           toplevel="libx.vhdl_lfile")
+
+    for vhdl_file in ['vhdl_file.vhd', 'vhdl_lfile',  'vhdl2008_file']:
+        with open(os.path.join(tf.work_root, vhdl_file), 'a'):
+            os.utime(os.path.join(tf.work_root, vhdl_file), None)
+
+    tf.backend.configure()
+
+    tf.compare_files(['Makefile'])
+
+    tf.backend.build()
+    tf.compare_files(['analyze.cmd'])
+
+    tf.backend.run()
+    tf.compare_files(['elab-run.cmd'])
