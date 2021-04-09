@@ -295,7 +295,9 @@ You can reproduce the example above with something like
     def build_main(self):
         pass
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No GUI support for SymbiYosys, running in CLI")
         tasknames = self.tool_options.get('tasknames', [])
         if not isinstance(tasknames, list):
             raise RuntimeError('"tasknames" tool option should be '

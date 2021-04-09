@@ -232,7 +232,9 @@ class Vivado(Edatool):
     correct FPGA board and then downloads the bitstream. The tcl script is then
     executed in Vivado's batch mode.
     """
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No GUI support for Vivado, running in CLI")
         if 'pnr' in self.tool_options:
             if self.tool_options['pnr'] == 'vivado':
                 pass

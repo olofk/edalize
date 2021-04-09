@@ -121,9 +121,11 @@ class Ghdl(Edatool):
             }
         )
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
         cmd = 'make'
         args = ['run']
+        if with_gui:
+            logger.warning("GHDL backend has no GUI support, running in CLI")
 
         # GHDL doesn't support Verilog, but the backend used vlogparam since
         # edalize didn't support generic at the time. Now that generic support

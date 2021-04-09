@@ -68,5 +68,5 @@ Get `morty` from here: https://github.com/zarubaf/morty
         # Go and do your thing!
         self._run_tool('morty', args, quiet=True)
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
         logger.warn("Morty does not support running. Use build instead.")

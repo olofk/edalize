@@ -163,5 +163,7 @@ class Symbiflow(Edatool):
         else:
             logger.error("VPR is the only P&R tool currently supported in SymbiFlow")
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No GUI support for SymbiFlow, running in CLI")
         logger.info("Programming")

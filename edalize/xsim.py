@@ -131,8 +131,12 @@ XSIM_OPTIONS  = {xsim_options}
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as f:
             f.write(self.MAKEFILE_TEMPLATE)
 
-    def run_main(self):
-        args = ['run']
+    def run_main(self, with_gui=False):
+        args = []
+        if with_gui:
+            args.append('run-gui')
+        else:
+            args.append('run')
         # Plusargs
         if self.plusarg:
             _s = '--testplusarg {}={}'

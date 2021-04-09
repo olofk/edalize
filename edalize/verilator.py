@@ -165,7 +165,9 @@ class Verilator(Edatool):
         _s = os.path.join(self.work_root, 'verilator.{}.log')
         self._run_tool('make', args, quiet=True)
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No GUI support for VeribleLint, running in CLI")
         self.check_managed_parser()
         self.args = []
         for key, value in self.plusarg.items():

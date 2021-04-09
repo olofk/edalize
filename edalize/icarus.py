@@ -115,8 +115,10 @@ class Icarus(Edatool):
                                                 incs = ' '.join(_incs),
                                                 srcs = ' '.join(_srcs)))
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
         args = ['run']
+        if with_gui:
+            logger.warning("Icarus has no GUI support, running in CLI")
 
         # Set plusargs
         if self.plusarg:

@@ -120,8 +120,13 @@ quit
                                                    isim_options  = isim_options,
                                                    extra_options = extra_options))
 
-    def run_main(self):
-        args = ['run']
+    def run_main(self, with_gui=False):
+        args = []
+        if with_gui:
+            args.append('run-gui')
+        else:
+            args.append('run')
+
         # Plusargs
         if self.plusarg:
             _s = '-testplusarg {}={}'

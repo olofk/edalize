@@ -191,5 +191,5 @@ class Libero(Edatool):
             logger.warn(
                 "Libero not found on path, execute manually the script \"" + filePath + "\"")
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
         pass

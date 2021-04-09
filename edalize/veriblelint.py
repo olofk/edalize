@@ -49,7 +49,9 @@ class Veriblelint(Edatool):
 
         return args
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No GUI support for VeribleLint, running in CLI")
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
         src_files_filtered = []
