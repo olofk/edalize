@@ -25,6 +25,7 @@ class Openlane(Edatool):
 
     def configure_main(self):
         file_table = ""
+        lefs = []
         blackbox_table = ""
         tcl_params = ""
         tcl_interactive = ""
@@ -34,6 +35,8 @@ class Openlane(Edatool):
                 file_table = file_table + f.name + " "
             elif f.file_type.startswith('verilogBlackbox'):
                 blackbox_table = blackbox_table + f.name + " "
+            elif f.file_type == 'LEF':
+                lefs.append(f.name)
             elif f.name.endswith('params.tcl'):
                 tcl_params = f.name
             elif self.tool_options.get('interactive_name') != None:
@@ -44,6 +47,7 @@ class Openlane(Edatool):
             'top' : self.toplevel,
             'file_table' : file_table,
             'blackbox_table' : blackbox_table,
+            'lefs_table' : ' '.join(lefs),
             'work_root' : os.path.split(self.work_root)[1],
             'tcl_params' : tcl_params,
             'tcl_interactive' : tcl_interactive,
