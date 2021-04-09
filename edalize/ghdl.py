@@ -2,6 +2,7 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import collections
 import logging
 import os.path
 from edalize.edatool import Edatool
@@ -83,7 +84,7 @@ class Ghdl(Edatool):
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
 
-        libraries = {}
+        libraries = collections.OrderedDict()
         library_options = "--work={lib} --workdir=./{lib}"
         ghdlimport = ""
         vhdl_sources = ""
