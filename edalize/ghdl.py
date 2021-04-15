@@ -163,6 +163,6 @@ class Ghdl(Edatool):
             extra_options='EXTRA_OPTIONS='
             for d in [self.vlogparam, self.generic]:
                 for k,v in d.items():
-                    extra_options += ' -g{}={}'.format(k,self._param_value_str(v,'"'))
+                    extra_options += ' -g{}={}'.format(k,self._param_value_str(v,'"',bool_is_str=True))
             args.append(extra_options)
         self._run_tool(cmd, args)
