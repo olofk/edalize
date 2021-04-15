@@ -66,7 +66,7 @@ setup(
     # The reporting modules have dependencies that shouldn't be required for
     # all Edalize users.
     extras_require={
-        "reporting": ["pyparsing", "numpy", "pandas"],
+        "reporting": ["pyparsing", "pandas"],
     },
     # Supported Python versions: 3.5+
     python_requires=">=3.5, <4",
