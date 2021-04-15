@@ -11,7 +11,7 @@ all: $(TARGET).bit
 %.config: %.json
 	$(EDALIZE_LAUNCHER) nextpnr-ecp5 -l next.log $(NEXTPNR_OPTIONS) --lpf $(LPF_FILE) --json $? --textcfg $@
 %.bit: %.config
-	$(EDALIZE_LAUNCHER) ecppack $< $@
+	$(EDALIZE_LAUNCHER) ecppack --svf $(patsubst %.bit,%.svf, $@) $< $@
 
 build-gui: $(TARGET).json
 	$(EDALIZE_LAUNCHER) nextpnr-ecp5 $(NEXTPNR_OPTIONS) --json $? --textcfg $@ --gui
