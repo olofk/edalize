@@ -1,2 +1,2 @@
 -m --std=08 some analyze_options -P./libx --work=libx --workdir=./libx vhdl_lfile
--r --std=08 some analyze_options -P./libx --work=libx --workdir=./libx vhdl_lfile a few run_options -ggeneric_bool=1 -ggeneric_int=42 -ggeneric_str=hello
+-r --std=08 some analyze_options -P./libx --work=libx --workdir=./libx vhdl_lfile a few run_options -ggeneric_bool=true -ggeneric_int=42 -ggeneric_str=hello
