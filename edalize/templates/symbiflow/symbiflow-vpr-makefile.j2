@@ -20,8 +20,13 @@ PARTNAME_OPT = -P "{{ partname }}"
 VPR_OPTIONS_OPTS = --additional_vpr_options "{{ vpr_options }}"
 {%- endif %}
 
+{% if seed -%}
+VPR_SEED = VPR_SEED="--seed {{ seed }}"
+{%- endif %}
+
 {% if pcf -%}
 PCF_OPTS = -p ${PCF}
+PCF_FASM2BELS_OPTS = --pcf ${PCF}
 {%- endif %}
 
 {% if xdc -%}
@@ -31,6 +36,16 @@ XDC_OPTS = -x ${XDC}
 {% if sdc -%}
 SDC_OPTS = -s ${SDC}
 {%- endif %}
+
+{% if fasm2bels %}
+RR_GRAPH = {{ rr_graph }}
+VPR_GRID = {{ vpr_grid }}
+VPR_CAPNP_SCHEMA_DIR = {{ vpr_capnp_schema }}
+
+all: timing_summary.rpt
+{% else %}
+all: ${TOP}.bit
+{% endif %}
 
 all: ${TOP}.bit
 
@@ -52,6 +67,27 @@ ${TOP}.fasm: ${TOP}.route
 ${TOP}.bit: ${TOP}.fasm
 	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm ${PARTNAME_OPT} -b ${TOP}.bit
 
-clean:
-	$(EDALIZE_LAUNCHER) rm -rf *.log *.rpt *.place *.bit *.eblif *.fasm *.json *.ioplace *.net *.route
+{% if fasm2bels %}
+timing_summary.rpt: ${TOP}.bit.v
+	$(EDALIZE_LAUNCHER) vivado -mode batch -source fasm2bels_vivado.tcl
 
+${TOP}.bit.v:
+	$(EDALIZE_LAUNCHER) python -m fasm2bels \
+		--db_root {{ dbroot }}/${BITSTREAM_DEVICE} \
+		--part ${PARTNAME} \
+		--bitread bitread \
+		--bit_file ${TOP}.bit \
+		--fasm_file ${TOP}.bit.fasm \
+		--eblif ${TOP}.eblif \
+		--connection_database channels.db \
+		--rr_graph ${RR_GRAPH} \
+		--route_file ${TOP}.route \
+		--vpr_grid_map ${VPR_GRID} \
+		--vpr_capnp_schema_dir ${VPR_CAPNP_SCHEMA_DIR} \
+		${PCF_FASM2BELS_OPTS} \
+		--verilog_file ${TOP}.bit.v \
+		--xdc_file ${TOP}.bit.xdc
+{% endif %}
+
+clean:
+	$(EDALIZE_LAUNCHER) rm -rf *.log *.rpt *.place *.bit* *.eblif *.fasm *.json *.ioplace *.net *.route design* *.txt *.ilang *.net* *.jou *.sdc *.v *.db

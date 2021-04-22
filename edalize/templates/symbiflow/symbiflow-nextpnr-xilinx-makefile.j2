@@ -5,7 +5,15 @@ NAME	:= {{ top }}
 PARTNAME:= {{ partname }}
 BITSTREAM_DEVICE := {{ bitstream_device }}
 
+{% if fasm2bels %}
+RR_GRAPH = {{ rr_graph }}
+VPR_GRID = {{ vpr_grid }}
+VPR_CAPNP_SCHEMA_DIR = {{ vpr_capnp_schema }}
+
+all: timing_summary.rpt
+{% else %}
 all: ${NAME}.bit
+{% endif %}
 
 ${NAME}.fasm: ${NAME}-nextpnr.mk
 	$(EDALIZE_LAUNCHER) $(MAKE) -f ${NAME}-nextpnr.mk
@@ -13,5 +21,27 @@ ${NAME}.fasm: ${NAME}-nextpnr.mk
 ${NAME}.bit: ${NAME}.fasm
 	$(EDALIZE_LAUNCHER) symbiflow_write_bitstream -d ${BITSTREAM_DEVICE} -f ${NAME}.fasm -p ${PARTNAME} -b ${NAME}.bit
 
+{% if fasm2bels %}
+timing_summary.rpt: ${NAME}.bit.v
+	$(EDALIZE_LAUNCHER) vivado -mode batch -source fasm2bels_vivado.tcl
+
+${NAME}.bit.v: ${NAME}.bit
+	$(EDALIZE_LAUNCHER) python -m fasm2bels \
+		--db_root {{ dbroot }}/${BITSTREAM_DEVICE} \
+		--part ${PARTNAME} \
+		--bitread bitread \
+		--bit_file ${NAME}.bit \
+		--fasm_file ${NAME}.bit.fasm \
+		--eblif ${NAME}.eblif \
+		--connection_database channels.db \
+		--rr_graph ${RR_GRAPH} \
+		--vpr_grid_map ${VPR_GRID} \
+		--vpr_capnp_schema_dir ${VPR_CAPNP_SCHEMA_DIR} \
+		--drive 12 \
+		--iostandard LVCMOS33 \
+		--verilog_file ${NAME}.bit.v \
+		--xdc_file ${NAME}.bit.xdc
+{% endif %}
+
 clean:
-	$(EDALIZE_LAUNCHER) rm -rf *.bit* *.blif *.eblif *.fasm *.json *.dcp *.log *.rpt *.jou *.txt
+	$(EDALIZE_LAUNCHER) rm -rf *.bit* *.blif *.eblif *.fasm *.json *.dcp *.log *.rpt *.jou *.txt *.edif *.db *design
