@@ -28,6 +28,8 @@ A core (usually the system core) can add the following files:
 class Symbiflow(Edatool):
 
     argtypes = ["vlogdefine", "vlogparam", "generic"]
+    archs = ["xilinx", "fpga_interchange"]
+    fpga_interchange_families = ["xc7"]
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -52,7 +54,7 @@ class Symbiflow(Edatool):
                     {
                         "name": "pnr",
                         "type": "String",
-                        "desc": 'Place and Route tool. Currently only "vpr" is supported',
+                        "desc": 'Place and Route tool. Currently only "vpr"/"vtr" and "nextpnr" are supported',
                     },
                     {
                         "name": "vpr_options",
@@ -60,9 +62,9 @@ class Symbiflow(Edatool):
                         "desc": "Additional vpr tool options. If not used, default options for the tool will be used",
                     },
                     {
-                        "name" : "environment_script",
-                        "type" : "String",
-                        "desc" : "Optional bash script that will be sourced before each build step."
+                        "name": "environment_script",
+                        "type": "String",
+                        "desc": "Optional bash script that will be sourced before each build step."
                     },
                 ]
             }
@@ -76,6 +78,90 @@ class Symbiflow(Edatool):
 
     def get_version(self):
         return "1.0"
+
+    def configure_nextpnr(self):
+        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+
+        yosys_synth_options = self.tool_options.get("yosys_synth_options", "")
+        yosys_template = self.tool_options.get("yosys_template", None)
+        nextpnr_impl_options = self.tool_options.get("options", "")
+
+        arch = self.tool_options.get("arch")
+        if arch in getattr(self, "archs"):
+            logger.error('Missing or invalid "arch" parameter: {} in "tool_options"'.format(arch))
+
+        package = self.tool_options.get("package", None)
+        if package is not None:
+            logger.error('Missing required "package" parameter')
+
+        schema_dir = self.tool_options.get("schema_dir", None)
+        if schema_dir is not None or arch is not "fpga_interchange":
+            logger.error('Missing required "schema_dir" parameter for "fpga_interchange" arch')
+
+        part = self.tool_options.get("part", None)
+        if part is not None:
+            logger.error('Missing required "part" parameter')
+
+        target_family = None
+        for family in getattr(self, "fpga_interchange_families"):
+            if family in part:
+                target_family = family
+                break
+
+        if target_family is None and arch is "fpga_interchange":
+            logger.error("Couldn't find family for part: {}. Available families: {}".format(part, ", ".join(getattr(self, "fpga_interchange_families"))))
+
+        nextpnr_edam = {
+                "files"         : self.files,
+                "name"          : self.name,
+                "toplevel"      : self.toplevel,
+                "tool_options"  : {"nextpnr" : {
+                                        "arch" : arch,
+                                        "yosys_synth_options" : yosys_synth_options,
+                                        "yosys_template" : yosys_template,
+                                        "nextpnr_impl_options" : nextpnr_impl_options,
+                                        "nextpnr_as_subtool" : True,
+                                        "package" : package,
+                                        "family" : target_family,
+                                        "schema_dir" : schema_dir,
+                                        }
+
+                                }
+                }
+
+        nextpnr = getattr(import_module("edalize.nextpnr"), "Nextpnr")(nextpnr_edam, self.work_root)
+        nextpnr.configure()
+
+        partname = part + package
+
+        if "xc7a" in part:
+            bitstream_device = "artix7"
+        if "xc7z" in part:
+            bitstream_device = "zynq7"
+        if "xc7k" in part:
+            bitstream_device = "kintex7"
+
+        placement_constraints = None
+        pins_constraints = None
+        for f in src_files:
+            if f.file_type in ["PCF"]:
+                pins_constraints = f.name
+            if f.file_type in ["xdc"]:
+                placement_constraints = f.name
+        vendor = self.tool_options.get("vendor", None)
+
+        environment_script = self.tool_options.get("environment_script", None)
+
+        makefile_params = {
+            "top" : self.name,
+            "partname" : partname,
+            "bitstream_device" : bitstream_device,
+            "environment_script": environment_script,
+        }
+
+        self.render_template("symbiflow-nextpnr-{}-makefile.j2".format(arch),
+                             "Makefile",
+                             makefile_params)
 
     def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
@@ -103,33 +189,33 @@ class Symbiflow(Edatool):
             if f.file_type in ["user"]:
                 user_files.append(f.name)
 
-        part = self.tool_options.get('part', None)
-        package = self.tool_options.get('package', None)
-        vendor = self.tool_options.get('vendor', None)
+        part = self.tool_options.get("part", None)
+        package = self.tool_options.get("package", None)
+        vendor = self.tool_options.get("vendor", None)
 
         if not part:
             logger.error('Missing required "part" parameter')
         if not package:
             logger.error('Missing required "package" parameter')
 
-        if vendor == 'xilinx':
-            if 'xc7a' in part:
-                bitstream_device = 'artix7'
-            if 'xc7z' in part:
-                bitstream_device = 'zynq7'
-            if 'xc7k' in part:
-                bitstream_device = 'kintex7'
+        if vendor == "xilinx":
+            if "xc7a" in part:
+                bitstream_device = "artix7"
+            if "xc7z" in part:
+                bitstream_device = "zynq7"
+            if "xc7k" in part:
+                bitstream_device = "kintex7"
 
             partname = part + package
 
             # a35t are in fact a50t
             # leave partname with 35 so we access correct DB
-            if part == 'xc7a35t':
-                part = 'xc7a50t'
-            device_suffix = 'test'
-        elif vendor == 'quicklogic':
+            if part == "xc7a35t":
+                part = "xc7a50t"
+            device_suffix = "test"
+        elif vendor == "quicklogic":
             partname = package
-            device_suffix = 'wlcsp'
+            device_suffix = "wlcsp"
             bitstream_device = part + "_" + device_suffix
 
         vpr_options = self.tool_options.get("vpr_options", None)
@@ -151,17 +237,19 @@ class Symbiflow(Edatool):
             "xdc": " ".join(placement_constraints),
             "vpr_options": vpr_options,
             "device_suffix": device_suffix,
-            "toolchain_prefix": 'symbiflow_',
             "environment_script": environment_script,
+            "toolchain_prefix": "symbiflow_",
             "vendor": vendor,
         }
         self.render_template("symbiflow-vpr-makefile.j2", "Makefile", makefile_params)
 
     def configure_main(self):
-        if self.tool_options.get("pnr") == "vtr":
+        if self.tool_options.get("pnr") == "nextpnr":
+            self.configure_nextpnr()
+        elif self.tool_options.get("pnr") in ["vtr", "vpr"]:
             self.configure_vpr()
         else:
-            logger.error("VPR is the only P&R tool currently supported in SymbiFlow")
+            logger.error("Unsupported P&R: {}".format(self.tool_options.get("pnr")))
 
     def run_main(self):
         logger.info("Programming")
