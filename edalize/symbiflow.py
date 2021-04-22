@@ -14,7 +14,7 @@ from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
-""" Symbiflow backtend
+""" Symbiflow backend
 
 A core (usually the system core) can add the following files:
 
