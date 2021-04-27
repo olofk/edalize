@@ -110,7 +110,6 @@ class Vivado(Edatool):
                                             'output_format' : 'edif',
                                             'yosys_synth_options' : yosys_synth_options,
                                             'yosys_as_subtool' : True,
-                                            'script_name'   : 'yosys.tcl',
                                             }
                                     }
                     }

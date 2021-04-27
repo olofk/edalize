@@ -30,9 +30,6 @@ class Yosys(Edatool):
                         {'name' : 'makefile_name',
                          'type' : 'String',
                          'desc' : 'Generated makefile name, defaults to $name.mk'},
-                        {'name' : 'script_name',
-                         'type' : 'String',
-                         'desc' : 'Generated tcl script filename, defaults to $name.mk'},
                         ],
                     'lists' : [
                         {'name' : 'yosys_synth_options',
@@ -79,7 +76,6 @@ class Yosys(Edatool):
             logger.error("ERROR: arch is not defined.")
 
         makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
-        script_name = self. tool_options.get('script_name', self.name + '.tcl')
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
                 'verilog_params'      : "\n".join(verilog_params),
@@ -91,12 +87,12 @@ class Yosys(Edatool):
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
-                'script_name'         : script_name,
+                'yosys_template'      : 'edalize_yosys_template.tcl',
                 'name'                : self.name
         }
 
         self.render_template('yosys-script-tcl.j2',
-                             script_name,
+                             'edalize_yosys_template.tcl',
                              template_vars)
 
         makefile_name = self.name + '.mk' if part_of_toolchain else 'Makefile'

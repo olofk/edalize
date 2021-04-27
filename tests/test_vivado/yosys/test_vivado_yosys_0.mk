@@ -5,11 +5,11 @@ TARGET   := test_vivado_yosys_0
 all: $(TARGET).edif
 
 
-%.blif: yosys.tcl
+%.blif: edalize_yosys_template.tcl
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
-%.json: yosys.tcl
+%.json: edalize_yosys_template.tcl
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
-%.edif: yosys.tcl
+%.edif: edalize_yosys_template.tcl
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
 
 clean:

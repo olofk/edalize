@@ -1,1 +1,1 @@
--l yosys.log -p tcl yosys.tcl
+-l yosys.log -p tcl edalize_yosys_template.tcl

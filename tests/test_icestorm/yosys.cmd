@@ -1,1 +1,1 @@
--l yosys.log -p tcl test_icestorm_0.tcl
+-l yosys.log -p tcl edalize_yosys_template.tcl
