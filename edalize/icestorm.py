@@ -58,6 +58,7 @@ class Icestorm(Edatool):
                                         'arch' : 'ice40',
                                         'yosys_synth_options' : yosys_synth_options,
                                         'yosys_as_subtool' : True,
+                                        'yosys_template' : self.tool_options.get('yosys_template'),
                                         }
                                 }
                 }

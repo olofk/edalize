@@ -30,6 +30,9 @@ class Yosys(Edatool):
                         {'name' : 'makefile_name',
                          'type' : 'String',
                          'desc' : 'Generated makefile name, defaults to $name.mk'},
+                        {'name' : 'yosys_template',
+                         'type' : 'String',
+                         'desc' : 'TCL template file to use instead of default template'},
                         ],
                     'lists' : [
                         {'name' : 'yosys_synth_options',
@@ -41,6 +44,8 @@ class Yosys(Edatool):
         # write Yosys tcl script file
         (src_files, incdirs) = self._get_fileset_files()
         part_of_toolchain = self.tool_options.get('yosys_as_subtool', False)
+
+        yosys_template = self.tool_options.get('yosys_template')
 
         file_table = []
         for f in src_files:
@@ -87,7 +92,7 @@ class Yosys(Edatool):
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
-                'yosys_template'      : 'edalize_yosys_template.tcl',
+                'yosys_template'      : yosys_template or 'edalize_yosys_template.tcl',
                 'name'                : self.name
         }
 
@@ -95,9 +100,10 @@ class Yosys(Edatool):
                              'edalize_yosys_procs.tcl',
                              template_vars)
 
-        self.render_template('yosys-script-tcl.j2',
-                             'edalize_yosys_template.tcl',
-                             template_vars)
+        if not yosys_template:
+            self.render_template('yosys-script-tcl.j2',
+                                 'edalize_yosys_template.tcl',
+                                 template_vars)
 
         makefile_name = self.name + '.mk' if part_of_toolchain else 'Makefile'
         self.render_template('yosys-makefile.j2',
