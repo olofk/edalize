@@ -1,0 +1,34 @@
+proc read_files {} {
+{{ file_table }}
+}
+
+proc set_defines {} {
+{% if verilog_defines -%}
+set defines {{ verilog_defines }}
+
+foreach d ${defines} {
+  set key [lindex $d 0]
+  set val [lindex $d 1]
+  verilog_defines "-D$key=$val"
+}
+{%- endif %}
+}
+
+proc set_incdirs {} {
+{% if incdirs -%}
+verilog_defaults -add {{ incdirs }}
+{%- endif %}
+}
+
+proc set_params {} {
+{% if verilog_params -%}
+{{ verilog_params }}
+{%- endif %}
+}
+
+proc synth {top} {
+{{ synth_command }} {{ synth_options }} -top $top
+}
+
+set top {{ top }}
+set name {{ name }}

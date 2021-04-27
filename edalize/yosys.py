@@ -91,6 +91,10 @@ class Yosys(Edatool):
                 'name'                : self.name
         }
 
+        self.render_template('edalize_yosys_procs.tcl.j2',
+                             'edalize_yosys_procs.tcl',
+                             template_vars)
+
         self.render_template('yosys-script-tcl.j2',
                              'edalize_yosys_template.tcl',
                              template_vars)

@@ -6,7 +6,7 @@ from edalize_common import make_edalize_test
 def run_icestorm_test(tf, pnr_cmdfile='nextpnr-ice40.cmd'):
     tf.backend.configure()
 
-    tf.compare_files(['Makefile', 'edalize_yosys_template.tcl'])
+    tf.compare_files(['Makefile', 'edalize_yosys_procs.tcl', 'edalize_yosys_template.tcl'])
 
     f = os.path.join(tf.work_root, 'pcf_file.pcf')
     with open(f, 'a'):

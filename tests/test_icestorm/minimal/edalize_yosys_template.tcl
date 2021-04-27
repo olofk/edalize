@@ -1,22 +1,18 @@
 yosys -import
+source edalize_yosys_procs.tcl
 
-set defines {}
-
-foreach d ${defines} {
-  set key [lindex $d 0]
-  set val [lindex $d 1]
-  verilog_defines "-D$key=$val"
-}
 verilog_defaults -push
 verilog_defaults -add -defer
 
-
-
-
+set_defines
+set_incdirs
+read_files
+set_params
 
 verilog_defaults -pop
 
-synth_ice40  -top top_module
-write_blif test_icestorm_0.blif
-write_json test_icestorm_0.json
-write_edif  test_icestorm_0.edif
+synth $top
+
+write_blif $name.blif
+write_json $name.json
+write_edif $name.edif
