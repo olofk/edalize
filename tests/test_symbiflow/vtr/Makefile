@@ -12,7 +12,6 @@ XDC	:= top.xdc
 TOOLCHAIN_PREFIX := symbiflow_
 PARTNAME_OPT = -p "xc7a35tcsg324-1csg324-1"
 
-
 VPR_OPTIONS_OPTS = --additional_vpr_options "--fake_option 1000"
 
 XDC_OPTS = -x ${XDC}
@@ -20,22 +19,22 @@ XDC_OPTS = -x ${XDC}
 all: ${TOP}.bit
 
 ${TOP}.eblif:
-	${SOURCE_OPTS} $(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} ${PARTNAME_OPT} ${XDC_OPTS}
+	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} ${PARTNAME_OPT} ${XDC_OPTS}
 
 ${TOP}.net: ${TOP}.eblif
-	${SOURCE_OPTS} $(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}pack -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
+	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}pack -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.place: ${TOP}.net
-	${SOURCE_OPTS} $(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}place -e ${TOP}.eblif -d ${DEVICE} -n ${TOP}.net -P ${PARTNAME} ${SDC_OPTS} ${PCF_OPTS} ${VPR_OPTIONS_OPTS}
+	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}place -e ${TOP}.eblif -d ${DEVICE} -n ${TOP}.net -P ${PARTNAME} ${SDC_OPTS} ${PCF_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.route: ${TOP}.place
-	${SOURCE_OPTS} $(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}route -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
+	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}route -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.fasm: ${TOP}.route
-	${SOURCE_OPTS} $(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}write_fasm -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
+	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}write_fasm -e ${TOP}.eblif -d ${DEVICE} ${SDC_OPTS} ${VPR_OPTIONS_OPTS}
 
 ${TOP}.bit: ${TOP}.fasm
-	${SOURCE_OPTS} $(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm ${PARTNAME_OPT} -b ${TOP}.bit
+	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm ${PARTNAME_OPT} -b ${TOP}.bit
 
 clean:
 	$(EDALIZE_LAUNCHER) rm -rf *.log *.rpt *.place *.bit *.eblif *.fasm *.json *.ioplace *.net *.route

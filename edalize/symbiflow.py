@@ -61,11 +61,6 @@ class Symbiflow(Edatool):
                         "type": "String",
                         "desc": "Additional vpr tool options. If not used, default options for the tool will be used",
                     },
-                    {
-                        "name": "environment_script",
-                        "type": "String",
-                        "desc": "Optional bash script that will be sourced before each build step."
-                    },
                 ]
             }
 
@@ -150,13 +145,10 @@ class Symbiflow(Edatool):
                 placement_constraints = f.name
         vendor = self.tool_options.get("vendor", None)
 
-        environment_script = self.tool_options.get("environment_script", None)
-
         makefile_params = {
             "top" : self.name,
             "partname" : partname,
             "bitstream_device" : bitstream_device,
-            "environment_script": environment_script,
         }
 
         self.render_template("symbiflow-nextpnr-{}-makefile.j2".format(arch),
@@ -220,12 +212,6 @@ class Symbiflow(Edatool):
 
         vpr_options = self.tool_options.get("vpr_options", None)
 
-
-        # Optional script that will be sourced right before executing each build step in Makefile
-        # This script can for example setup enviroment variables or conda enviroment.
-        # This file needs to be a bash file
-        environment_script = self.tool_options.get('environment_script', None)
-
         makefile_params = {
             "top": self.toplevel,
             "sources": " ".join(file_list),
@@ -237,7 +223,6 @@ class Symbiflow(Edatool):
             "xdc": " ".join(placement_constraints),
             "vpr_options": vpr_options,
             "device_suffix": device_suffix,
-            "environment_script": environment_script,
             "toolchain_prefix": "symbiflow_",
             "vendor": vendor,
         }
