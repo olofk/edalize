@@ -2,7 +2,7 @@
 
 TARGET   := {{ name }}
 
-all: $(TARGET).{{ default_target }}
+all: $(TARGET).fasm
 
 {{ name }}.json: {{ name }}.mk
 	$(EDALIZE_LAUNCHER) $(MAKE) -f $<
