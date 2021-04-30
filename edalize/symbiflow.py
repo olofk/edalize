@@ -137,7 +137,7 @@ class Symbiflow(Edatool):
 
         chipdb = None
         device = None
-        constr = None
+        placement_constraints = []
 
         for f in src_files:
             if f.file_type in ["bba"]:
@@ -145,15 +145,15 @@ class Symbiflow(Edatool):
             elif f.file_type in ["device"]:
                 device = f.name
             elif f.file_type in ["xdc"]:
-                constr = f.name
+                placement_constraints.append(f.name)
             else:
                 continue
 
         if not chipdb:
             logger.error("Missing required chipdb file")
 
-        if not constr:
-            logger.error("Missing required XDC file")
+        if placement_constraints == []:
+            logger.error("Missing required XDC file(s)")
 
         if device is None and arch is "fpga_interchange":
             logger.error('Missing required ".device" file for "fpga_interchange" arch')
@@ -181,7 +181,7 @@ class Symbiflow(Edatool):
                 "arch"              : arch,
                 "chipdb"            : chipdb,
                 "device"            : device,
-                "constr"            : constr,
+                "constr"            : placement_constraints,
                 "name"              : self.name,
                 "package"           : package,
                 "family"            : family,
