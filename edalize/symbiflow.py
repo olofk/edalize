@@ -118,10 +118,6 @@ class Symbiflow(Edatool):
         if not package:
             logger.error('Missing required "package" parameter')
 
-        schema_dir = os.getenv("INTERCHANGE_SCHEMA_PATH")
-        if not schema_dir and arch is "fpga_interchange":
-            raise RuntimeError("Environment variable INTERCHANGE_SCHEMA_PATH was not found. It should be set to /path/to/fpga-interchange-schema/interchange directory for fpga_interchange variant.")
-
         part = self.tool_options.get("part")
         if not part:
             logger.error('Missing required "part" parameter')
@@ -185,7 +181,6 @@ class Symbiflow(Edatool):
                 "name"              : self.name,
                 "package"           : package,
                 "family"            : family,
-                "schema_dir"        : schema_dir,
                 "additional_options": nextpnr_options,
         }
 
