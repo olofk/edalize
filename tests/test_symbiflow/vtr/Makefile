@@ -13,9 +13,13 @@ TOOLCHAIN_PREFIX := symbiflow_
 PARTNAME_OPT = -p "xc7a35tcsg324-1csg324-1"
 
 VPR_OPTIONS_OPTS = --additional_vpr_options "--fake_option 1000"
+
 PCF_OPTS = -p ${PCF}
+PCF_FASM2BELS_OPTS = --pcf ${PCF}
 XDC_OPTS = -x ${XDC}
 SDC_OPTS = -s ${SDC}
+all: ${TOP}.bit
+
 all: ${TOP}.bit
 
 ${TOP}.eblif:
@@ -36,6 +40,6 @@ ${TOP}.fasm: ${TOP}.route
 ${TOP}.bit: ${TOP}.fasm
 	$(EDALIZE_LAUNCHER) ${TOOLCHAIN_PREFIX}write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm ${PARTNAME_OPT} -b ${TOP}.bit
 
-clean:
-	$(EDALIZE_LAUNCHER) rm -rf *.log *.rpt *.place *.bit *.eblif *.fasm *.json *.ioplace *.net *.route
 
+clean:
+	$(EDALIZE_LAUNCHER) rm -rf *.log *.rpt *.place *.bit* *.eblif *.fasm *.json *.ioplace *.net *.route design* *.txt *.ilang *.net* *.jou *.sdc *.v *.db

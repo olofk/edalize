@@ -13,5 +13,6 @@ ${NAME}.fasm: ${NAME}-nextpnr.mk
 ${NAME}.bit: ${NAME}.fasm
 	$(EDALIZE_LAUNCHER) symbiflow_write_bitstream -d ${BITSTREAM_DEVICE} -f ${NAME}.fasm -p ${PARTNAME} -b ${NAME}.bit
 
+
 clean:
-	$(EDALIZE_LAUNCHER) rm -rf *.bit* *.blif *.eblif *.fasm *.json *.dcp *.log *.rpt *.jou *.txt
+	$(EDALIZE_LAUNCHER) rm -rf *.bit* *.blif *.eblif *.fasm *.json *.dcp *.log *.rpt *.jou *.txt *.edif *.db *design
