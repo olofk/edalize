@@ -1,0 +1,1 @@
+ --top top_module   -D vlogdefine_bool=1   -D vlogdefine_int=42   -D vlogdefine_str=hello  --lint-only sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv  --top top_module   -D vlogdefine_bool=1   -D vlogdefine_int=42   -D vlogdefine_str=hello  --preprocess sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv
