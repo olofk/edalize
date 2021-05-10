@@ -128,7 +128,7 @@ class Symbiflow(Edatool):
                 target_family = family
                 break
 
-        if target_family is None and arch is "fpga_interchange":
+        if target_family is None and arch == "fpga_interchange":
             logger.error("Couldn't find family for part: {}. Available families: {}".format(part, ", ".join(getattr(self, "fpga_interchange_families"))))
 
         chipdb = None
@@ -151,7 +151,7 @@ class Symbiflow(Edatool):
         if placement_constraints == []:
             logger.error("Missing required XDC file(s)")
 
-        if device is None and arch is "fpga_interchange":
+        if device is None and arch == "fpga_interchange":
             logger.error('Missing required ".device" file for "fpga_interchange" arch')
 
         nextpnr_options = self.tool_options.get("nextpnr_options", "")
