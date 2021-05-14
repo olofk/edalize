@@ -6,6 +6,8 @@ import logging
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.surelog import Surelog
+from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +37,15 @@ class Yosys(Edatool):
                          'desc' : 'TCL template file to use instead of default template'},
                         ],
                     'lists' : [
+                        {'name' : 'yosys_read_options',
+                         'type' : 'String',
+                         'desc' : 'Addtional options for the read_* command (e.g. read_verlog or read_uhdm)'},
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
                          'desc' : 'Additional options for the synth command'},
+                        {'name' : 'surelog_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for the Surelog'},
                         ]}
 
     def configure_main(self):
@@ -47,19 +55,49 @@ class Yosys(Edatool):
 
         yosys_template = self.tool_options.get('yosys_template')
 
+        yosys_read_options = " ".join(self.tool_options.get('yosys_read_options', []))
         file_table = []
-        for f in src_files:
-            cmd = ""
-            if f.file_type.startswith('verilogSource'):
-                cmd = 'read_verilog'
-            elif f.file_type.startswith('systemVerilogSource'):
-                cmd = 'read_verilog -sv'
-            elif f.file_type == 'tclSource':
-                cmd = 'source'
-            else:
-                continue
+        yosys_synth_options = self.tool_options.get('yosys_synth_options', [])
 
-            file_table.append(cmd + ' {' + f.name + '}')
+        arch = self.tool_options.get('arch', None)
+        if not arch:
+            logger.error("ERROR: arch is not defined.")
+
+        use_surelog = False
+        if "frontend=surelog" in yosys_synth_options:
+            use_surelog = True
+            yosys_synth_options.remove("frontend=surelog")
+        if use_surelog:
+            surelog_edam = {
+                    'files'         : self.files,
+                    'name'          : self.name,
+                    'toplevel'      : self.toplevel,
+                    'parameters'    : self.parameters,
+                    'tool_options'  : {'surelog' : {
+                                            'surelog_options' : self.tool_options.get('surelog_options', []),
+                                            'arch'            : arch,
+                                            }
+                                    }
+                    }
+
+            surelog = getattr(import_module("edalize.surelog"), 'Surelog')(surelog_edam, self.work_root)
+            surelog.configure()
+            self.vlogparam.clear() # vlogparams are handled by Surelog
+            self.vlogdefine.clear() # vlogdefines are handled by Surelog
+            file_table.append('read_uhdm ' + yosys_read_options + ' {' + os.path.abspath(self.work_root + '/' + self.toplevel + '.uhdm') + '}')
+        else:
+            for f in src_files:
+                cmd = ""
+                if f.file_type.startswith('verilogSource'):
+                    cmd = 'read_verilog'
+                elif f.file_type.startswith('systemVerilogSource'):
+                    cmd = 'read_verilog -sv'
+                elif f.file_type == 'tclSource':
+                    cmd = 'source'
+                else:
+                    continue
+
+                file_table.append(cmd + ' ' + yosys_read_options + ' {' + f.name + '}')
 
         verilog_defines = []
         for key, value in self.vlogdefine.items():
@@ -75,10 +113,6 @@ class Yosys(Edatool):
                 self.toplevel))
 
         output_format = self.tool_options.get('output_format', 'blif')
-        arch = self.tool_options.get('arch', None)
-
-        if not arch:
-            logger.error("ERROR: arch is not defined.")
 
         makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
         template_vars = {
@@ -88,12 +122,13 @@ class Yosys(Edatool):
                 'incdirs'             : ' '.join(['-I'+d for d in incdirs]),
                 'top'                 : self.toplevel,
                 'synth_command'       : "synth_" + arch,
-                'synth_options'       : " ".join(self.tool_options.get('yosys_synth_options', '')),
+                'synth_options'       : " ".join(yosys_synth_options),
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
                 'yosys_template'      : yosys_template or 'edalize_yosys_template.tcl',
-                'name'                : self.name
+                'name'                : self.name,
+                'use_surelog'         : use_surelog,
         }
 
         self.render_template('edalize_yosys_procs.tcl.j2',
