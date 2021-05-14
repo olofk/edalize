@@ -24,6 +24,12 @@ class Trellis(Edatool):
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
                          'desc' : 'Additional options for the synth_ecp5 command'},
+                        {'name' : 'yosys_read_options',
+                         'type' : 'String',
+                         'desc' : 'Addtional options for the read_* command (e.g. read_verlog or read_uhdm)'},
+                        {'name' : 'surelog_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for the Surelog'},
                         ]}
 
             combined_members = []
@@ -40,9 +46,11 @@ class Trellis(Edatool):
 
     def configure_main(self):
         # Write yosys script file
-        (src_files, incdirs) = self._get_fileset_files()
-        yosys_synth_options = self.tool_options.get('yosys_synth_options', [])
-        yosys_synth_options = ["-nomux"] + yosys_synth_options
+        (src_files, incdirs)  = self._get_fileset_files()
+        yosys_synth_options   = self.tool_options.get('yosys_synth_options', [])
+        yosys_read_options    = self.tool_options.get('yosys_read_options', [])
+        yosys_synth_options   = ["-nomux"] + yosys_synth_options
+        surelog_options       = self.tool_options.get('surelog_options', [])
         yosys_edam = {
                 'files'         : self.files,
                 'name'          : self.name,
@@ -51,7 +59,9 @@ class Trellis(Edatool):
                 'tool_options'  : {'yosys' : {
                                         'arch' : 'ecp5',
                                         'yosys_synth_options' : yosys_synth_options,
+                                        'yosys_read_options' : yosys_read_options,
                                         'yosys_as_subtool' : True,
+                                        'surelog_options' : surelog_options,
                                         }
                                 }
                 }

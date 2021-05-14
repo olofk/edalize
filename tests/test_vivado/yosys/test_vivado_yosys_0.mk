@@ -4,12 +4,12 @@ TARGET   := test_vivado_yosys_0
 
 all: $(TARGET).edif
 
-
-%.blif: edalize_yosys_template.tcl
+DEPENDENCIES := edalize_yosys_template.tcl
+%.blif: ${DEPENDENCIES}
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
-%.json: edalize_yosys_template.tcl
+%.json: ${DEPENDENCIES}
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
-%.edif: edalize_yosys_template.tcl
+%.edif: ${DEPENDENCIES}
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl $?"
 
 clean:

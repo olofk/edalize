@@ -31,6 +31,12 @@ class Icestorm(Edatool):
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
                          'desc' : 'Additional options for the synth_ice40 command'},
+                        {'name' : 'yosys_read_options',
+                         'type' : 'String',
+                         'desc' : 'Addtional options for the read_* command (e.g. read_verlog or read_uhdm)'},
+                        {'name' : 'surelog_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for the Surelog'},
                         ]}
 
             combined_members = icestorm_help['members']
@@ -47,8 +53,11 @@ class Icestorm(Edatool):
 
     def configure_main(self):
         # Write yosys script file
-        (src_files, incdirs) = self._get_fileset_files()
-        yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
+        (src_files, incdirs)  = self._get_fileset_files()
+        yosys_synth_options   = self.tool_options.get('yosys_synth_options', [])
+        yosys_read_options    = self.tool_options.get('yosys_read_options', [])
+        yosys_synth_options   = ["-nomux"] + yosys_synth_options
+
         yosys_edam = {
                 'files'         : self.files,
                 'name'          : self.name,
@@ -57,8 +66,10 @@ class Icestorm(Edatool):
                 'tool_options'  : {'yosys' : {
                                         'arch' : 'ice40',
                                         'yosys_synth_options' : yosys_synth_options,
+                                        'yosys_read_options' : yosys_read_options,
                                         'yosys_as_subtool' : True,
                                         'yosys_template' : self.tool_options.get('yosys_template'),
+                                        'surelog_options' : surelog_options,
                                         }
                                 }
                 }

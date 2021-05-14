@@ -9,7 +9,7 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
-from edalize.yosys import Yosys
+from edalize.surelog import Surelog
 from importlib import import_module
 
 logger = logging.getLogger(__name__)
@@ -71,14 +71,26 @@ class Symbiflow(Edatool):
                         "type": "String",
                         "desc": "Additional options for Nextpnr tool. If not used, default options for the tool will be used",
                     },
+                    {
+                        "name" : "yosys_frontend",
+                        "type" : "String",
+                        "desc" : 'Select yosys frontend. Currently "uhdm" and "verilog" frontends are supported.'
+                    },
+                ],
+                'lists' : [
+                        {'name' : 'surelog_options',
+                         'type' : 'String',
+                         'desc' : 'List of options for surelog'},
                 ],
             }
 
             symbiflow_members = symbiflow_help["members"]
+            symbiflow_lists = symbiflow_help["lists"]
 
             return {
                 "description": "The Symbiflow backend executes Yosys sythesis tool and VPR/Nextpnr place and route. It can target multiple different FPGA vendors",
                 "members": symbiflow_members,
+                "lists": symbiflow_lists,
             }
 
     def get_version(self):
@@ -200,22 +212,44 @@ class Symbiflow(Edatool):
         if has_vhdl or has_vhdl2008:
             logger.error("VHDL files are not supported in Yosys")
         file_list = []
+        uhdm_list = []
         timing_constraints = []
         pins_constraints = []
         placement_constraints = []
         user_files = []
 
+        yosys_frontend = self.tool_options.get('yosys_frontend', "verilog")
+
         for f in src_files:
-            if f.file_type in ["verilogSource"]:
-                file_list.append(f.name)
-            if f.file_type in ["SDC"]:
-                timing_constraints.append(f.name)
-            if f.file_type in ["PCF"]:
-                pins_constraints.append(f.name)
-            if f.file_type in ["xdc"]:
-                placement_constraints.append(f.name)
-            if f.file_type in ["user"]:
-                user_files.append(f.name)
+                if f.file_type in ["SDC"]:
+                    timing_constraints.append(f.name)
+                if f.file_type in ["PCF"]:
+                    pins_constraints.append(f.name)
+                if f.file_type in ["xdc"]:
+                    placement_constraints.append(f.name)
+                if f.file_type in ["user"]:
+                    user_files.append(f.name)
+
+        if yosys_frontend in ["uhdm"]:
+            surelog_edam = {
+                    'files'         : self.files,
+                    'name'          : self.name,
+                    'toplevel'      : self.toplevel,
+                    'parameters'    : self.parameters,
+                    'tool_options'  : {'surelog' : {
+                                            'surelog_options' : self.tool_options.get('surelog_options', []),
+                                            }
+                                    }
+                    }
+
+            surelog = getattr(import_module("edalize.surelog"), 'Surelog')(surelog_edam, self.work_root)
+            surelog.configure()
+            self.vlogparam.clear() # vlogparams are handled by Surelog
+            uhdm_list.append(os.path.abspath(self.work_root + '/' + self.toplevel + '.uhdm'))
+        else:
+            for f in src_files:
+                if f.file_type in ["verilogSource", "systemVerilogSource"]:
+                    file_list.append(f.name)
 
         part = self.tool_options.get("part")
         package = self.tool_options.get("package")
@@ -248,9 +282,12 @@ class Symbiflow(Edatool):
 
         vpr_options = self.tool_options.get("vpr_options")
 
+        print(uhdm_list)
+
         makefile_params = {
             "top": self.toplevel,
             "sources": " ".join(file_list),
+            "uhdm": " ".join(uhdm_list),
             "partname": partname,
             "part": part,
             "bitstream_device": bitstream_device,
