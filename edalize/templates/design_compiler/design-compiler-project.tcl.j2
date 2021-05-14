@@ -1,0 +1,55 @@
+############################################
+#
+# Auto-generated project tcl file:
+#  * sets up variable
+#  * runs customized script
+#
+############################################
+sh date
+
+{% if toplevel -%}
+set TOP_MODULE {{ toplevel }}
+{%- endif %}
+
+{% if dc_script -%}
+set DC_SCRIPT {{ dc_script }}
+{% else %}
+set DC_SCRIPT dc_script.tcl
+{%- endif %}
+
+set READ_SOURCES {{ name }}-read-sources
+
+{% if script_dir -%}
+set SCRIPT_DIR {{ script_dir }}
+{% else %}
+set SCRIPT_DIR "./"
+{% endif %}
+
+{% if report_dir -%}
+set REPORT_DIR {{ report_dir }}
+sh mkdir -p ${REPORT_DIR}
+{% else %}
+set REPORT_DIR "./"
+{%- endif %}
+
+{% if target_library -%}
+set target_library {{ target_library }}
+{%- endif %}
+
+{% if libs -%}
+set link_library   [concat "*"  {{ libs }}]
+{%- endif %}
+
+############################################
+#
+# Run custom script
+#
+############################################
+source ${SCRIPT_DIR}/${DC_SCRIPT}
+
+############################################
+#
+#  all done -- exit
+#
+############################################
+sh date
