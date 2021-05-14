@@ -1,0 +1,8 @@
+SHELL=/bin/bash
+NAME := {{ name }}
+BITSTREAM := {{ bitstream }}
+PART := {{ part }}
+
+
+all:
+			cat $(NAME)-read-sources.tcl

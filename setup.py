@@ -46,6 +46,7 @@ setup(
         'templates/ghdl/Makefile.j2',
         'templates/openlane/openlane-makefile.j2',
         'templates/openlane/openlane-script-tcl.j2',
+         'templates/design_compiler/design-compiler-makefile.j2',
 
     ]},
     author = "Olof Kindgren",
