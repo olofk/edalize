@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class Openlane(Edatool):
 
-    argtypes = []
+    argtypes = ['vlogdefine']
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -31,10 +31,15 @@ class Openlane(Edatool):
             elif f.file_type == "tclSource":
                 tcl.append(f.name)
 
+        defines = ""
+        for k, v in self.vlogdefine.items():
+            defines += ' {}={}'.format(k,self._param_value_str(v))
+
         template_vars = {
             'top' : self.toplevel,
             'file_table' : ' '.join(files),
             'tcl' : '\n'.join(['source ' + f for f in tcl]),
+            'defines' : defines,
         }
 
         script_name = 'config.tcl'

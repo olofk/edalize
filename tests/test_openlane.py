@@ -3,7 +3,7 @@ import os
 
 def test_openlane(make_edalize_test):
     tool_options = {}
-    paramtypes   = []
+    paramtypes   = ['vlogdefine']
 
     tf = make_edalize_test('openlane',
                            tool_options=tool_options,
