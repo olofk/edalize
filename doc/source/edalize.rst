@@ -187,6 +187,14 @@ edalize.ise_reporting module
     :members:
     :undoc-members:
     :show-inheritance:
+    
+edalize.design_compiler module
+--------------------------------
+
+.. automodule:: edalize.design_compiler
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 Module contents
 ---------------
