@@ -4,7 +4,7 @@ VERILOG       := {{ sources }}
 SYSTEMVERILOG := {{ sv_sources }}
 TOP           := {{ top }}
 
-LIBRARY_COMMAND := -v $(shell yosys-config --datdir)/{{ arch }}/cells_bb.v
+LIBRARY_COMMAND := -v $(shell $(EDALIZE_LAUNCHER) yosys-config --datdir)/{{ arch }}/cells_bb.v
 
 {% if verilog_params_command -%}
 PARAMS_COMMAND = {{ verilog_params_command }}
@@ -25,5 +25,5 @@ SURELOG_OPTIONS = {{ surelog_options }}
 all: ${TOP}.uhdm
 
 ${TOP}.uhdm:
-	surelog ${SURELOG_OPTIONS} -parse ${LIBRARY_COMMAND} ${DEFINES_COMMAND} ${PARAMS_COMMAND} -top ${TOP} ${INCLUDE_COMMAND} ${VERILOG} ${SYSTEMVERILOG}
+	$(EDALIZE_LAUNCHER) surelog ${SURELOG_OPTIONS} -parse ${LIBRARY_COMMAND} ${DEFINES_COMMAND} ${PARAMS_COMMAND} -top ${TOP} ${INCLUDE_COMMAND} ${VERILOG} ${SYSTEMVERILOG}
 	cp slpp_all/surelog.uhdm ${TOP}.uhdm
