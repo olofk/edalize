@@ -28,6 +28,8 @@ setup(
         'templates/vivado/vivado-run.tcl.j2',
         'templates/vivado/vivado-run-yosys.tcl.j2',
         'templates/vivado/vivado-synth.tcl.j2',
+        'templates/verilator/verilator-makefile.j2',
+        'templates/verilator/verilator-config.j2',
         'templates/vunit/run.py.j2',
         'templates/quartus/quartus-project.tcl.j2',
         'templates/quartus/quartus-std-makefile.j2',
