@@ -81,6 +81,7 @@ class Yosys(Edatool):
             logger.error("ERROR: arch is not defined.")
 
         makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
+        template = yosys_template or 'edalize_yosys_template.tcl'
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
                 'verilog_params'      : "\n".join(verilog_params),
@@ -92,7 +93,7 @@ class Yosys(Edatool):
                 'write_command'       : "write_" + output_format,
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
-                'yosys_template'      : yosys_template or 'edalize_yosys_template.tcl',
+                'yosys_template'      : template,
                 'name'                : self.name
         }
 
@@ -106,7 +107,10 @@ class Yosys(Edatool):
                                  template_vars)
 
         makefile_name = self.name + '.mk' if part_of_toolchain else 'Makefile'
-        self.render_template('yosys-makefile.j2',
-                             makefile_name,
-                             template_vars)
 
+        commands = self.EdaCommands()
+        commands.add(['yosys', '-l', 'yosys.log', '-p', f'"tcl {template}"'],
+                         [f'{self.name}.{output}' for output in ['blif', 'json','edif']],
+                         [template])
+        commands.set_default_target(f'{self.name}.{output_format}')
+        commands.write(os.path.join(self.work_root, makefile_name))

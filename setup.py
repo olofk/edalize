@@ -14,7 +14,6 @@ setup(
     packages=['edalize'],
     package_data = {'edalize' : [
         'templates/yosys/edalize_yosys_procs.tcl.j2',
-        'templates/yosys/yosys-makefile.j2',
         'templates/yosys/yosys-script-tcl.j2',
         'templates/icestorm/icestorm-makefile.j2',
         'templates/spyglass/Makefile.j2',
