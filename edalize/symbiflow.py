@@ -246,23 +246,60 @@ class Symbiflow(Edatool):
             device_suffix = "wlcsp"
             bitstream_device = part + "_" + device_suffix
 
-        vpr_options = self.tool_options.get("vpr_options")
+        _vo = self.tool_options.get("vpr_options")
+        vpr_options = ['--additional_vpr_options', f'"{_vo}"'] if _vo else []
+        pcf_opts = ['-p']+pins_constraints if pins_constraints else []
+        sdc_opts = ['-s']+timing_constraints if timing_constraints else []
+        xdc_opts = ['-x']+placement_constraints if placement_constraints else []
 
-        makefile_params = {
-            "top": self.toplevel,
-            "sources": " ".join(file_list),
-            "partname": partname,
-            "part": part,
-            "bitstream_device": bitstream_device,
-            "sdc": " ".join(timing_constraints),
-            "pcf": " ".join(pins_constraints),
-            "xdc": " ".join(placement_constraints),
-            "vpr_options": vpr_options,
-            "device_suffix": device_suffix,
-            "toolchain_prefix": "symbiflow_",
-            "vendor": vendor,
-        }
-        self.render_template("symbiflow-vpr-makefile.j2", "Makefile", makefile_params)
+        commands = self.EdaCommands()
+        #Synthesis
+        targets = self.toplevel+'.eblif'
+        command = ['symbiflow_synth', '-t', self.toplevel]
+        command += ['-v'] + file_list
+        command += ['-d', bitstream_device]
+        command += ['-p' if vendor == 'xilinx' else '-P', partname]
+        command += xdc_opts
+        commands.add(command, [targets], [])
+
+        #P&R
+        eblif_opt = ['-e', self.toplevel+'.eblif']
+        device_opt = ['-d', part+'_'+device_suffix]
+
+        depends = self.toplevel+'.eblif'
+        targets = self.toplevel+'.net'
+        command = ['symbiflow_pack'] + eblif_opt + device_opt + sdc_opts + vpr_options
+        commands.add(command, [targets], [depends])
+
+        depends = self.toplevel+'.net'
+        targets = self.toplevel+'.place'
+        command = ['symbiflow_place'] + eblif_opt + device_opt
+        command += ['-n', depends, '-P', partname]
+        command += sdc_opts + pcf_opts + vpr_options
+        commands.add(command, [targets], [depends])
+
+        depends = self.toplevel+'.place'
+        targets = self.toplevel+'.route'
+        command = ['symbiflow_route'] + eblif_opt + device_opt
+        command += sdc_opts + vpr_options
+        commands.add(command, [targets], [depends])
+
+        depends = self.toplevel+'.route'
+        targets = self.toplevel+'.fasm'
+        command = ['symbiflow_write_fasm'] + eblif_opt + device_opt
+        command += sdc_opts + vpr_options
+        commands.add(command, [targets], [depends])
+
+        depends = self.toplevel+'.fasm'
+        targets = self.toplevel+'.bit'
+        command = ['symbiflow_write_bitstream'] + ['-d', bitstream_device]
+        command += ['-f', depends]
+        command += ['-p' if vendor == 'xilinx' else '-P', partname]
+        command += ['-b', targets]
+        commands.add(command, [targets], [depends])
+
+        commands.set_default_target(targets)
+        commands.write(os.path.join(self.work_root, 'Makefile'))
 
     def configure_main(self):
         if self.tool_options.get("pnr") == "nextpnr":

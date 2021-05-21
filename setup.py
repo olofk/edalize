@@ -33,7 +33,6 @@ setup(
         'templates/trellis/trellis-makefile.j2',
         'templates/ascentlint/Makefile.j2',
         'templates/ascentlint/run-ascentlint.tcl.j2',
-        'templates/symbiflow/symbiflow-vpr-makefile.j2',
         'templates/symbiflow/symbiflow-nextpnr-xilinx-makefile.j2',
         'templates/symbiflow/symbiflow-nextpnr-fpga_interchange-makefile.j2',
         'templates/symbiflow/nextpnr-xilinx-makefile.j2',
