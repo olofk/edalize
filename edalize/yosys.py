@@ -43,7 +43,6 @@ class Yosys(Edatool):
     def configure_main(self):
         # write Yosys tcl script file
         (src_files, incdirs) = self._get_fileset_files()
-        part_of_toolchain = self.tool_options.get('yosys_as_subtool', False)
 
         yosys_template = self.tool_options.get('yosys_template')
 
@@ -106,11 +105,17 @@ class Yosys(Edatool):
                                  'edalize_yosys_template.tcl',
                                  template_vars)
 
-        makefile_name = self.name + '.mk' if part_of_toolchain else 'Makefile'
-
         commands = self.EdaCommands()
         commands.add(['yosys', '-l', 'yosys.log', '-p', f'"tcl {template}"'],
                          [f'{self.name}.{output}' for output in ['blif', 'json','edif']],
                          [template])
-        commands.set_default_target(f'{self.name}.{output_format}')
-        commands.write(os.path.join(self.work_root, makefile_name))
+        if self.tool_options.get('yosys_as_subtool'):
+            self.commands = commands.commands
+
+            #For backwards compatiblity until all yosys users migrated from makefile templates
+            commands.set_default_target(f'{self.name}.{output_format}')
+            commands.write(os.path.join(self.work_root, makefile_name))
+
+        else:
+            commands.set_default_target(f'{self.name}.{output_format}')
+            commands.write(os.path.join(self.work_root, 'Makefile'))

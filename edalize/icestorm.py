@@ -84,18 +84,55 @@ class Icestorm(Edatool):
         part = self.tool_options.get('part', None)
         if not pnr in ['arachne', 'next', 'none']:
             raise RuntimeError("Invalid pnr option '{}'. Valid values are 'arachne' for Arachne-pnr, 'next' for nextpnr or 'none' to only perform synthesis".format(pnr))
+
         # Write Makefile
-        arachne_pnr_options = self.tool_options.get('arachne_pnr_options', [])
-        nextpnr_options     = self.tool_options.get('nextpnr_options', [])
-        template_vars = {
-            'name'                : self.name,
-            'pcf_file'            : pcf_files[0],
-            'pnr'                 : pnr,
-            'arachne_pnr_options' : arachne_pnr_options,
-            'nextpnr_options'     : nextpnr_options,
-            'default_target'      : 'json' if pnr == 'none' else 'bin',
-            'device'              : part,
-        }
-        self.render_template('icestorm-makefile.j2',
-                             'Makefile',
-                             template_vars)
+        commands = self.EdaCommands()
+        commands.commands = yosys.commands
+
+        if pnr == 'arachne':
+            depends = self.name+'.blif'
+            targets = self.name+'.asc'
+            command = ['arachne-pnr']
+            command += self.tool_options.get('arachne_pnr_options', [])
+            command += ['-p', depends, '-o', targets]
+            commands.add(command, [depends], [targets])
+            set_default_target(self.name+'.bin')
+        elif pnr == 'next':
+            depends = self.name+'.json'
+            targets = self.name+'.asc'
+            command = ['nextpnr-ice40', '-l', 'next.log']
+            command += self.tool_options.get('nextpnr_options', [])
+            command += ['--pcf' , pcf_files[0]]
+            command += ['--json', depends]
+            command += ['--asc' , targets]
+            #CLI target
+            commands.add(command, [targets], [depends])
+
+            #GUI target
+            commands.add(command+['--gui'], ["build-gui"], [depends])
+
+            commands.set_default_target(self.name+'.bin')
+        else:
+            commands.set_default_target(self.name+'.json')
+
+        #Image generation
+        depends = self.name+'.asc'
+        targets = self.name+'.bin'
+        command = ['icepack', depends, targets]
+        commands.add(command, [targets], [depends])
+
+        #Timing analysis
+        depends = self.name+'.asc'
+        targets = self.name+'.tim'
+        command = ['icetime', '-tmd', part or '', depends, targets]
+        commands.add(command, [targets], [depends])
+        commands.add([], ["timing"], [targets])
+
+        #Statistics
+        depends = self.name+'.asc'
+        targets = self.name+'.stat'
+        command = ['icebox_stat', depends, targets]
+        commands.add(command, [targets], [depends])
+        commands.add([], ["stats"], [targets])
+
+        commands.write(os.path.join(self.work_root, 'Makefile'))
