@@ -166,30 +166,63 @@ class Symbiflow(Edatool):
         if "xc7k" in part:
             bitstream_device = "kintex7"
 
-        nextpnr_makefile_name = self.name + "-nextpnr.mk"
-        makefile_params = {
-            "top" : self.name,
-            "partname" : partname,
-            "bitstream_device" : bitstream_device,
-        }
-        nextpnr_makefile_vars = {
-                "toplevel"          : self.toplevel,
-                "arch"              : arch,
-                "chipdb"            : chipdb,
-                "device"            : device,
-                "constr"            : placement_constraints,
-                "name"              : self.name,
-                "package"           : package,
-                "family"            : family,
-                "additional_options": nextpnr_options,
-        }
+        depends = self.name+'.json'
+        xdcs = []
+        for x in placement_constraints:
+            xdcs += ['--xdc', x]
 
-        self.render_template("symbiflow-nextpnr-{}-makefile.j2".format(arch),
-                             "Makefile",
-                             makefile_params)
-        self.render_template("nextpnr-{}-makefile.j2".format(arch),
-                             nextpnr_makefile_name,
-                             nextpnr_makefile_vars)
+        commands = self.EdaCommands()
+        commands.commands = yosys.commands
+        if arch == "fpga_interchange":
+            commands.header += """ifndef INTERCHANGE_SCHEMA_PATH
+$(error Environment variable INTERCHANGE_SCHEMA_PATH was not found. It should be set to <fpga-interchange-schema path>/interchange)
+endif
+
+"""
+            targets = self.name+'.netlist'
+            command = ['python', '-m', 'fpga_interchange.yosys_json']
+            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
+            command += ['--device', device]
+            command += ['--top', self.toplevel]
+            command += [depends, targets]
+            commands.add(command, [targets], [depends])
+
+            depends = self.name+'.netlist'
+            targets = self.name+'.phys'
+            command = ['nextpnr-'+arch, '--chipdb', chipdb]
+            command += ['--package', package]
+            command += xdcs
+            command += ['--netlist', depends]
+            command += ['--write', self.name+'.routed.json']
+            command += ['--phys', targets]
+            command += [nextpnr_options]
+            commands.add(command, [targets], [depends])
+
+            depends = self.name+'.phys'
+            targets = self.name+'.fasm'
+            command = ['python', '-m', 'fpga_interchange.fasm_generator']
+            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
+            command += ['--family', family, device, self.name+'.netlist', depends, targets]
+            commands.add(command, [targets], [depends])
+        else:
+            targets = self.name+'.fasm'
+            command = ['nextpnr-'+arch, '--chipdb', chipdb]
+            command += xdcs
+            command += ['--json', depends]
+            command += ['--write', self.name+'.routed.json']
+            command += ['--fasm', targets]
+            command += ['--log', 'nextpnr.log']
+            command += [nextpnr_options]
+            commands.add(command, [targets], [depends])
+
+        depends = self.name+'.fasm'
+        targets = self.name+'.bit'
+        command = ['symbiflow_write_bitstream', '-d', bitstream_device]
+        command += ['-f', depends, '-p', partname, '-b', targets]
+        commands.add(command, [targets], [depends])
+
+        commands.set_default_target(targets)
+        commands.write(os.path.join(self.work_root, 'Makefile'))
 
     def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
@@ -203,7 +236,6 @@ class Symbiflow(Edatool):
         timing_constraints = []
         pins_constraints = []
         placement_constraints = []
-        user_files = []
 
         for f in src_files:
             if f.file_type in ["verilogSource"]:
@@ -214,8 +246,6 @@ class Symbiflow(Edatool):
                 pins_constraints.append(f.name)
             if f.file_type in ["xdc"]:
                 placement_constraints.append(f.name)
-            if f.file_type in ["user"]:
-                user_files.append(f.name)
 
         part = self.tool_options.get("part")
         package = self.tool_options.get("package")

@@ -61,8 +61,6 @@ def test_symbiflow_nextpnr_xilinx(make_edalize_test):
     config_files = [
         "edalize_yosys_procs.tcl",
         "edalize_yosys_template.tcl",
-        "{}.mk".format(test_name),
-        "{}-nextpnr.mk".format(test_name),
     ]
 
     run_symbiflow_test(tf, config_files)
@@ -96,8 +94,6 @@ def test_symbiflow_nextpnr_fpga_interchange(make_edalize_test):
     config_files = [
         "edalize_yosys_procs.tcl",
         "edalize_yosys_template.tcl",
-        "{}.mk".format(test_name),
-        "{}-nextpnr.mk".format(test_name),
     ]
 
     orig_env = os.environ.copy()
