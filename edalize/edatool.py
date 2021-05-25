@@ -165,6 +165,13 @@ class Edatool(object):
         else:
             logger.warning("Invalid API version '{}' for get_tool_options".format(api_ver))
 
+    @classmethod
+    def _extend_options(cls, options, other_class):
+        help = other_class.get_doc(0)
+
+        options['members'].extend(m for m in help['members'] if m['name'] not in [i['name'] for i in options['members']])
+        options['lists'].extend(m for m in help['lists'] if m['name'] not in [i['name'] for i in options['lists']])
+
     def configure(self, args=[]):
         if args:
             logger.error("Edalize has stopped supporting passing arguments as a function argument. Set these values as default values in the EDAM object instead")
