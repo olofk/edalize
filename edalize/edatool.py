@@ -355,6 +355,16 @@ class Edatool(object):
         with open(file_path, 'w') as f:
             f.write(template.render(template_vars))
 
+    def _add_include_dir(self, f, incdirs, force_slash=False):
+        if f.get('is_include_file'):
+            _incdir = f.get('include_path') or os.path.dirname(f['name']) or '.'
+            if force_slash:
+                _incdir = _incdir.replace('\\', '/')
+            if not _incdir in incdirs:
+                incdirs.append(_incdir)
+            return True
+        return False
+
     def _get_fileset_files(self, force_slash=False):
         class File:
             def __init__(self, name, file_type, logical_name):
@@ -364,13 +374,7 @@ class Edatool(object):
         incdirs = []
         src_files = []
         for f in self.files:
-            if 'is_include_file' in f and f['is_include_file']:
-                _incdir = f.get('include_path') or os.path.dirname(f['name']) or '.'
-                if force_slash:
-                    _incdir = _incdir.replace('\\', '/')
-                if not _incdir in incdirs:
-                    incdirs.append(_incdir)
-            else:
+            if not self._add_include_dir(f, incdirs, force_slash):
                 _name = f['name']
                 if force_slash:
                     _name = _name.replace('\\', '/')
