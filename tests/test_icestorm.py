@@ -44,8 +44,6 @@ def test_icestorm_no_pcf(make_edalize_test):
                            files=[])
 
     tf.backend.configure()
-    assert os.path.exists(os.path.join(tf.work_root, 'empty.pcf'))
-
 
 def test_icestorm_multiple_pcf(make_edalize_test):
     files = [{'name': 'pcf_file.pcf', 'file_type': 'PCF'},
@@ -56,7 +54,7 @@ def test_icestorm_multiple_pcf(make_edalize_test):
 
     with pytest.raises(RuntimeError) as e:
         tf.backend.configure()
-    assert "Icestorm backend supports only one PCF file. Found pcf_file.pcf, pcf_file2.pcf" in str(e.value)
+    assert "Nextpnr only support one PCF file. Found pcf_file.pcf and pcf_file2.pcf" in str(e.value)
 
 
 def test_icestorm_nextpnr(make_edalize_test):

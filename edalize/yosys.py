@@ -65,6 +65,13 @@ class Yosys(Edatool):
                 unused_files.append(f)
 
         self.edam['files'] = unused_files
+        of = [
+            {'name' : self.name+'.blif', 'file_type' : 'blif'},
+            {'name' : self.name+'.edif', 'file_type' : 'edif'},
+            {'name' : self.name+'.json', 'file_type' : 'jsonNetlist'},
+        ]
+        self.edam['files'] += of
+
         verilog_defines = []
         for key, value in self.vlogdefine.items():
             verilog_defines.append('{{{key} {value}}}'.format(key=key, value=value))

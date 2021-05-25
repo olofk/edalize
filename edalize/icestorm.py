@@ -5,8 +5,8 @@
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.nextpnr import Nextpnr
 from edalize.yosys import Yosys
-from importlib import import_module
 
 class Icestorm(Edatool):
 
@@ -25,11 +25,9 @@ class Icestorm(Edatool):
                     {'name' : 'arachne_pnr_options',
                      'type' : 'String',
                      'desc' : 'Additional options for Arachnhe PNR'},
-                    {'name' : 'nextpnr_options',
-                     'type' : 'String',
-                     'desc' : 'Additional options for nextpnr'},
                 ]}
             Edatool._extend_options(options, Yosys)
+            Edatool._extend_options(options, Nextpnr)
 
             return {'description' : "Open source toolchain for Lattice iCE40 FPGAs. Uses yosys for synthesis and arachne-pnr or nextpnr for Place & Route",
                     'members' : options['members'],
@@ -37,38 +35,22 @@ class Icestorm(Edatool):
 
     def configure_main(self):
         # Write yosys script file
-        (src_files, incdirs) = self._get_fileset_files()
         yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
-        yosys_edam = {
-                'files'         : self.files,
-                'name'          : self.name,
-                'toplevel'      : self.toplevel,
-                'parameters'    : self.parameters,
-                'tool_options'  : {'yosys' : {
-                                        'arch' : 'ice40',
-                                        'yosys_synth_options' : yosys_synth_options,
-                                        'yosys_as_subtool' : True,
-                                        'yosys_template' : self.tool_options.get('yosys_template'),
-                                        }
-                                }
-                }
 
-        yosys = getattr(import_module("edalize.yosys"), 'Yosys')(yosys_edam, self.work_root)
+        #Pass icestorm tool options to yosys and nextpnr
+        self.edam['tool_options'] = \
+            {'yosys' : {
+                'arch' : 'ice40',
+                'yosys_synth_options' : yosys_synth_options,
+                'yosys_as_subtool' : True,
+                'yosys_template' : self.tool_options.get('yosys_template'),
+            },
+             'nextpnr' : {
+                 'nextpnr_options' : self.tool_options.get('nextpnr_options', [])
+             },
+             }
+        yosys = Yosys(self.edam, self.work_root)
         yosys.configure()
-
-        pcf_files = []
-        for f in src_files:
-            if f.file_type == 'PCF':
-                pcf_files.append(f.name)
-            elif f.file_type == 'user':
-                pass
-
-        if not pcf_files:
-            pcf_files = ['empty.pcf']
-            with open(os.path.join(self.work_root, pcf_files[0]), 'a'):
-                os.utime(os.path.join(self.work_root, pcf_files[0]), None)
-        elif len(pcf_files) > 1:
-            raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
 
         pnr = self.tool_options.get('pnr', 'next')
         part = self.tool_options.get('part', None)
@@ -88,19 +70,10 @@ class Icestorm(Edatool):
             commands.add(command, [depends], [targets])
             set_default_target(self.name+'.bin')
         elif pnr == 'next':
-            depends = self.name+'.json'
-            targets = self.name+'.asc'
-            command = ['nextpnr-ice40', '-l', 'next.log']
-            command += self.tool_options.get('nextpnr_options', [])
-            command += ['--pcf' , pcf_files[0]]
-            command += ['--json', depends]
-            command += ['--asc' , targets]
-            #CLI target
-            commands.add(command, [targets], [depends])
-
-            #GUI target
-            commands.add(command+['--gui'], ["build-gui"], [depends])
-
+            nextpnr = Nextpnr(yosys.edam, self.work_root)
+            nextpnr.flow_config = {'arch' : 'ice40'}
+            nextpnr.configure()
+            commands.commands += nextpnr.commands
             commands.set_default_target(self.name+'.bin')
         else:
             commands.set_default_target(self.name+'.json')
