@@ -1,0 +1,1 @@
+-l next.log a few nextpnr_options --lpf lpf_file.lpf --json test_trellis_0.json --textcfg test_trellis_0.config

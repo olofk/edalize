@@ -1,0 +1,1 @@
+-l next.log --json test_trellis_0.json --textcfg test_trellis_0.config

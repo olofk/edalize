@@ -30,7 +30,6 @@ setup(
         'templates/quartus/quartus-project.tcl.j2',
         'templates/quartus/quartus-std-makefile.j2',
         'templates/quartus/quartus-pro-makefile.j2',
-        'templates/trellis/trellis-makefile.j2',
         'templates/ascentlint/Makefile.j2',
         'templates/ascentlint/run-ascentlint.tcl.j2',
         'templates/libero/libero-project.tcl.j2',

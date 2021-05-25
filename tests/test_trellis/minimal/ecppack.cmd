@@ -1,0 +1,1 @@
+--svf test_trellis_0.svf test_trellis_0.config test_trellis_0.bit
