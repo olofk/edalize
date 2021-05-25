@@ -110,6 +110,7 @@ class Edatool(object):
 
         if not edam:
             edam = eda_api
+        self.edam = edam
         try:
             self.name = edam['name']
         except KeyError:

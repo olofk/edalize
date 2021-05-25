@@ -42,24 +42,29 @@ class Yosys(Edatool):
 
     def configure_main(self):
         # write Yosys tcl script file
-        (src_files, incdirs) = self._get_fileset_files()
 
         yosys_template = self.tool_options.get('yosys_template')
 
+        incdirs = []
         file_table = []
-        for f in src_files:
+        unused_files = []
+
+        for f in self.files:
             cmd = ""
-            if f.file_type.startswith('verilogSource'):
+            if f['file_type'].startswith('verilogSource'):
                 cmd = 'read_verilog'
-            elif f.file_type.startswith('systemVerilogSource'):
+            elif f['file_type'].startswith('systemVerilogSource'):
                 cmd = 'read_verilog -sv'
-            elif f.file_type == 'tclSource':
+            elif f['file_type'] == 'tclSource':
                 cmd = 'source'
+
+            if cmd:
+                if not self._add_include_dir(f, incdirs):
+                    file_table.append(cmd + ' {' + f['name'] + '}')
             else:
-                continue
+                unused_files.append(f)
 
-            file_table.append(cmd + ' {' + f.name + '}')
-
+        self.edam['files'] = unused_files
         verilog_defines = []
         for key, value in self.vlogdefine.items():
             verilog_defines.append('{{{key} {value}}}'.format(key=key, value=value))
