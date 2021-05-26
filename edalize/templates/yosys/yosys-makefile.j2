@@ -9,6 +9,11 @@ all: $(TARGET).{{ default_target }}
 	$(MAKE) -f surelog.mk
 
 DEPENDENCIES := {{ top }}.uhdm {{ yosys_template }}
+{% elif use_sv2v -%}
+{{ sv_to_verilog }}:
+	$(MAKE) -f sv2v.mk
+
+DEPENDENCIES := {{ sv_to_verilog }} {{ yosys_template }}
 {% else %}
 DEPENDENCIES := {{ yosys_template }}
 {%- endif %}

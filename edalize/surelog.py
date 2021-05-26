@@ -13,6 +13,11 @@ class Surelog(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {'description' : "Surelog",
+                    'members' : [
+                        {'name' : 'arch',
+                         'type' : 'String',
+                         'desc' : 'Target architecture. Legal values are *xilinx*, *ice40* and *ecp5*'}
+                        ],
                     'lists' : [
                         {'name' : 'surelog_options',
                          'type' : 'String',

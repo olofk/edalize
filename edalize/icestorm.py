@@ -34,9 +34,9 @@ class Icestorm(Edatool):
                         {'name' : 'yosys_read_options',
                          'type' : 'String',
                          'desc' : 'Addtional options for the read_* command (e.g. read_verlog or read_uhdm)'},
-                        {'name' : 'surelog_options',
+                        {'name' : 'frontend_options',
                          'type' : 'String',
-                         'desc' : 'Additional options for the Surelog'},
+                         'desc' : 'Additional options for the Yosys frontend'},
                         ]}
 
             combined_members = icestorm_help['members']
@@ -57,7 +57,7 @@ class Icestorm(Edatool):
         yosys_synth_options   = self.tool_options.get('yosys_synth_options', [])
         yosys_read_options    = self.tool_options.get('yosys_read_options', [])
         yosys_synth_options   = ["-nomux"] + yosys_synth_options
-
+        frontend_options      = self.tool_options.get('frontedn_options',[])
         yosys_edam = {
                 'files'         : self.files,
                 'name'          : self.name,
@@ -69,7 +69,7 @@ class Icestorm(Edatool):
                                         'yosys_read_options' : yosys_read_options,
                                         'yosys_as_subtool' : True,
                                         'yosys_template' : self.tool_options.get('yosys_template'),
-                                        'surelog_options' : surelog_options,
+                                        'frontend_options' : frontend_options,
                                         }
                                 }
                 }

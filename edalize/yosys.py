@@ -43,9 +43,9 @@ class Yosys(Edatool):
                         {'name' : 'yosys_synth_options',
                          'type' : 'String',
                          'desc' : 'Additional options for the synth command'},
-                        {'name' : 'surelog_options',
+                        {'name' : 'frontend_options',
                          'type' : 'String',
-                         'desc' : 'Additional options for the Surelog'},
+                         'desc' : 'Additional options for the Yosys frontend'},
                         ]}
 
     def configure_main(self):
@@ -64,9 +64,14 @@ class Yosys(Edatool):
             logger.error("ERROR: arch is not defined.")
 
         use_surelog = False
+        use_sv2v = False
+        sv_to_verilog = []
         if "frontend=surelog" in yosys_synth_options:
             use_surelog = True
             yosys_synth_options.remove("frontend=surelog")
+        if "frontend=sv2v" in yosys_synth_options:
+            use_sv2v = True
+            yosys_synth_options.remove("frontend=sv2v")
         if use_surelog:
             surelog_edam = {
                     'files'         : self.files,
@@ -74,7 +79,7 @@ class Yosys(Edatool):
                     'toplevel'      : self.toplevel,
                     'parameters'    : self.parameters,
                     'tool_options'  : {'surelog' : {
-                                            'surelog_options' : self.tool_options.get('surelog_options', []),
+                                            'surelog_options' : self.tool_options.get('frontend_options', []),
                                             'arch'            : arch,
                                             }
                                     }
@@ -85,6 +90,30 @@ class Yosys(Edatool):
             self.vlogparam.clear() # vlogparams are handled by Surelog
             self.vlogdefine.clear() # vlogdefines are handled by Surelog
             file_table.append('read_uhdm ' + yosys_read_options + ' {' + os.path.abspath(self.work_root + '/' + self.toplevel + '.uhdm') + '}')
+        elif use_sv2v:
+            sv2v_edam = {
+                    'files'         : self.files,
+                    'name'          : self.name,
+                    'parameters'    : self.parameters,
+                    'tool_options'  : {'sv2v' : {
+                                            'sv2v_options' : self.tool_options.get('frontend_options', []),
+                                            }
+                                    }
+                    }
+            sv2v = getattr(import_module("edalize.sv2v"), 'Sv2v')(sv2v_edam, self.work_root)
+            sv2v.configure()
+            for f in src_files:
+                cmd = ""
+                if f.file_type.startswith('verilogSource') or f.file_type.startswith('systemVerilogSource'):
+                    cmd = 'read_verilog'
+                elif f.file_type == 'tclSource':
+                    cmd = 'source'
+                else:
+                    continue
+                if f.file_type.startswith('systemVerilogSource'):
+                    sv_to_verilog += [os.path.splitext(f.name)[0] + ".v"]
+
+                file_table.append(cmd + ' ' + yosys_read_options + ' {' + os.path.splitext(f.name)[0] + ".v" + '}')
         else:
             for f in src_files:
                 cmd = ""
@@ -129,6 +158,8 @@ class Yosys(Edatool):
                 'yosys_template'      : yosys_template or 'edalize_yosys_template.tcl',
                 'name'                : self.name,
                 'use_surelog'         : use_surelog,
+                'use_sv2v'            : use_sv2v,
+                'sv_to_verilog'       : ' '.join(sv_to_verilog),
         }
 
         self.render_template('edalize_yosys_procs.tcl.j2',

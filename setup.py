@@ -49,6 +49,7 @@ setup(
         'templates/openlane/openlane-makefile.j2',
         'templates/openlane/openlane-script-tcl.j2',
         'templates/surelog/surelog-makefile.j2',
+        'templates/sv2v/sv2v-makefile.j2',
     ]},
     author = "Olof Kindgren",
     author_email = "olof.kindgren@gmail.com",

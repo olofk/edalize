@@ -66,9 +66,9 @@ class Vivado(Edatool):
                         {'name' : 'yosys_read_options',
                          'type' : 'String',
                          'desc' : 'Additional options for the Yosys\' read command'},
-                        {'name' : 'surelog_options',
+                        {'name' : 'frontend_options',
                          'type' : 'String',
-                         'desc' : 'Additional options for the Surelog'},
+                         'desc' : 'Additional options for the Yosys frontend'},
                     ]}
 
     """ Get tool version
@@ -124,7 +124,7 @@ class Vivado(Edatool):
                                             'yosys_read_options' : yosys_read_options,
                                             'yosys_as_subtool' : True,
                                             'script_name'   : 'yosys.tcl',
-                                            'surelog_options' : self.tool_options.get('surelog_options', []),
+                                            'frontend_options' : self.tool_options.get('frontend_options', []),
                                             }
                                     }
                     }
