@@ -20,11 +20,16 @@ class Nextpnr(Edatool):
                         ]}
 
     def configure_main(self):
+        cst_file = ""
         lpf_file = ""
         pcf_file = ""
         netlist = ""
         unused_files = []
         for f in self.files:
+            if f['file_type'] == 'CST':
+                if cst_file:
+                    raise RuntimeError("Nextpnr only supports one CST file. Found {} and {}".format(cst_file, f['name']))
+                cst_file = f['name']
             if f['file_type'] == 'LPF':
                 if lpf_file:
                     raise RuntimeError("Nextpnr only supports one LPF file. Found {} and {}".format(pcf_file, f['name']))
@@ -50,10 +55,19 @@ class Nextpnr(Edatool):
         commands = self.EdaCommands()
 
         arch = self.flow_config['arch']
+        arch_options = []
         if arch == 'ecp5':
             targets = self.name+'.config'
             constraints = ['--lpf' , lpf_file] if lpf_file else []
             output = ['--textcfg' , targets]
+        elif arch == 'gowin':
+            device = self.tool_options.get('device')
+            if not device:
+                raise RuntimeError("Missing required option 'device' for nextpnr-gowin")
+            arch_options += ['--device', device]
+            targets = self.name+'.pack'
+            constraints = ['--cst' , cst_file] if cst_file else []
+            output = ['--write' , targets]
         else:
             targets = self.name+'.asc'
             constraints = ['--pcf' , pcf_file] if pcf_file else []
@@ -61,7 +75,7 @@ class Nextpnr(Edatool):
 
         depends = netlist
         command = ['nextpnr-'+ arch, '-l', 'next.log']
-        command += self.tool_options.get('nextpnr_options', [])
+        command += arch_options + self.tool_options.get('nextpnr_options', [])
         command += constraints + ['--json', depends] + output
 
         #CLI target

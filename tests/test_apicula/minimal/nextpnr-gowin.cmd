@@ -1,0 +1,1 @@
+-l next.log --device GW1N-LV1QN48C6/I5 --json test_apicula_0.json --write test_apicula_0.pack
