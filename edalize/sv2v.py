@@ -26,13 +26,16 @@ class Sv2v(Edatool):
             if f.file_type.startswith('systemVerilogSource'):
                 systemverilog_file_list.append(f.name)
 
+        pattern = len(self.vlogdefine.keys()) * "-D%s=%%s "
+        verilog_defines_command = pattern % tuple(self.vlogdefine.keys()) % tuple(self.vlogdefine.values())
+
         sv2v_options = self.tool_options.get('sv2v_options', [])
 
         template_vars = {
                 'name'                      : self.name,
                 'sv_sources'                : ' '.join(systemverilog_file_list),
                 'incdirs'                   : ' '.join(['--incdir='+d for d in incdirs]),
-                'sv2v_options'              : ' '.join(sv2v_options),
+                'sv2v_options'              : ' '.join(sv2v_options) + " " + verilog_defines_command,
         }
 
 
