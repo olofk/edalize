@@ -10,7 +10,6 @@ import subprocess
 
 from edalize.edatool import Edatool
 from edalize.yosys import Yosys
-from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +33,6 @@ class Vivado(Edatool):
         if api_ver == 0:
             return {'description' : "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA",
                     'members' : [
-                        {'name' : 'vivado-settings',
-                         'type' : 'String',
-                         'desc' : 'Path to vivado settings (e.g. /opt/Xilinx/Vivado/2017.2/settings64.sh)'},
                         {'name' : 'part',
                          'type' : 'String',
                          'desc' : 'FPGA part number (e.g. xc7a35tcsg324-1)'},
@@ -86,134 +82,141 @@ class Vivado(Edatool):
      with the build steps.
     """
     def configure_main(self):
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        self.jinja_env.filters["src_file_filter"] = self.src_file_filter
+        synth_tool = self.tool_options.get("synth", "vivado")
 
-        has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
-        has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
-        has_xci = "xci" in [x.file_type for x in src_files]
+        if synth_tool == "yosys":
 
-        self.synth_tool = self.tool_options.get("synth", "vivado")
-        if self.synth_tool == "yosys":
-            if has_vhdl or has_vhdl2008:
-                logger.error("VHDL files are not supported in Yosys.")
+            self.edam['tool_options']['yosys'] = {
+                'arch' : 'xilinx',
+                'output_format' : 'edif',
+                'yosys_synth_options' : self.tool_options.get('yosys_synth_options', []),
+                'yosys_as_subtool' : True,
+            }
 
-            yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
-            yosys_edam = {
-                    'files'         : self.files,
-                    'name'          : self.name,
-                    'toplevel'      : self.toplevel,
-                    'parameters'    : self.parameters,
-                    'tool_options'  : {'yosys' : {
-                                            'arch' : 'xilinx',
-                                            'output_format' : 'edif',
-                                            'yosys_synth_options' : yosys_synth_options,
-                                            'yosys_as_subtool' : True,
-                                            }
-                                    }
-                    }
-
-            yosys = getattr(import_module("edalize.yosys"), 'Yosys')(yosys_edam, self.work_root)
+            yosys = Yosys(self.edam, self.work_root)
             yosys.configure()
+            self.files = yosys.edam['files']
 
+        src_files = []
+        incdirs = []
+        edif_files = []
+        has_vhdl2008 = False
+        has_xci = False
+        unused_files = []
+
+        for f in self.files:
+            cmd = ""
+            if f['file_type'].startswith('verilogSource'):
+                cmd = 'read_verilog'
+            elif f['file_type'].startswith('systemVerilogSource'):
+                cmd = 'read_verilog -sv'
+            elif f['file_type'] == 'tclSource':
+                cmd = 'source'
+            elif f['file_type'] == 'edif':
+                cmd = 'read_edif'
+                edif_files.append(f['name'])
+            elif f['file_type'].startswith('vhdlSource'):
+                cmd = 'read_vhdl'
+                if f['file_type'] == 'vhdlSource-2008':
+                    has_vhdl2008 = True
+                    cmd += ' -vhdl2008'
+                if f.get('logical_name'):
+                    cmd += ' -library '+f['logical_name']
+            elif f['file_type'] == 'xci':
+                cmd = 'read_ip'
+                has_xci = True
+            elif f['file_type'] == 'xdc':
+                cmd = 'read_xdc'
+            elif f['file_type'] == 'SDC':
+                cmd = 'read_xdc -unmanaged'
+            elif f['file_type'] == 'mem':
+                cmd = 'read_mem'
+
+            if cmd:
+                if not self._add_include_dir(f, incdirs):
+                    src_files.append(cmd + ' {' + f['name'] + '}')
+            else:
+                unused_files.append(f)
 
         template_vars = {
             'name'         : self.name,
-            'src_files'    : src_files,
+            'src_files'    : '\n'.join(src_files),
             'incdirs'      : incdirs+['.'],
             'tool_options' : self.tool_options,
             'toplevel'     : self.toplevel,
             'vlogparam'    : self.vlogparam,
             'vlogdefine'   : self.vlogdefine,
             'generic'      : self.generic,
+            'netlist_flow' : bool(edif_files),
             'has_vhdl2008' : has_vhdl2008,
             'has_xci'      : has_xci,
         }
 
-        if self.synth_tool == 'yosys':
-            xdc_file = next((f for f in src_files if f.file_type == 'xdc'), None)
-            if xdc_file is not None:
-                xdc_file = xdc_file.name
-            self.render_template('vivado-project-yosys.tcl.j2',
-                                 self.name+'.tcl',
-                                 {'name' : self.name,
-                                  'tool_options' : self.tool_options})
+        self.render_template('vivado-project.tcl.j2',
+                             self.name+'.tcl',
+                             template_vars)
 
-            self.render_template('vivado-run-yosys.tcl.j2',
-                                 self.name+"_run.tcl",
-                                 {'edif_file' : self.name + '.edif',
-                                  'xdc_file' : xdc_file,
-                                  'name' : self.name,
-                                  'tool_options' : self.tool_options})
+        jobs = self.tool_options.get('jobs', None)
+
+        run_template_vars = {
+            'jobs' : ' -jobs ' + str(jobs) if jobs is not None else ''
+        }
+
+        self.render_template('vivado-run.tcl.j2',
+                             self.name+"_run.tcl",
+                             run_template_vars)
+
+        synth_template_vars = {
+            'jobs' : ' -jobs ' + str(jobs) if jobs is not None else ''
+        }
+
+        self.render_template('vivado-synth.tcl.j2',
+                             self.name+"_synth.tcl",
+                             synth_template_vars)
+
+        # Write Makefile
+        commands = self.EdaCommands()
+
+        vivado_command = ['vivado', '-notrace', '-mode', 'batch', '-source']
+
+        #Create project file
+        project_file = self.name+'.xpr'
+        tcl_file = [self.name+'.tcl']
+        commands.add(vivado_command+tcl_file, [project_file], tcl_file + edif_files)
+
+        #Synthesis target
+        if synth_tool == 'yosys':
+            commands.commands += yosys.commands
+            commands.add([], ['synth'], edif_files)
         else:
-            self.render_template('vivado-project.tcl.j2',
-                                 self.name+'.tcl',
-                                 template_vars)
+            depends = [f'{self.name}_synth.tcl', project_file]
+            targets = [f'{self.name}.runs/synth_1/__synthesis_is_complete__']
+            commands.add(vivado_command+depends, targets, depends)
+            commands.add([], ['synth'], targets)
 
-            jobs = self.tool_options.get('jobs', None)
+        #Bitstream generation
+        run_tcl = self.name+'_run.tcl'
+        depends = [run_tcl, project_file]
+        bitstream = self.name+'.bit'
+        commands.add(vivado_command+depends, [bitstream], depends)
 
-            run_template_vars = {
-                'jobs' : ' -jobs ' + str(jobs) if jobs is not None else ''
-            }
+        commands.add(['vivado', project_file], ['build-gui'], [project_file])
 
-            self.render_template('vivado-run.tcl.j2',
-                                 self.name+"_run.tcl",
-                                 run_template_vars)
+        depends = [self.name+'_pgm.tcl', bitstream]
+        command = ['vivado', '-quiet', '-nolog', '-notrace', '-mode', 'batch',
+                   '-source', f'{self.name}_pgm.tcl', '-tclargs']
 
-            synth_template_vars = {
-                'jobs' : ' -jobs ' + str(jobs) if jobs is not None else ''
-            }
+        part = self.tool_options.get('part', "")
+        command += [part] if part else []
+        command += [bitstream]
+        commands.add(command, ['pgm'], depends)
 
-            self.render_template('vivado-synth.tcl.j2',
-                                 self.name+"_synth.tcl",
-                                 synth_template_vars)
-
-        vivado_settings = self.tool_options.get('vivado-settings', None)
-        vivado_command = "source {} && vivado".format(vivado_settings) if vivado_settings else "vivado"
-
-        self.render_template('vivado-makefile.j2',
-                             'Makefile',
-                             {'name' : self.name,
-                              'part' : self.tool_options.get('part', ""),
-                              'bitstream' : self.name+'.bit',
-                              'yosys' : True if self.synth_tool == 'yosys' else None,
-                              'vivado_command': vivado_command
-                              })
+        commands.set_default_target(bitstream)
+        commands.write(os.path.join(self.work_root, 'Makefile'))
 
         self.render_template('vivado-program.tcl.j2',
                              self.name+"_pgm.tcl")
-
-    def src_file_filter(self, f):
-        def _vhdl_source(f):
-            s = 'read_vhdl'
-            if f.file_type == 'vhdlSource-2008':
-                s += ' -vhdl2008'
-            if f.logical_name:
-                s += ' -library '+f.logical_name
-            return s
-
-        file_types = {
-            'verilogSource'       : 'read_verilog',
-            'systemVerilogSource' : 'read_verilog -sv',
-            'vhdlSource'          : _vhdl_source(f),
-            'xci'                 : 'read_ip',
-            'xdc'                 : 'read_xdc',
-            'tclSource'           : 'source',
-            'SDC'                 : 'read_xdc -unmanaged',
-            'mem'                 : 'read_mem',
-        }
-        _file_type = f.file_type.split('-')[0]
-        if _file_type in file_types:
-            return file_types[_file_type] + ' ' + f.name
-
-        if _file_type == 'user':
-            return ''
-
-        _s = "{} has unknown file type '{}', interpretation is up to Vivado"
-        logger.warning(_s.format(f.name,
-                                    f.file_type))
-        return 'add_files -norecurse' + ' ' + f.name
 
     def build_main(self):
         logger.info("Building")
