@@ -91,7 +91,6 @@ class Yosys(Edatool):
         if not arch:
             logger.error("ERROR: arch is not defined.")
 
-        makefile_name = self.tool_options.get('makefile_name', self.name + '.mk')
         template = yosys_template or 'edalize_yosys_template.tcl'
         template_vars = {
                 'verilog_defines'     : "{" + " ".join(verilog_defines) + "}",
@@ -123,11 +122,6 @@ class Yosys(Edatool):
                          [template])
         if self.tool_options.get('yosys_as_subtool'):
             self.commands = commands.commands
-
-            #For backwards compatiblity until all yosys users migrated from makefile templates
-            commands.set_default_target(f'{self.name}.{output_format}')
-            commands.write(os.path.join(self.work_root, makefile_name))
-
         else:
             commands.set_default_target(f'{self.name}.{output_format}')
             commands.write(os.path.join(self.work_root, 'Makefile'))

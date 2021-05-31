@@ -53,7 +53,6 @@ def test_vivado_minimal(params, tmpdir):
     ]
 
     if synth_tool == "yosys":
-        config_file_list.append(name+'.mk')
         config_file_list.append('edalize_yosys_procs.tcl')
         config_file_list.append('edalize_yosys_template.tcl')
     else:
