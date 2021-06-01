@@ -65,6 +65,6 @@ setup(
     extras_require={
         "reporting": ["pyparsing", "pandas"],
     },
-    # Supported Python versions: 3.5+
-    python_requires=">=3.5, <4",
+    # Supported Python versions: 3.6+
+    python_requires=">=3.6, <4",
 )
