@@ -51,7 +51,12 @@ class Verilator(Edatool):
                          'desc' : 'Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for SystemC testbenches or *lint-only* to only perform linting on the Verilog code'},
                         {'name' : 'cli_parser',
                          'type' : 'String',
-                         'desc' : '**Deprecated: Use run_options instead** : Select whether FuseSoC should handle command-line arguments (*managed*) or if they should be passed directly to the verilated model (*raw*). Default is *managed*'}],
+                         'desc' : '**Deprecated: Use run_options instead** : Select whether FuseSoC should handle command-line arguments (*managed*) or if they should be passed directly to the verilated model (*raw*). Default is *managed*'},
+                        {'name' : 'exe',
+                         'type' : 'String',
+                         'desc' : "Controls whether to create an executable. Set to 'false' when something else will do the final linking"},
+                    ],
+
                     'lists' : [
                         {'name' : 'libs',
                          'type' : 'String',
@@ -125,7 +130,8 @@ class Verilator(Edatool):
                 f.write('\n'.join(vlt_files) + '\n')
             f.write('\n'.join(vlog_files) + '\n')
             f.write('--top-module {}\n'.format(self.toplevel))
-            f.write('--exe\n')
+            if str(self.tool_options.get('exe')).lower() != 'false':
+                f.write('--exe\n')
             f.write('\n'.join(opt_c_files))
             f.write('\n')
             f.write(''.join(['-G{}={}\n'.format(key, self._param_value_str(value, str_quote_style='\\"')) for key, value in self.vlogparam.items()]))
