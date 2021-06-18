@@ -168,7 +168,6 @@ class Verilator(Edatool):
 
         if self.tool_options['mode'] == 'lint-only':
             args.append('V'+self.toplevel+'.mk')
-        _s = os.path.join(self.work_root, 'verilator.{}.log')
         self._run_tool('make', args, quiet=True)
 
     def run_main(self):
