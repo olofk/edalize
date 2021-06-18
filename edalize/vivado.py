@@ -53,7 +53,7 @@ class Vivado(Edatool):
                         'desc' : 'Source managment mode. Allowed values are None (unmanaged, default), DisplayOnly (automatically update sources) and All (automatically update sources and compile order)'},
                         {'name' : 'hw_target',
                         'type' : 'Description',
-                        'desc' : 'Board identifier (e.g. */xilinx_tcf/Digilent/123456789123A'},
+                        'desc' : 'A pattern matching a board identifier. Refer to the Vivado documentation for ``get_hw_targets`` for details. Example: ``*/xilinx_tcf/Digilent/123456789123A``'},
                     ]}
 
     """ Get tool version
