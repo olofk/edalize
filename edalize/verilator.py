@@ -162,8 +162,8 @@ class Verilator(Edatool):
         if not 'mode' in self.tool_options:
             self.tool_options['mode'] = 'cc'
 
-        # Do parallel builds with <number of cpus> * 2 jobs.
-        make_job_count = multiprocessing.cpu_count() * 2
+        # Do parallel builds with <number of cpus>
+        make_job_count = multiprocessing.cpu_count()
         args = ['-j', str(make_job_count)]
 
         if self.tool_options['mode'] == 'lint-only':
