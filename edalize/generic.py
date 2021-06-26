@@ -87,14 +87,19 @@ class Generic(Edatool):
                         "desc": "environment variables to be passed to the tool",
                     },
                     {
+                        "name": "env_var_format",
+                        "type": "String",
+                        "desc": "format to be used with each environment variable",
+                    },
+                    {
                         "name": "vlog_catalog",
                         "type": "String",
                         "desc": "catalog of verilog files (one per line)",
                     },
                     {
-                        "name": "vlog_prefix",
+                        "name": "vlog_format",
                         "type": "String",
-                        "desc": "prefix to be used before each vlog file name",
+                        "desc": "format to be used with each verilog file name",
                     },
                     {
                         "name": "svlog_catalog",
@@ -102,24 +107,24 @@ class Generic(Edatool):
                         "desc": "catalog of system verilog files (one per line)",
                     },
                     {
-                        "name": "svlog_prefix",
+                        "name": "svlog_format",
                         "type": "String",
-                        "desc": "prefix to be used before each svlog file name",
+                        "desc": "format to be used with each system verilog file name",
                     },
                     {
-                        "name": "tcl_prefix",
+                        "name": "tcl_format",
                         "type": "String",
-                        "desc": "prefix to be used before each tcl file name",
-                    },
-                    {
-                        "name": "incdir_prefix",
-                        "type": "String",
-                        "desc": "prefix to be used before each include directory name",
+                        "desc": "format to be used with each tcl file name",
                     },
                     {
                         "name": "incdir_catalog",
                         "type": "String",
                         "desc": "catalog of include directories (one per line)",
+                    },
+                    {
+                        "name": "incdir_format",
+                        "type": "String",
+                        "desc": "format to be used with each include directory name",
                     },
                 ],
             }
@@ -141,31 +146,34 @@ class Generic(Edatool):
         sverilog_file_list = []
         tcl_file_list = []
         include_dir_list = []
+        env_var_list = []
         timing_constraints = []
         pins_constraints = []
         placement_constraints = []
         user_files = []
         
-        if self.tool_options.get("vlog_prefix") == None:
-            vlog_prefix = ""
+        if self.tool_options.get("vlog_format") == None:
+            vlog_format = "{}"
         else:
-            vlog_prefix = self.tool_options.get("vlog_prefix")
-        if self.tool_options.get("svlog_prefix") == None:
-            svlog_prefix = ""
+            vlog_format = self.tool_options.get("vlog_format")
+            
+        if self.tool_options.get("svlog_format") == None:
+            svlog_format = "{}"
         else:
-            svlog_prefix = self.tool_options.get("svlog_prefix")
-        if self.tool_options.get("tcl_prefix") == None:
-            tcl_prefix = ""
+            svlog_format = self.tool_options.get("svlog_format")
+            
+        if self.tool_options.get("tcl_format") == None:
+            tcl_format = "{}"
         else:
-            tcl_prefix = self.tool_options.get("tcl_prefix")
+            tcl_format = self.tool_options.get("tcl_format")
         
         for f in src_files:
             if f.file_type in ["verilogSource"]:
-                verilog_file_list.append(vlog_prefix + " " + f.name)
+                verilog_file_list.append(vlog_format.format(f.name))
             if f.file_type in ["systemVerilogSource"]:
-                sverilog_file_list.append(svlog_prefix + " " + f.name)
+                sverilog_file_list.append(svlog_format.format(f.name))
             if f.file_type in ["tclSource"]:
-                tcl_file_list.append(tcl_prefix + " " + f.name)
+                tcl_file_list.append(tcl_format.format(f.name))
             if f.file_type in ["SDC"]:
                 timing_constraints.append(f.name)
             if f.file_type in ["PCF"]:
@@ -198,18 +206,19 @@ class Generic(Edatool):
         tcl_files = " ".join(tcl_file_list)
         
         # Handle include directories       
-        if self.tool_options.get("incdir_prefix") == None:
-            incdir_prefix = ""
+        if self.tool_options.get("incdir_format") == None:
+            incdir_format = "{}"
         else:
-            incdir_prefix = self.tool_options.get("incdir_prefix")
+            incdir_format = self.tool_options.get("incdir_format")
             if self.tool_options.get("incdir_catalog") == None:
                 for d in incdirs:
-                    include_dir_list.append(incdir_prefix + " " + d)
+                    include_dir_list.append(incdir_format.format(d))
             else:
                 file_path = os.path.join(self.work_root, self.tool_options.get("incdir_catalog"))
                 with open(file_path, 'w') as file:
                     for d in incdirs:
-                        file.write(incdir_prefix + ' ' + d + ']\n')
+                        text = incdir_format.format(d)
+                        file.write(text + '\n')
                     file.close()
 
         part = self.tool_options.get("part")
@@ -225,12 +234,19 @@ class Generic(Edatool):
             flags = ""
         else:
             flags = self.tool_options.get("flags")
+        
+        if self.tool_options.get("env_var_format") == None:
+            env_var_format = "{}"
+        else:
+            env_var_format = self.tool_options.get("env_var_format")
             
         if self.tool_options.get("env_vars") == None:
             env_vars = ""
         else:
-            env_var_list = self.tool_options.get("env_vars").split()
-            env_vars = "export " + "; export ".join(env_var_list) + ";"
+            env_vars = self.tool_options.get("env_vars").split()
+            for env_var in env_vars:
+                env_var_list.append(env_var_format.format(env_var))
+            env_vars = " ".join(env_var_list)
 
         makefile_params = {
             "tool"              : tool,
@@ -239,8 +255,8 @@ class Generic(Edatool):
             "verilog_files"     : verilog_files,
             "sverilog_files"    : sverilog_files,
             "tcl_files"         : tcl_files,
-            "base_dir"          : os.getcwd(),
-            "incdirs"           : " ".join(include_dir_list),
+            "proj_dir"          : os.getcwd(),
+            "inc_dirs"          : " ".join(include_dir_list),
             "sdc"               : " ".join(timing_constraints),
             "pcf"               : " ".join(pins_constraints),
             "xdc"               : " ".join(placement_constraints),
