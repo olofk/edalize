@@ -82,6 +82,11 @@ class Generic(Edatool):
                         "desc": "flags to be passed to the tool",
                     },
                     {
+                        "name": "env_vars",
+                        "type": "String",
+                        "desc": "environment variables to be passed to the tool",
+                    },
+                    {
                         "name": "vlog_catalog",
                         "type": "String",
                         "desc": "catalog of verilog files (one per line)",
@@ -102,6 +107,11 @@ class Generic(Edatool):
                         "desc": "prefix to be used before each svlog file name",
                     },
                     {
+                        "name": "tcl_prefix",
+                        "type": "String",
+                        "desc": "prefix to be used before each tcl file name",
+                    },
+                    {
                         "name": "incdir_prefix",
                         "type": "String",
                         "desc": "prefix to be used before each include directory name",
@@ -120,16 +130,11 @@ class Generic(Edatool):
         return "1.0"
 
     def configure_generic(self):
-        logger.info("configure_generic")
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
-        has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
-
-        if has_vhdl or has_vhdl2008:
-            logger.error("VHDL files are not supported in Yosys")
         verilog_file_list = []
         sverilog_file_list = []
+        tcl_file_list = []
         include_dir_list = []
         timing_constraints = []
         pins_constraints = []
@@ -144,18 +149,18 @@ class Generic(Edatool):
             svlog_prefix = ""
         else:
             svlog_prefix = self.tool_options.get("svlog_prefix")
-        if self.tool_options.get("incdir_prefix") == None:
-            incdir_prefix = ""
+        if self.tool_options.get("tcl_prefix") == None:
+            tcl_prefix = ""
         else:
-            incdir_prefix = self.tool_options.get("incdir_prefix")
-            for d in incdirs:
-                include_dir_list.append(incdir_prefix + " " + d)
+            tcl_prefix = self.tool_options.get("tcl_prefix")
         
         for f in src_files:
             if f.file_type in ["verilogSource"]:
                 verilog_file_list.append(vlog_prefix + " " + f.name)
             if f.file_type in ["systemVerilogSource"]:
                 sverilog_file_list.append(svlog_prefix + " " + f.name)
+            if f.file_type in ["tclSource"]:
+                tcl_file_list.append(tcl_prefix + " " + f.name)
             if f.file_type in ["SDC"]:
                 timing_constraints.append(f.name)
             if f.file_type in ["PCF"]:
@@ -166,9 +171,9 @@ class Generic(Edatool):
                 user_files.append(f.name)
         
         if self.tool_options.get("vlog_catalog") == None:
-            verilog = " ".join(verilog_file_list)
+            verilog_files = " ".join(verilog_file_list)
         else:
-            verilog = ""
+            verilog_files = ""
             file_path = os.path.join(self.work_root, self.tool_options.get("vlog_catalog"))
             with open(file_path, 'w') as file:
                 for fname in verilog_file_list:
@@ -176,39 +181,57 @@ class Generic(Edatool):
                 file.close()
                 
         if self.tool_options.get("svlog_catalog") == None:
-            sverilog = " ".join(sverilog_file_list)
+            sverilog_files = " ".join(sverilog_file_list)
         else:
-            sverilog = ""
+            sverilog_files = ""
             file_path = os.path.join(self.work_root, self.tool_options.get("svlog_catalog"))
             with open(file_path, 'w') as file:
                 for fname in sverilog_file_list:
                     file.write(fname + '\n')
                 file.close()
+                
+        tcl_files = " ".join(tcl_file_list)
+        
+        # Handle include directories       
+        if self.tool_options.get("incdir_prefix") == None:
+            incdir_prefix = ""
+        else:
+            incdir_prefix = self.tool_options.get("incdir_prefix")
+            for d in incdirs:
+                include_dir_list.append(incdir_prefix + " " + d)
 
         part = self.tool_options.get("part")
         package = self.tool_options.get("package")
         vendor = self.tool_options.get("vendor")
         
-        tool = self.tool_options.get("tool")
-        
         if self.tool_options.get("tool") == None:
             logger.error("tool was not specified -- generic needs to know which tool to run")
+        else:
+            tool = self.tool_options.get("tool")
+        
+        if self.tool_options.get("flags") == None:
+            flags = ""
+        else:
+            flags = self.tool_options.get("flags")
             
-        
-
-        vpr_options = self.tool_options.get("vpr_options")
-        
+        if self.tool_options.get("env_vars") == None:
+            env_vars = ""
+        else:
+            env_var_list = self.tool_options.get("env_vars").split()
+            env_vars = "export " + "; export ".join(env_var_list) + ";"
 
         makefile_params = {
-            "tool"      : self.tool_options.get("tool"),
-            "flags"     : self.tool_options.get("flags"),
-            "verilog"   : verilog,
-            "sverilog"  : sverilog,
-            "incdirs"   : " ".join(include_dir_list),
-            "sdc": " ".join(timing_constraints),
-            "pcf": " ".join(pins_constraints),
-            "xdc": " ".join(placement_constraints),
-            "vpr_options": vpr_options,
+            "tool"              : tool,
+            "flags"             : flags,
+            "env_vars"          : env_vars,
+            "verilog_files"     : verilog_files,
+            "sverilog_files"    : sverilog_files,
+            "tcl_files"         : tcl_files,
+            "base_dir"          : os.getcwd(),
+            "incdirs"           : " ".join(include_dir_list),
+            "sdc"               : " ".join(timing_constraints),
+            "pcf"               : " ".join(pins_constraints),
+            "xdc"               : " ".join(placement_constraints),
         }
         self.render_template("generic-makefile.j2", "Makefile", makefile_params)
 

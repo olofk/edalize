@@ -133,5 +133,6 @@ class Design_compiler(Edatool):
 
     def build_main(self):
         logger.info("Building")
+        logger.info("(running make, which runs dc_shell which has an unbelievably long lag before printing. be patient)")
         args = []
         self._run_tool('make', args, quiet=True)
