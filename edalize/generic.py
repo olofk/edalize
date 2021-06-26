@@ -116,6 +116,11 @@ class Generic(Edatool):
                         "type": "String",
                         "desc": "prefix to be used before each include directory name",
                     },
+                    {
+                        "name": "incdir_catalog",
+                        "type": "String",
+                        "desc": "catalog of include directories (one per line)",
+                    },
                 ],
             }
 
@@ -197,8 +202,15 @@ class Generic(Edatool):
             incdir_prefix = ""
         else:
             incdir_prefix = self.tool_options.get("incdir_prefix")
-            for d in incdirs:
-                include_dir_list.append(incdir_prefix + " " + d)
+            if self.tool_options.get("incdir_catalog") == None:
+                for d in incdirs:
+                    include_dir_list.append(incdir_prefix + " " + d)
+            else:
+                file_path = os.path.join(self.work_root, self.tool_options.get("incdir_catalog"))
+                with open(file_path, 'w') as file:
+                    for d in incdirs:
+                        file.write(incdir_prefix + ' ' + d + ']\n')
+                    file.close()
 
         part = self.tool_options.get("part")
         package = self.tool_options.get("package")
