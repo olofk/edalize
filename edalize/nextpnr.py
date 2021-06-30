@@ -79,8 +79,8 @@ class Nextpnr(Edatool):
         command += constraints + ['--json', depends] + output
 
         #CLI target
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         #GUI target
-        commands.add(command+['--gui'], ["build-gui"], [depends])
+        commands.add(command+['--gui'], [self.EdaCommands.Target("build-gui", phony=True)], [depends])
         self.commands = commands.commands

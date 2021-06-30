@@ -185,7 +185,7 @@ endif
             command += ['--device', device]
             command += ['--top', self.toplevel]
             command += [depends, targets]
-            commands.add(command, [targets], [depends])
+            commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
             depends = self.name+'.netlist'
             targets = self.name+'.phys'
@@ -196,14 +196,14 @@ endif
             command += ['--write', self.name+'.routed.json']
             command += ['--phys', targets]
             command += [nextpnr_options]
-            commands.add(command, [targets], [depends])
+            commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
             depends = self.name+'.phys'
             targets = self.name+'.fasm'
             command = ['python', '-m', 'fpga_interchange.fasm_generator']
             command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
             command += ['--family', family, device, self.name+'.netlist', depends, targets]
-            commands.add(command, [targets], [depends])
+            commands.add(command, [self.EdaCommands.Target(targets)], [depends])
         else:
             targets = self.name+'.fasm'
             command = ['nextpnr-'+arch, '--chipdb', chipdb]
@@ -213,13 +213,13 @@ endif
             command += ['--fasm', targets]
             command += ['--log', 'nextpnr.log']
             command += [nextpnr_options]
-            commands.add(command, [targets], [depends])
+            commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         depends = self.name+'.fasm'
         targets = self.name+'.bit'
         command = ['symbiflow_write_bitstream', '-d', bitstream_device]
         command += ['-f', depends, '-p', partname, '-b', targets]
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, 'Makefile'))
@@ -290,7 +290,7 @@ endif
         command += ['-d', bitstream_device]
         command += ['-p' if vendor == 'xilinx' else '-P', partname]
         command += xdc_opts
-        commands.add(command, [targets], [])
+        commands.add(command, [self.EdaCommands.Target(targets)], [])
 
         #P&R
         eblif_opt = ['-e', self.toplevel+'.eblif']
@@ -299,26 +299,26 @@ endif
         depends = self.toplevel+'.eblif'
         targets = self.toplevel+'.net'
         command = ['symbiflow_pack'] + eblif_opt + device_opt + sdc_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         depends = self.toplevel+'.net'
         targets = self.toplevel+'.place'
         command = ['symbiflow_place'] + eblif_opt + device_opt
         command += ['-n', depends, '-P', partname]
         command += sdc_opts + pcf_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         depends = self.toplevel+'.place'
         targets = self.toplevel+'.route'
         command = ['symbiflow_route'] + eblif_opt + device_opt
         command += sdc_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         depends = self.toplevel+'.route'
         targets = self.toplevel+'.fasm'
         command = ['symbiflow_write_fasm'] + eblif_opt + device_opt
         command += sdc_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         depends = self.toplevel+'.fasm'
         targets = self.toplevel+'.bit'
@@ -326,7 +326,7 @@ endif
         command += ['-f', depends]
         command += ['-p' if vendor == 'xilinx' else '-P', partname]
         command += ['-b', targets]
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, 'Makefile'))

@@ -18,3 +18,5 @@ build-gui: test_vivado_yosys_0.xpr
 
 pgm: test_vivado_yosys_0_pgm.tcl test_vivado_yosys_0.bit
 	$(EDALIZE_LAUNCHER) vivado -quiet -nolog -notrace -mode batch -source test_vivado_yosys_0_pgm.tcl -tclargs xc7a35tcsg324-1 test_vivado_yosys_0.bit
+
+.PHONY: all synth build-gui pgm

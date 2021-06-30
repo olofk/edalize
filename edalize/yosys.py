@@ -118,7 +118,7 @@ class Yosys(Edatool):
 
         commands = self.EdaCommands()
         commands.add(['yosys', '-l', 'yosys.log', '-p', f'"tcl {template}"'],
-                         [f'{self.name}.{output}' for output in ['blif', 'json','edif']],
+                         [self.EdaCommands.Target(f'{self.name}.{output}') for output in ['blif', 'json','edif']],
                          [template])
         if self.tool_options.get('yosys_as_subtool'):
             self.commands = commands.commands

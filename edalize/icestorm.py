@@ -67,7 +67,7 @@ class Icestorm(Edatool):
             command = ['arachne-pnr']
             command += self.tool_options.get('arachne_pnr_options', [])
             command += ['-p', depends, '-o', targets]
-            commands.add(command, [depends], [targets])
+            commands.add(command, [self.EdaCommands.Target(depends)], [targets])
             set_default_target(self.name+'.bin')
         elif pnr == 'next':
             nextpnr = Nextpnr(yosys.edam, self.work_root)
@@ -82,20 +82,20 @@ class Icestorm(Edatool):
         depends = self.name+'.asc'
         targets = self.name+'.bin'
         command = ['icepack', depends, targets]
-        commands.add(command, [targets], [depends])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
 
         #Timing analysis
         depends = self.name+'.asc'
         targets = self.name+'.tim'
         command = ['icetime', '-tmd', part or '', depends, targets]
-        commands.add(command, [targets], [depends])
-        commands.add([], ["timing"], [targets])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
+        commands.add([], [self.EdaCommands.Target("timing", phony=True)], [targets])
 
         #Statistics
         depends = self.name+'.asc'
         targets = self.name+'.stat'
         command = ['icebox_stat', depends, targets]
-        commands.add(command, [targets], [depends])
-        commands.add([], ["stats"], [targets])
+        commands.add(command, [self.EdaCommands.Target(targets)], [depends])
+        commands.add([], [self.EdaCommands.Target("stats", phony=True)], [targets])
 
         commands.write(os.path.join(self.work_root, 'Makefile'))
