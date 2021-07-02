@@ -5,7 +5,6 @@
 import logging
 import os.path
 import os
-import platform
 import subprocess
 import re
 import xml.etree.ElementTree as ET
@@ -20,8 +19,6 @@ class Quartus(Edatool):
 
     # Define Standard edition to be our default version
     isPro = False
-    makefile_template = {False : "quartus-std-makefile.j2",
-                         True  : "quartus-pro-makefile.j2"}
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -106,10 +103,8 @@ class Quartus(Edatool):
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
-        self.jinja_env.filters['qsys_file_filter'] = self.qsys_file_filter
 
         has_vhdl2008 = 'vhdlSource-2008' in [x.file_type for x in src_files]
-        has_qsys     = 'QSYS'            in [x.file_type for x in src_files]
 
         escaped_name = self.name.replace(".", "_")
 
@@ -125,51 +120,149 @@ class Quartus(Edatool):
             'has_vhdl2008' : has_vhdl2008
         }
 
-        # Render Makefile based on detected version
-        self.render_template(self.makefile_template[self.isPro],
-                             'Makefile',
-                             { 'name'         : escaped_name,
-                               'src_files'    : src_files,
-                               'tool_options' : self.tool_options})
+        self._write_makefile(escaped_name, src_files)
 
         # Render the TCL project file
         self.render_template('quartus-project.tcl.j2',
                              escaped_name + '.tcl',
                              template_vars)
 
+    """ Write a the Makefile using EdaCommands from the base class
+    """
 
-    # Helper to extract file type
-    def file_type(self, f):
-        return f.file_type.split('-')[0]
+    def _write_makefile(self, escaped_name, src_files):
+        # Write Makefile
+        commands = self.EdaCommands()
 
-    # Filter for just QSYS files. This verifies that they are compatible
-    # with the identified Quartus version
-    def qsys_file_filter(self, f):
-        name = ''
-        if self.file_type(f) == 'QSYS':
+        # Add variables
+        #
+        # It would be better to make an official interface rather than muck with
+        # the header
+
+        commands.header += f"""NAME := {escaped_name}
+OPTIONS := {" ".join(self.tool_options["quartus_options"])}
+DSE_OPTIONS := {" ".join(self.tool_options["dse_options"])}
+
+"""
+
+        # Project file
+        depends = "$(NAME).tcl"
+        cmd = ["quartus_sh", "$(OPTIONS)", "-t", depends]
+        targets = [self.EdaCommands.Target("project", phony=True)]
+        commands.add([cmd], targets, [depends])
+
+        # Qsys
+        qsys_files = [f for f in src_files if f.file_type == "QSYS"]
+        depends = "project"
+        targets = [self.EdaCommands.Target("qsys", phony=True)]
+        cmds = []
+
+        for f in qsys_files:
+
+            # Give QSYS files special attributes to make the logic in
+            # the Jinja2 templates much simplier
+            setattr(f, "simplename", os.path.basename(f.name).split(".qsys")[0])
+            setattr(f, "srcdir", os.path.dirname(f.name) or ".")
+            setattr(f, "dstdir", os.path.join("qsys", f.simplename))
+
             # Compatibility checks
             try:
                 qsysTree = ET.parse(os.path.join(self.work_root, f.name))
                 try:
-                    tool = qsysTree.find('component').attrib['tool']
-                    if tool == 'QsysPro' and self.isPro:
-                        name = f.name
+                    tool = qsysTree.find("component").attrib["tool"]
+                    if not (tool == "QsysPro" and self.isPro):
+                        continue
                 except (AttributeError, KeyError):
                     # Either a component wasn't found in the QSYS file, or it
                     # had no associated tool information. Make the assumption
                     # it was a Standard edition file
-                    if not self.isPro:
-                        name = f.name
+                    if self.isPro:
+                        continue
             except (ET.ParseError, IOError):
                 logger.warning("Unable to parse QSYS file " + f.name)
 
-            # Give QSYS files special attributes to make the logic in
-            # the Jinja2 templates much simplier
-            setattr(f, "simplename", os.path.basename(f.name).split('.qsys')[0])
-            setattr(f, "srcdir", os.path.dirname(f.name) or '.')
-            setattr(f, "dstdir", os.path.join('qsys', f.simplename))
-        
-        return name
+            family = self.tool_options["family"]
+            device = self.tool_options["device"]
+            if self.isPro:
+                cmds.append(
+                    [
+                        "qsys-generate",
+                        f.name,
+                        "--synthesis=VERILOG",
+                        f'--family="{family}"',
+                        f"--part={device}",
+                        "--quartus-project=$(NAME)",
+                    ]
+                )
+            else:
+                cmds.append(
+                    [
+                        "ip-generate",
+                        f"--project-directory={f.srcdir}",
+                        f"--output-directory={f.dstdir}",
+                        f"--report-file=bsf:{f.dstdir}/{f.simplename}.bsf",
+                        f'--system-info=DEVICE_FAMILY="{family}"',
+                        f"--system-info=DEVICE={device}",
+                        f"--component-file={f.srcdir}/{f.simplename}.qsys",
+                    ]
+                )
+                cmds.append(
+                    [
+                        "ip-generate",
+                        f"--project-directory={f.srcdir}",
+                        f"--output-directory={f.dstdir}/synthesis",
+                        "--file-set=QUARTUS_SYNTH",
+                        f"--report-file=sopcinfo:{f.dstdir}/{f.simplename}.sopcinfo",
+                        f"--report-file=html:{f.dstdir}/{f.simplename}.html",
+                        f"--report-file=qip:{f.dstdir}/{f.simplename}.qip",
+                        f"--report-file=cmp:{f.dstdir}/{f.simplename}.cmp",
+                        "--report-file=svd",
+                        f'--system-info=DEVICE_FAMILY="{family}"',
+                        f"--system-info=DEVICE={device}",
+                        f"--component-file={f.srcdir}/{f.simplename}.qsys",
+                        "--language=VERILOG",
+                    ]
+                )
+
+        commands.add(cmds, targets, [depends])
+
+        # syn
+        if self.isPro:
+            syn = "quartus_syn"
+        else:
+            syn = "quartus_map"
+        cmd = [syn, "$(OPTIONS)", "$(NAME)"]
+        targets = [self.EdaCommands.Target("syn", phony=True)]
+        commands.add([cmd], targets, ["qsys"])
+
+        # fit, asm, sta
+        for target, depends in [("fit", "syn"), ("asm", "fit"), ("sta", "asm")]:
+            cmd = [f"quartus_{target}", "$(OPTIONS)", "$(NAME)"]
+            targets = [self.EdaCommands.Target(target, phony=True)]
+            commands.add([cmd], targets, [depends])
+
+        # DSE
+        cmd = ["quartus_dse", "$(NAME)", "$(DSE_OPTIONS)"]
+        targets = [self.EdaCommands.Target("dse", phony=True)]
+        commands.add([cmd], targets, ["syn"])
+
+        # clean
+        cmd = ["rm", "-rf", "*.*"]
+        if self.isPro:
+            cmd += ["qdb", "tmp-clearbox"]
+        else:
+            cmd += ["db", "incremental_db"]
+
+        targets = [self.EdaCommands.Target("clean", phony=True)]
+        commands.add([cmd], targets, [])
+
+        commands.set_default_target("sta")
+
+        commands.write(os.path.join(self.work_root, "Makefile"))
+
+    # Helper to extract file type
+    def file_type(self, f):
+        return f.file_type.split('-')[0]
 
     # Allow the templates to get source file information
     def src_file_filter(self, f):
@@ -181,7 +274,7 @@ class Quartus(Edatool):
 
         def _handle_qsys(t, f):
             # Quartus Pro just passes QSYS files onto the compiler, but Standard
-            # expects to see them sepecified as QIP. The Makefile is responsible
+            # expects to see them specified as QIP. The Makefile is responsible
             # for creating that QIP file for Standard edition in a known place
             # which can be used below
             if self.isPro:
