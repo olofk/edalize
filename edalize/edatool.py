@@ -274,8 +274,8 @@ class Edatool(object):
                         f.write(" "+str(d))
                     f.write("\n")
 
-                    if c.command:
-                        f.write(f"\t$(EDALIZE_LAUNCHER) {' '.join(c.command)}\n")
+                    for cmd in c.command:
+                        f.write(f"\t$(EDALIZE_LAUNCHER) {' '.join(cmd)}\n")
 
                 f.write(f"\n.PHONY: {' '.join(phony_targets)}\n")
 
