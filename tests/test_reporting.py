@@ -293,7 +293,7 @@ def test_picorv32_ise_spartan6_resources(picorv32_s6_data):
     # Check Control Set Information table
     df = rpt["Control Set Information"]
 
-    assert df["Clock Signal"].all() == "clk_BUFGP"
+    assert (df["Clock Signal"] == "clk_BUFGP").all()
     assert df.shape == (20, 6)
 
     rst_en = df[
@@ -672,7 +672,7 @@ def test_linux_on_litex_vexriscv_pipistrello_resources(
     df = rpt["IOB Properties"].set_index("IOB Name")
 
     ddr_io = df.filter(regex="ddram_*", axis=0)
-    assert ddr_io["IO Standard"].all() == "MOBILE_DDR"
+    assert (ddr_io["IO Standard"] == "MOBILE_DDR").all()
 
     # Check Control Set Information table
     df = rpt["Control Set Information"]
