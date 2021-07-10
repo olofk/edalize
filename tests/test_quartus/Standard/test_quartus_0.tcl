@@ -1,7 +1,7 @@
 project_new test_quartus_0 -overwrite
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSXFC6D6F31C8ES
-set_global_assignment -name globalassign_bool true
+set_global_assignment -name globalassign_bool 1
 set_global_assignment -name globalassign_int 42
 set_global_assignment -name globalassign_str hello
 set_global_assignment -name TOP_LEVEL_ENTITY top_module

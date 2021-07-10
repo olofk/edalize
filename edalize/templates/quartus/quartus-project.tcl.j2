@@ -1,6 +1,11 @@
 project_new {{ name }} -overwrite
 set_global_assignment -name FAMILY "{{ tool_options.family }}"
 set_global_assignment -name DEVICE {{ tool_options.device }}
+{% if globalassign %}
+{% for k, v in globalassign.items() %}
+set_global_assignment -name {{k}} {{v|param_value_str}}
+{% endfor %}
+{% endif %}
 {% if toplevel %}
 set_global_assignment -name TOP_LEVEL_ENTITY {{ toplevel }}
 {% endif %}
