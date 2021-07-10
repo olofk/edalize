@@ -2,6 +2,7 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from collections import OrderedDict
 import logging
 import os.path
 import os
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Quartus(Edatool):
 
-    argtypes = ['vlogdefine', 'vlogparam', 'generic']
+    argtypes = ['vlogdefine', 'vlogparam', 'generic', 'globalassign']
 
     # Define Standard edition to be our default version
     isPro = False
@@ -59,6 +60,8 @@ class Quartus(Edatool):
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=False):
         if not edam:
             edam = eda_api
+
+        self.globalassign = OrderedDict()
 
         super(Quartus, self).__init__(edam, work_root, verbose)
 
@@ -118,6 +121,7 @@ class Quartus(Edatool):
             'src_files'    : src_files,
             'incdirs'      : incdirs,
             'tool_options' : self.tool_options,
+            'globalassign' : self.globalassign,
             'toplevel'     : self.toplevel,
             'vlogparam'    : self.vlogparam,
             'vlogdefine'   : self.vlogdefine,

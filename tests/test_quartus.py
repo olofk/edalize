@@ -45,7 +45,8 @@ def test_quartus(make_edalize_test):
             os.environ["FUSESOC_QUARTUS_EDITION"] = edition
 
             tf = make_edalize_test('quartus',
-                                   param_types=['vlogdefine', 'vlogparam'],
+                                   param_types=['vlogdefine', 'vlogparam',
+                                                'globalassign'],
                                    tool_options=_tool_options,
                                    ref_dir=edition)
 
