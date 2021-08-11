@@ -33,6 +33,9 @@ class Icestorm(Edatool):
                     'members' : options['members'],
                     'lists' : options['lists']}
 
+    def check_args(self, unknown):
+        Yosys.validate_args(unknown)
+
     def configure_main(self):
         # Write yosys script file
         yosys_synth_options = self.tool_options.get('yosys_synth_options', '')
@@ -42,8 +45,10 @@ class Icestorm(Edatool):
             {'yosys' : {
                 'arch' : 'ice40',
                 'yosys_synth_options' : yosys_synth_options,
+                'yosys_read_options' : self.tool_options.get('yosys_read_options', []),
                 'yosys_as_subtool' : True,
                 'yosys_template' : self.tool_options.get('yosys_template'),
+                'frontend_options' : self.tool_options.get('frontedn_options',[])
             },
              'nextpnr' : {
                  'nextpnr_options' : self.tool_options.get('nextpnr_options', [])
@@ -87,14 +92,14 @@ class Icestorm(Edatool):
         #Timing analysis
         depends = self.name+'.asc'
         targets = self.name+'.tim'
-        command = ['icetime', '-tmd', part or '', depends, targets]
+        command = ['icetime', '-tmd', part or '', depends, "-r", targets]
         commands.add(command, [targets], [depends])
         commands.add([], ["timing"], [targets])
 
         #Statistics
         depends = self.name+'.asc'
         targets = self.name+'.stat'
-        command = ['icebox_stat', depends, targets]
+        command = ['icebox_stat', depends, ">"+targets]
         commands.add(command, [targets], [depends])
         commands.add([], ["stats"], [targets])
 

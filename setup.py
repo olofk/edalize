@@ -29,6 +29,8 @@ setup(
         'templates/quartus/quartus-pro-makefile.j2',
         'templates/ascentlint/Makefile.j2',
         'templates/ascentlint/run-ascentlint.tcl.j2',
+        'templates/symbiflow/symbiflow-fasm2bels-tcl.j2',
+        'templates/symbiflow/vivado-sh.j2',
         'templates/libero/libero-project.tcl.j2',
         'templates/libero/libero-run.tcl.j2',
         'templates/libero/libero-syn-user.tcl.j2',

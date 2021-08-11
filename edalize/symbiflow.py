@@ -10,6 +10,7 @@ import subprocess
 
 from edalize.edatool import Edatool
 from edalize.yosys import Yosys
+from edalize.surelog import Surelog
 from importlib import import_module
 
 logger = logging.getLogger(__name__)
@@ -71,6 +72,31 @@ class Symbiflow(Edatool):
                         "type": "String",
                         "desc": "Additional options for Nextpnr tool. If not used, default options for the tool will be used",
                     },
+                    {
+                        "name": 'fasm2bels',
+                        "type": 'Boolean',
+                        "desc": 'Value to state whether fasm2bels is to be used'
+                    },
+                    {
+                        "name": 'dbroot',
+                        "type": 'String',
+                        "desc": 'Path to the database root (needed by fasm2bels).'
+                    },
+                    {
+                        "name": 'clocks',
+                        "type": 'dict',
+                        "desc": 'Clocks to be added for having tools correctly handling timing based routing.'
+                    },
+                    {
+                        "name": 'seed',
+                        "type": 'String',
+                        "desc": 'Seed assigned to the PnR tool.'
+                    },
+                    {
+                        "name": "schema_dir",
+                        "type": "String",
+                        "desc": "Path if Capnp schema used by fpga_interchange",
+                    },
                 ],
             }
 
@@ -90,6 +116,7 @@ class Symbiflow(Edatool):
 
         # Yosys configuration
         yosys_synth_options = self.tool_options.get("yosys_synth_options", "")
+        yosys_additional_commands = self.tool_options.get('yosys_additional_commands', '')
         yosys_template = self.tool_options.get("yosys_template")
         yosys_edam = {
                 "files"         : self.files,
@@ -100,8 +127,11 @@ class Symbiflow(Edatool):
                                     "yosys" : {
                                         "arch" : vendor,
                                         "yosys_synth_options" : yosys_synth_options,
+                                        "yosys_additional_commands" : yosys_additional_commands,
+                                        'yosys_read_options' : self.tool_options.get('yosys_read_options', []),
                                         "yosys_template" : yosys_template,
                                         "yosys_as_subtool" : True,
+                                        'frontend_options' : self.tool_options.get('frontend_options', []),
                                     }
                                 }
                 }
@@ -174,14 +204,16 @@ class Symbiflow(Edatool):
         commands = self.EdaCommands()
         commands.commands = yosys.commands
         if arch == "fpga_interchange":
-            commands.header += """ifndef INTERCHANGE_SCHEMA_PATH
+            schema_dir = self.tool_options.get('schema_dir', None)
+            if schema_dir is None:
+                commands.header += """ifndef INTERCHANGE_SCHEMA_PATH
 $(error Environment variable INTERCHANGE_SCHEMA_PATH was not found. It should be set to <fpga-interchange-schema path>/interchange)
 endif
 
 """
             targets = self.name+'.netlist'
             command = ['python', '-m', 'fpga_interchange.yosys_json']
-            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
+            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)' if schema_dir is None else schema_dir]
             command += ['--device', device]
             command += ['--top', self.toplevel]
             command += [depends, targets]
@@ -201,7 +233,7 @@ endif
             depends = self.name+'.phys'
             targets = self.name+'.fasm'
             command = ['python', '-m', 'fpga_interchange.fasm_generator']
-            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
+            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)' if schema_dir is None else schema_dir]
             command += ['--family', family, device, self.name+'.netlist', depends, targets]
             commands.add(command, [targets], [depends])
         else:
@@ -227,7 +259,7 @@ endif
     def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
+        has_vhdl     = "vhdlSource"      in [x.file_type for x in src_files]
         has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
 
         if has_vhdl or has_vhdl2008:
@@ -236,6 +268,10 @@ endif
         timing_constraints = []
         pins_constraints = []
         placement_constraints = []
+
+        vpr_grid = None
+        rr_graph = None
+        vpr_capnp_schema = None
 
         for f in src_files:
             if f.file_type in ["verilogSource"]:
@@ -246,6 +282,14 @@ endif
                 pins_constraints.append(f.name)
             if f.file_type in ["xdc"]:
                 placement_constraints.append(f.name)
+            if f.file_type in ["RRGraph"]:
+                rr_graph = f.name
+            if f.file_type in ["VPRGrid"]:
+                vpr_grid = f.name
+            if f.file_type in ['capnp']:
+                vpr_capnp_schema = f.name
+
+        builddir = self.tool_options.get('builddir', 'build')
 
         part = self.tool_options.get("part")
         package = self.tool_options.get("package")
@@ -282,13 +326,36 @@ endif
         sdc_opts = ['-s']+timing_constraints if timing_constraints else []
         xdc_opts = ['-x']+placement_constraints if placement_constraints else []
 
+        fasm2bels = self.tool_options.get('fasm2bels', False)
+        dbroot = self.tool_options.get('dbroot', None)
+        clocks = self.tool_options.get('clocks', None)
+
+        if fasm2bels:
+            if any(v is None for v in [rr_graph, vpr_grid, dbroot]):
+                logger.error("When using fasm2bels, rr_graph, vpr_grid and database root must be provided")
+            tcl_params = {
+                'top': self.toplevel,
+                'part': partname,
+                'xdc': ' '.join(placement_constraints),
+                'clocks': clocks,
+            }
+
+            self.render_template('symbiflow-fasm2bels-tcl.j2',
+                                 'fasm2bels.tcl',
+                                 tcl_params)
+            self.render_template('vivado-sh.j2',
+                                 'vivado.sh',
+                                 dict())
+
+        seed = self.tool_options.get('seed', None)
+
         commands = self.EdaCommands()
         #Synthesis
         targets = self.toplevel+'.eblif'
         command = ['symbiflow_synth', '-t', self.toplevel]
         command += ['-v'] + file_list
         command += ['-d', bitstream_device]
-        command += ['-p' if vendor == 'xilinx' else '-P', partname]
+        command += ['-p', partname]
         command += xdc_opts
         commands.add(command, [targets], [])
 
@@ -328,6 +395,30 @@ endif
         command += ['-b', targets]
         commands.add(command, [targets], [depends])
 
+        if fasm2bels:
+            targets = self.toplevel+".bit.v"
+            command = ['python -m fasm2bels']
+            command += ['--db_root', dbroot+f'/{bitstream_device}']
+            command += ['--part', partname]
+            command += ['--bitread bitread']
+            command += ['--bit_file', self.toplevel+'.bit']
+            command += ['--fasm_file', self.toplevel+'.bit.fasm']
+            command += ['--eblif', self.toplevel+'.eblif']
+            command += ['--connection_database channels.db']
+            command += ['--rr_graph', rr_graph]
+            command += ['--route_file', self.toplevel+".route"]
+            command += ['--vpr_grid_map', vpr_grid]
+            command += ['--vpr_capnp_schema_dir', vpr_capnp_schema]
+            if len(pins_constraints) > 0:
+                command += [f"--pcf {' '.join(pins_constraints)}"]
+            command += ['--verilog_file', self.toplevel+".bit.v"]
+            command += ['--xdc_file', self.toplevel+".bit.xdc"]
+            command += ["&& rm channels.db"]
+            commands.add(command, [targets], [])
+            depends = targets
+            targets = "timing_summary.rpt"
+            command = ["bash vivado.sh"]
+            commands.add(command, [targets], [depends])
         commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, 'Makefile'))
 
