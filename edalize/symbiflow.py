@@ -71,6 +71,11 @@ class Symbiflow(Edatool):
                         "type": "String",
                         "desc": "Additional options for Nextpnr tool. If not used, default options for the tool will be used",
                     },
+                    {
+                        "name": "schema_dir",
+                        "type": "String",
+                        "desc": "Path if Capnp schema used by fpga_interchange",
+                    },
                 ],
             }
 
@@ -90,6 +95,7 @@ class Symbiflow(Edatool):
 
         # Yosys configuration
         yosys_synth_options = self.tool_options.get("yosys_synth_options", "")
+        yosys_additional_commands = self.tool_options.get('yosys_additional_commands', '')
         yosys_template = self.tool_options.get("yosys_template")
         yosys_edam = {
                 "files"         : self.files,
@@ -100,6 +106,7 @@ class Symbiflow(Edatool):
                                     "yosys" : {
                                         "arch" : vendor,
                                         "yosys_synth_options" : yosys_synth_options,
+                                        "yosys_additional_commands" : yosys_additional_commands,
                                         "yosys_template" : yosys_template,
                                         "yosys_as_subtool" : True,
                                     }
@@ -174,14 +181,16 @@ class Symbiflow(Edatool):
         commands = self.EdaCommands()
         commands.commands = yosys.commands
         if arch == "fpga_interchange":
-            commands.header += """ifndef INTERCHANGE_SCHEMA_PATH
+            schema_dir = self.tool_options.get('schema_dir', None)
+            if schema_dir is None:
+                commands.header += """ifndef INTERCHANGE_SCHEMA_PATH
 $(error Environment variable INTERCHANGE_SCHEMA_PATH was not found. It should be set to <fpga-interchange-schema path>/interchange)
 endif
 
 """
             targets = self.name+'.netlist'
             command = ['python', '-m', 'fpga_interchange.yosys_json']
-            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
+            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)' if schema_dir is None else schema_dir]
             command += ['--device', device]
             command += ['--top', self.toplevel]
             command += [depends, targets]
@@ -201,7 +210,7 @@ endif
             depends = self.name+'.phys'
             targets = self.name+'.fasm'
             command = ['python', '-m', 'fpga_interchange.fasm_generator']
-            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
+            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)' if schema_dir is None else schema_dir]
             command += ['--family', family, device, self.name+'.netlist', depends, targets]
             commands.add(command, [targets], [depends])
         else:
@@ -227,7 +236,7 @@ endif
     def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
+        has_vhdl     = "vhdlSource"      in [x.file_type for x in src_files]
         has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
 
         if has_vhdl or has_vhdl2008:
@@ -288,7 +297,8 @@ endif
         command = ['symbiflow_synth', '-t', self.toplevel]
         command += ['-v'] + file_list
         command += ['-d', bitstream_device]
-        command += ['-p' if vendor == 'xilinx' else '-P', partname]
+        command += pcf_opts if pcf_opts != [] else [-'-p']
+        command += ['-P', partname]
         command += xdc_opts
         commands.add(command, [targets], [])
 

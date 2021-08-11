@@ -87,14 +87,14 @@ class Icestorm(Edatool):
         #Timing analysis
         depends = self.name+'.asc'
         targets = self.name+'.tim'
-        command = ['icetime', '-tmd', part or '', depends, targets]
+        command = ['icetime', '-tmd', part or '', depends, "-r", targets]
         commands.add(command, [targets], [depends])
         commands.add([], ["timing"], [targets])
 
         #Statistics
         depends = self.name+'.asc'
         targets = self.name+'.stat'
-        command = ['icebox_stat', depends, targets]
+        command = ['icebox_stat', depends, ">"+targets]
         commands.add(command, [targets], [depends])
         commands.add([], ["stats"], [targets])
 
