@@ -54,6 +54,17 @@ class Vivado(Edatool):
                         {'name' : 'hw_target',
                         'type' : 'Description',
                         'desc' : 'A pattern matching a board identifier. Refer to the Vivado documentation for ``get_hw_targets`` for details. Example: ``*/xilinx_tcf/Digilent/123456789123A``'},
+                    ],
+                    'lists' : [
+                        {'name' : 'yosys_synth_options',
+                         'type' : 'String',
+                         'desc' :'Additional options for synth command'},
+                        {'name' : 'yosys_read_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for Yosys\' read command'},
+                        {'name' : 'frontend_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for the Yosys frontend'},
                     ]}
 
     """ Get tool version
@@ -91,7 +102,9 @@ class Vivado(Edatool):
                 'arch' : 'xilinx',
                 'output_format' : 'edif',
                 'yosys_synth_options' : self.tool_options.get('yosys_synth_options', []),
+                'yosys_read_options' : self.tool_options.get('yosys_read_options', []),
                 'yosys_as_subtool' : True,
+                'frontend_options' : self.tool_options.get('frontend_options', [])
             }
 
             yosys = Yosys(self.edam, self.work_root)

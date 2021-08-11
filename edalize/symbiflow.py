@@ -10,6 +10,7 @@ import subprocess
 
 from edalize.edatool import Edatool
 from edalize.yosys import Yosys
+from edalize.surelog import Surelog
 from importlib import import_module
 
 logger = logging.getLogger(__name__)
@@ -100,8 +101,10 @@ class Symbiflow(Edatool):
                                     "yosys" : {
                                         "arch" : vendor,
                                         "yosys_synth_options" : yosys_synth_options,
+                                        'yosys_read_options' : self.tool_options.get('yosys_read_options', []),
                                         "yosys_template" : yosys_template,
                                         "yosys_as_subtool" : True,
+                                        'frontend_options' : self.tool_options.get('frontend_options', []),
                                     }
                                 }
                 }
