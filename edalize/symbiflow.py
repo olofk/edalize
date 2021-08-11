@@ -71,6 +71,21 @@ class Symbiflow(Edatool):
                         "type": "String",
                         "desc": "Additional options for Nextpnr tool. If not used, default options for the tool will be used",
                     },
+                    {
+                        "name": 'fasm2bels',
+                        "type": 'Boolean',
+                        "desc": 'Value to state whether fasm2bels is to be used'
+                    },
+                    {
+                        "name": 'dbroot',
+                        "type": 'String',
+                        "desc": 'Path to the database root (needed by fasm2bels).'
+                    },
+                    {
+                        "name": 'clocks',
+                        "type": 'dict',
+                        "desc": 'Clocks to be added for having tools correctly handling timing based routing.'
+                    },
                 ],
             }
 
@@ -237,6 +252,10 @@ endif
         pins_constraints = []
         placement_constraints = []
 
+        vpr_grid = None
+        rr_graph = None
+        vpr_capnp_schema = None
+
         for f in src_files:
             if f.file_type in ["verilogSource"]:
                 file_list.append(f.name)
@@ -246,6 +265,12 @@ endif
                 pins_constraints.append(f.name)
             if f.file_type in ["xdc"]:
                 placement_constraints.append(f.name)
+            if f.file_type in ["RRGraph"]:
+                rr_graph = f.name
+            if f.file_type in ["VPRGrid"]:
+                vpr_grid = f.name
+            if f.file_type in ['capnp']:
+                vpr_capnp_schema = f.name
 
         part = self.tool_options.get("part")
         package = self.tool_options.get("package")
@@ -281,6 +306,27 @@ endif
         pcf_opts = ['-p']+pins_constraints if pins_constraints else []
         sdc_opts = ['-s']+timing_constraints if timing_constraints else []
         xdc_opts = ['-x']+placement_constraints if placement_constraints else []
+
+        fasm2bels = self.tool_options.get('fasm2bels', False)
+        dbroot = self.tool_options.get('dbroot', None)
+        clocks = self.tool_options.get('clocks', None)
+
+        if fasm2bels:
+            if any(v is None for v in [rr_graph, vpr_grid, dbroot]):
+                logger.error("When using fasm2bels, rr_graph, vpr_grid and database root must be provided")
+            tcl_params = {
+                'top': self.toplevel,
+                'part': partname,
+                'xdc': ' '.join(placement_constraints),
+                'clocks': clocks,
+            }
+
+            self.render_template('symbiflow-fasm2bels-tcl.j2',
+                                 'fasm2bels.tcl',
+                                 tcl_params)
+            self.render_template('vivado-sh.j2',
+                                 'vivado.sh',
+                                 dict())
 
         commands = self.EdaCommands()
         #Synthesis
@@ -328,6 +374,30 @@ endif
         command += ['-b', targets]
         commands.add(command, [targets], [depends])
 
+        if fasm2bels:
+            targets = self.toplevel+".bit.v"
+            command = ['python -m fasm2bels']
+            command += ['--db_root', dbroot+f'/{bitstream_device}']
+            command += ['--part', partname]
+            command += ['--bitread bitread']
+            command += ['--bit_file', self.toplevel+'.bit']
+            command += ['--fasm_file', self.toplevel+'.bit.fasm']
+            command += ['--eblif', self.toplevel+'.eblif']
+            command += ['--connection_database channels.db']
+            command += ['--rr_graph', rr_graph]
+            command += ['--route_file', self.toplevel+".route"]
+            command += ['--vpr_grid_map', vpr_grid]
+            command += ['--vpr_capnp_schema_dir', vpr_capnp_schema]
+            if len(pins_constraints) > 0:
+                command += [f"--pcf {' '.join(pins_constraints)}"]
+            command += ['--verilog_file', self.toplevel+".bit.v"]
+            command += ['--xdc_file', self.toplevel+".bit.xdc"]
+            command += ["&& rm channels.db"]
+            commands.add(command, [targets], [])
+            depends = targets
+            targets = "timing_summary.rpt"
+            command = ["bash vivado.sh"]
+            commands.add(command, [targets], [depends])
         commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, 'Makefile'))
 

@@ -1,0 +1,16 @@
+create_project -force -part {{ part }} design design
+
+read_verilog {{ top }}.bit.v
+synth_design -top top
+
+read_xdc {{ top }}.bit.xdc
+
+write_checkpoint -force design_{{ top }}_after_source.dcp
+
+{% if clocks %}
+    {% for key, value in clocks.items() %}
+create_clock -period {{ value }} [get_ports {{ key }}]
+    {% endfor %}
+{% endif %}
+
+report_timing_summary -datasheet -max_paths 10 -file timing_summary.rpt

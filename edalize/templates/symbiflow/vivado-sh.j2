@@ -1,0 +1,7 @@
+#!/bin/bash
+
+VIVADO_SETTINGS=`find /opt -wholename "*Xilinx/Vivado/*/settings64.sh" | sort | head -n 1`
+
+source $VIVADO_SETTINGS
+
+vivado -mode batch -source fasm2bels.tcl
