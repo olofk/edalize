@@ -1,4 +1,8 @@
 yosys -import
+{% if plugins %}
+{{ plugins }}
+yosys -import
+{% endif %}
 source edalize_yosys_procs.tcl
 
 verilog_defaults -push

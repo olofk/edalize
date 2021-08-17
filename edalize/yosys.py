@@ -59,7 +59,9 @@ class Yosys(Edatool):
         file_table = []
         unused_files = []
 
-        yosys_read_options = " ".join(self.tool_options.get('yosys_read_options', []))
+        yosys_read_options = self.tool_options.get('yosys_read_options', None)
+
+        yosys_read_options = " ".join(yosys_read_options) if yosys_read_options is not None else ""
         yosys_synth_options = self.tool_options.get('yosys_synth_options', [])
 
         arch = self.tool_options.get('arch', None)
@@ -67,8 +69,10 @@ class Yosys(Edatool):
             logger.error("ERROR: arch is not defined.")
 
         use_surelog = False
+        plugins = []
         if "frontend=surelog" in yosys_synth_options:
             use_surelog = True
+            plugins += ['uhdm']
             yosys_synth_options.remove("frontend=surelog")
 
         if use_surelog:
@@ -142,7 +146,8 @@ class Yosys(Edatool):
                 'default_target'      : output_format,
                 'edif_opts'           : '-pvector bra' if arch=='xilinx' else '',
                 'yosys_template'      : template,
-                'name'                : self.name
+                'name'                : self.name,
+                'plugins'             : "plugin -i %s \n"*len(plugins) % tuple(plugins),
         }
 
         self.render_template('edalize_yosys_procs.tcl.j2',
