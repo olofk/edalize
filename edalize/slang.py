@@ -53,6 +53,7 @@ Example snippet of a CAPI2 description file for Slang:
 
         # contain the command line arguments
         self.flags = []
+        
         return 0
 
     @staticmethod
@@ -82,10 +83,14 @@ Example snippet of a CAPI2 description file for Slang:
         '''
         src_files, self.incdirs = self._get_fileset_files()
 
+        for dir in self.incdirs:
+            self.flags.append("-I {}".format(dir))
+
         ft_re = re.compile(r'(:?systemV|v)erilogSource')
         for file_obj in src_files:
             if ft_re.match(file_obj.file_type):
                 self.flags.append(file_obj.name)
+        
 
     def _get_run_mode_flags(self):
         '''
@@ -103,33 +108,34 @@ Example snippet of a CAPI2 description file for Slang:
         understand flags necessary for various defines
         '''
         for key, value in self.vlogdefine.items():
-            self.flags.append(' -D {}={} '.format(key, self._param_value_str(value)))
+            self.flags.append('-D {}={}'.format(key, self._param_value_str(value)))
 
     def _get_extra_options(self):
         '''
         get extra options from user
         '''
         extra_options = self.tool_options.get('extra_options', "")
-        self.flags += extra_options.split()
+        self.flags += " ".join(extra_options).split()
 
     def _get_top_flags(self):
         '''
         generate flags for top level module
         '''
         if self.toplevel != "":
-            self.flags.append(" --top {} ".format(self.toplevel))
+            self.flags.append("--top {}".format(self.toplevel))
     
     def build_main(self):
-        return
-
-    def configure_main(self):
-        return
-
-    def run_main(self):
         self._get_top_flags()
         self._get_define_flags()
         self._get_run_mode_flags()
         self._get_file_names()
         self._get_extra_options()
+        return
+
+    def configure_main(self):
+        self.flags = []
+        return
+
+    def run_main(self):
         self._run_tool("slang" ,self.flags)
         
