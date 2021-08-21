@@ -84,7 +84,8 @@ Example snippet of a CAPI2 description file for Slang:
         src_files, self.incdirs = self._get_fileset_files()
 
         for dir in self.incdirs:
-            self.flags.append("-I {}".format(dir))
+            self.flags.append("-I")
+            self.flags.append("{}".format(dir))
 
         ft_re = re.compile(r'(:?systemV|v)erilogSource')
         for file_obj in src_files:
@@ -108,7 +109,7 @@ Example snippet of a CAPI2 description file for Slang:
         understand flags necessary for various defines
         '''
         for key, value in self.vlogdefine.items():
-            self.flags.append('-D {}={}'.format(key, self._param_value_str(value)))
+            self.flags.append("-D {}={}".format(key, self._param_value_str(value)))
 
     def _get_extra_options(self):
         '''
@@ -122,14 +123,16 @@ Example snippet of a CAPI2 description file for Slang:
         generate flags for top level module
         '''
         if self.toplevel != "":
-            self.flags.append("--top {}".format(self.toplevel))
+            self.flags.append("--top")
+            self.flags.append("{}".format(self.toplevel))
     
     def build_main(self):
-        self._get_top_flags()
         self._get_define_flags()
-        self._get_run_mode_flags()
         self._get_file_names()
         self._get_extra_options()
+        self._get_run_mode_flags()
+        self._get_top_flags()
+        self._run_tool('slang' , self.flags, quiet=True)
         return
 
     def configure_main(self):
@@ -137,5 +140,4 @@ Example snippet of a CAPI2 description file for Slang:
         return
 
     def run_main(self):
-        self._run_tool("slang" ,self.flags)
-        
+        return
