@@ -5,6 +5,7 @@ def test_slang_lint(make_edalize_test):
         'mode' : "lint"
     }
     tf = make_edalize_test('slang',
+                           test_name="test_slang_lint",
                            param_types=['vlogdefine'],
                            tool_options=tool_options,
                            ref_dir='lint')
@@ -30,7 +31,7 @@ def test_slang_preprocess(make_edalize_test):
 
 def test_slang_extra_options(make_edalize_test):
     tool_options = {
-        'extra_options' : "-v"
+        'extra_options' : ["-v", "-d -c -e"]
     }
     tf = make_edalize_test('slang',
                        test_name="test_slang_extra_options",
