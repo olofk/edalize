@@ -37,7 +37,7 @@ Example snippet of a CAPI2 description file for Slang:
         }
     }
 
-    argtypes = ['vlogdefine']
+    argtypes = ['vlogdefine', 'vlogparam']
 
     flags = []
 
@@ -110,6 +110,13 @@ Example snippet of a CAPI2 description file for Slang:
         '''
         for key, value in self.vlogdefine.items():
             self.flags.append("-D {}={}".format(key, self._param_value_str(value)))
+    
+    def _get_param_flags(self):
+        '''
+        get flags for parameters
+        '''
+        for key, value in self.vlogparam.items():
+            self.flags.append("-G {}={}".format(key, self._param_value_str(value)))
 
     def _get_slang_options(self):
         '''
@@ -128,6 +135,7 @@ Example snippet of a CAPI2 description file for Slang:
     
     def build_main(self):
         self._get_define_flags()
+        self._get_param_flags()
         self._get_file_names()
         self._get_slang_options()
         self._get_run_mode_flags()

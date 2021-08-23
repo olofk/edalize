@@ -6,7 +6,7 @@ def test_slang_lint(make_edalize_test):
     }
     tf = make_edalize_test('slang',
                            test_name="test_slang_lint",
-                           param_types=['vlogdefine'],
+                           param_types=['vlogdefine', 'vlogparam'],
                            tool_options=tool_options,
                            ref_dir='lint')
 
@@ -22,7 +22,7 @@ def test_slang_preprocess(make_edalize_test):
     tf = make_edalize_test('slang',
                            test_name="test_slang_preprocess",
                            tool_options=tool_options,
-                           param_types=['vlogdefine'],
+                           param_types=['vlogdefine', 'vlogparam'],
                            ref_dir="preprocess")
     tf.backend.configure()
     tf.backend.build()
@@ -36,7 +36,7 @@ def test_slang_slang_options(make_edalize_test):
     tf = make_edalize_test('slang',
                        test_name="test_slang_slang_options",
                        tool_options=tool_options,
-                       param_types=['vlogdefine'],
+                       param_types=['vlogdefine', 'vlogparam'],
                        ref_dir="slang_options")
     tf.backend.configure()
     tf.backend.build()
