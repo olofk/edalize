@@ -25,7 +25,7 @@ Example snippet of a CAPI2 description file for Slang:
       mode:
         - lint # this will lint all the files
         - preprocess # this will preprocess all the files and output a single file
-      extra_options:
+      slang_options:
         user defined options
 
     """
@@ -33,7 +33,7 @@ Example snippet of a CAPI2 description file for Slang:
     tool_options = {
         'lists' : {
             'mode': 'String',
-            'extra_options': 'String'
+            'slang_options': 'String'
         }
     }
 
@@ -69,7 +69,7 @@ Example snippet of a CAPI2 description file for Slang:
                         'desc': ("choose slang to run in either lint mode or preprocess mode")
                     },
                     {
-                        'name': 'extra_options',
+                        'name': 'slang_options',
                         'type': 'String',
                         'desc': ("extra options for slang")
                     }
@@ -111,12 +111,12 @@ Example snippet of a CAPI2 description file for Slang:
         for key, value in self.vlogdefine.items():
             self.flags.append("-D {}={}".format(key, self._param_value_str(value)))
 
-    def _get_extra_options(self):
+    def _get_slang_options(self):
         '''
         get extra options from user
         '''
-        extra_options = self.tool_options.get('extra_options', "")
-        self.flags += " ".join(extra_options).split()
+        slang_options = self.tool_options.get('slang_options', "")
+        self.flags += " ".join(slang_options).split()
 
     def _get_top_flags(self):
         '''
@@ -129,7 +129,7 @@ Example snippet of a CAPI2 description file for Slang:
     def build_main(self):
         self._get_define_flags()
         self._get_file_names()
-        self._get_extra_options()
+        self._get_slang_options()
         self._get_run_mode_flags()
         self._get_top_flags()
         self._run_tool('slang' , self.flags, quiet=True)
