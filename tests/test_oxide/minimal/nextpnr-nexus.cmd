@@ -1,0 +1,1 @@
+-l next.log --device LIFCL-40-9BG400CES --json test_oxide_0.json --fasm test_oxide_0.fasm
