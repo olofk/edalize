@@ -28,6 +28,7 @@ class Nextpnr(Edatool):
         cst_file = ""
         lpf_file = ""
         pcf_file = ""
+        pdc_file = ""
         netlist = ""
         unused_files = []
         for f in self.files:
@@ -47,6 +48,14 @@ class Nextpnr(Edatool):
                         )
                     )
                 lpf_file = f["name"]
+            if f["file_type"] == "PDC":
+                if pdc_file:
+                    raise RuntimeError(
+                        "Nextpnr only supports one PDC file. Found {} and {}".format(
+                            pdc_file, f["name"]
+                        )
+                    )
+                pdc_file = f["name"]
             if f["file_type"] == "PCF":
                 if pcf_file:
                     raise RuntimeError(
@@ -81,6 +90,14 @@ class Nextpnr(Edatool):
             targets = self.name + ".config"
             constraints = ["--lpf", lpf_file] if lpf_file else []
             output = ["--textcfg", targets]
+        elif arch == "nexus":
+            device = self.tool_options.get("device")
+            if not device:
+                raise RuntimeError("Missing required option 'device' for nextpnr-nexus")
+            arch_options += ["--device", device]
+            targets = self.name + ".fasm"
+            constraints = ["--pdc", pdc_file] if pdc_file else []
+            output = ["--fasm", targets]
         elif arch == "gowin":
             device = self.tool_options.get("device")
             if not device:
