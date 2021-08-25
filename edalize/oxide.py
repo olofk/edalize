@@ -17,7 +17,11 @@ class Oxide(Edatool):
         if api_ver == 0:
             options = {
                 'lists' : [],
-                'members' : []}
+                'members' : [
+                    {'name' : 'device',
+                     'type' : 'String',
+                     'desc' : 'Required device option for nextpnr-nexus command (e.g. LIFCL-40-9BG400C)'},
+                ]}
 
             Edatool._extend_options(options, Yosys)
             Edatool._extend_options(options, Nextpnr)
