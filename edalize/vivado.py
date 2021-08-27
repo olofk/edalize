@@ -54,6 +54,9 @@ class Vivado(Edatool):
                         {'name' : 'hw_target',
                         'type' : 'Description',
                         'desc' : 'A pattern matching a board identifier. Refer to the Vivado documentation for ``get_hw_targets`` for details. Example: ``*/xilinx_tcf/Digilent/123456789123A``'},
+                        {'name' : 'hw_server_url',
+                        'type' : 'String',
+                        'desc' : 'The host and port for remote hardware targets. ex. ``10.0.0.3:3121``'},
                     ]}
 
     """ Get tool version
@@ -139,6 +142,8 @@ class Vivado(Edatool):
             else:
                 unused_files.append(f)
 
+            
+
         template_vars = {
             'name'         : self.name,
             'src_files'    : '\n'.join(src_files),
@@ -215,8 +220,15 @@ class Vivado(Edatool):
         commands.set_default_target(bitstream)
         commands.write(os.path.join(self.work_root, 'Makefile'))
 
+        url = self.tool_options.get('hw_server_url', None)
+
+        pgm_template_vars = {
+            'hw_server_url' : ' -url ' + str(url) if url is not None else ''
+        }
+
         self.render_template('vivado-program.tcl.j2',
-                             self.name+"_pgm.tcl")
+                             self.name+"_pgm.tcl",
+                             pgm_template_vars)
 
     def build_main(self):
         logger.info("Building")
@@ -234,6 +246,7 @@ class Vivado(Edatool):
     correct FPGA board and then downloads the bitstream. The tcl script is then
     executed in Vivado's batch mode.
     """
+
     def run_main(self):
         if 'pnr' in self.tool_options:
             if self.tool_options['pnr'] == 'vivado':
