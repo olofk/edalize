@@ -223,7 +223,7 @@ class Vivado(Edatool):
         url = self.tool_options.get('hw_server_url', None)
 
         pgm_template_vars = {
-            'hw_server_url' : ' -url ' + str(url) if url is not None else ''
+            'url' : ' -url ' + str(url) if url is not None else ''
         }
 
         self.render_template('vivado-program.tcl.j2',
