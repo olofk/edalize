@@ -41,12 +41,8 @@ class Rivierapro(Edatool):
         vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
 
         libs = []
-        common_compilation = []
-        common_compilation += ['vlog']
-        common_compilation += self.tool_options.get('vlog_options', [])
-        common_compilation += vlog_include_dirs
-        for k, v in self.vlogdefine.items():
-            common_compilation += ['+define+{}={}'.format(k,self._param_value_str(v))]
+        common_compilation_sv = []
+        common_compilation_vhdl = []
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = 'work'
@@ -95,12 +91,32 @@ class Rivierapro(Edatool):
                 args += ['-quiet']
                 args += ['-work', f.logical_name]
                 args += [f.name]
-                common_compilation += [f.name,'\\\n']
+                if cmd == 'vlog':
+                    if not common_compilation_sv:
+                        common_compilation_sv += ['vlog']
+                        for k, v in self.vlogdefine.items():
+                            common_compilation_sv += ['+define+{}={}'.format(k,self._param_value_str(v))]
+                        common_compilation_sv += self.tool_options.get('vlog_options', [])
+                        common_compilation_sv += vlog_include_dirs
+                        common_compilation_sv += ['-quiet']
+                        common_compilation_sv += ['-work', f.logical_name]
+                        common_compilation_sv += [f.name,'\\\n']
+                    else:
+                        common_compilation_sv += [f.name,'\\\n']
+                elif cmd == 'vcom':
+                    if not common_compilation_vhdl:
+                        common_compilation_vhdl += ['vcom']
+                        common_compilation_vhdl += [f.name,'\\\n']
+                    else:
+                        common_compilation_vhdl += [f.name,'\\\n']
                 if (self.tool_options.get('compilation_mode'))=='sep' or (self.tool_options.get('compilation_mode')==None):
                     tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))
 
         if (self.tool_options.get('compilation_mode')=='common'):
-            tcl_build_rtl.write("{} \n".format(' '.join(common_compilation)))
+            if common_compilation_sv:
+                tcl_build_rtl.write("{} \n".format(' '.join(common_compilation_sv)))
+            if common_compilation_vhdl:
+                tcl_build_rtl.write("{} \n".format(' '.join(common_compilation_vhdl)))
 			
         if not (self.tool_options.get('compilation_mode')=='common' or self.tool_options.get('compilation_mode')==None or self.tool_options.get('compilation_mode')=='sep'):
             raise RuntimeError('wrong compilation mode, use --compilation_mode=common for common compilation or --compilation_mode=sep for separate compilation')
