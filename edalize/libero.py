@@ -148,6 +148,7 @@ class Libero(Edatool):
             'vhdlSource': "-hdl_source {",
             'PDC': '-io_pdc {',
             'SDC': '-sdc {',
+            'FPPDC': '-fp_pdc {',
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
@@ -170,6 +171,7 @@ class Libero(Edatool):
         file_types = {
             'PDC': 'constraint/io/',
             'SDC': 'constraint/',
+            'FPPDC': 'constraint/fp/',
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
