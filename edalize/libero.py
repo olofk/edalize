@@ -38,6 +38,10 @@ class Libero(Edatool):
                         {'name': 'hdl',
                          'type': 'String',
                          'desc': 'Default HDL (e.g. "VERILOG")'},
+                        {'name': 'v2021_or_later',
+                         'type': 'String',
+                         'desc': 'Libero SoC version v2021.1 or later'},
+
                     ]
                     }
 
@@ -46,6 +50,7 @@ class Libero(Edatool):
 
     tool_options_defaults = {
         'range': 'IND',
+        'v2021_or_later': 'false',
     }
 
     def _set_tool_options_defaults(self):
@@ -73,6 +78,7 @@ class Libero(Edatool):
         with the build steps.
         """
         self._set_tool_options_defaults()
+        self.tool_options['v2021_or_later'] = self.tool_options.get('v2021_or_later') in ['1', 'true', 'True']
         self._check_mandatory_options()
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
