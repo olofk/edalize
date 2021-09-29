@@ -207,6 +207,7 @@ FILES = [
     {'name': 'config.sby.j2', 'file_type': 'sbyConfigTemplate'},
     {"name": "another_sv_file.sv", "file_type": "systemVerilogSource"},
     {"name": "pdc_constraint_file.pdc", "file_type": "PDC"},
+    {"name": "pdc_floorplan_constraint_file.pdc", "file_type": "FPPDC"},
     {'name': 'lpf_file.lpf', 'file_type': 'LPF'}
 ]
 """Files of all supported file types."""
