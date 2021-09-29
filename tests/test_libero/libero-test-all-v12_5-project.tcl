@@ -2,9 +2,9 @@
 # Microsemi Tcl Script
 # Libero
 
-puts "----------------- Creating project libero-test-all ------------------------------"
+puts "----------------- Creating project libero-test-all-v12_5 ------------------------------"
 # Create a new project with device parameters
-new_project -location {./prj} -name libero-test-all -project_description {} -hdl {VHDL} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V}
+new_project -location {./prj} -name libero-test-all-v12_5 -project_description {} -hdl {VHDL} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V}
 
 # Import HDL sources and constraints
 import_files \
@@ -34,9 +34,9 @@ source tcl_file.tcl
 
 # Configure Synthesize tool to use the generated Synplify TCL script
 configure_tool -name {SYNTHESIZE} \
-        -params {SYNPLIFY_TCL_FILE:../../libero-test-all-syn-user.tcl}
+        -params {SYNPLIFY_TCL_FILE:../../libero-test-all-v12_5-syn-user.tcl}
 
-puts "Configured Synthesize tool to use script: libero-test-all-syn-user.tcl"
+puts "Configured Synthesize tool to use script: libero-test-all-v12_5-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"
 puts "- ../../."
 
@@ -66,5 +66,5 @@ organize_tool_files -tool {VERIFYTIMING} \
 
 save_project
 
-puts "If desired, execute the libero-test-all-run.tcl script to run the generation flow."
+puts "If desired, execute the libero-test-all-v12_5-run.tcl script to run the generation flow."
 puts "----------------- Finished Importing project -----------------------------"
