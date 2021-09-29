@@ -34,10 +34,10 @@ class Libero(Edatool):
                          'desc': 'FPGA temperature range (e.g. IND)'},
                         {'name': 'defiostd',
                          'type': 'String',
-                         'desc': 'FPGA default IO std (e.g. "LVCMOS 1.8V"'},
+                         'desc': 'FPGA default IO std (e.g. "LVCMOS 1.8V")'},
                         {'name': 'hdl',
                          'type': 'String',
-                         'desc': 'Default HDL (e.g. "VERILOG"'},
+                         'desc': 'Default HDL (e.g. "VERILOG")'},
                     ]
                     }
 
