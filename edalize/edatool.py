@@ -405,11 +405,11 @@ class Edatool(object):
             logger.debug("Environment: " + str(_env))
             logger.debug("Working directory: " + self.work_root)
             try:
-                cp = run(script['cmd'],
-                                    cwd = self.work_root,
-                                    env = _env,
-				    capture_output=not self.verbose,
-                                    check = True)
+                run(script['cmd'],
+                    cwd = self.work_root,
+                    env = _env,
+                    capture_output=not self.verbose,
+                    check = True)
             except FileNotFoundError as e:
                 msg = "Unable to run {} script '{}': {}"
                 raise RuntimeError(msg.format(hook_name, script['name'], str(e)))
@@ -431,12 +431,12 @@ class Edatool(object):
         capture_output = quiet and not (self.verbose or self.stdout or self.stderr)
         try:
             cp = run([cmd] + args,
-		     cwd = self.work_root,
-		     stdin=subprocess.PIPE,
+                     cwd = self.work_root,
+                     stdin = subprocess.PIPE,
                      stdout=self.stdout,
                      stderr=self.stderr,
-		     capture_output=capture_output,
-		     check=True)
+                     capture_output=capture_output,
+                     check=True)
         except FileNotFoundError:
             _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
             raise RuntimeError(_s)
@@ -450,7 +450,7 @@ class Edatool(object):
                 logger.error(e.stderr.decode())
                 logger.debug("=== STDERR ===")
                 logger.debug(e.stderr)
-            
+
             raise RuntimeError(_s)
         return cp.returncode, cp.stdout, cp.stderr
 
