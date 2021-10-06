@@ -79,7 +79,7 @@ def test_verilog_include_file_with_partial_include_path():
     assert len(parsed_files) == 0
     assert incdirs == ['../some_dir']
 
-def test_edam_hooks(tmpdir):
+def test_edam_hook_failing(tmpdir):
     import os.path
     from edalize import get_edatool
 
@@ -101,3 +101,35 @@ def test_edam_hooks(tmpdir):
         r"\['sh', '.+/exit_1_script'\] exited with error code 1")
     with pytest.raises(RuntimeError, match=exc_str_exp):
         backend.build_pre()
+
+
+def test_edam_multiple_hooks(tmpdir):
+    """ Test if more than one hook gets successfully executed. """
+
+    import os.path
+    from edalize import get_edatool
+
+    hooks = {
+        "pre_build": [
+            {
+                "cmd": ["/usr/bin/touch", "hook_1_executed.txt"],
+                "name": "hook_1",
+            },
+            {
+                "cmd": ["/usr/bin/touch", "hook_2_executed.txt"],
+                "name": "hook_2",
+            },
+        ]
+    }
+
+    work_root = str(tmpdir)
+    edam = {"hooks": hooks, "name": "test_edam_multiple_hooks"}
+
+    assert not os.path.exists(os.path.join(work_root, 'hook_1_executed.txt'))
+    assert not os.path.exists(os.path.join(work_root, 'hook_2_executed.txt'))
+
+    backend = get_edatool("icarus")(edam=edam, work_root=work_root)
+    backend.build_pre()
+
+    assert os.path.exists(os.path.join(work_root, 'hook_1_executed.txt'))
+    assert os.path.exists(os.path.join(work_root, 'hook_2_executed.txt'))
