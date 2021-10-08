@@ -33,9 +33,11 @@ set_root -module {top_module::work}
 puts "---------- Executing User TCL script: tcl_file.tcl ----------"
 source tcl_file.tcl
 
-# Configure Synthesize tool to use the generated Synplify TCL script
+
+
+# Configure Synthesize tool to use the generated Synplify TCL script 
 configure_tool -name {SYNTHESIZE} \
-        -params {SYNPLIFY_TCL_FILE:../../libero-test-syn-user.tcl}
+        -params [join "SYNPLIFY_TCL_FILE:" [file join [file dirname [info script]] /libero-test-syn-user.tcl]]
 
 puts "Configured Synthesize tool to use script: libero-test-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"

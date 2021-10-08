@@ -1,5 +1,5 @@
 from edalize_common import make_edalize_test
-import pytest
+
 
 def test_libero(make_edalize_test):
     """ Test passing tool options to the Libero backend """
@@ -19,13 +19,9 @@ def test_libero(make_edalize_test):
                       '-run.tcl', name + '-syn-user.tcl', ])
 
 
-@pytest.mark.parametrize("params", [("v12_5", False), ("v2021_1", True)])
-def test_libero_with_params(params,make_edalize_test):
+def test_libero_with_params(make_edalize_test):
     """ Test passing tool options to the Libero backend """
-
-    test_name, v2021_or_later = params
-
-    name = 'libero-test-all-' + test_name
+    name = 'libero-test-all'
     tool_options = {
         'family': 'PolarFire',
         'die': 'MPF300TS_ES',
@@ -36,8 +32,6 @@ def test_libero_with_params(params,make_edalize_test):
         'defiostd': 'LVCMOS 1.8V',
         'hdl': 'VHDL',
     }
-    if v2021_or_later:
-        tool_options['v2021_or_later'] = 'true'
 
     tf = make_edalize_test('libero',
                            test_name=name,
