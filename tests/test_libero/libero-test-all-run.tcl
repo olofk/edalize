@@ -2,7 +2,7 @@
 # Microsemi Tcl Script
 # Libero
 
-source {libero-test-all-v12_5-project.tcl}
+source {libero-test-all-project.tcl}
 
 run_tool -name {SYNTHESIZE}
 run_tool -name {PLACEROUTE}
