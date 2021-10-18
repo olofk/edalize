@@ -112,8 +112,8 @@ You can reproduce the example above with something like
         }
     }
 
-    def __init__(self, edam=None, work_root=None, eda_api=None):
-        super(Symbiyosys, self).__init__(edam, work_root, eda_api)
+    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+        super(Symbiyosys, self).__init__(edam, work_root, eda_api, verbose)
 
         # Register Jinja filters
         self.jinja_env.filters["gen_reads"] = self._gen_reads
