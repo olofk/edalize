@@ -82,7 +82,7 @@ class Quartus(Edatool):
         if not edam:
             edam = eda_api
 
-        super(Quartus, self).__init__(edam, work_root, verbose)
+        super(Quartus, self).__init__(edam, work_root, eda_api, verbose)
 
         # Acquire quartus_sh identification information from available tool if
         # possible. We always default to version 18.1 Standard if a problem is encountered
