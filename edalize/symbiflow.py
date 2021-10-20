@@ -339,5 +339,7 @@ endif
         else:
             logger.error("Unsupported PnR tool: {}".format(self.tool_options.get("pnr")))
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No GUI support for SymbiFlow, running in CLI")
         logger.info("Programming")

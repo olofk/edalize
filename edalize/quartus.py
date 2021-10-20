@@ -238,7 +238,9 @@ class Quartus(Edatool):
 
     """ Program the FPGA
     """
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No support for Quartus GUI, running in CLI")
         args = ['--mode=jtag']
         if 'cable' in self.tool_options:
             args += ['-c', self.tool_options['cable']]

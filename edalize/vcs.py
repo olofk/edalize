@@ -86,8 +86,11 @@ Example snippet of a CAPI2 description file for VCS:
 
         self.render_template('Makefile.j2', 'Makefile', template_vars)
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
         args = ['run']
+        if with_gui:
+            logger.warning("No GUI support for VCS, running in CLI")
+
 
         # Set plusargs
         if self.plusarg:

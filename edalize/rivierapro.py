@@ -173,7 +173,9 @@ class Rivierapro(Edatool):
         args = ['-c', '-do', 'do edalize_main.tcl; exit']
         self._run_tool('vsim', args, quiet=True)
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
+        if with_gui:
+            logger.warning("No support for GUI in RivieraPro, running in CLI")
         if not os.getenv('ALDEC_PATH'):
             raise RuntimeError("Environment variable ALDEC_PATH was not found. It should be set to Riviera Pro install path. Please source <Riviera Pro install path>/etc/setenv to set it")
 

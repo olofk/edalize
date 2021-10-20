@@ -185,8 +185,12 @@ class Xcelium(Edatool):
         self._write_makefile()
         tcl_main.close()
 
-    def run_main(self):
-        args = ['run']
+    def run_main(self, with_gui=False):
+        args = []
+        if with_gui:
+            args.append('run-gui')
+        else:
+            args.append('run')
 
         # Set plusargs
         if self.plusarg:

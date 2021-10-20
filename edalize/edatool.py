@@ -207,10 +207,10 @@ class Edatool(object):
         if 'post_build' in self.hooks:
             self._run_scripts(self.hooks['post_build'], 'post_build')
 
-    def run(self, args={}):
+    def run(self, args={}, with_gui=False):
         logger.info("Running")
         self.run_pre(args)
-        self.run_main()
+        self.run_main(with_gui)
         self.run_post()
 
     def run_pre(self, args=None):
@@ -222,7 +222,7 @@ class Edatool(object):
         if 'pre_run' in self.hooks:
             self._run_scripts(self.hooks['pre_run'], 'pre_run')
 
-    def run_main(self):
+    def run_main(self, with_gui=False):
         pass
 
     def run_post(self):
