@@ -62,7 +62,7 @@ class Apicula(Edatool):
         depends = self.name+'.pack'
         targets = self.name+'.fs'
         command = ['gowin_pack', '-d', self.tool_options.get('device'), '-o', targets, depends]
-        commands.add(command, [targets], [depends])
+        commands.add([command], [self.EdaCommands.Target(targets)], [depends])
 
         commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, 'Makefile'))

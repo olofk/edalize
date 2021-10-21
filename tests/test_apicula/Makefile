@@ -13,3 +13,5 @@ build-gui: test_apicula_0.json
 
 test_apicula_0.fs: test_apicula_0.pack
 	$(EDALIZE_LAUNCHER) gowin_pack -d GW1N-LV1QN48C6/I5 -o test_apicula_0.fs test_apicula_0.pack
+
+.PHONY: all build-gui

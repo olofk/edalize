@@ -117,8 +117,8 @@ class Yosys(Edatool):
                                  template_vars)
 
         commands = self.EdaCommands()
-        commands.add(['yosys', '-l', 'yosys.log', '-p', f'"tcl {template}"'],
-                         [f'{self.name}.{output}' for output in ['blif', 'json','edif']],
+        commands.add([['yosys', '-l', 'yosys.log', '-p', f'"tcl {template}"']],
+                         [self.EdaCommands.Target(f'{self.name}.{output}') for output in ['blif', 'json','edif']],
                          [template])
         if self.tool_options.get('yosys_as_subtool'):
             self.commands = commands.commands

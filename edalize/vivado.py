@@ -183,25 +183,25 @@ class Vivado(Edatool):
         #Create project file
         project_file = self.name+'.xpr'
         tcl_file = [self.name+'.tcl']
-        commands.add(vivado_command+tcl_file, [project_file], tcl_file + edif_files)
+        commands.add([vivado_command+tcl_file], [self.EdaCommands.Target(project_file)], tcl_file + edif_files)
 
         #Synthesis target
         if synth_tool == 'yosys':
             commands.commands += yosys.commands
-            commands.add([], ['synth'], edif_files)
+            commands.add([], [self.EdaCommands.Target('synth', phony=True)], edif_files)
         else:
             depends = [f'{self.name}_synth.tcl', project_file]
-            targets = [f'{self.name}.runs/synth_1/__synthesis_is_complete__']
-            commands.add(vivado_command+depends, targets, depends)
-            commands.add([], ['synth'], targets)
+            targets = [self.EdaCommands.Target(f'{self.name}.runs/synth_1/__synthesis_is_complete__')]
+            commands.add([vivado_command+depends], targets, depends)
+            commands.add([], [self.EdaCommands.Target('synth', phony=True)], targets)
 
         #Bitstream generation
         run_tcl = self.name+'_run.tcl'
         depends = [run_tcl, project_file]
         bitstream = self.name+'.bit'
-        commands.add(vivado_command+depends, [bitstream], depends)
+        commands.add([vivado_command+depends], [self.EdaCommands.Target(bitstream)], depends)
 
-        commands.add(['vivado', project_file], ['build-gui'], [project_file])
+        commands.add([['vivado', project_file]], [self.EdaCommands.Target('build-gui', phony=True)], [project_file])
 
         depends = [self.name+'_pgm.tcl', bitstream]
         command = ['vivado', '-quiet', '-nolog', '-notrace', '-mode', 'batch',
@@ -210,7 +210,7 @@ class Vivado(Edatool):
         part = self.tool_options.get('part', "")
         command += [part] if part else []
         command += [bitstream]
-        commands.add(command, ['pgm'], depends)
+        commands.add([command], [self.EdaCommands.Target('pgm', phony=True)], depends)
 
         commands.set_default_target(bitstream)
         commands.write(os.path.join(self.work_root, 'Makefile'))

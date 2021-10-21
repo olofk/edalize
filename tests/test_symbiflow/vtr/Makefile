@@ -19,3 +19,5 @@ top_module.fasm: top_module.route
 
 top_module.bit: top_module.fasm
 	$(EDALIZE_LAUNCHER) symbiflow_write_bitstream -d artix7 -f top_module.fasm -p xc7a35tcsg324-1csg324-1 -b top_module.bit
+
+.PHONY: all

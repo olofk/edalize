@@ -13,3 +13,5 @@ build-gui: test_trellis_0.json
 
 test_trellis_0.bit: test_trellis_0.config
 	$(EDALIZE_LAUNCHER) ecppack --svf test_trellis_0.svf test_trellis_0.config test_trellis_0.bit
+
+.PHONY: all build-gui

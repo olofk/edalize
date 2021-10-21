@@ -57,7 +57,7 @@ class Trellis(Edatool):
         depends = self.name+'.config'
         targets = self.name+'.bit'
         command = ['ecppack', '--svf', self.name+'.svf', depends, targets]
-        commands.add(command, [targets], [depends])
+        commands.add([command], [self.EdaCommands.Target(targets)], [depends])
 
         commands.set_default_target(self.name+'.bit')
         commands.write(os.path.join(self.work_root, 'Makefile'))
