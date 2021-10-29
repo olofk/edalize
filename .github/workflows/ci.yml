@@ -24,8 +24,8 @@ jobs:
       matrix:
         os:
         - { icon: 🐧, name: ubuntu }
-        - { icon: 🍎, name: macos }
-        - { icon: 🧊, name: windows }
+        #- { icon: 🍎, name: macos }
+        #- { icon: 🧊, name: windows }
         pyver:
         - '3.6'
         - '3.7'
