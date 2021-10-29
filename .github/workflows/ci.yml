@@ -12,7 +12,23 @@ on:
 
 jobs:
 
-  build:
+  Format:
+    name: 🐍 Format
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 🧰 Checkout
+      uses: actions/checkout@v2
+
+    - name: 🐍 Setup Python ${{ matrix.pyver }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: 🚦 Run pre-commit Action
+      uses: pre-commit/action@v2.0.0
+
+  Build:
     strategy:
       fail-fast: false
       matrix:
