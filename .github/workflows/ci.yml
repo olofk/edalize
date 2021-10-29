@@ -11,31 +11,31 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - ubuntu
-        - macos
-        - windows
+        - { icon: 🐧, name: ubuntu }
+        - { icon: 🍎, name: macos }
+        - { icon: 🧊, name: windows }
         pyver:
         - '3.6'
         - '3.7'
         - '3.8'
         - '3.9'
         - '3.10'
-    runs-on: ${{ matrix.os }}-latest
-
+    runs-on: ${{ matrix.os.name }}-latest
+    name: ${{ matrix.os.icon }} ${{ matrix.os.name }} | ${{ matrix.pyver }}
     steps:
 
-    - uses: actions/checkout@v2
+    - name: 🧰 Repository Checkout
+      uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.pyver }}
+    - name: 🐍 Set up Python ${{ matrix.pyver }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.pyver }}
 
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
+    - name: 🛠️ Install dependencies
+      run: |
+        python -c "import sys; print(sys.version)"
+        pip install tox
 
-    - name: Install Tox and any other packages
-      run: pip install tox
-
-    - name: Build package and run tests with tox
+    - name: 🚧 Build package and run tests with tox
       run: tox -e py
