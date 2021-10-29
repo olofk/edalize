@@ -7,20 +7,20 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         os:
-        - ubuntu-latest
-        - macos-latest
-        - windows-latest
+        - ubuntu
+        - macos
+        - windows
         pyver:
         - '3.6'
         - '3.7'
         - '3.8'
         - '3.9'
         - '3.10'
+    runs-on: ${{ matrix.os }}-latest
 
     steps:
 
