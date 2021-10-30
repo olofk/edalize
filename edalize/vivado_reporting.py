@@ -1,4 +1,5 @@
-"""Vivado-specific reporting routines
+"""
+Vivado-specific reporting routines
 """
 
 import io
@@ -40,10 +41,10 @@ class VivadoReporting(Reporting):
 
     @staticmethod
     def _parse_utilization_tables(util_str: str) -> Dict[str, str]:
-        """Find all of the section titles and tables in a Vivado utilization report
+        """
+        Find all of the section titles and tables in a Vivado utilization report.
 
-        These are returned as a dict with the section titles as keys and the
-        table as the value
+        These are returned as a dict with the section titles as keys and the table as the value.
         """
 
         # Find section headings, discarding the number and following horizontal
@@ -84,7 +85,8 @@ class VivadoReporting(Reporting):
 
     @staticmethod
     def _parse_timing_summary_tables(time_rpt: str):
-        """Return tables from a Vivado timing summary report
+        """
+        Return tables from a Vivado timing summary report.
 
         This currently only handles basic tables such as "Design Timing
         Summary" and "Clock Summary". The more complex data in "Timing Details"

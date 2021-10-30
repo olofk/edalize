@@ -1,6 +1,3 @@
-"""Quartus-specific reporting routines
-"""
-
 import logging
 import re
 from typing import Dict, Union
@@ -31,6 +28,9 @@ except ImportError as e:
 
 
 class QuartusReporting(Reporting):
+    """
+    Quartus-specific reporting routines.
+    """
 
     # Override non-default class variables
     _resource_rpt_pattern = "*.fit.rpt"
@@ -39,7 +39,8 @@ class QuartusReporting(Reporting):
 
     @staticmethod
     def _parse_tables(report_str: str) -> Dict[str, str]:
-        """Parse the tables from a fitter report
+        """
+        Parse the tables from a fitter report.
 
         Keys are the title of the table, values are the table body
         """

@@ -13,19 +13,16 @@ from edalize.yosys import Yosys
 
 logger = logging.getLogger(__name__)
 
-""" Vivado Backend
-
-A core (usually the system core) can add the following files:
-
-- Standard design sources
-
-- Constraints: Supply xdc files with file_type=xdc or unmanaged constraints with file_type SDC
-
-- IP: Supply the IP core xci file with file_type=xci and other files (like .prj)
-      as file_type=user
-"""
 class Vivado(Edatool):
+    """
+    Vivado Backend.
 
+    A core (usually the system core) can add the following files:
+
+    * Standard design sources
+    * Constraints: Supply xdc files with file_type=xdc or unmanaged constraints with file_type SDC
+    * IP: Supply the IP core xci file with file_type=xci and other files (like .prj) as file_type=user
+    """
     argtypes = ['vlogdefine', 'vlogparam', 'generic']
 
     @classmethod
@@ -56,13 +53,13 @@ class Vivado(Edatool):
                         'desc' : 'A pattern matching a board identifier. Refer to the Vivado documentation for ``get_hw_targets`` for details. Example: ``*/xilinx_tcf/Digilent/123456789123A``'},
                     ]}
 
-    """ Get tool version
-
-    This gets the Vivado version by running vivado -version and
-    parsing the output. If this command fails, "unknown" is returned
-    """
     def get_version(self):
+        """
+        Get tool version.
 
+        This gets the Vivado version by running vivado -version and
+        parsing the output. If this command fails, "unknown" is returned.
+        """
         version = "unknown"
         try:
             vivado_text = subprocess.Popen(["vivado", "-version"], stdout=subprocess.PIPE, env=os.environ).communicate()[0]
@@ -76,13 +73,14 @@ class Vivado(Edatool):
 
         return version
 
-    """ Configuration is the first phase of the build
-    This writes the project TCL files and Makefile. It first collects all
-    sources, IPs and constraints and then writes them to the TCL file along
-     with the build steps.
-    """
     def configure_main(self):
+        """
+        Configuration is the first phase of the build.
 
+        This writes the project TCL files and Makefile. It first collects all
+        sources, IPs and constraints and then writes them to the TCL file along
+        with the build steps.
+        """
         synth_tool = self.tool_options.get("synth", "vivado")
 
         if synth_tool == "yosys":
@@ -228,13 +226,14 @@ class Vivado(Edatool):
                 args.append('synth')
         self._run_tool('make', args, quiet=True)
 
-    """ Program the FPGA
-
-    For programming the FPGA a vivado tcl script is written that searches for the
-    correct FPGA board and then downloads the bitstream. The tcl script is then
-    executed in Vivado's batch mode.
-    """
     def run_main(self):
+        """
+        Program the FPGA.
+
+        For programming the FPGA a vivado tcl script is written that searches for the
+        correct FPGA board and then downloads the bitstream. The tcl script is then
+        executed in Vivado's batch mode.
+        """
         if 'pnr' in self.tool_options:
             if self.tool_options['pnr'] == 'vivado':
                 pass

@@ -62,13 +62,14 @@ Example snippet of a CAPI2 description file
                 self.tool_options[key] = default_value
 
 
-    """ Configuration is the first phase of the build
-
-    This writes the project TCL files and Makefile. It first collects all
-    sources, IPs and constraints and then writes them to the TCL file along
-    with the build steps.
-    """
     def configure_main(self):
+        """
+        Configuration is the first phase of the build.
+
+        This writes the project TCL files and Makefile. It first collects all
+        sources, IPs and constraints and then writes them to the TCL file along
+        with the build steps.
+        """
         self._set_tool_options_defaults()
 
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
