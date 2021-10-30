@@ -70,7 +70,8 @@ else:
 
 # Jinja2 tests and filters, available in all templates
 def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
-    """ Convert a parameter value to string suitable to be passed to an EDA tool
+    """
+    Convert a parameter value to string suitable to be passed to an EDA tool.
 
     Rules:
 
@@ -353,7 +354,7 @@ class Edatool(object):
 
     def render_template(self, template_file, target_file, template_vars = {}):
         """
-        Render a Jinja2 template for the backend
+        Render a Jinja2 template for the backend.
 
         The template file is expected in the directory templates/BACKEND_NAME.
         """
@@ -459,9 +460,10 @@ class Edatool(object):
         return ft.startswith("verilogSource") or ft.startswith("systemVerilogSource")
 
     def _write_fileset_to_f_file(self, output_file, include_vlogparams = True, filter_func = _filter_verilog_files):
-        """ Write a file list (*.f) file
+        """
+        Write a file list (*.f) file.
 
-        Returns a list of all files which were not added to the *.f file
+        Returns a list of all files which were not added to the *.f file.
         """
 
         with open(output_file, 'w') as f:

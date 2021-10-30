@@ -36,7 +36,8 @@ except ImportError as e:
 
 
 class Reporting(abc.ABC):
-    """Base class providing defaults and common functionality for tool-specific reporting classes
+    """
+    Base class providing defaults and common functionality for tool-specific reporting classes.
     """
 
     # Static variables to be overridden by subclasses.
@@ -55,8 +56,8 @@ class Reporting(abc.ABC):
     def period_to_freq(
         p: float, in_unit: str = "ns", out_unit: str = "MHz"
     ) -> Optional[float]:
-
-        """Convert a clock period to a freqency
+        """
+        Convert a clock period to a freqency.
         """
 
         period_map = {
@@ -99,8 +100,8 @@ class Reporting(abc.ABC):
         hline: str = "+",
         header_threshold: int = 2,
     ) -> Dict[str, Union[bool, str]]:
-
-        """Convert report tables to CSV
+        """
+        Convert report tables to CSV.
 
         :param table_str: The table to be converted
         :type table_str: str
@@ -275,7 +276,8 @@ class Reporting(abc.ABC):
     def _report_to_df(
         cls, parser: Callable[[str], Dict], report_file: str
     ) -> Dict[str, pd.DataFrame]:
-        """Helper for reports returning a number of tables
+        """
+        Helper for reports returning a number of tables.
 
         :param parser: The function to be used to parse the report
             string. Should return a dictionary with keys containing the table
@@ -311,7 +313,8 @@ class Reporting(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def report_summary(cls, resources, timing):
-        """Resource summary in a backend-independent format
+        """
+        Resource summary in a backend-independent format.
 
         This abstract method should be overridden by each backend.
 
@@ -340,7 +343,8 @@ class Reporting(abc.ABC):
 
     @classmethod
     def report_resources(cls, report_file: str):
-        """Detailed device-dependent resource information
+        """
+        Detailed device-dependent resource information.
 
         This abstract method should be overridden by each backend.
 
@@ -357,7 +361,8 @@ class Reporting(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def report_timing(cls, report_file: str):
-        """Detailed device-dependent timing information
+        """
+        Detailed device-dependent timing information.
 
         This abstract method should be overridden by each backend.
 
@@ -373,8 +378,8 @@ class Reporting(abc.ABC):
 
     @classmethod
     def report(cls, dir: str) -> Dict[str, pd.DataFrame]:
-        """Report a common summary format along with device-specific resource
-        and timing information
+        """
+        Report a common summary format along with device-specific resource and timing information.
 
         The :func:`report_summary`, :func:`report_resources`, and
         :func:`report_timing` methods may be used to access the data for each

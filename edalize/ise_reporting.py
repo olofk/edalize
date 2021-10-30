@@ -1,6 +1,3 @@
-"""ISE-specific reporting routines
-"""
-
 import logging
 from typing import Dict, Any
 
@@ -32,6 +29,9 @@ except ImportError as e:
 
 
 class IseReporting(Reporting):
+    """
+    ISE-specific reporting routines.
+    """
 
     # Override class variables
     _resource_rpt_pattern = "*_map.mrp"
@@ -40,7 +40,8 @@ class IseReporting(Reporting):
 
     @staticmethod
     def _parse_twr_period(timing_str: str) -> pp.ParseResults:
-        """Parse period constraints from an ISE timing report
+        """
+        Parse period constraints from an ISE timing report.
 
         Expects the default ISE verbose output from a command like: ::
             trce -v 3 -n 3 -fastpaths top.ncd top.pcf -o top.twr
@@ -142,7 +143,8 @@ class IseReporting(Reporting):
 
     @staticmethod
     def _parse_twr_stats(report_str: str) -> pp.ParseResults:
-        """Parse the design statistics from an ISE timing report
+        """
+        Parse the design statistics from an ISE timing report.
 
         Design statistics: ::
            Minimum period:  11.343ns{1}   (Maximum frequency:  88.160MHz)
@@ -166,9 +168,10 @@ class IseReporting(Reporting):
 
     @staticmethod
     def _parse_map_tables(report_str: str) -> Dict[str, str]:
-        """Parse the tables from a ISE map report
+        """
+        Parse the tables from a ISE map report.
 
-        Keys are the title of the table, values are the table body
+        Keys are the title of the table, values are the table body.
         """
 
         # Capture the title from section headings like:
@@ -218,7 +221,8 @@ class IseReporting(Reporting):
 
     @classmethod
     def report_resources(cls, report_file: str) -> Dict[str, pd.DataFrame]:
-        """Report resource data from a map report
+        """
+        Report resource data from a map report.
 
         Parse a provided map report and return the tables from the report
         in a dictionary keyed with the table title and a Pandas DataFrame
@@ -229,7 +233,8 @@ class IseReporting(Reporting):
 
     @classmethod
     def report_timing(cls, report_file: str) -> Dict[str, Any]:
-        """Report period constraints, and overall minimum period and maximum frequency
+        """
+        Report period constraints, and overall minimum period and maximum frequency.
         """
 
         report = open(report_file, "r").read()
