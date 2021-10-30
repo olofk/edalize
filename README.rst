@@ -1,26 +1,26 @@
-Edalize
-=======
-
-.. image:: https://badges.gitter.im/librecores/edalize.svg
-   :alt: Join the chat at https://gitter.im/librecores/edalize
-   :target: https://gitter.im/librecores/edalize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
-.. image:: https://github.com/olofk/edalize/workflows/CI/badge.svg
-        :target: https://github.com/olofk/edalize/actions?query=workflow%3ACI
-        :alt: CI status
-
-.. image:: https://readthedocs.org/projects/edalize/badge/?version=latest
+.. image:: https://img.shields.io/readthedocs/edalize?longCache=true&style=flat-square&label=edalize.rtfd.io&logo=ReadTheDocs&logoColor=e8ecef
         :target: https://edalize.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://img.shields.io/pypi/dm/edalize.svg?label=PyPI%20downloads
+.. image:: https://img.shields.io/badge/Chat-on%20gitter-4db797.svg?longCache=true&style=flat-square&logo=gitter&logoColor=e8ecef
+   :alt: Join the chat at https://gitter.im/librecores/edalize
+   :target: https://gitter.im/librecores/edalize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. image:: https://www.librecores.org/olofk/edalize/badge.svg?style=flat-square
+        :target: https://www.librecores.org/olofk/edalize
+        :alt: LibreCores
+
+.. image:: https://img.shields.io/pypi/dm/edalize.svg?longCache=true&style=flat-square&logo=PyPI&logoColor=e8ecef&label=PyPI%20downloads
         :target: https://pypi.org/project/edalize/
         :alt: PyPI downloads
 
-.. image:: https://www.librecores.org/olofk/edalize/badge.svg?style=flat
-        :target: https://www.librecores.org/olofk/edalize
-        :alt: LibreCores
-   
+.. image:: https://img.shields.io/github/workflow/status/olofk/edalize/CI?longCache=true&style=flat-square&label=CI&logo=github%20actions&logoColor=e8ecef
+        :target: https://github.com/olofk/edalize/actions?query=workflow%3ACI
+        :alt: CI status
+
+Edalize
+=======
+
 What's this?
 ------------
 
@@ -52,7 +52,7 @@ following Python command::
     $ python -m pip install -e .
 
 The reporting modules have been made optional due to their use of a number of
-dependencies for data analysis. These can be installed with
+dependencies for data analysis. These can be installed with::
 
     $ python -m pip install -e ".[reporting]"
 
