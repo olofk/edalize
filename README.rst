@@ -45,21 +45,24 @@ It can be directly integrated as a library for your existing Python-powered HDL 
 Install it
 ----------
 
-Edalize is a Python module. Then once downloaded we can install it with
-following Python command::
+Edalize is a Python module.
+Find the sources at `github.com/olofk/edalize <https://github.com/olofk/edalize>`__.
+Once downloaded, we can install it with following Python command::
 
     $ cd edalize
     $ python -m pip install -e .
 
-The reporting modules have been made optional due to their use of a number of
-dependencies for data analysis. These can be installed with::
+The reporting modules have been made optional due to their use of a number of dependencies for data analysis.
+These can be installed with::
 
     $ python -m pip install -e ".[reporting]"
 
 How to use it?
 --------------
 
-Ok, this sounds great. Now, how do I get started?
+Ok, this sounds great.
+Now, how do I get started?
+Find the documentation at `edalize.rtfd.io <https://edalize.rtfd.io>`__.
 
 Assume we have a project that consists of a Verilog source file called ``blinky.v``.
 Then there's also a testbench called ``blinky_tb.v`` and a constraints file for synthesis called ``constraints.sdc``.
