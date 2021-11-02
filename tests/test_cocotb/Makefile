@@ -1,7 +1,7 @@
-TARGET           := test_icarus_minimal_0
-TOPLEVEL         := top
+TARGET           := test_cocotb_0
+TOPLEVEL         := top_module
 IVERILOG_OPTIONS := 
-VPP_OPTIONS      :=
+VPP_OPTIONS := -M /home/user/git/cocotb/cocotb/libs -m libcocotbvpi_icarus
 
 all: $(VPI_MODULES) $(TARGET)
 

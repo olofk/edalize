@@ -1,0 +1,1 @@
+-M /home/user/git/cocotb/cocotb/libs -m libcocotbvpi_icarus -M. -l icarus.log test_cocotb_0 -fst

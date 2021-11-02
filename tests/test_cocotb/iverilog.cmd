@@ -1,0 +1,1 @@
+-stop_module -c test_cocotb_0.scr -o test_cocotb_0

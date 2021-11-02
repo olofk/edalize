@@ -16,7 +16,7 @@ $(TARGET):
 	iverilog -s$(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
 
 run: $(VPI_MODULES) $(TARGET)
-	vvp -n -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) -fst $(EXTRA_OPTIONS)
+	vvp -n $(VPP_OPTIONS) -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) -fst $(EXTRA_OPTIONS)
 
 clean:
 	$(RM) $(VPI_MODULES) $(TARGET)
@@ -50,6 +50,9 @@ class Icarus(Edatool):
                         {'name' : 'iverilog_options',
                          'type' : 'String',
                          'desc' : 'Additional options for iverilog'},
+                        {'name' : 'vpp_options',
+                         'type' : 'String',
+                         'desc' : 'Additional options for vpp'},
                         ]}
 
     def configure_main(self):
@@ -98,6 +101,7 @@ class Icarus(Edatool):
                 f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
             f.write("TOPLEVEL         := {}\n".format(self.toplevel))
             f.write("IVERILOG_OPTIONS := {}\n".format(' '.join(self.tool_options.get('iverilog_options', []))))
+            f.write("VPP_OPTIONS := {}\n".format(' '.join(self.tool_options.get('vpp_options', []))))
             if self.plusarg:
                 plusargs = []
                 for key, value in self.plusarg.items():

@@ -2,6 +2,7 @@ TARGET           := test_icarus_0
 VPI_MODULES      := vpi1.vpi vpi2.vpi
 TOPLEVEL         := top_module
 IVERILOG_OPTIONS := some iverilog_options
+VPP_OPTIONS      := some vpp_options
 EXTRA_OPTIONS    ?= +plusarg_bool=1 +plusarg_int=42 +plusarg_str=hello
 
 all: $(VPI_MODULES) $(TARGET)
@@ -10,7 +11,7 @@ $(TARGET):
 	iverilog -s$(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
 
 run: $(VPI_MODULES) $(TARGET)
-	vvp -n -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) -fst $(EXTRA_OPTIONS)
+	vvp -n $(VPP_OPTIONS) -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) -fst $(EXTRA_OPTIONS)
 
 clean:
 	$(RM) $(VPI_MODULES) $(TARGET)

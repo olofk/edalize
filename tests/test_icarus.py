@@ -5,6 +5,7 @@ def test_icarus(make_edalize_test):
     name = 'test_icarus_0'
     tool_options = {
         'iverilog_options': ['some', 'iverilog_options'],
+        'vpp_options': ['some', 'vpp_options'],
         'timescale': '1ns/1ns',
     }
     tf = make_edalize_test('icarus',
