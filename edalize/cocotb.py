@@ -65,7 +65,7 @@ class Cocotb:
     def __getattr__(self, k):
         return getattr(self.simulator, k)
 
-    def __init__(self, edam=None, work_root=None, eda_api=None):
+    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=None):
         _tool_name = self.__class__.__name__.lower()
 
         if not edam:
