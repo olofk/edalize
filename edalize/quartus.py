@@ -51,12 +51,14 @@ class Quartus(Edatool):
                          'type' : 'String',
                          'desc' : 'Additional options for Quartus'},
                         ]}
-    """ Initial setup of the class
 
-    This calls the parent constructor, but also identifies whether
-    the current system is using a Standard or Pro edition of Quartus.
-    """
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=False):
+        """
+        Initial setup of the class.
+
+        This calls the parent constructor, but also identifies whether
+        the current system is using a Standard or Pro edition of Quartus.
+        """
         if not edam:
             edam = eda_api
 
@@ -97,13 +99,14 @@ class Quartus(Edatool):
             self.jinja_env.filters['generic_value_str'] = \
                 partial(self.jinja_env.filters['generic_value_str'], bool_is_str=True)
 
-    """ Configuration is the first phase of the build
-
-    This writes the project TCL files and Makefile. It first collects all
-    sources, IPs and constraints and then writes them to the TCL file along
-    with the build steps.
-    """
     def configure_main(self):
+        """
+        Configuration is the first phase of the build.
+
+        This writes the project TCL files and Makefile. It first collects all
+        sources, IPs and constraints and then writes them to the TCL file along
+        with the build steps.
+        """
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
         self.jinja_env.filters['qsys_file_filter'] = self.qsys_file_filter
@@ -168,7 +171,7 @@ class Quartus(Edatool):
             setattr(f, "simplename", os.path.basename(f.name).split('.qsys')[0])
             setattr(f, "srcdir", os.path.dirname(f.name) or '.')
             setattr(f, "dstdir", os.path.join('qsys', f.simplename))
-        
+
         return name
 
     # Allow the templates to get source file information
@@ -236,9 +239,10 @@ class Quartus(Edatool):
                 args.append('syn')
         self._run_tool('make', args, quiet=True)
 
-    """ Program the FPGA
-    """
     def run_main(self):
+        """
+        Program the FPGA.
+        """
         args = ['--mode=jtag']
         if 'cable' in self.tool_options:
             args += ['-c', self.tool_options['cable']]

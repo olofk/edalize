@@ -89,9 +89,10 @@ class Ghdl(Edatool):
         ghdlimport = ""
         vhdl_sources = ""
 
-        # GHDL doesn't support the dot notation used by other tools (e.g.
-        # my_lib.top_design) for the top level so work around this if the user
-        # has specified the top level in this manner.
+        # GHDL versions older than 849a25e0 don't support the dot notation (e.g.
+        # my_lib.top_design) for the top level.
+        # Nonetheless, we unconditionally split the library and the primary unit,
+        # if the user specified the top level using the dot notation.
         top = self.toplevel.split(".")
 
         if len(top) > 2:

@@ -64,14 +64,14 @@ class Libero(Edatool):
         if shouldExit:
             raise RuntimeError("Missing required tool options")
 
-    """ Configuration is the first phase of the build
-
-    This writes the project TCL file. It first collects all
-    sources, IPs and constraints and then writes them to the TCL file along
-    with the build steps.
-    """
-
     def configure_main(self):
+        """
+        Configuration is the first phase of the build.
+
+        This writes the project TCL file. It first collects all
+        sources, IPs and constraints and then writes them to the TCL file along
+        with the build steps.
+        """
         self._set_tool_options_defaults()
         self._check_mandatory_options()
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)

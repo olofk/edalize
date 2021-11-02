@@ -11,7 +11,7 @@ from edalize.edatool import Edatool
 
 class Symbiyosys(Edatool):
 
-    _description = '''SymbiYosys backend
+    _description = """SymbiYosys backend
 
 SymbiYosys is a wrapper around yosys to make it easier to do formal
 verification.
@@ -100,7 +100,7 @@ You can reproduce the example above with something like
     {% endfor %}
     {{chparam}}
 
-    '''
+    """
 
     argtypes = ['vlogdefine', 'vlogparam']
 
@@ -145,7 +145,7 @@ You can reproduce the example above with something like
                     ]}
 
     def _get_file_names(self):
-        '''Read the fileset to get our file names'''
+        """Read the fileset to get our file names"""
         assert self.rtl_paths is None
 
         src_files, self.incdirs = self._get_fileset_files()
@@ -189,17 +189,19 @@ You can reproduce the example above with something like
         return sby_names[0]
 
     def _get_read_flags(self):
-        '''Return a string with the flags that should be passed for each read.
+        """
+        Return a string with the flags that should be passed for each read.
 
         These are exposed as the {{flags}} variable in Jinja templates.
-
-        '''
+        """
         return ' '.join(['-D{}={}'.format(key, self._param_value_str(value))
                          for key, value in self.vlogdefine.items()] +
                         ['-I{}'.format(inc) for inc in self.incdirs])
 
     def _get_chparam(self):
-        '''Return a string for the {{chparam}} variable'''
+        """
+        Return a string for the {{chparam}} variable.
+        """
         if not self.vlogparam:
             return ''
 
@@ -212,15 +214,15 @@ You can reproduce the example above with something like
         return ' '.join(chparam_lst)
 
     def _gen_reads(self, value):
-        '''Custom jinja filter that generates read lines for each source file.
+        """
+        Custom jinja filter that generates read lines for each source file.
 
         We expect it to be used like this:
 
             {{"-sv"|gen_reads}}
 
         See the class documentation for more details.
-
-        '''
+        """
         base_cmd = 'read {} {} '.format(value, self._get_read_flags())
 
         lines = []
@@ -234,15 +236,15 @@ You can reproduce the example above with something like
         return '\n'.join(lines)
 
     def _interpolate_sby(self, src):
-        '''Patch a .sby template to read the right paths
+        """
+        Patch a .sby template to read the right paths.
 
         The input file should be a Jinja template. We expect it not to have
         much templating, but the user will probably want to use templating for
         the list of source files (that has to appear twice).
 
         See the class documentation for details of the templating variables.
-
-        '''
+        """
         # This should have been set by _get_file_names by now
         assert self.rtl_paths is not None
 
@@ -274,14 +276,14 @@ You can reproduce the example above with something like
             df.write(template.render(template_ctxt))
 
     def _dump_file_lists(self):
-        '''Dump the list of RTL files and incdirs in work_root
+        """
+        Dump the list of RTL files and incdirs in work_root.
 
         This is useful if you need to run some sort of hook that consumes the
         list of files (to run sv2v in place on them, for example). The list of
         RTL files goes to files.txt and the list of include directories goes to
         incdirs.txt.
-
-        '''
+        """
         with open(os.path.join(self.work_root, 'files.txt'), 'w') as handle:
             handle.write('\n'.join(self.rtl_paths) + '\n')
         with open(os.path.join(self.work_root, 'incdirs.txt'), 'w') as handle:

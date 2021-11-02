@@ -2,29 +2,52 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
+  # Run CI daily even without code changes to ensure tests pass with 
+  # updated dependencies.
+  schedule:
+    - cron: '0 0 * * 5'
+  # See:
+  # * https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#scheduled-events
+  # * https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
+  # Allow triggering a CI run from the web UI.
+  workflow_dispatch:
+  # See:
+  # * https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+  # * https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
 
 jobs:
+
   build:
-
-    runs-on: ubuntu-latest
     strategy:
-      # You can use PyPy versions in python-version. For example, pypy2 and pypy3
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
-
+        os:
+        - { icon: 🐧, name: ubuntu }
+        #- { icon: 🍎, name: macos }
+        #- { icon: 🧊, name: windows }
+        pyver:
+        - '3.6'
+        - '3.7'
+        - '3.8'
+        - '3.9'
+        - '3.10'
+    runs-on: ${{ matrix.os.name }}-latest
+    name: ${{ matrix.os.icon }} ${{ matrix.os.name }} | ${{ matrix.pyver }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+
+    - name: 🧰 Repository Checkout
+      uses: actions/checkout@v2
+
+    - name: 🐍 Set up Python ${{ matrix.pyver }}
       uses: actions/setup-python@v1
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
-    - name: Install Tox and any other packages
-      run: pip install tox
-    - name: Build package and run tests with tox
+        python-version: ${{ matrix.pyver }}
+
+    - name: 🛠️ Install dependencies
+      run: |
+        python -c "import sys; print(sys.version)"
+        pip install tox
+
+    - name: 🚧 Build package and run tests with tox
       run: tox -e py
