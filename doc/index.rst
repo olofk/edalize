@@ -18,19 +18,26 @@
 Welcome to Edalize's documentation!
 ===================================
 
+Edalize is a Python Library for interacting with EDA tools.
+It can create project files for supported tools and run them in batch or GUI mode (where supported).
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :caption: Reference
+   :hidden:
 
    edam/api
-   source/modules
-   source/tests
+   Modules <edalize>
 
+.. toctree::
+   :caption: Developer's Guide
+   :hidden:
 
-Indices and tables
-==================
+   dev/setup
+   dev/tests
 
+.. toctree::
+   :caption: Indices and tables
+   :hidden:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   genindex
+   Module Index <py-modindex>
