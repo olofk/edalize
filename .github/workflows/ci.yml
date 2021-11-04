@@ -7,14 +7,8 @@ on:
   # updated dependencies.
   schedule:
     - cron: '0 0 * * 5'
-  # See:
-  # * https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#scheduled-events
-  # * https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
   # Allow triggering a CI run from the web UI.
   workflow_dispatch:
-  # See:
-  # * https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
-  # * https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
 
 jobs:
 
