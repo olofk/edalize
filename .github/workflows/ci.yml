@@ -3,7 +3,7 @@ name: CI
 on:
   push:
   pull_request:
-  # Run CI daily even without code changes to ensure tests pass with 
+  # Run CI once a week even without code changes to ensure tests pass with
   # updated dependencies.
   schedule:
     - cron: '0 0 * * 5'
