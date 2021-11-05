@@ -29,25 +29,19 @@ class CocotbConfig:
         if toplevel_lang != 'vhdl':
             raise RuntimeError('GHDL only supports VHDL')
 
-        ghdl_cocotb_lib = pathlib.Path(os.path.dirname(cocotb.__file__)) / 'libs' / 'libcocotbvpi_ghdl.so'
-
-        return [f"--vpi={ghdl_cocotb_lib}"]
+        return ["--vpi=$(shell cocotb-config --lib-name-path VPI ghdl)"]
 
     @staticmethod
     def get_icarus_args(toplevel_lang):
         if toplevel_lang != 'verilog':
             raise RuntimeError('Icarus only supports Verilog')
 
-        cocotb_lib_dir = pathlib.Path(os.path.dirname(cocotb.__file__)) / 'libs'
-
-        return ['-M', str(cocotb_lib_dir), '-m', 'libcocotbvpi_icarus']
+        return ['-M', '$(shell cocotb-config --lib-dir)', '-m', 'libcocotbvpi_icarus']
 
     @staticmethod
     def get_modelsim_args():
 
-        modelsim_cocotb_lib = pathlib.Path(os.path.dirname(cocotb.__file__)) / 'libs' / 'libcocotbfli_modelsim.so'
-
-        return [f'-foreign "cocotb_init {modelsim_cocotb_lib}"']
+        return ['-foreign "cocotb_init $(shell cocotb-config --lib-name-path FLI modelsim)"']
 
 # Don't inherit from Edatool so we can delegate methods to simulator backend with getattr
 class Cocotb:

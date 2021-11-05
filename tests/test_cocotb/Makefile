@@ -1,7 +1,7 @@
 TARGET           := test_cocotb_0
 TOPLEVEL         := top_module
 IVERILOG_OPTIONS := 
-VPP_OPTIONS := -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus
+VPP_OPTIONS := -M $(shell cocotb-config --lib-dir) -m libcocotbvpi_icarus
 
 all: $(VPI_MODULES) $(TARGET)
 
