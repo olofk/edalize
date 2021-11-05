@@ -2,7 +2,7 @@ TARGET           := test_icarus_0
 VPI_MODULES      := vpi1.vpi vpi2.vpi
 TOPLEVEL         := top_module
 IVERILOG_OPTIONS := some iverilog_options
-VPP_OPTIONS      := some vpp_options
+VPP_OPTIONS := some vpp_options
 EXTRA_OPTIONS    ?= +plusarg_bool=1 +plusarg_int=42 +plusarg_str=hello
 
 all: $(VPI_MODULES) $(TARGET)
