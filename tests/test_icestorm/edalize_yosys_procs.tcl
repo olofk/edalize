@@ -1,3 +1,6 @@
+proc load_plugins {} {
+}
+
 proc read_files {} {
 read_verilog -sv {sv_file.sv}
 source {tcl_file.tcl}
