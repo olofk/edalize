@@ -4,6 +4,7 @@
 
 import os
 import logging
+import sys
 
 from edalize.edatool import Edatool
 
@@ -16,35 +17,29 @@ endif
 
 XCELIUM_HOME = $(shell xmroot)
 
-CC ?= gcc
-CFLAGS := -c -std=c99 -fPIC -fno-stack-protector -g
-
-LD ?= ld
-LDFLAGS := -shared -E
-
-#Only 32 bits is currently supported
-CFLAGS  += -m32
-LDFLAGS += -melf_i386
-
 RM ?= rm
 INCS := -I$(XCELIUM_HOME)/tools/include
 
 XRUN ?= $(XCELIUM_HOME)/tools/bin/xrun
+XRUN_PREFIX  ?= {xrun_prefix}
 
 TOPLEVEL      := {toplevel}
 VPI_MODULES   := {modules}
 PARAMETERS    ?= {parameters}
 PLUSARGS      ?= {plusargs}
-XMSIM_OPTIONS ?= {xmsim_options}
-XRUN_OPTIONS  ?= {xrun_options}
-EXTRA_OPTIONS ?= $(XRUN_OPTIONS) $(if $(XMSIM_OPTIONS),-xmsimargs '$(XMSIM_OPTIONS)',) $(addprefix -defparam ,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
+BUILD_OPTIONS ?= {elab_options}
+XRUN_OPTIONS  ?= {run_options}
 
-XRUN_CALL = $(XRUN) -q -f edalize_main.f $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) -top $(TOPLEVEL)
 
 all: $(VPI_MODULES)
 
-run: $(VPI_MODULES)
-	$(XRUN_CALL)
+build:
+	$(XRUN_PREFIX) xrun -elaborate  $(BUILD_OPTIONS) -top $(TOPLEVEL) -f edalize_main.f 
+run_nc:
+	$(XRUN_PREFIX) xrun -R -access rw $(XRUN_OPTIONS)
+
+run: $(VPI_MODULES) build run_nc
+
 
 run-gui: $(VPI_MODULES)
 	$(XRUN_CALL) -gui -access rwc
@@ -76,55 +71,55 @@ class Xcelium(Edatool):
         if api_ver == 0:
             return {'description' : "Xcelium simulator from Cadence Design Systems",
                     'lists' : [
-                        {'name' : 'xmvhdl_options',
+                        {'name' : 'elab_options',
                          'type' : 'String',
-                         'desc' : 'Additional options for compilation with xmvhdl'},
-                        {'name' : 'xmvlog_options',
+                         'desc' : 'Additional run options for xrun -elaboration'},
+                        {'name' : 'xrun_prefix',
                          'type' : 'String',
-                         'desc' : 'Additional options for compilation with xmvlog'},
-                        {'name' : 'xmsim_options',
+                         'desc' : 'prefix for using submission servers like bjob or nc'},
+                        {'name' : 'run_options',
                          'type' : 'String',
-                         'desc' : 'Additional run options for xmsim'},
-                        {'name' : 'xrun_options',
-                         'type' : 'String',
-                         'desc' : 'Additional run options for xrun'},
+                         'desc' : 'Additional run options for xrun -R'},
                         ]}
 
     def _write_build_rtl_f_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "edalize_build_rtl.f"), 'w')
+        tcl_build_c    = open(os.path.join(self.work_root, "edalize_build_c.f"), 'w')
 
         (src_files, incdirs) = self._get_fileset_files()
         vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
 
         libs = []
+
+        print("\n DEFINES::", file=sys.stderr)
+        print(self.vlogdefine, file=sys.stderr)
+
+        # add defines to file of files
+        args = []
+        for k, v in self.vlogdefine.items():
+            args += ['+define+{}={}'.format(k,self._param_value_str(v))]
+
+        # add inc dirs
+        args += vlog_include_dirs
+        line = "{}".format('\n'.join(args))
+        tcl_build_rtl.write(line + '\n')
+
+        # add rtl/c files
         for f in src_files:
+            args = []
             if not f.logical_name:
                 f.logical_name = 'worklib'
             if f.file_type.startswith("verilogSource") or \
                f.file_type.startswith("systemVerilogSource"):
-                cmd = 'xmvlog'
-                args = []
-
-                args += self.tool_options.get('xmvlog_options', [])
-
-                # Sort dictionary items, to ensure stable output, which makes testing easier
-                for k, v in self.vlogdefine.items():
-                    args += ['+define+{}={}'.format(k,self._param_value_str(v))]
-
-                if f.file_type.startswith("systemVerilogSource"):
-                    args += ['-sv']
-                args += vlog_include_dirs
+                cmd = 'elab_opts'
+                #place holder for any verilog specific per file option
             elif f.file_type.startswith("vhdlSource"):
                 cmd = 'xmvhdl'
-                if f.file_type.endswith("-93"):
-                    args = ['-v93']
-                if f.file_type.endswith("-2008"):
-                    args = ['-v200x']
-                else:
-                    args = []
-
-                args += self.tool_options.get('xmvhdl_options', [])
-
+            elif f.file_type == 'cSource':
+                cmd = None
+                # C files get their own files of files
+                #lets the user choose between build in or extern c compiler
+                tcl_build_c.write("{}\n".format(f.name))
             elif f.file_type == 'tclSource':
                 cmd = None
                 tcl_main.write("-input {}\n".format(f.name))
@@ -136,7 +131,7 @@ class Xcelium(Edatool):
                 cmd = None
             if cmd:
                 args += [f.name.replace('\\','/')]
-                line = "-makelib {} {} -endlib".format(f.logical_name, ' '.join(args))
+                line = "{}".format(' '.join(args))
                 tcl_build_rtl.write(line + '\n')
 
     def _write_makefile(self):
@@ -150,16 +145,17 @@ class Xcelium(Edatool):
         for key, value in self.plusarg.items():
             _plusargs += ['{}={}'.format(key, self._param_value_str(value))]
 
-        _xmsim_options = self.tool_options.get('xmsim_options', [])
-        _xrun_options = self.tool_options.get('xrun_options', [])
-
+        _elab_options = self.tool_options.get('elab_options', [])
+        _xrun_prefix  = self.tool_options.get('xrun_prefix', [])
+        _xrun_options = self.tool_options.get('run_options', [])
         _modules = [m['name'] for m in self.vpi_modules]
         _clean_targets = ' '.join(["clean_"+m for m in _modules])
         _s = MAKE_HEADER.format(toplevel = self.toplevel,
                                 parameters = ' '.join(_parameters),
                                 plusargs = ' '.join(_plusargs),
-                                xmsim_options = ' '.join(_xmsim_options),
-                                xrun_options = ' '.join(_xrun_options),
+                                elab_options = ' '.join(_elab_options),
+                                run_options = ' '.join(_xrun_options),
+                                xrun_prefix = ' '.join(_xrun_prefix),
                                 modules = ' '.join(_modules),
                                 clean_targets = _clean_targets)
         vpi_make.write(_s)
@@ -179,6 +175,7 @@ class Xcelium(Edatool):
 
     def configure_main(self):
         tcl_main = open(os.path.join(self.work_root, "edalize_main.f"), 'w')
+        tcl_main.write("-f edalize_build_c.f\n")
         tcl_main.write("-f edalize_build_rtl.f\n")
 
         self._write_build_rtl_f_file(tcl_main)

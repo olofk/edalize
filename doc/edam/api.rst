@@ -322,10 +322,8 @@ xcelium
 ================ ===================== ===========
 Field Name       Type                  Description
 ================ ===================== ===========
-xmvlog_options   List of String        Extra options for compilation with `xmvlog`
-xmvhdl_options   List of String        Extra options for compilation with `xmvhdl`
-xmsim_options    List of String        Extra options for running simulation with with `xsim`
-xrun_options     List of String        Extra options for invocation with with `xrun`
+elab_options     List of String        Compilation options for invocation with `xrun -elaborate`
+run_options      List of String        Extra options for invocation with with `xrun -R`
 ================ ===================== ===========
 
 xsim
