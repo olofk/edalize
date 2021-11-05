@@ -2,5 +2,5 @@
 import os
 import sys
 
-with open('quartus_map.cmd', 'w') as f:
-    f.write(' '.join(sys.argv[1:]) + '\n')
+with open("quartus_map.cmd", "w") as f:
+    f.write(" ".join(sys.argv[1:]) + "\n")

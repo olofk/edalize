@@ -11,7 +11,7 @@ tests_dir = os.path.dirname(__file__)
 
 
 class TestFixture:
-    '''A fixture that makes an edalize backend with work_root directory
+    """A fixture that makes an edalize backend with work_root directory
 
     Create this object using the make_edalize_test factory fixture. This passes
     through its `tool_name` and sets up a temporary directory for `work_root`,
@@ -41,29 +41,41 @@ class TestFixture:
         use_vpi: If true, set up backend with definitions from :attr:`VPI`.
                  Defaults to `False`.
 
-    '''
-    def __init__(self,
-                 tool_name,
-                 work_root,
-                 test_name=None,
-                 param_types=['plusarg', 'vlogdefine', 'vlogparam'],
-                 files=None,
-                 tool_options={},
-                 ref_dir='.',
-                 use_vpi=False,
-                 toplevel='top_module'):
+    """
 
-        raw_ref_dir = os.path.join(tests_dir, 'test_' + tool_name, ref_dir)
+    def __init__(
+        self,
+        tool_name,
+        work_root,
+        test_name=None,
+        param_types=["plusarg", "vlogdefine", "vlogparam"],
+        files=None,
+        tool_options={},
+        ref_dir=".",
+        use_vpi=False,
+        toplevel="top_module",
+    ):
 
-        self.test_name = ('test_{}_0'.format(tool_name)
-                          if test_name is None else test_name)
+        raw_ref_dir = os.path.join(tests_dir, "test_" + tool_name, ref_dir)
+
+        self.test_name = (
+            "test_{}_0".format(tool_name) if test_name is None else test_name
+        )
         self.ref_dir = os.path.normpath(raw_ref_dir)
         self.work_root = work_root
-        self.backend = _setup_backend(self.test_name, tool_name, param_types,
-                                      files, tool_options, work_root, use_vpi, toplevel)
+        self.backend = _setup_backend(
+            self.test_name,
+            tool_name,
+            param_types,
+            files,
+            tool_options,
+            work_root,
+            use_vpi,
+            toplevel,
+        )
 
-    def compare_files(self, files, ref_subdir='.'):
-        '''Check some files in the work root match those in the ref directory
+    def compare_files(self, files, ref_subdir="."):
+        """Check some files in the work root match those in the ref directory
 
         The files argument gives the list of files to check. These are
         interpreted as paths relative to the work directory and relative to
@@ -73,26 +85,27 @@ class TestFixture:
         documentation for how to use the :envvar:`GOLDEN_RUN` environment
         variable to copy across a golden reference.
 
-        '''
+        """
         ref_dir = os.path.normpath(os.path.join(self.ref_dir, ref_subdir))
         return compare_files(ref_dir, self.work_root, files)
 
     def copy_to_work_root(self, path):
-        shutil.copy(os.path.join(self.ref_dir, path),
-                    os.path.join(self.work_root, path))
+        shutil.copy(
+            os.path.join(self.ref_dir, path), os.path.join(self.work_root, path)
+        )
 
 
 @pytest.fixture
 def make_edalize_test(monkeypatch, tmpdir):
-    '''A factory fixture to make an edalize backend with work_root directory
+    """A factory fixture to make an edalize backend with work_root directory
 
     The returned factory method takes a `tool_name` (the name of the tool) and
     the keyword arguments supported by :class:`TestFixture`. It returns a
     :class:`TestFixture` object, whose `work_root` is a temporary directory.
 
-    '''
+    """
     # Prepend directory `mock_commands` to PATH environment variable
-    monkeypatch.setenv('PATH', os.path.join(tests_dir, 'mock_commands'), ':')
+    monkeypatch.setenv("PATH", os.path.join(tests_dir, "mock_commands"), ":")
 
     created = []
 
@@ -119,7 +132,7 @@ def compare_files(ref_dir, work_root, files):
 
         assert os.path.exists(generated_file)
 
-        if 'GOLDEN_RUN' in os.environ:
+        if "GOLDEN_RUN" in os.environ:
             shutil.copy(generated_file, reference_file)
 
         with open(reference_file) as fref, open(generated_file) as fgen:
@@ -131,23 +144,25 @@ def param_gen(paramtypes):
 
     defs = OrderedDict()
     for paramtype in paramtypes:
-        for datatype in ['bool', 'int', 'str']:
-            if datatype == 'int':
+        for datatype in ["bool", "int", "str"]:
+            if datatype == "int":
                 default = 42
-            elif datatype == 'str':
-                default = 'hello'
+            elif datatype == "str":
+                default = "hello"
             else:
                 default = True
-            defs[paramtype+'_'+datatype] = {
-                'datatype'    : datatype,
-                'default'     : default,
-                'description' : '',
-                'paramtype'   : paramtype}
+            defs[paramtype + "_" + datatype] = {
+                "datatype": datatype,
+                "default": default,
+                "description": "",
+                "paramtype": paramtype,
+            }
     return defs
 
 
-def _setup_backend(name, tool, paramtypes, files,
-                   tool_options, work_root, use_vpi, toplevel):
+def _setup_backend(
+    name, tool, paramtypes, files, tool_options, work_root, use_vpi, toplevel
+):
     """Set up a backend.
 
     The backend is called *name*, is set up for *tool* with *tool_options*,
@@ -160,19 +175,21 @@ def _setup_backend(name, tool, paramtypes, files,
     if use_vpi:
         _vpi = VPI
         for v in VPI:
-            for f in v['src_files']:
+            for f in v["src_files"]:
                 _f = os.path.join(work_root, f)
                 if not os.path.exists(os.path.dirname(_f)):
                     os.makedirs(os.path.dirname(_f))
-                with open(_f, 'a'):
+                with open(_f, "a"):
                     os.utime(_f, None)
 
-    edam = {'name'         : name,
-            'files'        : FILES if files is None else files,
-            'parameters'   : parameters,
-            'tool_options' : {tool : tool_options},
-            'toplevel'     : toplevel,
-            'vpi'          :  _vpi}
+    edam = {
+        "name": name,
+        "files": FILES if files is None else files,
+        "parameters": parameters,
+        "tool_options": {tool: tool_options},
+        "toplevel": toplevel,
+        "vpi": _vpi,
+    }
 
     return get_edatool(tool)(edam=edam, work_root=work_root)
 
@@ -204,23 +221,22 @@ FILES = [
     {"name": "config.vbl", "file_type": "veribleLintRules"},
     {"name": "verible_waiver.vbw", "file_type": "veribleLintWaiver"},
     {"name": "verible_waiver2.vbw", "file_type": "veribleLintWaiver"},
-    {'name': 'config.sby.j2', 'file_type': 'sbyConfigTemplate'},
+    {"name": "config.sby.j2", "file_type": "sbyConfigTemplate"},
     {"name": "another_sv_file.sv", "file_type": "systemVerilogSource"},
     {"name": "pdc_constraint_file.pdc", "file_type": "PDC"},
     {"name": "pdc_floorplan_constraint_file.pdc", "file_type": "FPPDC"},
-    {'name': 'lpf_file.lpf', 'file_type': 'LPF'}
+    {"name": "lpf_file.lpf", "file_type": "LPF"},
 ]
 """Files of all supported file types."""
 
 
 VPI = [
-    {'src_files': ['src/vpi_1/f1',
-                   'src/vpi_1/f3'],
-     'include_dirs': ['src/vpi_1/'],
-     'libs': ['some_lib'],
-     'name': 'vpi1'},
-    {'src_files': ['src/vpi_2/f4'],
-     'include_dirs': [],
-     'libs': [],
-     'name': 'vpi2'}]
+    {
+        "src_files": ["src/vpi_1/f1", "src/vpi_1/f3"],
+        "include_dirs": ["src/vpi_1/"],
+        "libs": ["some_lib"],
+        "name": "vpi1",
+    },
+    {"src_files": ["src/vpi_2/f4"], "include_dirs": [], "libs": [], "name": "vpi2"},
+]
 """Predefined VPI modules to build."""

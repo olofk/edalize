@@ -3,11 +3,11 @@ import os
 import sys
 
 for arg in sys.argv:
-    if arg.startswith('--name='):
-        output_file = arg[7:]+'.vpi'
+    if arg.startswith("--name="):
+        output_file = arg[7:] + ".vpi"
 
-with open(output_file, 'a'):
+with open(output_file, "a"):
     os.utime(output_file, None)
 
-with open('iverilog-vpi.cmd', 'a') as f:
-    f.write(' '.join(sys.argv[1:]) + '\n')
+with open("iverilog-vpi.cmd", "a") as f:
+    f.write(" ".join(sys.argv[1:]) + "\n")

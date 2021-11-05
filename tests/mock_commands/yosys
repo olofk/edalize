@@ -6,15 +6,15 @@ grab_input = False
 for arg in sys.argv:
     if grab_input:
         input_file = arg.replace(" ", "_")
-    grab_input = (arg == '-p')
+    grab_input = arg == "-p"
 
-output_file = input_file[0:-3]+'blif'
-with open(output_file, 'a'):
-    os.utime(output_file, None)    
+output_file = input_file[0:-3] + "blif"
+with open(output_file, "a"):
+    os.utime(output_file, None)
 
-output_file = input_file[0:-3]+'json'
-with open(output_file, 'a'):
-    os.utime(output_file, None)    
+output_file = input_file[0:-3] + "json"
+with open(output_file, "a"):
+    os.utime(output_file, None)
 
-with open('yosys.cmd', 'w') as f:
-    f.write(' '.join(sys.argv[1:]) + '\n')
+with open("yosys.cmd", "w") as f:
+    f.write(" ".join(sys.argv[1:]) + "\n")
