@@ -6,10 +6,10 @@ grab_input = False
 for arg in sys.argv:
     if grab_input:
         output_file = arg
-    grab_input = (arg == '-o')
+    grab_input = arg == "-o"
 
-with open(output_file, 'a'):
+with open(output_file, "a"):
     os.utime(output_file, None)
 
-with open('iverilog.cmd', 'w') as f:
-    f.write(' '.join(sys.argv[1:]) + '\n')
+with open("iverilog.cmd", "w") as f:
+    f.write(" ".join(sys.argv[1:]) + "\n")

@@ -16,7 +16,7 @@ def test_symbiflow_vtr(make_edalize_test):
         "package": "csg324-1",
         "vendor": "xilinx",
         "pnr": "vtr",
-        "vpr_options": "--fake_option 1000"
+        "vpr_options": "--fake_option 1000",
     }
 
     files = [
@@ -24,12 +24,14 @@ def test_symbiflow_vtr(make_edalize_test):
         {"name": "top.sdc", "file_type": "SDC"},
         {"name": "top.pcf", "file_type": "PCF"},
     ]
-    tf = make_edalize_test("symbiflow",
-                           test_name="test_symbiflow_vtr_0",
-                           param_types=["vlogdefine", "vlogparam"],
-                           tool_options=tool_options,
-                           files=files,
-                           ref_dir="vtr")
+    tf = make_edalize_test(
+        "symbiflow",
+        test_name="test_symbiflow_vtr_0",
+        param_types=["vlogdefine", "vlogparam"],
+        tool_options=tool_options,
+        files=files,
+        ref_dir="vtr",
+    )
 
     run_symbiflow_test(tf)
 
@@ -42,7 +44,7 @@ def test_symbiflow_nextpnr_xilinx(make_edalize_test):
         "package": "csg324-1",
         "vendor": "xilinx",
         "pnr": "nextpnr",
-        "nextpnr_options": "--fake_option 1000"
+        "nextpnr_options": "--fake_option 1000",
     }
 
     files = [
@@ -51,12 +53,14 @@ def test_symbiflow_nextpnr_xilinx(make_edalize_test):
     ]
 
     test_name = "test_symbiflow_nextpnr_xilinx_0"
-    tf = make_edalize_test("symbiflow",
-                           test_name=test_name,
-                           param_types=["vlogdefine", "vlogparam"],
-                           tool_options=tool_options,
-                           files=files,
-                           ref_dir=os.path.join("nextpnr", "xilinx"))
+    tf = make_edalize_test(
+        "symbiflow",
+        test_name=test_name,
+        param_types=["vlogdefine", "vlogparam"],
+        tool_options=tool_options,
+        files=files,
+        ref_dir=os.path.join("nextpnr", "xilinx"),
+    )
 
     config_files = [
         "edalize_yosys_procs.tcl",
@@ -74,7 +78,7 @@ def test_symbiflow_nextpnr_fpga_interchange(make_edalize_test):
         "package": "csg324-1",
         "vendor": "xilinx",
         "pnr": "nextpnr",
-        "nextpnr_options": "--fake_option 1000"
+        "nextpnr_options": "--fake_option 1000",
     }
 
     files = [
@@ -84,12 +88,14 @@ def test_symbiflow_nextpnr_fpga_interchange(make_edalize_test):
     ]
 
     test_name = "test_symbiflow_nextpnr_fpga_interchange_0"
-    tf = make_edalize_test("symbiflow",
-                           test_name=test_name,
-                           param_types=["vlogdefine", "vlogparam"],
-                           tool_options=tool_options,
-                           files=files,
-                           ref_dir=os.path.join("nextpnr", "fpga_interchange"))
+    tf = make_edalize_test(
+        "symbiflow",
+        test_name=test_name,
+        param_types=["vlogdefine", "vlogparam"],
+        tool_options=tool_options,
+        files=files,
+        ref_dir=os.path.join("nextpnr", "fpga_interchange"),
+    )
 
     config_files = [
         "edalize_yosys_procs.tcl",

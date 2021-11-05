@@ -103,9 +103,7 @@ class QuartusReporting(Reporting):
 
         # Get a frequency like 175.0 MHz and just return the numeric part
         freq = timing["Clocks"].set_index("Clock Name")["Frequency"]
-        summary["constraint"] = (
-            freq.str.split(expand=True)[0].astype(float).to_dict()
-        )
+        summary["constraint"] = freq.str.split(expand=True)[0].astype(float).to_dict()
 
         # Find the Fmax summary table for the slowest corner, such as "Slow
         # 1200mV 85C Model Fmax Summary". The voltage and temperature will

@@ -2,10 +2,10 @@
 import os
 import sys
 
-output_file = sys.argv[sys.argv.index('--textcfg')+1]
+output_file = sys.argv[sys.argv.index("--textcfg") + 1]
 
-with open(output_file, 'a'):
+with open(output_file, "a"):
     os.utime(output_file, None)
 
-with open('nextpnr-ecp5.cmd', 'w') as f:
-    f.write(' '.join(sys.argv[1:]) + '\n')
+with open("nextpnr-ecp5.cmd", "w") as f:
+    f.write(" ".join(sys.argv[1:]) + "\n")

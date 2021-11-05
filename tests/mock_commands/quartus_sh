@@ -12,5 +12,5 @@ if len(sys.argv) > 1 and sys.argv[1] == "--version":
         print("Version 16.1.2 Build 203 01/18/2017 SJ Standard Edition")
     sys.exit(0)
 
-with open('quartus_sh.cmd', 'w') as f:
-    f.write(' '.join(sys.argv[1:]) + '\n')
+with open("quartus_sh.cmd", "w") as f:
+    f.write(" ".join(sys.argv[1:]) + "\n")

@@ -24,6 +24,7 @@ class Symbiflow(Edatool):
     * Standard design sources (Verilog only)
     * Constraints: unmanaged constraints with file_type SDC, pin_constraints with file_type PCF and placement constraints with file_type xdc
     """
+
     argtypes = ["vlogdefine", "vlogparam", "generic"]
     archs = ["xilinx", "fpga_interchange"]
     fpga_interchange_families = ["xc7"]
@@ -34,9 +35,9 @@ class Symbiflow(Edatool):
             symbiflow_help = {
                 "members": [
                     {
-                        "name" : "arch",
-                        "type" : "String",
-                        "desc" : "Target architecture. Legal values are *xilinx* and *fpga_interchange* (this is relevant only for Nextpnr variant)."
+                        "name": "arch",
+                        "type": "String",
+                        "desc": "Target architecture. Legal values are *xilinx* and *fpga_interchange* (this is relevant only for Nextpnr variant).",
                     },
                     {
                         "name": "package",
@@ -89,27 +90,31 @@ class Symbiflow(Edatool):
         yosys_synth_options = self.tool_options.get("yosys_synth_options", "")
         yosys_template = self.tool_options.get("yosys_template")
         yosys_edam = {
-                "files"         : self.files,
-                "name"          : self.name,
-                "toplevel"      : self.toplevel,
-                "parameters"    : self.parameters,
-                "tool_options"  : {
-                                    "yosys" : {
-                                        "arch" : vendor,
-                                        "yosys_synth_options" : yosys_synth_options,
-                                        "yosys_template" : yosys_template,
-                                        "yosys_as_subtool" : True,
-                                    }
-                                }
+            "files": self.files,
+            "name": self.name,
+            "toplevel": self.toplevel,
+            "parameters": self.parameters,
+            "tool_options": {
+                "yosys": {
+                    "arch": vendor,
+                    "yosys_synth_options": yosys_synth_options,
+                    "yosys_template": yosys_template,
+                    "yosys_as_subtool": True,
                 }
+            },
+        }
 
-        yosys = getattr(import_module("edalize.yosys"), "Yosys")(yosys_edam, self.work_root)
+        yosys = getattr(import_module("edalize.yosys"), "Yosys")(
+            yosys_edam, self.work_root
+        )
         yosys.configure()
 
         # Nextpnr configuration
         arch = self.tool_options.get("arch")
         if arch not in self.archs:
-            logger.error('Missing or invalid "arch" parameter: {} in "tool_options"'.format(arch))
+            logger.error(
+                'Missing or invalid "arch" parameter: {} in "tool_options"'.format(arch)
+            )
 
         package = self.tool_options.get("package")
         if not package:
@@ -126,7 +131,11 @@ class Symbiflow(Edatool):
                 break
 
         if target_family is None and arch == "fpga_interchange":
-            logger.error("Couldn't find family for part: {}. Available families: {}".format(part, ", ".join(getattr(self, "fpga_interchange_families"))))
+            logger.error(
+                "Couldn't find family for part: {}. Available families: {}".format(
+                    part, ", ".join(getattr(self, "fpga_interchange_families"))
+                )
+            )
 
         chipdb = None
         device = None
@@ -163,10 +172,10 @@ class Symbiflow(Edatool):
         if "xc7k" in part:
             bitstream_device = "kintex7"
 
-        depends = self.name+'.json'
+        depends = self.name + ".json"
         xdcs = []
         for x in placement_constraints:
-            xdcs += ['--xdc', x]
+            xdcs += ["--xdc", x]
 
         commands = self.EdaCommands()
         commands.commands = yosys.commands
@@ -176,50 +185,57 @@ $(error Environment variable INTERCHANGE_SCHEMA_PATH was not found. It should be
 endif
 
 """
-            targets = self.name+'.netlist'
-            command = ['python', '-m', 'fpga_interchange.yosys_json']
-            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
-            command += ['--device', device]
-            command += ['--top', self.toplevel]
+            targets = self.name + ".netlist"
+            command = ["python", "-m", "fpga_interchange.yosys_json"]
+            command += ["--schema_dir", "$(INTERCHANGE_SCHEMA_PATH)"]
+            command += ["--device", device]
+            command += ["--top", self.toplevel]
             command += [depends, targets]
             commands.add(command, [targets], [depends])
 
-            depends = self.name+'.netlist'
-            targets = self.name+'.phys'
-            command = ['nextpnr-'+arch, '--chipdb', chipdb]
-            command += ['--package', package]
+            depends = self.name + ".netlist"
+            targets = self.name + ".phys"
+            command = ["nextpnr-" + arch, "--chipdb", chipdb]
+            command += ["--package", package]
             command += xdcs
-            command += ['--netlist', depends]
-            command += ['--write', self.name+'.routed.json']
-            command += ['--phys', targets]
+            command += ["--netlist", depends]
+            command += ["--write", self.name + ".routed.json"]
+            command += ["--phys", targets]
             command += [nextpnr_options]
             commands.add(command, [targets], [depends])
 
-            depends = self.name+'.phys'
-            targets = self.name+'.fasm'
-            command = ['python', '-m', 'fpga_interchange.fasm_generator']
-            command += ['--schema_dir', '$(INTERCHANGE_SCHEMA_PATH)']
-            command += ['--family', family, device, self.name+'.netlist', depends, targets]
+            depends = self.name + ".phys"
+            targets = self.name + ".fasm"
+            command = ["python", "-m", "fpga_interchange.fasm_generator"]
+            command += ["--schema_dir", "$(INTERCHANGE_SCHEMA_PATH)"]
+            command += [
+                "--family",
+                family,
+                device,
+                self.name + ".netlist",
+                depends,
+                targets,
+            ]
             commands.add(command, [targets], [depends])
         else:
-            targets = self.name+'.fasm'
-            command = ['nextpnr-'+arch, '--chipdb', chipdb]
+            targets = self.name + ".fasm"
+            command = ["nextpnr-" + arch, "--chipdb", chipdb]
             command += xdcs
-            command += ['--json', depends]
-            command += ['--write', self.name+'.routed.json']
-            command += ['--fasm', targets]
-            command += ['--log', 'nextpnr.log']
+            command += ["--json", depends]
+            command += ["--write", self.name + ".routed.json"]
+            command += ["--fasm", targets]
+            command += ["--log", "nextpnr.log"]
             command += [nextpnr_options]
             commands.add(command, [targets], [depends])
 
-        depends = self.name+'.fasm'
-        targets = self.name+'.bit'
-        command = ['symbiflow_write_bitstream', '-d', bitstream_device]
-        command += ['-f', depends, '-p', partname, '-b', targets]
+        depends = self.name + ".fasm"
+        targets = self.name + ".bit"
+        command = ["symbiflow_write_bitstream", "-d", bitstream_device]
+        command += ["-f", depends, "-p", partname, "-b", targets]
         commands.add(command, [targets], [depends])
 
         commands.set_default_target(targets)
-        commands.write(os.path.join(self.work_root, 'Makefile'))
+        commands.write(os.path.join(self.work_root, "Makefile"))
 
     def configure_vpr(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
@@ -274,59 +290,59 @@ endif
             bitstream_device = part + "_" + device_suffix
 
         _vo = self.tool_options.get("vpr_options")
-        vpr_options = ['--additional_vpr_options', f'"{_vo}"'] if _vo else []
-        pcf_opts = ['-p']+pins_constraints if pins_constraints else []
-        sdc_opts = ['-s']+timing_constraints if timing_constraints else []
-        xdc_opts = ['-x']+placement_constraints if placement_constraints else []
+        vpr_options = ["--additional_vpr_options", f'"{_vo}"'] if _vo else []
+        pcf_opts = ["-p"] + pins_constraints if pins_constraints else []
+        sdc_opts = ["-s"] + timing_constraints if timing_constraints else []
+        xdc_opts = ["-x"] + placement_constraints if placement_constraints else []
 
         commands = self.EdaCommands()
-        #Synthesis
-        targets = self.toplevel+'.eblif'
-        command = ['symbiflow_synth', '-t', self.toplevel]
-        command += ['-v'] + file_list
-        command += ['-d', bitstream_device]
-        command += ['-p' if vendor == 'xilinx' else '-P', partname]
+        # Synthesis
+        targets = self.toplevel + ".eblif"
+        command = ["symbiflow_synth", "-t", self.toplevel]
+        command += ["-v"] + file_list
+        command += ["-d", bitstream_device]
+        command += ["-p" if vendor == "xilinx" else "-P", partname]
         command += xdc_opts
         commands.add(command, [targets], [])
 
-        #P&R
-        eblif_opt = ['-e', self.toplevel+'.eblif']
-        device_opt = ['-d', part+'_'+device_suffix]
+        # P&R
+        eblif_opt = ["-e", self.toplevel + ".eblif"]
+        device_opt = ["-d", part + "_" + device_suffix]
 
-        depends = self.toplevel+'.eblif'
-        targets = self.toplevel+'.net'
-        command = ['symbiflow_pack'] + eblif_opt + device_opt + sdc_opts + vpr_options
+        depends = self.toplevel + ".eblif"
+        targets = self.toplevel + ".net"
+        command = ["symbiflow_pack"] + eblif_opt + device_opt + sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
-        depends = self.toplevel+'.net'
-        targets = self.toplevel+'.place'
-        command = ['symbiflow_place'] + eblif_opt + device_opt
-        command += ['-n', depends, '-P', partname]
+        depends = self.toplevel + ".net"
+        targets = self.toplevel + ".place"
+        command = ["symbiflow_place"] + eblif_opt + device_opt
+        command += ["-n", depends, "-P", partname]
         command += sdc_opts + pcf_opts + vpr_options
         commands.add(command, [targets], [depends])
 
-        depends = self.toplevel+'.place'
-        targets = self.toplevel+'.route'
-        command = ['symbiflow_route'] + eblif_opt + device_opt
+        depends = self.toplevel + ".place"
+        targets = self.toplevel + ".route"
+        command = ["symbiflow_route"] + eblif_opt + device_opt
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
-        depends = self.toplevel+'.route'
-        targets = self.toplevel+'.fasm'
-        command = ['symbiflow_write_fasm'] + eblif_opt + device_opt
+        depends = self.toplevel + ".route"
+        targets = self.toplevel + ".fasm"
+        command = ["symbiflow_write_fasm"] + eblif_opt + device_opt
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
-        depends = self.toplevel+'.fasm'
-        targets = self.toplevel+'.bit'
-        command = ['symbiflow_write_bitstream'] + ['-d', bitstream_device]
-        command += ['-f', depends]
-        command += ['-p' if vendor == 'xilinx' else '-P', partname]
-        command += ['-b', targets]
+        depends = self.toplevel + ".fasm"
+        targets = self.toplevel + ".bit"
+        command = ["symbiflow_write_bitstream"] + ["-d", bitstream_device]
+        command += ["-f", depends]
+        command += ["-p" if vendor == "xilinx" else "-P", partname]
+        command += ["-b", targets]
         commands.add(command, [targets], [depends])
 
         commands.set_default_target(targets)
-        commands.write(os.path.join(self.work_root, 'Makefile'))
+        commands.write(os.path.join(self.work_root, "Makefile"))
 
     def configure_main(self):
         if self.tool_options.get("pnr") == "nextpnr":
@@ -334,7 +350,9 @@ endif
         elif self.tool_options.get("pnr") in ["vtr", "vpr"]:
             self.configure_vpr()
         else:
-            logger.error("Unsupported PnR tool: {}".format(self.tool_options.get("pnr")))
+            logger.error(
+                "Unsupported PnR tool: {}".format(self.tool_options.get("pnr"))
+            )
 
     def run_main(self):
         logger.info("Programming")

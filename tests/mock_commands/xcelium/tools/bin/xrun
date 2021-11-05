@@ -2,5 +2,5 @@
 import sys
 import shlex
 
-with open('xrun.cmd', 'w') as f:
-    f.write(' '.join(shlex.quote(arg) for arg in sys.argv[1:]) + '\n')
+with open("xrun.cmd", "w") as f:
+    f.write(" ".join(shlex.quote(arg) for arg in sys.argv[1:]) + "\n")

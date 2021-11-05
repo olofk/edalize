@@ -110,7 +110,7 @@ def picorv32_cyclone4_data():
 
 
 def test_picorv32_quartus_cyclone4_summary(picorv32_cyclone4_data):
-    """ Check all summary fields """
+    """Check all summary fields"""
 
     summary = picorv32_cyclone4_data["summary"]
 
@@ -179,7 +179,7 @@ def picorv32_cyclone10_data():
 
 
 def test_picorv32_quartus_cyclone10_summary(picorv32_cyclone10_data):
-    """ Check all summary fields """
+    """Check all summary fields"""
 
     summary = picorv32_cyclone10_data["summary"]
 
@@ -198,7 +198,7 @@ def test_picorv32_quartus_cyclone10_summary(picorv32_cyclone10_data):
 
 
 def test_picorv32_quartus_cyclone10_no_header(picorv32_cyclone10_data):
-    """ Check a table with no header """
+    """Check a table with no header"""
 
     df = picorv32_cyclone10_data["resources"]["Fitter Summary"].set_index(0)
 
@@ -240,7 +240,7 @@ def picorv32_s6_data():
 
 
 def test_picorv32_ise_spartan6_summary(picorv32_s6_data):
-    """ Check all summary fields """
+    """Check all summary fields"""
 
     summary = picorv32_s6_data["summary"]
 
@@ -259,7 +259,7 @@ def test_picorv32_ise_spartan6_summary(picorv32_s6_data):
 
 
 def test_picorv32_ise_spartan6_multiline(picorv32_s6_data):
-    """ Check multi-line headings """
+    """Check multi-line headings"""
     df = picorv32_s6_data["resources"]["IOB Properties"]
 
     assert list(df.columns) == [
@@ -277,7 +277,7 @@ def test_picorv32_ise_spartan6_multiline(picorv32_s6_data):
 
 
 def test_picorv32_ise_spartan6_resources(picorv32_s6_data):
-    """ Check resource values """
+    """Check resource values"""
 
     rpt = picorv32_s6_data["resources"]
 
@@ -317,7 +317,7 @@ def test_picorv32_ise_spartan6_resources(picorv32_s6_data):
 
 
 def test_picorv32_ise_spartan6_timing(picorv32_s6_data):
-    """ Check timing values """
+    """Check timing values"""
 
     rpt = picorv32_s6_data["timing"]
 
@@ -349,7 +349,7 @@ def picorv32_artix7_data():
 
 
 def test_picorv32_artix7_summary(picorv32_artix7_data):
-    """ Check all summary fields """
+    """Check all summary fields"""
 
     summary = picorv32_artix7_data["summary"]
 
@@ -368,7 +368,7 @@ def test_picorv32_artix7_summary(picorv32_artix7_data):
 
 
 def test_picorv32_artix7_resources(picorv32_artix7_data):
-    """ Check selected resource report fields """
+    """Check selected resource report fields"""
 
     rpt = picorv32_artix7_data["resources"]
 
@@ -384,7 +384,7 @@ def test_picorv32_artix7_resources(picorv32_artix7_data):
 
 
 def test_picorv32_artix7_timing(picorv32_artix7_data):
-    """ Check selected timing report fields """
+    """Check selected timing report fields"""
 
     rpt = picorv32_artix7_data["timing"]
 
@@ -410,7 +410,7 @@ def picorv32_kusp_data():
 
 
 def test_picorv32_kusp_summary(picorv32_kusp_data):
-    """ Check all summary fields """
+    """Check all summary fields"""
 
     summary = picorv32_kusp_data["summary"]
 
@@ -429,7 +429,7 @@ def test_picorv32_kusp_summary(picorv32_kusp_data):
 
 
 def test_picorv32_kusp_resources(picorv32_kusp_data):
-    """ Check selected resource report fields """
+    """Check selected resource report fields"""
 
     tables = picorv32_kusp_data["resources"]
 
@@ -448,7 +448,7 @@ def test_picorv32_kusp_resources(picorv32_kusp_data):
 
 
 def test_picorv32_kusp_timing(picorv32_kusp_data):
-    """ Check selected timing report fields """
+    """Check selected timing report fields"""
 
     rpt = picorv32_kusp_data["timing"]
 

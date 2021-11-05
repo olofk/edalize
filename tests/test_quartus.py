@@ -15,20 +15,50 @@ qsys_file = """<?xml version="1.0" encoding="UTF-8"?>
 </system>
 """
 
-qsys_fill = {"Standard": "",
-             "Pro"     : "tool=\"QsysPro\""}
+qsys_fill = {"Standard": "", "Pro": 'tool="QsysPro"'}
 
-test_sets = {"Standard": {"Quartus": ['ip-generate.cmd', 'quartus_asm.cmd', 'quartus_fit.cmd', 'quartus_map.cmd', 'quartus_sh.cmd', 'quartus_sta.cmd'],
-                          "DSE"    : ['ip-generate.cmd', 'quartus_map.cmd', 'quartus_sh.cmd', 'quartus_dse.cmd']},
-             "Pro"     : {"Quartus": ['qsys-generate.cmd', 'quartus_asm.cmd', 'quartus_fit.cmd', 'quartus_syn.cmd', 'quartus_sh.cmd', 'quartus_sta.cmd'],
-                          "DSE"    : ['qsys-generate.cmd', 'quartus_syn.cmd', 'quartus_sh.cmd', 'quartus_dse.cmd']}}
+test_sets = {
+    "Standard": {
+        "Quartus": [
+            "ip-generate.cmd",
+            "quartus_asm.cmd",
+            "quartus_fit.cmd",
+            "quartus_map.cmd",
+            "quartus_sh.cmd",
+            "quartus_sta.cmd",
+        ],
+        "DSE": [
+            "ip-generate.cmd",
+            "quartus_map.cmd",
+            "quartus_sh.cmd",
+            "quartus_dse.cmd",
+        ],
+    },
+    "Pro": {
+        "Quartus": [
+            "qsys-generate.cmd",
+            "quartus_asm.cmd",
+            "quartus_fit.cmd",
+            "quartus_syn.cmd",
+            "quartus_sh.cmd",
+            "quartus_sta.cmd",
+        ],
+        "DSE": [
+            "qsys-generate.cmd",
+            "quartus_syn.cmd",
+            "quartus_sh.cmd",
+            "quartus_dse.cmd",
+        ],
+    },
+}
+
 
 def test_quartus(make_edalize_test):
     tool_options = {
-        'family'          : 'Cyclone V',
-        'device'          : '5CSXFC6D6F31C8ES',
-        'quartus_options' : ['some', 'quartus_options'],
-        'dse_options'     : ['some', 'dse_options'],
+        "family": "Cyclone V",
+        "device": "5CSXFC6D6F31C8ES",
+        "quartus_options": ["some", "quartus_options"],
+        "dse_options": ["some", "dse_options"],
     }
 
     # Test each edition of Quartus
@@ -44,18 +74,20 @@ def test_quartus(make_edalize_test):
             # present
             os.environ["FUSESOC_QUARTUS_EDITION"] = edition
 
-            tf = make_edalize_test('quartus',
-                                   param_types=['vlogdefine', 'vlogparam'],
-                                   tool_options=_tool_options,
-                                   ref_dir=edition)
+            tf = make_edalize_test(
+                "quartus",
+                param_types=["vlogdefine", "vlogparam"],
+                tool_options=_tool_options,
+                ref_dir=edition,
+            )
 
             # Each edition performs checks on the QSYS files present, so
             # provide a minimal example
-            with open(os.path.join(tf.work_root, "qsys_file"), 'w') as f:
+            with open(os.path.join(tf.work_root, "qsys_file"), "w") as f:
                 f.write(qsys_file.format(qsys_fill[edition]))
 
             tf.backend.configure()
-            tf.compare_files(['Makefile', tf.test_name + '.tcl'])
+            tf.compare_files(["Makefile", tf.test_name + ".tcl"])
 
             tf.backend.build()
             tf.compare_files(test_sets[edition][pnr])
