@@ -36,9 +36,11 @@ puts "---------- Executing User TCL script: {{src_file|tcl_file_filter|replace("
 {{src_file|tcl_file_filter}}
 {% endfor %}
 
-# Configure Synthesize tool to use the generated Synplify TCL script
+
+
+# Configure Synthesize tool to use the generated Synplify TCL script 
 configure_tool -name {SYNTHESIZE} \
-        -params {SYNPLIFY_TCL_FILE:../../{{name}}-syn-user.tcl}
+        -params [join "SYNPLIFY_TCL_FILE:" [file join [file dirname [info script]] /{{name}}-syn-user.tcl]]
 
 puts "Configured Synthesize tool to use script: {{name}}-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"

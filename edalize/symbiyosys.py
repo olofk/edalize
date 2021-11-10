@@ -102,13 +102,13 @@ You can reproduce the example above with something like
 
     """
 
-    argtypes = ['vlogdefine', 'vlogparam']
+    argtypes = ["vlogdefine", "vlogparam"]
 
     tool_options = {
-        'lists': {
+        "lists": {
             # A list of tasks to run from the .sby file. Passed on the sby
             # command line.
-            'tasknames': 'String'
+            "tasknames": "String"
         }
     }
 
@@ -128,21 +128,24 @@ You can reproduce the example above with something like
 
         # The name of the interpolated .sby file that we create in the work
         # root
-        self.sby_name = 'test.sby'
+        self.sby_name = "test.sby"
 
     @staticmethod
     def get_doc(api_ver):
         if api_ver == 0:
-            return {'description':
-                    'SymbiYosys formal verification wrapper for Yosys',
-                    'lists': [
-                        {
-                            'name': 'tasknames',
-                            'type': 'String',
-                            'desc': ("A list of the .sby file's tasks to run. "
-                                     "Passed on the sby command line.")
-                        }
-                    ]}
+            return {
+                "description": "SymbiYosys formal verification wrapper for Yosys",
+                "lists": [
+                    {
+                        "name": "tasknames",
+                        "type": "String",
+                        "desc": (
+                            "A list of the .sby file's tasks to run. "
+                            "Passed on the sby command line."
+                        ),
+                    }
+                ],
+            }
 
     def _get_file_names(self):
         """Read the fileset to get our file names"""
@@ -156,7 +159,7 @@ You can reproduce the example above with something like
         # RTL files have types verilogSource or systemVerilogSource*. We
         # presumably want some of them. The .sby file has type sbyConfig: we
         # want exactly one of them.
-        ft_re = re.compile(r'(:?systemV|v)erilogSource')
+        ft_re = re.compile(r"(:?systemV|v)erilogSource")
         for file_obj in src_files:
             if ft_re.match(file_obj.file_type):
                 self.rtl_paths.append(file_obj.name)
@@ -166,25 +169,28 @@ You can reproduce the example above with something like
                 # work).
                 basename = os.path.basename(file_obj.name)
                 if basename in bn_to_path:
-                    raise RuntimeError("More than one RTL file with the same"
-                                       "basename: {!r} and {!r}."
-                                       .format(bn_to_path[basename],
-                                               file_obj.name))
+                    raise RuntimeError(
+                        "More than one RTL file with the same"
+                        "basename: {!r} and {!r}.".format(
+                            bn_to_path[basename], file_obj.name
+                        )
+                    )
 
                 bn_to_path[basename] = file_obj.name
                 continue
 
-            if file_obj.file_type == 'sbyConfigTemplate':
+            if file_obj.file_type == "sbyConfigTemplate":
                 sby_names.append(file_obj.name)
                 continue
 
             # Ignore anything else
 
         if len(sby_names) != 1:
-            raise RuntimeError("SymbiYosys expects exactly one file with type "
-                               "sbyConfigTemplate (the one called "
-                               "something.sby.j2). We have {}."
-                               .format(sby_names or "none"))
+            raise RuntimeError(
+                "SymbiYosys expects exactly one file with type "
+                "sbyConfigTemplate (the one called "
+                "something.sby.j2). We have {}.".format(sby_names or "none")
+            )
 
         return sby_names[0]
 
@@ -194,24 +200,30 @@ You can reproduce the example above with something like
 
         These are exposed as the {{flags}} variable in Jinja templates.
         """
-        return ' '.join(['-D{}={}'.format(key, self._param_value_str(value))
-                         for key, value in self.vlogdefine.items()] +
-                        ['-I{}'.format(inc) for inc in self.incdirs])
+        return " ".join(
+            [
+                "-D{}={}".format(key, self._param_value_str(value))
+                for key, value in self.vlogdefine.items()
+            ]
+            + ["-I{}".format(inc) for inc in self.incdirs]
+        )
 
     def _get_chparam(self):
         """
         Return a string for the {{chparam}} variable.
         """
         if not self.vlogparam:
-            return ''
+            return ""
 
-        chparam_lst = ['chparam']
+        chparam_lst = ["chparam"]
         for key, value in self.vlogparam.items():
-            chparam_lst += ['-set', key,
-                            self._param_value_str(param_value=value,
-                                                  str_quote_style='"')]
+            chparam_lst += [
+                "-set",
+                key,
+                self._param_value_str(param_value=value, str_quote_style='"'),
+            ]
         chparam_lst.append(self.toplevel)
-        return ' '.join(chparam_lst)
+        return " ".join(chparam_lst)
 
     def _gen_reads(self, value):
         """
@@ -223,7 +235,7 @@ You can reproduce the example above with something like
 
         See the class documentation for more details.
         """
-        base_cmd = 'read {} {} '.format(value, self._get_read_flags())
+        base_cmd = "read {} {} ".format(value, self._get_read_flags())
 
         lines = []
         for path in self.rtl_paths:
@@ -233,7 +245,7 @@ You can reproduce the example above with something like
         if chparam:
             lines.append(chparam)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def _interpolate_sby(self, src):
         """
@@ -258,21 +270,22 @@ You can reproduce the example above with something like
             try:
                 template = self.jinja_env.from_string(sf.read())
             except jinja2.TemplateError as err:
-                raise RuntimeError('Failed to load {!r} '
-                                   'as a Jinja2 template: {}.'
-                                   .format(src_path, err))
+                raise RuntimeError(
+                    "Failed to load {!r} "
+                    "as a Jinja2 template: {}.".format(src_path, err)
+                )
 
-        files = '\n'.join(self.rtl_paths)
+        files = "\n".join(self.rtl_paths)
 
         template_ctxt = {
-            'chparam': self._get_chparam(),
-            'files': files,
-            'flags': self._get_read_flags(),
-            'src_files': [os.path.basename(p) for p in self.rtl_paths],
-            'top_level': self.toplevel
+            "chparam": self._get_chparam(),
+            "files": files,
+            "flags": self._get_read_flags(),
+            "src_files": [os.path.basename(p) for p in self.rtl_paths],
+            "top_level": self.toplevel,
         }
 
-        with open(dst_path, 'w') as df:
+        with open(dst_path, "w") as df:
             df.write(template.render(template_ctxt))
 
     def _dump_file_lists(self):
@@ -284,10 +297,10 @@ You can reproduce the example above with something like
         RTL files goes to files.txt and the list of include directories goes to
         incdirs.txt.
         """
-        with open(os.path.join(self.work_root, 'files.txt'), 'w') as handle:
-            handle.write('\n'.join(self.rtl_paths) + '\n')
-        with open(os.path.join(self.work_root, 'incdirs.txt'), 'w') as handle:
-            handle.write('\n'.join(self.incdirs) + '\n')
+        with open(os.path.join(self.work_root, "files.txt"), "w") as handle:
+            handle.write("\n".join(self.rtl_paths) + "\n")
+        with open(os.path.join(self.work_root, "incdirs.txt"), "w") as handle:
+            handle.write("\n".join(self.incdirs) + "\n")
 
     def configure_main(self):
         clean_sby_name = self._get_file_names()
@@ -298,10 +311,11 @@ You can reproduce the example above with something like
         pass
 
     def run_main(self):
-        tasknames = self.tool_options.get('tasknames', [])
+        tasknames = self.tool_options.get("tasknames", [])
         if not isinstance(tasknames, list):
-            raise RuntimeError('"tasknames" tool option should be '
-                               'a list of strings. Got {!r}.'
-                               .format(tasknames))
+            raise RuntimeError(
+                '"tasknames" tool option should be '
+                "a list of strings. Got {!r}.".format(tasknames)
+            )
 
-        self._run_tool('sby', ['-d', 'build', self.sby_name] + tasknames)
+        self._run_tool("sby", ["-d", "build", self.sby_name] + tasknames)

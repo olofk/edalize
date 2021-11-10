@@ -34,43 +34,53 @@ clean_{name}:
 	$(RM) {name}.vpi
 """
 
+
 class Icarus(Edatool):
 
-    argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
+    argtypes = ["plusarg", "vlogdefine", "vlogparam"]
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code written in Verilog (IEEE-1364) into some target format",
-                    'members' : [
-                        {'name' : 'timescale',
-                         'type' : 'String',
-                         'desc' : 'Default timescale'}],
-                    'lists' : [
-                        {'name' : 'iverilog_options',
-                         'type' : 'String',
-                         'desc' : 'Additional options for iverilog'},
-                        {'name' : 'vpp_options',
-                         'type' : 'String',
-                         'desc' : 'Additional options for vpp'},
-                        ]}
+            return {
+                "description": "Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code written in Verilog (IEEE-1364) into some target format",
+                "members": [
+                    {"name": "timescale", "type": "String", "desc": "Default timescale"}
+                ],
+                "lists": [
+                    {
+                        "name": "iverilog_options",
+                        "type": "String",
+                        "desc": "Additional options for iverilog",
+                    },
+                    {
+                        "name" : "vpp_options",
+                        "type" : "String",
+                        "desc" : "Additional options for vpp",
+                    },
+                ],
+            }
 
     def configure_main(self):
-        f = open(os.path.join(self.work_root, self.name+'.scr'),'w')
+        f = open(os.path.join(self.work_root, self.name + ".scr"), "w")
 
         (src_files, incdirs) = self._get_fileset_files()
         for key, value in self.vlogdefine.items():
-            f.write('+define+{}={}\n'.format(key, self._param_value_str(value, '')))
+            f.write("+define+{}={}\n".format(key, self._param_value_str(value, "")))
 
         for key, value in self.vlogparam.items():
-            f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, self._param_value_str(value, '"')))
+            f.write(
+                "+parameter+{}.{}={}\n".format(
+                    self.toplevel, key, self._param_value_str(value, '"')
+                )
+            )
         for id in incdirs:
-            f.write("+incdir+" + id+'\n')
-        timescale = self.tool_options.get('timescale')
+            f.write("+incdir+" + id + "\n")
+        timescale = self.tool_options.get("timescale")
         if timescale:
-            with open(os.path.join(self.work_root, 'timescale.v'), 'w') as tsfile:
+            with open(os.path.join(self.work_root, "timescale.v"), "w") as tsfile:
                 tsfile.write("`timescale {}\n".format(timescale))
-            f.write('timescale.v\n')
+            f.write("timescale.v\n")
 
         supported_file_types = [
             "verilogSource",
@@ -84,8 +94,8 @@ class Icarus(Edatool):
         ]
         for src_file in src_files:
             if src_file.file_type in supported_file_types:
-                f.write(src_file.name+'\n')
-            elif src_file.file_type == 'user':
+                f.write(src_file.name + "\n")
+            elif src_file.file_type == "user":
                 pass
             else:
                 _s = "{} has unknown file type '{}'"
@@ -93,40 +103,52 @@ class Icarus(Edatool):
 
         f.close()
 
-        with open(os.path.join(self.work_root, 'Makefile'), 'w') as f:
+        with open(os.path.join(self.work_root, "Makefile"), "w") as f:
 
             f.write("TARGET           := {}\n".format(self.name))
-            _vpi_modules = ' '.join([m['name']+'.vpi' for m in self.vpi_modules])
+            _vpi_modules = " ".join([m["name"] + ".vpi" for m in self.vpi_modules])
             if _vpi_modules:
                 f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
             f.write("TOPLEVEL         := {}\n".format(self.toplevel))
-            f.write("IVERILOG_OPTIONS := {}\n".format(' '.join(self.tool_options.get('iverilog_options', []))))
-            f.write("VPP_OPTIONS := {}\n".format(' '.join(self.tool_options.get('vpp_options', []))))
+            f.write(
+                "IVERILOG_OPTIONS := {}\n".format(
+                    " ".join(self.tool_options.get("iverilog_options", []))
+                )
+            )
+            f.write(
+                "VPP_OPTIONS := {}\n".format(
+                    " ".join(self.tool_options.get("vpp_options", []))
+                )
+            )
             if self.plusarg:
                 plusargs = []
                 for key, value in self.plusarg.items():
-                    plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
-                f.write("EXTRA_OPTIONS    ?= {}\n".format(' '.join(plusargs)))
+                    plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+                f.write("EXTRA_OPTIONS    ?= {}\n".format(" ".join(plusargs)))
 
             f.write(MAKEFILE_TEMPLATE)
 
             for vpi_module in self.vpi_modules:
-                _incs = ['-I' + s for s in vpi_module['include_dirs']]
-                _libs = ['-l'+l for l in vpi_module['libs']]
-                _srcs = vpi_module['src_files']
-                f.write(VPI_MAKE_SECTION.format(name = vpi_module['name'],
-                                                libs = ' '.join(_libs),
-                                                incs = ' '.join(_incs),
-                                                srcs = ' '.join(_srcs)))
+                _incs = ["-I" + s for s in vpi_module["include_dirs"]]
+                _libs = ["-l" + l for l in vpi_module["libs"]]
+                _srcs = vpi_module["src_files"]
+                f.write(
+                    VPI_MAKE_SECTION.format(
+                        name=vpi_module["name"],
+                        libs=" ".join(_libs),
+                        incs=" ".join(_incs),
+                        srcs=" ".join(_srcs),
+                    )
+                )
 
     def run_main(self):
-        args = ['run']
+        args = ["run"]
 
         # Set plusargs
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
-                plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
-            args.append('EXTRA_OPTIONS='+' '.join(plusargs))
+                plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+            args.append("EXTRA_OPTIONS=" + " ".join(plusargs))
 
-        self._run_tool('make', args)
+        self._run_tool("make", args)

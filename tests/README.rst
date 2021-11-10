@@ -1,17 +1,11 @@
-***************
 Testing edalize
-***************
-
-Users
-=====
+###############
 
 To run the tests, call :command:`pytest`.
 
-Developers
-==========
 
 Mocks for commands
-------------------
+==================
 
 We provide mocks (stand-ins) for all tools that we want to exercise in tests (located in :file:`tests/mock_commands/`).
 These mocks are very simplified "models" of the actual tool, and are called instead of the actual tool.
@@ -25,8 +19,9 @@ In a more complex test setup (e.g. for ``vcs``),
 * we make the file executable
 * we set the access and modified times of generated files to the current time
 
+
 Testcases
----------
+=========
 
 To define a testcase, use the :func:`edalize_common.make_edalize_test` pytest factory fixture.
 This defines a factory that you can call to set up a mocked-up backend appropriately.

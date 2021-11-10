@@ -3,22 +3,32 @@ name: CI
 on:
   push:
   pull_request:
-  # Run CI daily even without code changes to ensure tests pass with 
+  # Run CI once a week even without code changes to ensure tests pass with
   # updated dependencies.
   schedule:
     - cron: '0 0 * * 5'
-  # See:
-  # * https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#scheduled-events
-  # * https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
   # Allow triggering a CI run from the web UI.
   workflow_dispatch:
-  # See:
-  # * https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
-  # * https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
 
 jobs:
 
-  build:
+  Format:
+    name: 🐍 Format
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 🧰 Checkout
+      uses: actions/checkout@v2
+
+    - name: 🐍 Setup Python ${{ matrix.pyver }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: 🚦 Run pre-commit Action
+      uses: pre-commit/action@v2.0.0
+
+  Build:
     strategy:
       fail-fast: false
       matrix:

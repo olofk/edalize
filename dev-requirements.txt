@@ -1,0 +1,2 @@
+pre-commit>=2.9.0
+tox

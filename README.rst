@@ -1,26 +1,26 @@
-Edalize
-=======
-
-.. image:: https://badges.gitter.im/librecores/edalize.svg
-   :alt: Join the chat at https://gitter.im/librecores/edalize
-   :target: https://gitter.im/librecores/edalize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
-.. image:: https://github.com/olofk/edalize/workflows/CI/badge.svg
-        :target: https://github.com/olofk/edalize/actions?query=workflow%3ACI
-        :alt: CI status
-
-.. image:: https://readthedocs.org/projects/edalize/badge/?version=latest
+.. image:: https://img.shields.io/readthedocs/edalize?longCache=true&style=flat-square&label=edalize.rtfd.io&logo=ReadTheDocs&logoColor=e8ecef
         :target: https://edalize.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://img.shields.io/pypi/dm/edalize.svg?label=PyPI%20downloads
+.. image:: https://img.shields.io/badge/Chat-on%20gitter-4db797.svg?longCache=true&style=flat-square&logo=gitter&logoColor=e8ecef
+   :alt: Join the chat at https://gitter.im/librecores/edalize
+   :target: https://gitter.im/librecores/edalize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. image:: https://www.librecores.org/olofk/edalize/badge.svg?style=flat-square
+        :target: https://www.librecores.org/olofk/edalize
+        :alt: LibreCores
+
+.. image:: https://img.shields.io/pypi/dm/edalize.svg?longCache=true&style=flat-square&logo=PyPI&logoColor=e8ecef&label=PyPI%20downloads
         :target: https://pypi.org/project/edalize/
         :alt: PyPI downloads
 
-.. image:: https://www.librecores.org/olofk/edalize/badge.svg?style=flat
-        :target: https://www.librecores.org/olofk/edalize
-        :alt: LibreCores
-   
+.. image:: https://img.shields.io/github/workflow/status/olofk/edalize/CI?longCache=true&style=flat-square&label=CI&logo=github%20actions&logoColor=e8ecef
+        :target: https://github.com/olofk/edalize/actions?query=workflow%3ACI
+        :alt: CI status
+
+Edalize
+=======
+
 What's this?
 ------------
 
@@ -45,21 +45,24 @@ It can be directly integrated as a library for your existing Python-powered HDL 
 Install it
 ----------
 
-Edalize is a Python module. Then once downloaded we can install it with
-following Python command::
+Edalize is a Python module.
+Find the sources at `github.com/olofk/edalize <https://github.com/olofk/edalize>`__.
+Once downloaded, we can install it with following Python command::
 
     $ cd edalize
     $ python -m pip install -e .
 
-The reporting modules have been made optional due to their use of a number of
-dependencies for data analysis. These can be installed with
+The reporting modules have been made optional due to their use of a number of dependencies for data analysis.
+These can be installed with::
 
     $ python -m pip install -e ".[reporting]"
 
 How to use it?
 --------------
 
-Ok, this sounds great. Now, how do I get started?
+Ok, this sounds great.
+Now, how do I get started?
+Find the documentation at `edalize.rtfd.io <https://edalize.rtfd.io>`__.
 
 Assume we have a project that consists of a Verilog source file called ``blinky.v``.
 Then there's also a testbench called ``blinky_tb.v`` and a constraints file for synthesis called ``constraints.sdc``.

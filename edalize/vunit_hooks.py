@@ -41,4 +41,5 @@ class VUnitRunner(VUnitHooks):
     """
     The default runner which will be used if no :file:`vunit_runner.py` is specified.
     """
+
     pass

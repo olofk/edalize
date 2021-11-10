@@ -16,6 +16,7 @@ import_files \
         -hdl_source {vhdl2008_file} \
         -hdl_source {another_sv_file.sv} \
         -io_pdc {pdc_constraint_file.pdc} \
+        -fp_pdc {pdc_floorplan_constraint_file.pdc} \
 
 # Import HDL sources on libraries (logical_names)
 import_files \
@@ -32,9 +33,11 @@ set_root -module {top_module::work}
 puts "---------- Executing User TCL script: tcl_file.tcl ----------"
 source tcl_file.tcl
 
-# Configure Synthesize tool to use the generated Synplify TCL script
+
+
+# Configure Synthesize tool to use the generated Synplify TCL script 
 configure_tool -name {SYNTHESIZE} \
-        -params {SYNPLIFY_TCL_FILE:../../libero-test-all-syn-user.tcl}
+        -params [join "SYNPLIFY_TCL_FILE:" [file join [file dirname [info script]] /libero-test-all-syn-user.tcl]]
 
 puts "Configured Synthesize tool to use script: libero-test-all-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"
@@ -51,10 +54,12 @@ organize_tool_files -tool {SYNTHESIZE} \
 puts "----------------------- Place and Route Constraints ----------------------"
 puts "File: ./prj/constraint/sdc_file"
 puts "File: ./prj/constraint/io/pdc_constraint_file.pdc"
+puts "File: ./prj/constraint/fp/pdc_floorplan_constraint_file.pdc"
 
 organize_tool_files -tool {PLACEROUTE} \
         -file {./prj/constraint/sdc_file} \
         -file {./prj/constraint/io/pdc_constraint_file.pdc} \
+        -file {./prj/constraint/fp/pdc_floorplan_constraint_file.pdc} \
         -module {top_module::work} -input_type {constraint}
 
 # Configure Verify Timing tool to use the project constraints
