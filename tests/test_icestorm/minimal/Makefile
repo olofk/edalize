@@ -2,7 +2,7 @@
 
 all: test_icestorm_0.bin
 
-test_icestorm_0.blif test_icestorm_0.json test_icestorm_0.edif: edalize_yosys_template.tcl
+test_icestorm_0.json: edalize_yosys_template.tcl
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl edalize_yosys_template.tcl"
 
 test_icestorm_0.asc: test_icestorm_0.json

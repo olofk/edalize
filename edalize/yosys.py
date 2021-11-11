@@ -80,12 +80,18 @@ class Yosys(Edatool):
                 unused_files.append(f)
 
         self.edam["files"] = unused_files
-        of = [
-            {"name": self.name + ".blif", "file_type": "blif"},
-            {"name": self.name + ".edif", "file_type": "edif"},
-            {"name": self.name + ".json", "file_type": "jsonNetlist"},
-        ]
-        self.edam["files"] += of
+
+        output_format = self.tool_options.get("output_format", "blif")
+        default_target = f"{self.name}.{output_format}"
+
+        self.edam["files"].append(
+            {
+                "name": default_target,
+                "file_type": "jsonNetlist"
+                if output_format == "json"
+                else output_format,
+            }
+        )
 
         verilog_defines = []
         for key, value in self.vlogdefine.items():
@@ -100,7 +106,6 @@ class Yosys(Edatool):
                 _s.format(key, self._param_value_str(value), self.toplevel)
             )
 
-        output_format = self.tool_options.get("output_format", "blif")
         arch = self.tool_options.get("arch", None)
 
         if not arch:
@@ -116,8 +121,8 @@ class Yosys(Edatool):
             "synth_command": "synth_" + arch,
             "synth_options": " ".join(self.tool_options.get("yosys_synth_options", "")),
             "write_command": "write_" + output_format,
-            "default_target": output_format,
-            "edif_opts": "-pvector bra" if arch == "xilinx" else "",
+            "output_format": output_format,
+            "output_opts": "-pvector bra " if arch == "xilinx" else "",
             "yosys_template": template,
             "name": self.name,
         }
@@ -134,7 +139,7 @@ class Yosys(Edatool):
         commands = self.EdaCommands()
         commands.add(
             ["yosys", "-l", "yosys.log", "-p", f'"tcl {template}"'],
-            [f"{self.name}.{output}" for output in ["blif", "json", "edif"]],
+            [default_target],
             [template],
         )
         if self.tool_options.get("yosys_as_subtool"):

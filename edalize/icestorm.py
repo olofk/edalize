@@ -49,6 +49,7 @@ class Icestorm(Edatool):
         self.edam["tool_options"] = {
             "yosys": {
                 "arch": "ice40",
+                "output_format": "json",
                 "yosys_synth_options": yosys_synth_options,
                 "yosys_as_subtool": True,
                 "yosys_template": self.tool_options.get("yosys_template"),

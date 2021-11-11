@@ -5,7 +5,7 @@ all: test_vivado_yosys_0.bit
 test_vivado_yosys_0.xpr: test_vivado_yosys_0.tcl test_vivado_yosys_0.edif
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_yosys_0.tcl
 
-test_vivado_yosys_0.blif test_vivado_yosys_0.json test_vivado_yosys_0.edif: edalize_yosys_template.tcl
+test_vivado_yosys_0.edif: edalize_yosys_template.tcl
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl edalize_yosys_template.tcl"
 
 synth: test_vivado_yosys_0.edif

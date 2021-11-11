@@ -14,16 +14,18 @@ from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
+""" Symbiflow backend
+
+A core (usually the system core) can add the following files:
+
+- Standard design sources (Verilog only)
+
+- Constraints: unmanaged constraints with file_type SDC, pin_constraints with file_type PCF and placement constraints with file_type xdc
+
+"""
+
 
 class Symbiflow(Edatool):
-    """
-    Symbiflow backend.
-
-    A core (usually the system core) can add the following files:
-
-    * Standard design sources (Verilog only)
-    * Constraints: unmanaged constraints with file_type SDC, pin_constraints with file_type PCF and placement constraints with file_type xdc
-    """
 
     argtypes = ["vlogdefine", "vlogparam", "generic"]
     archs = ["xilinx", "fpga_interchange"]
@@ -97,6 +99,7 @@ class Symbiflow(Edatool):
             "tool_options": {
                 "yosys": {
                     "arch": vendor,
+                    "output_format": "json",
                     "yosys_synth_options": yosys_synth_options,
                     "yosys_template": yosys_template,
                     "yosys_as_subtool": True,

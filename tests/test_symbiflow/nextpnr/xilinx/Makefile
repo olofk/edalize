@@ -2,7 +2,7 @@
 
 all: test_symbiflow_nextpnr_xilinx_0.bit
 
-test_symbiflow_nextpnr_xilinx_0.blif test_symbiflow_nextpnr_xilinx_0.json test_symbiflow_nextpnr_xilinx_0.edif: edalize_yosys_template.tcl
+test_symbiflow_nextpnr_xilinx_0.json: edalize_yosys_template.tcl
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl edalize_yosys_template.tcl"
 
 test_symbiflow_nextpnr_xilinx_0.fasm: test_symbiflow_nextpnr_xilinx_0.json
