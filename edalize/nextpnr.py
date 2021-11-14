@@ -5,6 +5,7 @@
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.utils import EdaCommands
 
 
 class Nextpnr(Edatool):
@@ -72,7 +73,7 @@ class Nextpnr(Edatool):
         self.edam["files"] += of
 
         # Write Makefile
-        commands = self.EdaCommands()
+        commands = EdaCommands()
 
         arch = self.flow_config["arch"]
         arch_options = []

@@ -5,6 +5,7 @@
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.utils import EdaCommands
 from edalize.nextpnr import Nextpnr
 from edalize.yosys import Yosys
 
@@ -61,7 +62,7 @@ class Apicula(Edatool):
         nextpnr.configure()
 
         # Write Makefile
-        commands = self.EdaCommands()
+        commands = EdaCommands()
         commands.commands = yosys.commands
 
         commands.commands += nextpnr.commands

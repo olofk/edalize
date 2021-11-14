@@ -6,6 +6,7 @@ import logging
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.utils import EdaCommands
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +137,7 @@ class Yosys(Edatool):
                 "yosys-script-tcl.j2", "edalize_yosys_template.tcl", template_vars
             )
 
-        commands = self.EdaCommands()
+        commands = EdaCommands()
         commands.add(
             ["yosys", "-l", "yosys.log", "-p", f'"tcl {template}"'],
             [default_target],

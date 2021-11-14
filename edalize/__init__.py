@@ -7,6 +7,7 @@ from os.path import dirname
 from pkgutil import walk_packages
 
 NON_TOOL_PACKAGES = [
+    "utils",
     "vunit_hooks",
     "reporting",
     "ise_reporting",

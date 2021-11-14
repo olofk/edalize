@@ -9,6 +9,7 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
+from edalize.utils import EdaCommands
 from edalize.yosys import Yosys
 from importlib import import_module
 
@@ -180,7 +181,7 @@ class Symbiflow(Edatool):
         for x in placement_constraints:
             xdcs += ["--xdc", x]
 
-        commands = self.EdaCommands()
+        commands = EdaCommands()
         commands.commands = yosys.commands
         if arch == "fpga_interchange":
             commands.header += """ifndef INTERCHANGE_SCHEMA_PATH
@@ -298,7 +299,7 @@ endif
         sdc_opts = ["-s"] + timing_constraints if timing_constraints else []
         xdc_opts = ["-x"] + placement_constraints if placement_constraints else []
 
-        commands = self.EdaCommands()
+        commands = EdaCommands()
         # Synthesis
         targets = self.toplevel + ".eblif"
         command = ["symbiflow_synth", "-t", self.toplevel]

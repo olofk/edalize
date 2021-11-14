@@ -9,6 +9,7 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
+from edalize.utils import EdaCommands
 from edalize.yosys import Yosys
 
 logger = logging.getLogger(__name__)
@@ -190,7 +191,7 @@ class Vivado(Edatool):
         )
 
         # Write Makefile
-        commands = self.EdaCommands()
+        commands = EdaCommands()
 
         vivado_command = ["vivado", "-notrace", "-mode", "batch", "-source"]
 
