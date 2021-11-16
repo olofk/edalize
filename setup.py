@@ -13,7 +13,7 @@ def read(fname):
 setup(
     name="edalize",
     version="0.2.5",
-    packages=["edalize", "edalize.tools"],
+    packages=["edalize", "edalize.tools", "edalize.flows"],
     package_data={
         "edalize": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",

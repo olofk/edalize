@@ -20,6 +20,12 @@ def get_edatool(name):
     return getattr(import_module("{}.{}".format(__name__, name)), name.capitalize())
 
 
+def get_flow(name):
+    return getattr(
+        import_module("{}.flows.{}".format(__name__, name)), name.capitalize()
+    )
+
+
 def walk_tool_packages():
     for _, pkg_name, _ in walk_packages([dirname(__file__)]):
         if not pkg_name in NON_TOOL_PACKAGES:
