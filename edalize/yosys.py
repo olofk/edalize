@@ -139,7 +139,7 @@ class Yosys(Edatool):
 
         commands = EdaCommands()
         commands.add(
-            ["yosys", "-l", "yosys.log", "-p", f'"tcl {template}"'],
+            ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'"],
             [default_target],
             [template],
         )
