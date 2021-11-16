@@ -13,7 +13,7 @@ def read(fname):
 setup(
     name="edalize",
     version="0.2.5",
-    packages=["edalize"],
+    packages=["edalize", "edalize.tools"],
     package_data={
         "edalize": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
@@ -38,7 +38,11 @@ setup(
             "templates/ghdl/Makefile.j2",
             "templates/openlane/openlane-makefile.j2",
             "templates/openlane/openlane-script-tcl.j2",
-        ]
+        ],
+        "edalize.tools": [
+            "templates/yosys/edalize_yosys_procs.tcl.j2",
+            "templates/yosys/yosys-script-tcl.j2",
+        ],
     },
     author="Olof Kindgren",
     author_email="olof.kindgren@gmail.com",
