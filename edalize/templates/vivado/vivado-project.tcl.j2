@@ -1,9 +1,22 @@
 # Auto-generated project tcl file
 
+{% if tool_options.board_repo_paths -%}
+# Must be set before creating the project otherwise it is ignored.
+# Allows the user to provide local path to board files.
+set_param board.repoPaths {
+  {%- for path in tool_options.board_repo_paths %}
+  {{ path }}
+  {%- endfor %} }
+{%- endif %}
+
 create_project {{ name }} -force
 
 {% if tool_options.part -%}
 set_property part {{ tool_options.part }} [current_project]
+{%- endif %}
+
+{% if tool_options.board_part -%}
+set_property board_part {{ tool_options.board_part }} [current_project]
 {%- endif %}
 
 {% if has_vhdl2008 -%}
@@ -39,6 +52,15 @@ set_property include_dirs [list {{ incdirs|join(' ') }}] [get_filesets sources_1
 set_property top {{ toplevel }} [current_fileset]
 set_property source_mgmt_mode {{ tool_options.source_mgmt_mode if tool_options.source_mgmt_mode else "None" }} [current_project]
 
+{%- endif %}
+
+{% if bd_files -%}
+{%- for bd in bd_files %}
+report_ip_status
+upgrade_ip [get_ips -of_objects [get_bd_designs {{ bd }}]]
+set_property synth_checkpoint_mode None [get_files {{ bd }}]
+generate_target all [get_files {{ bd }}]
+{% endfor -%}
 {%- endif %}
 
 {% if has_xci -%}

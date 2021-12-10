@@ -33,11 +33,23 @@ class Vivado(Edatool):
         if api_ver == 0:
             return {
                 "description": "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA",
+                'lists': [
+                    {
+                        'name': 'board_repo_paths',
+                        'type': 'String',
+                        'desc': 'Board repository paths. A list of paths to search for board files.'
+                    },
+                ],
                 "members": [
                     {
                         "name": "part",
                         "type": "String",
                         "desc": "FPGA part number (e.g. xc7a35tcsg324-1)",
+                    },
+                    {
+                        "name": "board_part",
+                        "type": "String",
+                        "desc": "Board part number (e.g. xilinx.com:kc705:part0:0.9)",
                     },
                     {
                         "name": "synth",
@@ -123,6 +135,7 @@ class Vivado(Edatool):
         has_vhdl2008 = False
         has_xci = False
         unused_files = []
+        bd_files = []
 
         for f in self.files:
             cmd = ""
@@ -151,6 +164,9 @@ class Vivado(Edatool):
                 cmd = "read_xdc -unmanaged"
             elif f["file_type"] == "mem":
                 cmd = "read_mem"
+            elif f["file_type"] == "bd":
+                cmd = 'read_bd'
+                bd_files.append(f["name"])
 
             if cmd:
                 if not self._add_include_dir(f, incdirs):
@@ -170,6 +186,7 @@ class Vivado(Edatool):
             "netlist_flow": bool(edif_files),
             "has_vhdl2008": has_vhdl2008,
             "has_xci": has_xci,
+            "bd_files": bd_files
         }
 
         self.render_template("vivado-project.tcl.j2", self.name + ".tcl", template_vars)
