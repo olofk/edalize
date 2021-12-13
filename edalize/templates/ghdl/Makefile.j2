@@ -10,10 +10,13 @@ VHDL_SOURCES = {{ vhdl_sources }}
 all: work-obj{{ standard }}.cf
 
 run: $(TOPLEVEL)
-	ghdl -r $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
+	$(EDALIZE_LAUNCHER) ghdl -r $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj{{ standard }}.cf
-	ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL)
+	$(EDALIZE_LAUNCHER) ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL)
+
+$(TOPLEVEL).v: $(VHDL_SOURCES) work-obj{{ standard }}.cf
+	$(EDALIZE_LAUNCHER) ghdl --synth --out=verilog $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL)
 
 make_libraries_directories:
 	@echo "Creating libraries directories"

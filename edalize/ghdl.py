@@ -138,7 +138,7 @@ class Ghdl(Edatool):
                 analyze_options += " -P./{}".format(lib)
                 make_libraries_directories += "\tmkdir -p {}\n".format(lib)
                 lib_opts = library_options.format(lib=lib)
-            ghdlimport += "\tghdl -i $(STD) $(ANALYZE_OPTIONS) {} {}\n".format(
+            ghdlimport += "\t$(EDALIZE_LAUNCHER) ghdl -i $(STD) $(ANALYZE_OPTIONS) {} {}\n".format(
                 lib_opts, " ".join(files)
             )
 
