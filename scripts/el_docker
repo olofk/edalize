@@ -1,0 +1,37 @@
+#!/usr/bin/python
+import os
+import subprocess
+import sys
+
+containers = {
+    "flow.tcl": "edalize/openlane-sky130:v0.12",
+    "yosys": "hdlc/yosys",
+    "nextpnr-ice40": "hdlc/nextpnr",
+    "nextpnr-ecp5": "hdlc/nextpnr",
+    "icepack": "hdlc/icestorm",
+    "ecppack": "hdlc/prjtrellis",
+    "icetime": "hdlc/icestorm",
+    "icebox_stat": "hdlc/icestorm",
+    "ghdl": "ghdl/ghdl:buster-llvm-7",
+    "verilator": "verilator/verilator",
+}
+tool = sys.argv[1]
+if tool in containers:
+    (build_root, work) = os.path.split(os.getcwd())
+
+    prefix = [
+        "docker",
+        "run",
+        "--rm",
+        "-u",
+        f"{os.getuid()}:{os.getgid()}",
+        "-v",
+        f"{build_root}:/src",
+        "-w",
+        f"/src/{work}",
+        containers[tool],
+    ]
+else:
+    prefix = []
+
+sys.exit(subprocess.call(prefix + sys.argv[1:]))

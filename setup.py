@@ -84,4 +84,5 @@ setup(
     },
     # Supported Python versions: 3.6+
     python_requires=">=3.6, <4",
+    scripts=["scripts/el_docker"],
 )
