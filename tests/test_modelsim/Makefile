@@ -30,6 +30,9 @@ PLUSARGS      ?= plusarg_bool=1 plusarg_int=42 plusarg_str=hello
 VSIM_OPTIONS  ?= a few vsim_options
 EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
 
+run-gui: export MODULE = 
+run-gui: export PYTHONPATH = 
+
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
