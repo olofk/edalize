@@ -10,9 +10,18 @@ def run_icestorm_test(tf, pnr_cmdfile="nextpnr-ice40.cmd"):
         ["Makefile", "edalize_yosys_procs.tcl", "edalize_yosys_template.tcl"]
     )
 
-    f = os.path.join(tf.work_root, "pcf_file.pcf")
-    with open(f, "a"):
-        os.utime(f, None)
+    for x in [
+        "pcf_file.pcf",
+        "sv_file.sv",
+        "tcl_file.tcl",
+        "vlog_file.v",
+        "vlog05_file.v",
+        "vlog_incfile",
+        "another_sv_file.sv",
+    ]:
+        f = os.path.join(tf.work_root, x)
+        with open(f, "a"):
+            os.utime(f, None)
 
     tf.backend.build()
     tf.compare_files(["yosys.cmd", pnr_cmdfile, "icepack.cmd"])
@@ -88,6 +97,6 @@ def test_icestorm_invalid_pnr(make_edalize_test):
     with pytest.raises(RuntimeError) as e:
         tf.backend.configure()
     assert (
-        "Invalid pnr option 'invalid'. Valid values are 'arachne' for Arachne-pnr, 'next' for nextpnr or 'none' to only perform synthesis"
+        "Invalid pnr option 'invalid'. Valid values are 'next' for nextpnr or 'none' to only perform synthesis"
         in str(e.value)
     )

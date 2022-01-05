@@ -2,8 +2,8 @@
 
 all: test_trellis_0.bit
 
-test_trellis_0.blif test_trellis_0.json test_trellis_0.edif: edalize_yosys_template.tcl
-	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl edalize_yosys_template.tcl"
+test_trellis_0.json: edalize_yosys_template.tcl
+	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p 'tcl edalize_yosys_template.tcl'
 
 test_trellis_0.config: test_trellis_0.json
 	$(EDALIZE_LAUNCHER) nextpnr-ecp5 -l next.log a few nextpnr_options --lpf lpf_file.lpf --json test_trellis_0.json --textcfg test_trellis_0.config

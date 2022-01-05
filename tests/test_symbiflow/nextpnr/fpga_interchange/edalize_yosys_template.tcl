@@ -13,6 +13,4 @@ verilog_defaults -pop
 
 synth $top
 
-write_blif $name.blif
-write_json $name.json
-write_edif -pvector bra$name.edif
+write_json -pvector bra $name.json

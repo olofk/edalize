@@ -6,8 +6,8 @@ endif
 
 all: test_symbiflow_nextpnr_fpga_interchange_0.bit
 
-test_symbiflow_nextpnr_fpga_interchange_0.blif test_symbiflow_nextpnr_fpga_interchange_0.json test_symbiflow_nextpnr_fpga_interchange_0.edif: edalize_yosys_template.tcl
-	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl edalize_yosys_template.tcl"
+test_symbiflow_nextpnr_fpga_interchange_0.json: edalize_yosys_template.tcl
+	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p 'tcl edalize_yosys_template.tcl'
 
 test_symbiflow_nextpnr_fpga_interchange_0.netlist: test_symbiflow_nextpnr_fpga_interchange_0.json
 	$(EDALIZE_LAUNCHER) python -m fpga_interchange.yosys_json --schema_dir $(INTERCHANGE_SCHEMA_PATH) --device xc7a35t.device --top top_module test_symbiflow_nextpnr_fpga_interchange_0.json test_symbiflow_nextpnr_fpga_interchange_0.netlist

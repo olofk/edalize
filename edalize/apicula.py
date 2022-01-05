@@ -5,6 +5,7 @@
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.utils import EdaCommands
 from edalize.nextpnr import Nextpnr
 from edalize.yosys import Yosys
 
@@ -41,6 +42,7 @@ class Apicula(Edatool):
         self.edam["tool_options"] = {
             "yosys": {
                 "arch": "gowin",
+                "output_format": "json",
                 "yosys_synth_options": [f"-json {self.name}.json"]
                 + self.tool_options.get("yosys_synth_options", []),
                 "yosys_as_subtool": True,
@@ -60,7 +62,7 @@ class Apicula(Edatool):
         nextpnr.configure()
 
         # Write Makefile
-        commands = self.EdaCommands()
+        commands = EdaCommands()
         commands.commands = yosys.commands
 
         commands.commands += nextpnr.commands

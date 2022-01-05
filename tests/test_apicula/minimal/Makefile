@@ -2,8 +2,8 @@
 
 all: test_apicula_0.fs
 
-test_apicula_0.blif test_apicula_0.json test_apicula_0.edif: edalize_yosys_template.tcl
-	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p "tcl edalize_yosys_template.tcl"
+test_apicula_0.json: edalize_yosys_template.tcl
+	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p 'tcl edalize_yosys_template.tcl'
 
 test_apicula_0.pack: test_apicula_0.json
 	$(EDALIZE_LAUNCHER) nextpnr-gowin -l next.log --device GW1N-LV1QN48C6/I5 --json test_apicula_0.json --write test_apicula_0.pack

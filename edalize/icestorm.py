@@ -7,6 +7,7 @@ import os.path
 from edalize.edatool import Edatool
 from edalize.nextpnr import Nextpnr
 from edalize.yosys import Yosys
+from edalize.flows.icestorm import Icestorm as Icestorm2
 
 
 class Icestorm(Edatool):
@@ -30,6 +31,11 @@ class Icestorm(Edatool):
                         "type": "String",
                         "desc": "Additional options for Arachnhe PNR",
                     },
+                    {
+                        "name": "frontends",
+                        "type": "String",
+                        "desc": "fixme",
+                    },
                 ],
             }
             Edatool._extend_options(options, Yosys)
@@ -41,73 +47,19 @@ class Icestorm(Edatool):
                 "lists": options["lists"],
             }
 
+    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+        super().__init__(edam, work_root, eda_api, verbose)
+        _tool_opts = edam["tool_options"]["icestorm"]
+
+        edam["flow_options"] = edam["tool_options"]["icestorm"]
+
+        self.icestorm = Icestorm2(edam, work_root, verbose)
+
     def configure_main(self):
-        # Write yosys script file
-        yosys_synth_options = self.tool_options.get("yosys_synth_options", "")
+        self.icestorm.configure()
 
-        # Pass icestorm tool options to yosys and nextpnr
-        self.edam["tool_options"] = {
-            "yosys": {
-                "arch": "ice40",
-                "yosys_synth_options": yosys_synth_options,
-                "yosys_as_subtool": True,
-                "yosys_template": self.tool_options.get("yosys_template"),
-            },
-            "nextpnr": {
-                "nextpnr_options": self.tool_options.get("nextpnr_options", [])
-            },
-        }
-        yosys = Yosys(self.edam, self.work_root)
-        yosys.configure()
+    def build_pre(self):
+        pass
 
-        pnr = self.tool_options.get("pnr", "next")
-        part = self.tool_options.get("part", None)
-        if not pnr in ["arachne", "next", "none"]:
-            raise RuntimeError(
-                "Invalid pnr option '{}'. Valid values are 'arachne' for Arachne-pnr, 'next' for nextpnr or 'none' to only perform synthesis".format(
-                    pnr
-                )
-            )
-
-        # Write Makefile
-        commands = self.EdaCommands()
-        commands.commands = yosys.commands
-
-        if pnr == "arachne":
-            depends = self.name + ".blif"
-            targets = self.name + ".asc"
-            command = ["arachne-pnr"]
-            command += self.tool_options.get("arachne_pnr_options", [])
-            command += ["-p", depends, "-o", targets]
-            commands.add(command, [depends], [targets])
-            set_default_target(self.name + ".bin")
-        elif pnr == "next":
-            nextpnr = Nextpnr(yosys.edam, self.work_root)
-            nextpnr.flow_config = {"arch": "ice40"}
-            nextpnr.configure()
-            commands.commands += nextpnr.commands
-            commands.set_default_target(self.name + ".bin")
-        else:
-            commands.set_default_target(self.name + ".json")
-
-        # Image generation
-        depends = self.name + ".asc"
-        targets = self.name + ".bin"
-        command = ["icepack", depends, targets]
-        commands.add(command, [targets], [depends])
-
-        # Timing analysis
-        depends = self.name + ".asc"
-        targets = self.name + ".tim"
-        command = ["icetime", "-tmd", part or "", depends, targets]
-        commands.add(command, [targets], [depends])
-        commands.add([], ["timing"], [targets])
-
-        # Statistics
-        depends = self.name + ".asc"
-        targets = self.name + ".stat"
-        command = ["icebox_stat", depends, targets]
-        commands.add(command, [targets], [depends])
-        commands.add([], ["stats"], [targets])
-
-        commands.write(os.path.join(self.work_root, "Makefile"))
+    def build_post(self):
+        pass
