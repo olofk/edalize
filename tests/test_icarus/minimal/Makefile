@@ -1,7 +1,7 @@
 TARGET           := test_icarus_minimal_0
 TOPLEVEL         := top
 IVERILOG_OPTIONS := 
-VPP_OPTIONS      :=
+VPP_OPTIONS := 
 
 all: $(VPI_MODULES) $(TARGET)
 
