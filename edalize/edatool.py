@@ -466,7 +466,14 @@ class Edatool(object):
         # the tool runs, as in the tests. Making the handling of environments
         # consistent across backends could resolve this.
         env = self.env.copy()
-
+        pythonpath = None
+        if 'PYTHONPATH' in env:
+            pythonpath = env['PYTHONPATH']
+        env.update(os.environ)
+        # Ensure correct pythonpath is used 
+        if pythonpath is not None:
+            env['PYTHONPATH'] = pythonpath 
+ 
         capture_output = quiet and not (self.verbose or self.stdout or self.stderr)
         try:
             cp = run(

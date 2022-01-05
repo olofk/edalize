@@ -9,6 +9,9 @@ def test_modelsim(make_edalize_test):
         "vlog_options": ["some", "vlog_options"],
         "vsim_options": ["a", "few", "vsim_options"],
     }
+    orig_env = os.environ.copy()
+    if 'PYTHONPATH' in os.environ:
+        del os.environ['PYTHONPATH']
 
     # FIXME: Add VPI tests
     tf = make_edalize_test("modelsim", tool_options=tool_options)
@@ -17,7 +20,6 @@ def test_modelsim(make_edalize_test):
 
     tf.compare_files(["Makefile", "edalize_build_rtl.tcl", "edalize_main.tcl"])
 
-    orig_env = os.environ.copy()
     try:
         os.environ["MODEL_TECH"] = os.path.join(tests_dir, "mock_commands")
 
