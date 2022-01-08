@@ -83,6 +83,6 @@ setup(
         "reporting": ["pyparsing", "pandas"],
     },
     # Supported Python versions: 3.6+
-    python_requires=">=3.6, <4",
+    python_requires=">=3.7, <4",
     scripts=["scripts/el_docker"],
 )
