@@ -37,7 +37,6 @@ jobs:
         #- { icon: 🍎, name: macos }
         #- { icon: 🧊, name: windows }
         pyver:
-        - '3.6'
         - '3.7'
         - '3.8'
         - '3.9'
