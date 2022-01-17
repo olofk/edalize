@@ -300,12 +300,19 @@ endif
         xdc_opts = ["-x"] + placement_constraints if placement_constraints else []
 
         commands = EdaCommands()
+
+        # Add vendor variables
+        commands.add_var("export EDALIZE_VENDOR=%s" % vendor)
+        commands.add_var("export EDALIZE_PART=%s" % part)
+
         # Synthesis
         targets = self.toplevel + ".eblif"
         command = ["symbiflow_synth", "-t", self.toplevel]
         command += ["-v"] + file_list
         command += ["-d", bitstream_device]
         command += ["-p" if vendor == "xilinx" else "-P", partname]
+        if vendor == "quicklogic" and pins_constraints:
+            command += pcf_opts
         command += xdc_opts
         commands.add(command, [targets], [])
 
@@ -345,7 +352,47 @@ endif
         command += ["-b", targets]
         commands.add(command, [targets], [depends])
 
-        commands.set_default_target(targets)
+        if vendor == "quicklogic":
+            depends = self.toplevel + ".bit"
+            targets = self.toplevel + ".bin"
+            command = ["symbiflow_write_binary"]
+            command += [depends]
+            command += [targets]
+            commands.add(command, [targets], [depends])
+
+            depends = self.toplevel + ".bit"
+            targets = self.toplevel + ".h"
+            command = ["symbiflow_write_bitheader"]
+            command += [depends]
+            command += [targets]
+            commands.add(command, [targets], [depends])
+
+            depends = self.toplevel + ".bit"
+            targets = self.toplevel + ".openocd.cfg"
+            command = ["symbiflow_write_openocd"]
+            command += [depends]
+            command += [targets]
+            commands.add(command, [targets], [depends])
+
+            depends = self.toplevel + ".bit"
+            targets = self.toplevel + ".jlink"
+            command = ["symbiflow_write_jlink"]
+            command += [depends]
+            command += [targets]
+            commands.add(command, [targets], [depends])
+
+            commands.set_default_target(
+                self.toplevel
+                + ".bin"
+                + " "
+                + self.toplevel
+                + ".h"
+                + " "
+                + self.toplevel
+                + ".openocd.cfg"
+            )
+        else:
+            commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, "Makefile"))
 
     def configure_main(self):
