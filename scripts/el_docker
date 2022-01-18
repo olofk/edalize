@@ -1,37 +1,137 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os
+import shutil
 import subprocess
 import sys
+import logging
+import shlex
 
-containers = {
-    "flow.tcl": "edalize/openlane-sky130:v0.12",
-    "yosys": "hdlc/yosys",
-    "nextpnr-ice40": "hdlc/nextpnr",
-    "nextpnr-ecp5": "hdlc/nextpnr",
-    "icepack": "hdlc/icestorm",
-    "ecppack": "hdlc/prjtrellis",
-    "icetime": "hdlc/icestorm",
-    "icebox_stat": "hdlc/icestorm",
-    "ghdl": "ghdl/ghdl:buster-llvm-7",
-    "verilator": "verilator/verilator",
-}
+logger = logging.getLogger(__name__)
+symbiflow_init = "bash -lec {}"
+
+# fmt: off
+containers = [
+    {'tool': 'ghdl',                      'image': 'ghdl/ghdl:buster-llvm-7',                         'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'verilator',                 'image': 'verilator/verilator',                             'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'flow.tcl',                  'image':  'edalize/openlane-sky130:v0.12',                  'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'mill',                      'image': 'adoptopenjdk:8u282-b08-jre-hotspot',              'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'sbt',                       'image': 'adoptopenjdk:8u282-b08-jre-hotspot',              'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'yosys',                     'image': 'hdlc/yosys',                                      'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'nextpnr-ice40',             'image': 'hdlc/nextpnr',                                    'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'nextpnr-ecp5',              'image': 'hdlc/nextpnr',                                    'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'nextpnr-nexus',             'image': 'hdlc/nextpnr',                                    'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'icepack',                   'image': 'hdlc/icestorm',                                   'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'ecppack',                   'image': 'hdlc/prjtrellis',                                 'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'icetime',                   'image': 'hdlc/icestorm',                                   'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'icebox_stat',               'image': 'hdlc/icestorm',                                   'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'icepll',                    'image': 'hdlc/icestorm',                                   'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'ecppll',                    'image': 'hdlc/prjtrellis',                                 'init': '', 'vendor': '', 'part': ''},
+    # For Quicklogic EOS S3
+    {'tool': 'ql_symbiflow',              'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_synth',           'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_pack',            'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_place',           'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_route',           'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_write_fasm',      'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_write_bitstream', 'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_write_binary',    'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    {'tool': 'symbiflow_write_bitheader', 'image': 'gcr.io/hdl-containers/conda/symbiflow/eos-s3',    'init': symbiflow_init, 'vendor': 'quicklogic', 'part': 'ql-eos-s3'},
+    # For Xilinx xc7a35/50t
+    {'tool': 'symbiflow_synth',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a50t',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a50t'},
+    {'tool': 'symbiflow_pack',            'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a50t',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a50t'},
+    {'tool': 'symbiflow_place',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a50t',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a50t'},
+    {'tool': 'symbiflow_route',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a50t',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a50t'},
+    {'tool': 'symbiflow_write_fasm',      'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a50t',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a50t'},
+    {'tool': 'symbiflow_write_bitstream', 'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a50t',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a50t'},
+    # For Xilinx xc7a100t
+    {'tool': 'symbiflow_synth',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a100t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a100t'},
+    {'tool': 'symbiflow_pack',            'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a100t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a100t'},
+    {'tool': 'symbiflow_place',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a100t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a100t'},
+    {'tool': 'symbiflow_route',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a100t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a100t'},
+    {'tool': 'symbiflow_write_fasm',      'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a100t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a100t'},
+    {'tool': 'symbiflow_write_bitstream', 'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a100t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a100t'},
+    # For Xilinx xc7a200t
+    {'tool': 'symbiflow_synth',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a200t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a200t'},
+    {'tool': 'symbiflow_pack',            'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a200t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a200t'},
+    {'tool': 'symbiflow_place',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a200t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a200t'},
+    {'tool': 'symbiflow_route',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a200t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a200t'},
+    {'tool': 'symbiflow_write_fasm',      'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a200t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a200t'},
+    {'tool': 'symbiflow_write_bitstream', 'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/a200t', 'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7a200t'},
+    # For Xilinx xc7z010
+    {'tool': 'symbiflow_synth',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z010',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z010'},
+    {'tool': 'symbiflow_pack',            'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z010',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z010'},
+    {'tool': 'symbiflow_place',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z010',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z010'},
+    {'tool': 'symbiflow_route',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z010',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z010'},
+    {'tool': 'symbiflow_write_fasm',      'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z010',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z010'},
+    {'tool': 'symbiflow_write_bitstream', 'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z010',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z010'},
+    # For Xilinx xc7z020
+    {'tool': 'symbiflow_synth',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z020',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z020'},
+    {'tool': 'symbiflow_pack',            'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z020',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z020'},
+    {'tool': 'symbiflow_place',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z020',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z020'},
+    {'tool': 'symbiflow_route',           'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z020',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z020'},
+    {'tool': 'symbiflow_write_fasm',      'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z020',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z020'},
+    {'tool': 'symbiflow_write_bitstream', 'image': 'gcr.io/hdl-containers/conda/symbiflow/xc7/z020',  'init': symbiflow_init, 'vendor': 'xilinx', 'part': 'xc7z020'},
+]
+# fmt: on
+
 tool = sys.argv[1]
-if tool in containers:
+toolname = os.path.basename(tool)
+
+# If command exists locally, use it
+if shutil.which(toolname) is not None:
+    cmd = sys.argv[1:]
+# If it's in the container list, wrap with Docker
+elif [c for c in containers if c["tool"] == toolname]:
     (build_root, work) = os.path.split(os.getcwd())
+    dockerEnv = ""
+    for k in os.environ:
+        dockerEnv = dockerEnv + "-e " + k + "=" " + os.environ[k] + " " "
+
+    runtool = os.path.relpath(os.path.realpath(tool), os.getcwd())
+    for c in containers:
+        # Vendor neutral
+        if c["tool"] == toolname and c["vendor"] == "":
+            image = c["image"]
+            init = c["init"]
+            break
+        # Vendor specific toolchain
+        elif (
+            c["tool"] == toolname
+            and c["vendor"] == os.environ.get("EDALIZE_VENDOR")
+            and os.environ.get("EDALIZE_PART") in c["part"]
+        ):
+            image = c["image"]
+            init = c["init"]
+            break
+        else:
+            image = ""
+            init = ""
+
+    if image:
+        logger.info("INFO: Will use image '{}' with init '{}'".format(image, init))
+    else:
+        logger.error("ERROR: Tool {} not found in container list.".format(toolname))
+        exit(1)
 
     prefix = [
         "docker",
         "run",
         "--rm",
-        "-u",
-        f"{os.getuid()}:{os.getgid()}",
         "-v",
-        f"{build_root}:/src",
+        build_root + ":/src",
+        #    '-e', dockerEnv,
         "-w",
-        f"/src/{work}",
-        containers[tool],
+        "/src/" + work,
+        image,
     ]
+    if init:
+        c = init.format(shlex.quote(runtool + " " + shlex.join(sys.argv[2:])))
+    else:
+        c = runtool + " " + shlex.join(sys.argv[2:])
+    cmd = prefix + shlex.split(c)
+# Otherwise, run it locally
 else:
-    prefix = []
+    cmd = sys.argv[1:]
 
-sys.exit(subprocess.call(prefix + sys.argv[1:]))
+logger.info("INFO: Wrapper Command: ".format(" ".join(cmd)))
+sys.exit(subprocess.call(cmd, env=os.environ))
