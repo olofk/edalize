@@ -33,11 +33,11 @@ class Vivado(Edatool):
         if api_ver == 0:
             return {
                 "description": "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA",
-                'lists': [
+                "lists": [
                     {
-                        'name': 'board_repo_paths',
-                        'type': 'String',
-                        'desc': 'Board repository paths. A list of paths to search for board files.'
+                        "name": "board_repo_paths",
+                        "type": "String",
+                        "desc": "Board repository paths. A list of paths to search for board files.",
                     },
                 ],
                 "members": [
@@ -165,7 +165,7 @@ class Vivado(Edatool):
             elif f["file_type"] == "mem":
                 cmd = "read_mem"
             elif f["file_type"] == "bd":
-                cmd = 'read_bd'
+                cmd = "read_bd"
                 bd_files.append(f["name"])
 
             if cmd:
@@ -186,7 +186,7 @@ class Vivado(Edatool):
             "netlist_flow": bool(edif_files),
             "has_vhdl2008": has_vhdl2008,
             "has_xci": has_xci,
-            "bd_files": bd_files
+            "bd_files": bd_files,
         }
 
         self.render_template("vivado-project.tcl.j2", self.name + ".tcl", template_vars)
