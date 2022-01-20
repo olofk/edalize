@@ -1,8 +1,10 @@
 # Auto-generated project tcl file
 
+
 create_project test_vivado_0 -force
 
 set_property part xc7a35tcsg324-1 [current_project]
+
 #Default since Vivado 2016.1
 set_param project.enableVHDL2008 1
 set_property generic {vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello } [get_filesets sources_1]
@@ -24,6 +26,7 @@ read_verilog -sv {another_sv_file.sv}
 set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]
 set_property source_mgmt_mode None [current_project]
+
 # Vivado treats IP integrator entities as nested sub-designs and prevents core
 # generation from the base project in non-GUI flow raising
 # ERROR: [Vivado 12-3563] The Nested sub-design '...xci' can only be generated
