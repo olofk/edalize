@@ -29,9 +29,10 @@ def get_flow(name):
 
 
 def walk_tool_packages():
-    for _, pkg_name, _ in walk_packages([dirname(__file__)]):
-        if not pkg_name in NON_TOOL_PACKAGES:
-            yield pkg_name
+    for _, pkg_name, _ in walk_packages([dirname(__file__)], "edalize."):
+        pkg_parts = pkg_name.split(".")
+        if not pkg_parts[1] in NON_TOOL_PACKAGES:
+            yield pkg_parts[1]
 
 
 def get_edatools():
