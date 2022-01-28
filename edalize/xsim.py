@@ -128,7 +128,7 @@ XSIM_OPTIONS  = {xsim_options}
             gen_param.update(self.generic)
             gen_param_args = " ".join(
                 [
-                    "--generic_top {}={}".format(k, self._param_value_str(v))
+                    '--generic_top "{}={}"'.format(k, self._param_value_str(v))
                     for k, v in gen_param.items()
                 ]
             )
