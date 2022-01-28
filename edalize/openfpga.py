@@ -76,25 +76,27 @@ class Openfpga(Edatool):
         """
         (src_files, inc_dirs) = self._get_fileset_files(force_slash=True)
 
-        # Check files for Yosys (Verilog)
-        for f in src_files:
-            if not f.file_type.startswith("verilogSource"):
-                raise RuntimeError(f"File type not supported for '{f.name}'")
-        if len(src_files) == 0:
-            raise RuntimeError("Missing testbench source file(s)!")
-
         # Create the benchmark variable, as a list of files using absolute path
-        abs_files = []
+        tb_files = []
         for f in src_files:
+            # check the correct file type
+            if not f.file_type.startswith("verilogSource"):
+                logger.warning(f"File type not supported for '{f.name}'")
+                continue
+            # find the absolute path
             if os.path.isfile(f.name):
                 fname = os.path.abspath(f.name)
             elif os.path.isfile(f"{self.work_root}/{f.name}"):
                 fname = os.path.abspath(f"{self.work_root}/{f.name}")
             else:
-                raise RuntimeError(f"Can't found file '{f.name}'")
-            abs_files.append(fname)
+                logger.error(f"Can't found file '{f.name}'")
+                continue
+            tb_files.append(fname)
 
-        self.testbench_file = ','.join(abs_files)
+        if len(tb_files) == 0:
+            logger.error("Missing testbench source file(s)!")
+
+        self.testbench_file = ','.join(tb_files)
 
     def configure_main(self):
         """
