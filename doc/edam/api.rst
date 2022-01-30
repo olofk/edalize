@@ -106,6 +106,7 @@ icestorm        String                Options for Project IceStorm_
 ise             String                Options for Xilinx ISE_
 isim            String                Options for Xilinx iSim_
 modelsim        String                Options for Mentor ModelSim_
+openfpga        String                Options for OpenFPGA OpenFPGA_
 quartus         String                Options for Intel Quartus_
 rivierapro      String                Options for Aldec RivieraPro_
 spyglass        String                Options for Synposys SpyGlass_
@@ -181,6 +182,22 @@ Field Name       Type                  Description
 vlog_options     List of String        Extra options for each Verilog file compiled with `vlog`
 vsim_options     List of String        Extra options for running the simulation with `vsim`
 ================ ===================== ===========
+
+openfpga
+~~~~~~~~
+
+The following environment variables need to be sourced before running any simulation on SOFA (**S**kywater **O**pen-source **F**PG**A**) IPs:
+
+- `OPENFPGA_PATH`: directory of the (OpenFPGA)[https://github.com/lnis-uofu/OpenFPGA] framework Github repo ((documentation)[https://openfpga.readthedocs.io/])
+- `SOFA_PATH`: directory of the (SOFA)[https://github.com/lnis-uofu/SOFA] eFPGA IPs Github repo
+
+================ ===================== ===========
+Field Name       Type                  Description
+================ ===================== ===========
+arch             String                FPGA architecture e.g. `sofa-hd`, `sofa-chd`, `sofa-qlhd` and `sofa-plus-hd`
+task_options     List of String        Extra options for running the task simulation with OpenFPGA framework (see the OpenFPGA documentation)
+================ ===================== ===========
+
 
 quartus
 ~~~~~~~
