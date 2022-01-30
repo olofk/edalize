@@ -186,10 +186,10 @@ vsim_options     List of String        Extra options for running the simulation 
 openfpga
 ~~~~~~~~
 
-The following environment variables need to be sourced before running any simulation on SOFA (**S**kywater **O**pen-source **F**PG**A**) IPs:
+The following environment variables need to be sourced before running any simulation on SOFA (**S**\ kywater **O**\ pen-source **F**\ PG\ **A**) IPs:
 
-- `OPENFPGA_PATH`: directory of the (OpenFPGA)[https://github.com/lnis-uofu/OpenFPGA] framework Github repo ((documentation)[https://openfpga.readthedocs.io/])
-- `SOFA_PATH`: directory of the (SOFA)[https://github.com/lnis-uofu/SOFA] eFPGA IPs Github repo
+- ``OPENFPGA_PATH``: directory of the `OpenFPGA <https://github.com/lnis-uofu/OpenFPGA>`_ framework Github repo (`documentation <https://openfpga.readthedocs.io/>`_)
+- ``SOFA_PATH``: directory of the `SOFA <https://github.com/lnis-uofu/SOFA>`_ eFPGA IPs Github repo
 
 ================ ===================== ===========
 Field Name       Type                  Description

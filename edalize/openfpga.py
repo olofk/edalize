@@ -57,10 +57,9 @@ class Openfpga(Edatool):
         This calls the parent constructor, but also identifies whether the
         current system has correctly set the following environment variables:
 
-        - `OPENFPGA_PATH`: directory of the OpenFPGA framework, available here:
-        https://github.com/lnis-uofu/OpenFPGA
-        - `SOFA_PATH`: directory of the SOFA eFPGA IPs, available here:
-        https://github.com/lnis-uofu/SOFA
+        - ``OPENFPGA_PATH``: directory of the OpenFPGA framework, available here: https://github.com/lnis-uofu/OpenFPGA
+
+        - ``SOFA_PATH``: directory of the SOFA eFPGA IPs, available here: https://github.com/lnis-uofu/SOFA
         """
         super(Openfpga, self).__init__(edam, work_root, verbose)
 
@@ -119,6 +118,7 @@ Download and source the project: https://github.com/lnis-uofu/SOFA"""
         This writes an OpenFPGA task file for SOFA/SOFA+ architectures, which
         will generate the according OpenFPGA flow. It first collects all
         verilog sources, top_module and then writes them into the task file.
+
         Note: OpenFPGA flow may uses Yosys/VPR backend for Synthesis and P&R,
         respectively.
         """
