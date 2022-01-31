@@ -166,6 +166,7 @@ Download and source the project: https://github.com/lnis-uofu/SOFA"""
         if arch == "sofa-plus-hd":
             template_vars.update(
                 {
+                    "openfpga_sim_setting_file": f"{flow_dir}/openfpga_simulation_settings/fixed_sim_openfpga.xml",
                     "vpr_device_layout": "12x12",
                     "vpr_route_chan_width": "60",
                 }
