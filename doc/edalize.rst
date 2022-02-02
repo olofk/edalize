@@ -60,6 +60,14 @@ edalize.modelsim module
     :undoc-members:
     :show-inheritance:
 
+edalize.openfpga module
+-----------------------
+
+.. automodule:: edalize.openfpga
+    :members:
+    :undoc-members:
+    :show-inheritance:
+ 
 edalize.quartus module
 ----------------------
 
