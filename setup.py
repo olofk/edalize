@@ -18,6 +18,7 @@ setup(
         "edalize": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
             "templates/yosys/yosys-script-tcl.j2",
+            "templates/openfpga/task_simulation.conf.j2",
             "templates/spyglass/Makefile.j2",
             "templates/spyglass/spyglass-project.prj.j2",
             "templates/spyglass/spyglass-run-goal.tcl.j2",
