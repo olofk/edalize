@@ -18,7 +18,7 @@ class Vpr(Edatool):
     """
     VPR tool Backend
 
-    The VTR backend performs Packing, Placement, Routing & Timing Analysis.
+    The VPR backend performs Packing, Placement, Routing & Timing Analysis.
     VPR is an open source academic CAD tool designed for the exploration of new FPGA architectures and CAD algorithms, at the packing, placement and routing phases of the CAD flow
 
     """
@@ -27,14 +27,7 @@ class Vpr(Edatool):
     def get_doc(cls, api_ver):
         if api_ver == 0:
             return {
-                "description": "The VTR backend performs Packing, Placement, Routing & Timing Analysis.",
-                "lists": [
-                    {
-                        "name": "board_repo_paths",
-                        "type": "String",
-                        "desc": "Board repository paths. A list of paths to search for board files.",
-                    },
-                ],
+                "description": "The VPR backend performs Packing, Placement, Routing & Timing Analysis.",
                 "members": [
                     {
                         "name": "arch_xml",

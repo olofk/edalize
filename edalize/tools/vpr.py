@@ -20,7 +20,7 @@ class Vpr(Edatool):
     """
      VPR tool Backend
 
-    The VTR backend performs Packing, Placement, Routing & Timing Analysis.
+    The VPR backend performs Packing, Placement, Routing & Timing Analysis.
 
     """
 
@@ -113,6 +113,11 @@ class Vpr(Edatool):
         command = ["vpr", arch_xml, self.name + ".blif", "--analysis"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
+
+        for ext in [".net", ".place", ".route", ".analysis"]:
+            self.edam["files"].append(
+                {"name": self.name + str(ext), "file_type": "vpr_" + str(ext[1:])}
+            )
 
         self.commands = commands.commands
         commands.set_default_target(targets)

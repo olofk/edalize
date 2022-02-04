@@ -19,9 +19,6 @@ class Vpr(Edaflow):
 
     FLOW_OPTIONS = {}
 
-    def __init__(self, edam, work_root, verbose=False):
-        Edaflow.__init__(self, edam, work_root, verbose)
-
     def build_tool_graph(self):
         return super().build_tool_graph()
 
