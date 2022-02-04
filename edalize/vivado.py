@@ -45,6 +45,11 @@ class Vivado(Edatool):
                         "desc": "FPGA part number (e.g. xc7a35tcsg324-1)",
                     },
                     {
+                        "name": "board_part",
+                        "type": "String",
+                        "desc": "Board part number (e.g. xilinx.com:kc705:part0:0.9)",
+                    },
+                    {
                         "name": "synth",
                         "type": "String",
                         "desc": "Synthesis tool. Allowed values are vivado (default) and yosys.",
