@@ -1,0 +1,82 @@
+# Auto-generated project tcl file
+
+{% if tool_options.board_repo_paths -%}
+# Must be set before creating the project otherwise it is ignored.
+# Allows the user to provide local path to board files.
+set_param board.repoPaths {
+  {%- for path in tool_options.board_repo_paths %}
+  {{ path }}
+  {%- endfor %} }
+{%- endif %}
+
+create_project {{ name }} -force
+
+{% if tool_options.part -%}
+set_property part {{ tool_options.part }} [current_project]
+{%- endif %}
+
+{% if tool_options.board_part -%}
+set_property board_part {{ tool_options.board_part }} [current_project]
+{%- endif %}
+
+{% if has_vhdl2008 -%}
+#Default since Vivado 2016.1
+set_param project.enableVHDL2008 1
+{%- endif %}
+
+{% if vlogparam -%}
+set_property generic {
+  {%- for k, v in vlogparam.items() %}{{ k }}={{ v|param_value_str }} {% endfor -%}
+  } [get_filesets sources_1]
+{%- endif %}
+
+{% if generic -%}
+set_property generic {
+  {%- for k, v in generic.items() %}{{ k }}={{ v|generic_value_str(bool_is_str = True) }} {% endfor -%}
+  } [get_filesets sources_1]
+{%- endif %}
+
+{% if vlogdefine -%}
+set_property verilog_define {
+  {%- for k, v in vlogdefine.items() %}{{ k }}={{ v|param_value_str }} {% endfor -%}
+  } [get_filesets sources_1]
+{%- endif %}
+
+{{ src_files }}
+
+{% if incdirs -%}
+set_property include_dirs [list {{ incdirs|join(' ') }}] [get_filesets sources_1]
+{%- endif %}
+
+{% if toplevel -%}
+set_property top {{ toplevel }} [current_fileset]
+set_property source_mgmt_mode {{ tool_options.source_mgmt_mode if tool_options.source_mgmt_mode else "None" }} [current_project]
+
+{%- endif %}
+
+{% if bd_files -%}
+{%- for bd in bd_files %}
+report_ip_status
+upgrade_ip [get_ips -of_objects [get_bd_designs {{ bd }}]]
+set_property synth_checkpoint_mode None [get_files {{ bd }}]
+generate_target all [get_files {{ bd }}]
+{% endfor -%}
+{%- endif %}
+
+{% if has_xci -%}
+# Vivado treats IP integrator entities as nested sub-designs and prevents core
+# generation from the base project in non-GUI flow raising
+# ERROR: [Vivado 12-3563] The Nested sub-design '...xci' can only be generated
+#   by its parent sub-design.
+# These cores are created and generated separately by Tcl scripts.
+# exported from IP integrator. To prevent this error, Ip cores that are part of
+# a block design must be excluded from generation at the top level. This can be
+# done using `get_ips -filter {SCOPE !~ "*.bd"}`. In Vivado >= 2019.1 the same
+# can be achieved using `get_ips -exclude_bd_ips`
+upgrade_ip [get_ips -filter {SCOPE !~ "*.bd"}]
+generate_target all [get_ips -filter {SCOPE !~ "*.bd"}]
+{%- endif %}
+
+{% if netlist_flow -%}
+link_design -top {{ name }} -part {{ tool_options.part }}
+{%- endif %}

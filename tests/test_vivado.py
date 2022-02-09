@@ -8,7 +8,6 @@ def test_vivado(make_edalize_test):
         param_types=["generic", "vlogdefine", "vlogparam"],
         tool_options={"part": "xc7a35tcsg324-1"},
     )
-
     tf.backend.configure()
     tf.compare_files(
         [
@@ -25,11 +24,10 @@ def test_vivado(make_edalize_test):
 
 
 @pytest.mark.parametrize("params", [("minimal", "vivado"), ("yosys", "yosys")])
-def test_vivado_minimal(params, tmpdir):
+def test_vivado_minimal(params, tmpdir, make_edalize_test):
     import os
 
-    from edalize import get_edatool
-
+    import edalize
     from edalize_common import compare_files, tests_dir
 
     test_name, synth_tool = params
@@ -41,15 +39,16 @@ def test_vivado_minimal(params, tmpdir):
     tool = "vivado"
     tool_options = {
         "part": "xc7a35tcsg324-1",
-        "synth": synth_tool,
     }
     name = "test_vivado_{}_0".format(test_name)
     work_root = str(tmpdir)
-
-    edam = {"name": name, "tool_options": {"vivado": tool_options}}
-
-    backend = get_edatool(tool)(edam=edam, work_root=work_root)
-    backend.configure()
+    edam = {
+        "name": name,
+        "flow_options": {"synth": synth_tool, "part": "xc7a35tcsg324-1"},
+    }
+    vivado_flow = edalize.get_flow("vivado")
+    vivado_backend = vivado_flow(edam=edam, work_root=work_root)
+    vivado_backend.configure()
 
     config_file_list = [
         "Makefile",
@@ -71,5 +70,5 @@ def test_vivado_minimal(params, tmpdir):
     if synth_tool == "yosys":
         build_file_list.append("yosys.cmd")
 
-    backend.build()
+    vivado_backend.build()
     compare_files(ref_dir, work_root, build_file_list)

@@ -1,3 +1,6 @@
+proc load_plugins {} {
+}
+
 proc read_files {} {
 
 }

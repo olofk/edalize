@@ -7,8 +7,9 @@ if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
   # Vivado only outputs to stdout for jobs that are explicitly waited on with
   # 'wait_on_run'. So launch and wait on synth then launch and wait on impl to
   # get logging to stdout from both.
-  launch_runs synth_1
-  wait_on_run synth_1
+
+  launch_runs synth_1 -quiet
+
   launch_runs impl_1 -to_step write_bitstream
   wait_on_run impl_1
   puts "Bitstream generation completed"

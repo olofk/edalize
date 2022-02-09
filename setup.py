@@ -43,6 +43,10 @@ setup(
         "edalize.tools": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
             "templates/yosys/yosys-script-tcl.j2",
+            "templates/vivado/vivado-program.tcl.j2",
+            "templates/vivado/vivado-project.tcl.j2",
+            "templates/vivado/vivado-run.tcl.j2",
+            "templates/vivado/vivado-synth.tcl.j2",
         ],
     },
     author="Olof Kindgren",
