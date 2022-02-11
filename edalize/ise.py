@@ -56,8 +56,9 @@ project set "Generate Detailed MAP Report" true
 
 setMode -bscan
 setCable -port auto
-addDevice -p 1 -file {bit_file}
-program -p 1
+identify
+assignFile -p {board_device_index} -file {bit_file}
+program -p {board_device_index}
 saveCDF -file {cdf_file}
 quit
 """
@@ -87,6 +88,11 @@ quit
                         "name": "speed",
                         "type": "String",
                         "desc": "FPGA speed grade (e.g. -2)",
+                    },
+                    {
+                        "name": "board_device_index",
+                        "type": "String",
+                        "desc": "Specifies the FPGA's device number in the JTAG chain, starting at 1",
                     },
                 ],
             }
@@ -191,6 +197,7 @@ quit
                 pgm_file=pgm_file_name,
                 bit_file=os.path.join(self.work_root, self.toplevel + ".bit"),
                 cdf_file=os.path.join(self.work_root, self.toplevel + ".cdf"),
+                board_device_index=self.tool_options.get("board_device_index", "1"),
             )
         )
         pgm_file.close()

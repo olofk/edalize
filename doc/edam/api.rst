@@ -154,14 +154,15 @@ yosys_synth_options List of String        Options for Yosys Synthesis
 ise
 ~~~
 
-================ ===================== ===========
-Field Name       Type                  Description
-================ ===================== ===========
-family           String                FPGA family e.g. *spartan6*, *virtex5*
-device           String                Device identifier e.g. *xc6slx45*
-package          String                Device package e.g. *csg324*
-speed            String                Device speed grade e.g. *-2*
-================ ===================== ===========
+================== ===================== ===========
+Field Name         Type                  Description
+================== ===================== ===========
+family             String                FPGA family e.g. *spartan6*, *virtex5*
+device             String                Device identifier e.g. *xc6slx45*
+package            String                Device package e.g. *csg324*
+speed              String                Device speed grade e.g. *-2*
+board_device_index String                Specifies the FPGA's device number in the JTAG chain, starting at 1.
+================== ===================== ===========
 
 isim
 ~~~~
