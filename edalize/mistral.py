@@ -5,15 +5,15 @@
 import os.path
 
 from edalize.edatool import Edatool
-from edalize.utils import EdaCommands
 from edalize.nextpnr import Nextpnr
+from edalize.utils import EdaCommands
 from edalize.yosys import Yosys
 
 
 class Mistral(Edatool):
 
     argtypes = ["vlogdefine", "vlogparam"]
-	
+
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
@@ -30,13 +30,13 @@ class Mistral(Edatool):
 
             Edatool._extend_options(options, Yosys)
             Edatool._extend_options(options, Nextpnr)
-            
+
             return {
                 "description": "Project mistral enables a fully open-source flow for Cyclone V FPGAs using Yosys for Verilog synthesis and nextpnr for place and route",
                 "members": options["members"],
                 "lists": options["lists"],
             }
- 
+
     def configure_main(self):
 	    # pass mistral tool option to yosys and nextpnr
         self.edam["tool_options"] = {
@@ -49,10 +49,10 @@ class Mistral(Edatool):
 	        },
 	        "nextpnr": {
 	        	"device": self.tool_options.get("device"),
-	            "nextpnr_options": self.tool_options.get("nextpnr_options", [])
+	            "nextpnr_options": self.tool_options.get("nextpnr_options", []),
 	        },
 		}
-		
+
         yosys = Yosys(self.edam, self.work_root)
         yosys.configure()
 
@@ -69,11 +69,7 @@ class Mistral(Edatool):
         # Image generation
         depends = self.name + ".json"
         targets = self.name + ".rbf"
-	#	command = ["ecppack", "--svf", self.name + ".svf", depends, targets]
-	#	commands.add(command, [targets], [depends])
+	
 
         commands.set_default_target(self.name + ".rbf")
-        commands.write(os.path.join(self.work_root, "Makefile")) 
-			
-            
-            
+        commands.write(os.path.join(self.work_root, "Makefile"))
