@@ -27,6 +27,11 @@ class Yosys(Edatool):
                         "desc": "Target architecture. Legal values are *xilinx*, *ice40* and *ecp5*",
                     },
                     {
+                        "name": "prj",
+                        "type": "String",
+                        "desc": "Project family. Legal values are none or *xray*",
+                    },
+                    {
                         "name": "output_format",
                         "type": "String",
                         "desc": "Output file format. Legal values are *json*, *edif*, *blif*",
@@ -108,6 +113,7 @@ class Yosys(Edatool):
             )
 
         arch = self.tool_options.get("arch", None)
+        prj = self.tool_options.get("prj", None)
 
         if not arch:
             logger.error("ERROR: arch is not defined.")
@@ -123,7 +129,9 @@ class Yosys(Edatool):
             "synth_options": " ".join(self.tool_options.get("yosys_synth_options", "")),
             "write_command": "write_" + output_format,
             "output_format": output_format,
-            "output_opts": "-pvector bra " if arch == "xilinx" else "",
+            "output_opts": "-pvector bra "
+            if arch == "xilinx" and prj != "xray"
+            else "",
             "yosys_template": template,
             "name": self.name,
         }

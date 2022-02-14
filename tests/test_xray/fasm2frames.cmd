@@ -1,0 +1,1 @@
+--part xc7k325tffg676-1 --db-root /opt/nextpnr/prjxray-db/kintex7 test_xray_0.fasm
