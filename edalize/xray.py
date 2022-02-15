@@ -102,8 +102,8 @@ class Xray(Edatool):
         # Write Makefile
         commands = EdaCommands()
 
-        commands.add_var("export CHIPDB=/opt/nextpnr/xilinx-chipdb")
-        commands.add_var("export DB_DIR=/opt/nextpnr/prjxray-db")
+        # commands.add_var("export CHIPDB=/opt/nextpnr/xilinx-chipdb")
+        # commands.add_var("export DB_DIR=/opt/nextpnr/prjxray-db")
 
         commands.commands = yosys.commands
 
@@ -112,7 +112,7 @@ class Xray(Edatool):
         targets = self.name + ".fasm"
         command = ["nextpnr-xilinx"]
         command += nextpnr_options
-        command += ["--chipdb", '"$${CHIPDB}/' + part + '.bin"']  # Use chipdb file?!?
+        command += ["--chipdb", "\\$${CHIPDB}/" + part + ".bin"]  # Use chipdb file?!?
         command += xdcs
         command += ["--json", depends]
         command += ["--write", self.name + "_routed.json"]
@@ -124,7 +124,7 @@ class Xray(Edatool):
         targets = self.name + ".frames"
         command = ["fasm2frames"]
         command += ["--part", part]
-        command += ["--db-root", '"$${DB_DIR}/' + bitstream_device + '"']
+        command += ["--db-root", "\\$${DB_DIR}/" + bitstream_device]
         command += [depends, ">", targets]
         commands.add(command, [targets], [depends])
 
@@ -134,7 +134,7 @@ class Xray(Edatool):
         command = ["xc7frames2bit"]
         command += [
             "--part_file",
-            '"$${DB_DIR}/' + bitstream_device + "/" + part + '/part.yaml"',
+            "\\$${DB_DIR}/" + bitstream_device + "/" + part + "/part.yaml",
         ]
         command += ["--part_name", part]
         command += ["--frm_file", depends]
