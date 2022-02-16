@@ -1,9 +1,12 @@
 import os
 import pytest
+
+# import ipdb;
 from edalize_common import make_edalize_test
 
 
-def run_mistral_test(tf,pnr_cmdfile="nextpnr-mistral.cmd"):
+def run_mistral_test(tf):
+    # ipdb.set_trace()
     tf.backend.configure()
 
     tf.compare_files(
@@ -16,25 +19,35 @@ def run_mistral_test(tf,pnr_cmdfile="nextpnr-mistral.cmd"):
 
 def test_mistral(make_edalize_test):
     tool_options = {
-        "device": "5CSEBA6U19I7",
+        "device": "5CSEBA6U23I7",
+        #    "family": "cyclonev",
         "yosys_synth_options": ["some", "yosys_synth_options"],
         "nextpnr_options": ["a", "few", "nextpnr_options"],
     }
+
     tf = make_edalize_test(
         "mistral", param_types=["vlogdefine", "vlogparam"], tool_options=tool_options
     )
 
     run_mistral_test(tf)
 
+
 def test_mistral_minimal(make_edalize_test):
     tool_options = {
-        "device": "5CSEBA6U19I7",
+        "device": "5CSEBA6U23I7",
+        #        "family": "cyclonev",
     }
+
     tf = make_edalize_test(
-        "mistral", param_types=[], files=[], tool_options=tool_options, ref_dir="minimal"
+        "mistral",
+        param_types=[],
+        files=[],
+        tool_options=tool_options,
+        ref_dir="minimal",
     )
 
     run_mistral_test(tf)
+
 
 def test_mistral_multiple_qsf(make_edalize_test):
     files = [
@@ -49,6 +62,7 @@ def test_mistral_multiple_qsf(make_edalize_test):
         "Nextpnr only supports one QSF file. Found qsf_file.qsf and qsf_file2.qsf"
         in str(e.value)
     )
+
 
 def test_mistral_no_device(make_edalize_test):
     tf = make_edalize_test("mistral", param_types=[])

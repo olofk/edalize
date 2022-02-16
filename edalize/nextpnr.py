@@ -69,9 +69,9 @@ class Nextpnr(Edatool):
                 if qsf_file:
                     raise RuntimeError(
                         "Nextpnr only supports one QSF file. Found {} and {}".format(
-							qsf_file, f["name"]
-						)
-					)   
+                            qsf_file, f["name"]
+                        )
+                    )
                 qsf_file = f["name"]
             elif f["file_type"] == "jsonNetlist":
                 if netlist:
@@ -100,13 +100,15 @@ class Nextpnr(Edatool):
             constraints = ["--lpf", lpf_file] if lpf_file else []
             output = ["--textcfg", targets]
         elif arch == "mistral":
-        	device = self.tool_options.get("device")
-        	if not device:
-        		raise RuntimeError("Missing required option 'device' for nextpnr-mistral")
-        	arch_options += ["--device", device]
-        	targets = self.name + ".rbf"
-        	constraints = ["--qsf",qsf_file] if qsf_file else []
-        	output = ["--rbf",targets]
+            device = self.tool_options.get("device")
+            if not device:
+                raise RuntimeError(
+                    "Missing required option 'device' for nextpnr-mistral"
+                )
+            arch_options += ["--device", device]
+            targets = self.name + ".rbf"
+            constraints = ["--qsf", qsf_file] if qsf_file else []
+            output = ["--rbf", targets]
         elif arch == "nexus":
             device = self.tool_options.get("device")
             if not device:

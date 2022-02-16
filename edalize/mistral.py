@@ -25,6 +25,11 @@ class Mistral(Edatool):
                         "type": "String",
                         "desc": "Required device option for nextpnr-mistral command (e.g. 5CEFA5F23I7)",
                     },
+                    {
+                        "name": "family",
+                        "type": "String",
+                        "desc": "Required device option for nextpnr-mistral command (e.g. cyclonev)",
+                    },
                 ],
             }
 
@@ -38,20 +43,21 @@ class Mistral(Edatool):
             }
 
     def configure_main(self):
-	    # pass mistral tool option to yosys and nextpnr
+        # pass mistral tool option to yosys and nextpnr
         self.edam["tool_options"] = {
-	        "yosys": {
-	            "arch": "intel_alm",
-	            "output_format": "json",
-	            "yosys_synth_options": self.tool_options.get("yosys_synth_options", []),
-	            "yosys_as_subtool": True,
-	            "yosys_template": self.tool_options.get("yosys_template"),
-	        },
-	        "nextpnr": {
-	        	"device": self.tool_options.get("device"),
-	            "nextpnr_options": self.tool_options.get("nextpnr_options", []),
-	        },
-		}
+            "yosys": {
+                "arch": "intel_alm",
+                "output_format": "json",
+                # "yosys_synth_options": self.tool_options.get("yosys_synth_options", ["-family" + " "+  self.tool_options.get("family")]) ,
+                "yosys_synth_options": self.tool_options.get("yosys_synth_options", []),
+                "yosys_as_subtool": True,
+                "yosys_template": self.tool_options.get("yosys_template"),
+            },
+            "nextpnr": {
+                "device": self.tool_options.get("device"),
+                "nextpnr_options": self.tool_options.get("nextpnr_options", []),
+            },
+        }
 
         yosys = Yosys(self.edam, self.work_root)
         yosys.configure()
@@ -62,14 +68,13 @@ class Mistral(Edatool):
 
         # Write Makefile
         commands = EdaCommands()
+
         commands.commands = yosys.commands
 
         commands.commands += nextpnr.commands
 
         # Image generation
-        depends = self.name + ".json"
-        targets = self.name + ".rbf"
-	
 
         commands.set_default_target(self.name + ".rbf")
+
         commands.write(os.path.join(self.work_root, "Makefile"))
