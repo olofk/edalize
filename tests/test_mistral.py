@@ -1,12 +1,12 @@
 import os
 import pytest
 
-# import ipdb;
+
 from edalize_common import make_edalize_test
 
 
 def run_mistral_test(tf):
-    # ipdb.set_trace()
+
     tf.backend.configure()
 
     tf.compare_files(
@@ -20,7 +20,6 @@ def run_mistral_test(tf):
 def test_mistral(make_edalize_test):
     tool_options = {
         "device": "5CSEBA6U23I7",
-        #    "family": "cyclonev",
         "yosys_synth_options": ["some", "yosys_synth_options"],
         "nextpnr_options": ["a", "few", "nextpnr_options"],
     }
@@ -35,7 +34,6 @@ def test_mistral(make_edalize_test):
 def test_mistral_minimal(make_edalize_test):
     tool_options = {
         "device": "5CSEBA6U23I7",
-        #        "family": "cyclonev",
     }
 
     tf = make_edalize_test(
