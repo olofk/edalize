@@ -25,11 +25,6 @@ class Mistral(Edatool):
                         "type": "String",
                         "desc": "Required device option for nextpnr-mistral command (e.g. 5CEFA5F23I7)",
                     },
-                    {
-                        "name": "family",
-                        "type": "String",
-                        "desc": "Required device option for nextpnr-mistral command (e.g. cyclonev)",
-                    },
                 ],
             }
 
@@ -44,12 +39,13 @@ class Mistral(Edatool):
 
     def configure_main(self):
         # pass mistral tool option to yosys and nextpnr
+
         self.edam["tool_options"] = {
             "yosys": {
                 "arch": "intel_alm",
                 "output_format": "json",
-                # "yosys_synth_options": self.tool_options.get("yosys_synth_options", ["-family" + " "+  self.tool_options.get("family")]) ,
-                "yosys_synth_options": self.tool_options.get("yosys_synth_options", []),
+                "yosys_synth_options": ["-family", "cyclonev"]
+                + self.tool_options.get("yosys_synth_options", []),
                 "yosys_as_subtool": True,
                 "yosys_template": self.tool_options.get("yosys_template"),
             },

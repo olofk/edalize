@@ -18,7 +18,7 @@ proc set_params {} {
 }
 
 proc synth {top} {
-synth_intel_alm  -top $top
+synth_intel_alm -family cyclonev -top $top
 }
 
 set top top_module
