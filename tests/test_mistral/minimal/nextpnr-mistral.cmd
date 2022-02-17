@@ -1,0 +1,1 @@
+-l next.log --device 5CSEBA6U23I7 --json test_mistral_0.json --rbf test_mistral_0.rbf

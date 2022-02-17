@@ -224,6 +224,7 @@ FILES = [
     {"name": "config.sby.j2", "file_type": "sbyConfigTemplate"},
     {"name": "another_sv_file.sv", "file_type": "systemVerilogSource"},
     {"name": "pdc_constraint_file.pdc", "file_type": "PDC"},
+    {"name": "qsf_constraint_file.qsf", "file_type": "QSF"},
     {"name": "pdc_floorplan_constraint_file.pdc", "file_type": "FPPDC"},
     {"name": "lpf_file.lpf", "file_type": "LPF"},
 ]
