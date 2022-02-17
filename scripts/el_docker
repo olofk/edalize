@@ -77,11 +77,8 @@ containers = [
 tool = sys.argv[1]
 toolname = os.path.basename(tool)
 
-# If command exists locally, use it
-if shutil.which(toolname) is not None:
-    cmd = sys.argv[1:]
 # If it's in the container list, wrap with Docker
-elif [c for c in containers if c["tool"] == toolname]:
+if [c for c in containers if c["tool"] == toolname]:
     (build_root, work) = os.path.split(os.getcwd())
     dockerEnv = ""
     for k in os.environ:
