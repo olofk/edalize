@@ -26,6 +26,8 @@ class Vivado(Edatool):
     * IP: Supply the IP core xci file with file_type=xci and other files (like .prj) as file_type=user
     """
 
+    argtypes = ["vlogdefine", "vlogparam", "generic"]
+
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
