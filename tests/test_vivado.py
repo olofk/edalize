@@ -72,3 +72,29 @@ def test_vivado_minimal(params, tmpdir, make_edalize_test):
 
     vivado_backend.build()
     compare_files(ref_dir, work_root, build_file_list)
+
+
+def test_vivado_board_file(make_edalize_test):
+    tf = make_edalize_test(
+        "vivado",
+        ref_dir="board_file",
+        param_types=["generic", "vlogdefine", "vlogparam"],
+        tool_options={
+            "part": "xc7a35tcsg324-1",
+            "board_part": "em.avnet.com:mini_itx_7z100:part0:1.0",
+            "board_repo_paths": ["./board_repo"],
+        },
+    )
+    tf.backend.configure()
+    tf.compare_files(
+        [
+            "Makefile",
+            tf.test_name + ".tcl",
+            tf.test_name + "_synth.tcl",
+            tf.test_name + "_run.tcl",
+            tf.test_name + "_pgm.tcl",
+        ]
+    )
+
+    tf.backend.build()
+    tf.compare_files(["vivado.cmd"])
