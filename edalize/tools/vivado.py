@@ -40,6 +40,10 @@ class Vivado(Edatool):
             "type": "String",
             "desc": "Board part number (e.g. xilinx.com:kc705:part0:0.9)",
         },
+        "board_repo_paths": {
+            "type": "String",
+            "desc": "Board repository paths. A list of paths to search for board files."
+        },
         "pnr": {
             "type": "String",
             "desc": "P&R tool. Allowed values are vivado (default) and none (to just run synthesis)",
