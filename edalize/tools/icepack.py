@@ -15,7 +15,13 @@ class Icepack(Edatool):
 
     description = "Generate binary image for iCE40 FPGAs"
 
-    TOOL_OPTIONS = {}
+    TOOL_OPTIONS = {
+        "icepack_options": {
+            "type": "str",
+            "desc": "Additional options for icepack",
+            "list": True,
+        }
+    }
 
     def configure(self, edam):
         super().configure(edam)
@@ -47,7 +53,11 @@ class Icepack(Edatool):
         # Image generation
         depends = asc_file
         targets = bin_file
-        command = ["icepack", depends, targets]
+        command = (
+            ["icepack"]
+            + self.tool_options.get("icepack_options", [])
+            + [depends, targets]
+        )
 
         commands = EdaCommands()
         commands.add(command, [targets], [depends])

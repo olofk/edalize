@@ -51,7 +51,6 @@ def test_icestorm_no_pcf(make_edalize_test):
 
     tf.backend.configure()
 
-
 def test_icestorm_multiple_pcf(make_edalize_test):
     files = [
         {"name": "pcf_file.pcf", "file_type": "PCF"},
@@ -72,6 +71,7 @@ def test_icestorm_nextpnr(make_edalize_test):
         "yosys_synth_options": ["some", "yosys_synth_options"],
         "arachne_pnr_options": ["a", "few", "arachne_pnr_options"],
         "nextpnr_options": ["multiple", "nextpnr_options"],
+        "icepack_options": ["several", "icepack_options"],
         "pnr": "next",
     }
     tf = make_edalize_test(

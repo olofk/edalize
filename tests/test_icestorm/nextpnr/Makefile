@@ -14,7 +14,7 @@ build-gui: test_icestorm_0.json
 	$(EDALIZE_LAUNCHER) nextpnr-ice40 -l next.log multiple nextpnr_options --pcf pcf_file.pcf --json test_icestorm_0.json --asc test_icestorm_0.asc --gui
 
 test_icestorm_0.bin: test_icestorm_0.asc
-	$(EDALIZE_LAUNCHER) icepack test_icestorm_0.asc test_icestorm_0.bin
+	$(EDALIZE_LAUNCHER) icepack several icepack_options test_icestorm_0.asc test_icestorm_0.bin
 
 test_icestorm_0.tim: test_icestorm_0.asc
 	$(EDALIZE_LAUNCHER) icetime -r test_icestorm_0.tim test_icestorm_0.asc
