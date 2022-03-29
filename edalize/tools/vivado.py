@@ -42,7 +42,7 @@ class Vivado(Edatool):
         },
         "board_repo_paths": {
             "type": "String",
-            "desc": "Board repository paths. A list of paths to search for board files."
+            "desc": "Board repository paths. A list of paths to search for board files.",
         },
         "pnr": {
             "type": "String",
