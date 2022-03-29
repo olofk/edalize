@@ -51,6 +51,7 @@ def test_icestorm_no_pcf(make_edalize_test):
 
     tf.backend.configure()
 
+
 def test_icestorm_multiple_pcf(make_edalize_test):
     files = [
         {"name": "pcf_file.pcf", "file_type": "PCF"},
