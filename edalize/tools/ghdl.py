@@ -64,11 +64,12 @@ class Ghdl(Edatool):
 
             has87 = has93 = has08 = False
             for f in self.files:
-                if f["file_type"] == "vhdlSource-87":
+                file_type = f.get("file_type", "")
+                if file_type == "vhdlSource-87":
                     has87 = True
-                elif f["file_type"] == "vhdlSource-93":
+                elif file_type == "vhdlSource-93":
                     has93 = True
-                elif f["file_type"] == "vhdlSource-2008":
+                elif file_type == "vhdlSource-2008":
                     has08 = True
             stdarg = []
             if has08:
@@ -119,7 +120,7 @@ class Ghdl(Edatool):
 
         unused_files = []
         for f in self.files:
-            if f["file_type"] in _vhdltypes:
+            if f.get("file_type") in _vhdltypes:
                 # Files without a specified library will by added to
                 # libraries[None] which is perhaps poor form but avoids
                 # conflicts with user generated names

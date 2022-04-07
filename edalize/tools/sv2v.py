@@ -22,7 +22,7 @@ class Sv2v(Edatool):
         unused_files = []
 
         for f in self.files:
-            if f["file_type"].startswith("systemVerilogSource"):
+            if f.get("file_type").startswith("systemVerilogSource"):
                 if not self._add_include_dir(f, incdirs):
                     sv_files.append(f["name"])
             else:

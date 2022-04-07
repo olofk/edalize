@@ -29,7 +29,8 @@ class Nextpnr(Edatool):
         netlist = ""
         unused_files = []
         for f in self.files:
-            if f["file_type"] == "CST":
+            file_type = f.get("file_type", "")
+            if file_type == "CST":
                 if cst_file:
                     raise RuntimeError(
                         "Nextpnr only supports one CST file. Found {} and {}".format(
@@ -37,7 +38,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 cst_file = f["name"]
-            if f["file_type"] == "LPF":
+            if file_type == "LPF":
                 if lpf_file:
                     raise RuntimeError(
                         "Nextpnr only supports one LPF file. Found {} and {}".format(
@@ -45,7 +46,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 lpf_file = f["name"]
-            if f["file_type"] == "PCF":
+            if file_type == "PCF":
                 if pcf_file:
                     raise RuntimeError(
                         "Nextpnr only supports one PCF file. Found {} and {}".format(
@@ -53,7 +54,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 pcf_file = f["name"]
-            elif f["file_type"] == "jsonNetlist":
+            elif file_type == "jsonNetlist":
                 if netlist:
                     raise RuntimeError(
                         "Nextpnr only supports one netlist. Found {} and {}".format(

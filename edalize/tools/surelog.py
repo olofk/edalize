@@ -29,9 +29,10 @@ class Surelog(Edatool):
         for f in self.files:
             src = ""
             if "file_type" in f:
-                if f["file_type"].startswith("verilogSource"):
+                file_type = f.get("file_type", "")
+                if file_type.startswith("verilogSource"):
                     src = f["name"]
-                elif f["file_type"].startswith("systemVerilogSource"):
+                elif file_type.startswith("systemVerilogSource"):
                     src = "-sv " + f["name"]
 
                 if src:

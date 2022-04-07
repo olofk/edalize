@@ -29,7 +29,7 @@ class Icetime(Edatool):
 
         asc_file = ""
         for f in self.files:
-            if f["file_type"] == "iceboxAscii":
+            if f.get("file_type") == "iceboxAscii":
                 if asc_file:
                     raise RuntimeError(
                         "Icetime only supports one input file. Found {} and {}".format(
