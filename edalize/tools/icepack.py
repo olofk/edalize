@@ -31,7 +31,7 @@ class Icepack(Edatool):
         asc_file = ""
         bin_file = ""
         for f in self.files:
-            if f["file_type"] == "iceboxAscii":
+            if f.get("file_type") == "iceboxAscii":
                 if asc_file:
                     raise RuntimeError(
                         "Icepack only supports one input file. Found {} and {}".format(

@@ -46,15 +46,16 @@ class Yosys(Edatool):
         depfiles = []
         has_uhdm = False
         for f in self.files:
+            file_type = f.get("file_type", "")
             cmd = ""
-            if f["file_type"].startswith("verilogSource"):
+            if file_type.startswith("verilogSource"):
                 cmd = "read_verilog"
-            elif f["file_type"].startswith("systemVerilogSource"):
+            elif file_type.startswith("systemVerilogSource"):
                 cmd = "read_verilog -sv"
-            elif f["file_type"] == "uhdm":
+            elif file_type == "uhdm":
                 cmd = "read_uhdm"
                 has_uhdm = True
-            elif f["file_type"] == "tclSource":
+            elif file_type == "tclSource":
                 cmd = "source"
 
             if cmd:
