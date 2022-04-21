@@ -9,7 +9,6 @@ from setuptools import setup
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-
 setup(
     name="edalize",
     version="0.3.3",
@@ -39,6 +38,7 @@ setup(
             "templates/ghdl/Makefile.j2",
             "templates/openlane/openlane-makefile.j2",
             "templates/openlane/openlane-script-tcl.j2",
+            "templates/design_compiler/design-compiler-makefile.j2",
         ],
         "edalize.tools": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
