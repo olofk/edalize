@@ -39,6 +39,8 @@ setup(
             "templates/openlane/openlane-makefile.j2",
             "templates/openlane/openlane-script-tcl.j2",
             "templates/design_compiler/design-compiler-makefile.j2",
+            "templates/design_compiler/esign-compiler-project.tcl.j2",
+            "templates/design_compiler/design-compiler-read-sources.tcl.j2",
         ],
         "edalize.tools": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
