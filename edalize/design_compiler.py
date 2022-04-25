@@ -89,7 +89,7 @@ class Design_compiler(Edatool):
         self.render_template('design-compiler-makefile.j2',
                              'Makefile',
                              {'name' : self.name,
-                                'report_dir'        : self.tool_options.get('report_dir'),
+                                'report_dir'        : make_list(self.tool_options.get('report_dir')),
                                 'design_compiler_command_command': design_compiler_command
                               })
                               
