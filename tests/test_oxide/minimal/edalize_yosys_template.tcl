@@ -13,4 +13,4 @@ verilog_defaults -pop
 
 synth $top
 
-write_json $name.json
+write_json test_oxide_0.json
