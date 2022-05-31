@@ -38,7 +38,6 @@ class Verilator(Edatool):
 
         # Future improvement: Separate include directories of c and verilog files
         incdirs = set()
-        src_files = []
 
         verilator_file = self.name + ".vc"
 
