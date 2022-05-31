@@ -117,6 +117,8 @@ if [c for c in containers if c["tool"] == toolname]:
         "-v",
         build_root + ":/src",
         #    '-e', dockerEnv,
+        "-u",
+        f"{os.getuid()}:{os.getgid()}",
         "-w",
         "/src/" + work,
         image,
