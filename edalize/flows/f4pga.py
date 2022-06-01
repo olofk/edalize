@@ -10,10 +10,13 @@ class F4PGA(Edaflow):
     """Free and open-source 'flow for FPGA's'. Uses Yosys for synthesys and VPR or NextPNR for place and route."""
 
     FLOW = [
-        ("yosys", [""], {"arch":"", "output_format":"json"}),
-        ("", [""], {"arch":""}),
-        ("", [""], {}),
-        ("", [], {})
+        ("yosys", ["vpr"], {"arch":"", "output_format":"json"}),
+        ("vpr", [""], {"arch":""})
     ]
 
     FLOW_OPTIONS = {}
+
+def configure_tools(self, nodes):
+    super().configure_tools(nodes)
+
+    # Add FASM and bitstream generation to makefile
