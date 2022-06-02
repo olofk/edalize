@@ -16,7 +16,7 @@ class F4PGA(Edaflow):
 
     FLOW_OPTIONS = {}
 
-def configure_tools(self, nodes):
-    super().configure_tools(nodes)
+    def configure_tools(self, nodes):
+        super().configure_tools(nodes)
 
-    # Add FASM and bitstream generation to makefile
+        # Add FASM and bitstream generation to makefile
