@@ -15,7 +15,7 @@ class F4pga(Edaflow):
 
     FLOW = [
         ("yosys", ["vpr"], {"arch": "xilinx", "output_format": "blif"}),
-        ("vpr", [], {"arch": "xilinx", "arch_xml": "${shareDir}/arch/xc7a50t_test/arch.timing.xml", "vpr_options": []})
+        ("vpr", [], {"arch": "xilinx", "arch_xml": "${F4PGA_ENV_SHARE}/arch/xc7a50t_test/arch.timing.xml", "vpr_options": []})
     ]
 
     FLOW_OPTIONS = {}
@@ -30,3 +30,17 @@ class F4pga(Edaflow):
         super().configure_tools(nodes)
         name = self.edam["name"]
         self.commands.set_default_target(name + ".bit")
+
+        # Variables
+        
+        # FASM and bitstream generation
+        fasm_command = ["genfasm", "${ARCH_DEF}", "${EBLIF}", "--device ${DEVICE_NAME}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
+        fasm_target = name + ".fasm"
+        fasm_depend = name + ".route"
+
+        bitstream_command = ["xcfasm", "--db-root ${DBROOT}", "--part ${PART}", "--part_file ${DBROOT}/${PART}/part.yaml", "--sparse --emit_pudc_b_pullup", "--fn_in ${FASM}", "--bit_out ${BIT}", "${FRM2BIT}"]
+        bitstream_target = name + ".bit"
+        bitstream_depend = name + ".fasm"
+
+        self.commands.add(fasm_command, [fasm_target], [fasm_depend])
+        self.commands.add(bitstream_command, [bitstream_target], [bitstream_depend])
