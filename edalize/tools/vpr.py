@@ -29,6 +29,10 @@ class Vpr(Edatool):
             "type": "str",
             "desc": "Path to target architecture in XML format",
         },
+        "input_type": {
+            "type": "str",
+            "desc": "The type of file to input (e.g. blif or eblif)"
+        },
         "vpr_options": {
             "type": "str",
             "desc": "Additional options for VPR.",
@@ -90,27 +94,29 @@ class Vpr(Edatool):
 
         commands = EdaCommands()
 
-        depends = self.name + ".blif"
+        blif_name = self.name + "." + self.tool_options.get("input_type", "blif")
+
+        depends = blif_name
         targets = self.name + ".net"
-        command = ["vpr", arch_xml, self.name + ".blif", "--pack"]
+        command = ["vpr", arch_xml, blif_name, "--pack"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".net"
         targets = self.name + ".place"
-        command = ["vpr", arch_xml, self.name + ".blif", "--place"]
+        command = ["vpr", arch_xml, blif_name, "--place"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".place"
         targets = self.name + ".route"
-        command = ["vpr", arch_xml, self.name + ".blif", "--route"]
+        command = ["vpr", arch_xml, blif_name, "--route"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".route"
         targets = self.name + ".analysis"
-        command = ["vpr", arch_xml, self.name + ".blif", "--analysis"]
+        command = ["vpr", arch_xml, blif_name, "--analysis"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
