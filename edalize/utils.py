@@ -17,6 +17,9 @@ class EdaCommands(object):
     def add_var(self, var):
         self.vars.append(var)
 
+    def add_env_var(self, key, value):
+        self.vars.append(f"export {key}={value}")
+
     def set_default_target(self, target):
         self.default_target = target
 
