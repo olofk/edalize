@@ -33,6 +33,11 @@ class Yosys(Edatool):
             "desc": "Additional options for the synth command",
             "list": True,
         },
+        "split_io": {
+            "type": "str",
+            "desc": "A list of arguments for an optional split IO script (for F4PGA/Symbiflow)",
+            "list": True,
+        }
     }
 
     def write_config_files(self, edam):
@@ -130,10 +135,39 @@ class Yosys(Edatool):
                 "yosys-script-tcl.j2", "edalize_yosys_template.tcl", template_vars
             )
 
+        split_io = False
+        split_io_options = []
+        script = ""
+        infile = ""
+        outfile = ""
+        end_script = ""
+        if self.tool_options.get("split_io"):
+            split_io = True
+            split_io_options = self.tool_options.get("split_io")
+            script = split_io_options[0]
+            infile = split_io_options[1]
+            outfile = split_io_options[2]
+            end_script = split_io_options[3]
+
         commands = EdaCommands()
-        commands.add(
-            ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'"],
-            [default_target],
-            [template] + depfiles,
-        )
+
+        if split_io:
+            commands.add(
+                ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'", ' '.join(depfiles)],
+                [infile],
+                [template] + depfiles)
+            commands.add(
+                ["python", script, "-i", infile, "-o", outfile],
+                [outfile],
+                [script, infile])
+            commands.add(
+                ["yosys", "-l", "yosys.log", "-p", f"'read_json {outfile}; tcl {end_script}'"],
+                [default_target],
+                [outfile, end_script])
+        else:
+            commands.add(
+                ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'", ' '.join(depfiles)],
+                [default_target],
+                [template] + depfiles,)
+
         self.commands = commands.commands
