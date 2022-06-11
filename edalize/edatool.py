@@ -4,7 +4,10 @@
 
 import argparse
 from collections import OrderedDict
+from importlib import import_module
 import os
+from pkgutil import walk_packages
+
 import subprocess
 import logging
 import sys
@@ -20,6 +23,32 @@ try:
     _mswindows = True
 except ImportError:
     _mswindows = False
+
+NON_TOOL_PACKAGES = [
+    "flows",
+    "tools",
+    "utils",
+    "vunit_hooks",
+    "reporting",
+    "ise_reporting",
+    "vivado_reporting",
+    "quartus_reporting",
+]
+
+
+def get_edatool(name):
+    return getattr(import_module(f"edalize.{name}"), name.capitalize())
+
+
+def walk_tool_packages():
+    for _, pkg_name, _ in walk_packages([os.path.dirname(__file__)], "edalize."):
+        pkg_parts = pkg_name.split(".")
+        if not pkg_parts[1] in NON_TOOL_PACKAGES:
+            yield pkg_parts[1]
+
+
+def get_edatools():
+    return [get_edatool(pkg) for pkg in walk_tool_packages()]
 
 
 def subprocess_run_3_9(
