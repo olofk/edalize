@@ -33,7 +33,8 @@ class F4pga(Edaflow):
                 "--read_rr_graph ${RR_GRAPH}",
                 "--read_router_lookahead ${LOOKAHEAD}",
                 "--read_placement_delay_lookup ${PLACE_DELAY}" 
-            ]})
+            ],
+            "gen_constraints": True})
     ]
 
     FLOW_OPTIONS = {}
@@ -58,7 +59,7 @@ class F4pga(Edaflow):
             if f["file_type"] in ["xdc"]:
                 constraint_file_list.append(f["name"])
 
-        # Variables
+        # F4PGA Variables
         self.commands.add_env_var("FASM_FILE", f"{top}.fasm")
         self.commands.add_env_var("BITSTREAM_FILE", f"{top}.bit")
 
@@ -69,6 +70,7 @@ class F4pga(Edaflow):
         self.commands.add_env_var("TOP", f"{top}")
 
         self.commands.add_env_var("INPUT_XDC_FILES", ' '.join(constraint_file_list))
+        self.commands.add_env_var("PYTHON", "python3")
 
         self.commands.add_env_var("USE_ROI", "\"FALSE\"")
         self.commands.add_env_var("TECHMAP_PATH", "${F4PGA_ENV_SHARE}/techmaps/xc7_vpr/techmap")
@@ -88,6 +90,12 @@ class F4pga(Edaflow):
         self.commands.add_env_var("PLACE_DELAY", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.place_delay.bin")
         self.commands.add_env_var("ARCH_DEF", "${ARCH_DIR}/arch.timing.xml")
         self.commands.add_env_var("DBROOT", "${DATABASE_DIR}/${DEVICE_TYPE}")
+        self.commands.add_env_var("IOGEN", "${F4PGA_ENV_SHARE}/scripts/prjxray_create_ioplace.py")
+        self.commands.add_env_var("CONSTR_GEN", "${F4PGA_ENV_SHARE}/scripts/prjxray_create_place_constraints.py")
+        self.commands.add_env_var("CONSTR_FILE", "constraints.place")
+        self.commands.add_env_var("PINMAP_FILE", "${ARCH_DIR}/${PART}/pinmap.csv")
+        self.commands.add_env_var("VPR_GRID_MAP", "${ARCH_DIR}/vpr_grid_map.csv")
+        self.commands.add_env_var("IOPLACE_FILE", f"{top}.ioplace")
 
         self.commands.add_env_var("OUT_NOISY_WARNINGS", "noisy_warnings-${DEVICE_NAME}_fasm.log")
         self.commands.add_env_var("VPR_OPTIONS", ' '.join([

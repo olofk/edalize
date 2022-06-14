@@ -38,6 +38,10 @@ class Vpr(Edatool):
             "desc": "Additional options for VPR.",
             "list": True,
         },
+        "gen_constraints": {
+            "type": "bool",
+            "desc": "If true, generates constraints"
+        }
     }
 
     def get_version(self):
@@ -95,16 +99,47 @@ class Vpr(Edatool):
         commands = EdaCommands()
 
         blif_name = self.name + "." + self.tool_options.get("input_type", "blif")
+        net_name = self.name + ".net"
 
         depends = blif_name
-        targets = self.name + ".net"
+        targets = net_name
         command = ["vpr", arch_xml, blif_name, "--pack"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
-        depends = self.name + ".net"
+        if self.tool_options.get("gen_constraints"):
+            depends = net_name
+            targets = "${IOPLACE_FILE}"
+            commands.add([
+                "${PYTHON}",
+                "${IOGEN}",
+                f"--blif {blif_name}",
+                "--map ${PINMAP_FILE}",
+                f"--net {net_name}",
+                "> ${IOPLACE_FILE}"
+            ], [targets], [depends])
+            depends = "${IOPLACE_FILE}"
+            targets = "${CONSTR_FILE}"
+            commands.add([
+                "${PYTHON}",
+                "${CONSTR_GEN}",
+                f"--net {net_name}",
+                "--arch ${ARCH_DEF}",
+                f"--blif {blif_name}",
+                "--vpr_grid_map ${VPR_GRID_MAP}",
+                "--input ${IOPLACE_FILE}",
+                "--db_root ${DATABASE_DIR} " 
+                "--part ${PART}",
+                "> ${CONSTR_FILE}"
+            ], [targets], [depends])
+
         targets = self.name + ".place"
-        command = ["vpr", arch_xml, blif_name, "--place"]
+        if self.tool_options.get("gen_constraints"):
+            depends = "${CONSTR_FILE}"
+            command = ["vpr", arch_xml, blif_name, "--fix_clusters ${CONSTR_FILE}", "--place"]
+        else:
+            depends = self.name + ".net"
+            command = ["vpr", arch_xml, blif_name, "--place"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 

@@ -157,7 +157,7 @@ class Yosys(Edatool):
                 [infile],
                 [template] + depfiles)
             commands.add(
-                ["python", script, "-i", infile, "-o", outfile],
+                ["${PYTHON}", script, "-i", infile, "-o", outfile],
                 [outfile],
                 [script, infile])
             commands.add(
