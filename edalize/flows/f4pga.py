@@ -29,31 +29,10 @@ class F4pga(Edaflow):
             "arch_xml": "${F4PGA_ENV_SHARE}/arch/xc7a50t_test/arch.timing.xml", 
             "input_type": "eblif",
             "vpr_options": [
-                "--disp on",
-                "--max_router_iterations 500",
-                "--routing_failure_predictor off",
-                "--router_high_fanout_threshold -1",
-                "--constant_net_method route",
-                "--route_chan_width 500",
-                "--router_heap bucket",
-                "--clock_modeling route",
-                "--place_delta_delay_matrix_calculation_method dijkstra",
-                "--place_delay_model delta",
-                "--router_lookahead extended_map",
-                "--check_route quick",
-                "--strict_checks off",
-                "--allow_dangling_combinational_nodes on",
-                "--disable_errors check_unbuffered_edges:check_route",
-                "--congested_routing_iteration_threshold 0.8",
-                "--incremental_reroute_delay_ripup off",
-                "--base_cost_type delay_normalized_length_bounded",
-                "--bb_factor 10",
-                "--acc_fac 0.7",
-                "--astar_fac 1.8",
-                "--initial_pres_fac 2.828",
-                "--pres_fac_mult 1.2",
-                "--check_rr_graph off",
-                "--suppress_warnings ${OUT_NOISY_WARNINGS},sum_pin_class:check_unbuffered_edges:load_rr_indexed_data_T_values:check_rr_node:trans_per_R:check_route:set_rr_graph_tool_comment:calculate_average_switch"
+                "${VPR_OPTIONS}",
+                "--read_rr_graph ${RR_GRAPH}",
+                "--read_router_lookahead ${LOOKAHEAD}",
+                "--read_placement_delay_lookup ${PLACE_DELAY}" 
             ]})
     ]
 
@@ -80,9 +59,12 @@ class F4pga(Edaflow):
                 constraint_file_list.append(f["name"])
 
         # Variables
+        self.commands.add_env_var("FASM_FILE", f"{top}.fasm")
         self.commands.add_env_var("BITSTREAM_FILE", f"{top}.bit")
 
-        self.commands.add_env_var("DEVICE", "artix7")
+        self.commands.add_env_var("DEVICE_TYPE", "artix7")
+        self.commands.add_env_var("DEVICE_NAME", "xc7a50t_test")
+        self.commands.add_env_var("DEVICE_NAME_MODIFIED", "$(shell echo ${DEVICE_NAME} | sed -n 's/_/-/p')")
         self.commands.add_env_var("PART", "xc7a35tcpg236-1")
         self.commands.add_env_var("TOP", f"{top}")
 
@@ -91,7 +73,7 @@ class F4pga(Edaflow):
         self.commands.add_env_var("USE_ROI", "\"FALSE\"")
         self.commands.add_env_var("TECHMAP_PATH", "${F4PGA_ENV_SHARE}/techmaps/xc7_vpr/techmap")
         self.commands.add_env_var("DATABASE_DIR", "$(shell prjxray-config)")
-        self.commands.add_env_var("PART_JSON", "${DATABASE_DIR}/${DEVICE}/${PART}/part.json")
+        self.commands.add_env_var("PART_JSON", "${DATABASE_DIR}/${DEVICE_TYPE}/${PART}/part.json")
         self.commands.add_env_var("OUT_FASM_EXTRA", f"{top}_fasm_extra.fasm")
         self.commands.add_env_var("OUT_SDC", f"{top}.sdc")
         self.commands.add_env_var("OUT_SYNTH_V", f"{top}_synth.v")
@@ -100,15 +82,50 @@ class F4pga(Edaflow):
         self.commands.add_env_var("UTILS_PATH", "${F4PGA_ENV_SHARE}/scripts")
         self.commands.add_env_var("SYNTH_JSON", f"{top}_io.json")
         self.commands.add_env_var("OUT_EBLIF", f"{top}.eblif")
+        self.commands.add_env_var("ARCH_DIR", "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}")
+        self.commands.add_env_var("RR_GRAPH", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.rr_graph.real.bin")
+        self.commands.add_env_var("LOOKAHEAD", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.lookahead.bin")
+        self.commands.add_env_var("PLACE_DELAY", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.place_delay.bin")
+        self.commands.add_env_var("ARCH_DEF", "${ARCH_DIR}/arch.timing.xml")
+        self.commands.add_env_var("DBROOT", "${DATABASE_DIR}/${DEVICE_TYPE}")
+
+        self.commands.add_env_var("OUT_NOISY_WARNINGS", "noisy_warnings-${DEVICE_NAME}_fasm.log")
+        self.commands.add_env_var("VPR_OPTIONS", ' '.join([
+                "--disp on",
+                "--max_router_iterations 500",
+                "--routing_failure_predictor off",
+                "--router_high_fanout_threshold -1",
+                "--constant_net_method route",
+                "--route_chan_width 500",
+                "--router_heap bucket",
+                "--clock_modeling route",
+                "--place_delta_delay_matrix_calculation_method dijkstra",
+                "--place_delay_model delta",
+                "--router_lookahead extended_map",
+                "--check_route quick",
+                "--strict_checks off",
+                "--allow_dangling_combinational_nodes on",
+                "--disable_errors check_unbuffered_edges:check_route",
+                "--congested_routing_iteration_threshold 0.8",
+                "--incremental_reroute_delay_ripup off",
+                "--base_cost_type delay_normalized_length_bounded",
+                "--bb_factor 10",
+                "--acc_fac 0.7",
+                "--astar_fac 1.8",
+                "--initial_pres_fac 2.828",
+                "--pres_fac_mult 1.2",
+                "--check_rr_graph off",
+                "--suppress_warnings ${OUT_NOISY_WARNINGS},sum_pin_class:check_unbuffered_edges:load_rr_indexed_data_T_values:check_rr_node:trans_per_R:check_route:set_rr_graph_tool_comment:calculate_average_switch",
+        ]))
         
         # FASM and bitstream generation
-        fasm_command = ["genfasm", "${ARCH_DEF}", "${EBLIF}", "--device ${DEVICE_NAME}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
-        fasm_target = f"{name}.fasm"
+        fasm_command = ["genfasm", "${ARCH_DEF}", "${OUT_EBLIF}", "--device ${DEVICE_NAME_MODIFIED}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
+        fasm_target = "${FASM_FILE}"
         fasm_depend = f"{name}.analysis"
 
-        bitstream_command = ["xcfasm", "--db-root ${DBROOT}", "--part ${PART}", "--part_file ${DBROOT}/${PART}/part.yaml", "--sparse --emit_pudc_b_pullup", "--fn_in ${FASM}", "--bit_out ${BITSTREAM_FILE}", "${FRM2BIT}"]
+        bitstream_command = ["xcfasm", "--db-root ${DBROOT}", "--part ${PART}", "--part_file ${DBROOT}/${PART}/part.yaml", "--sparse --emit_pudc_b_pullup", "--fn_in ${FASM_FILE}", "--bit_out ${BITSTREAM_FILE}", "${FRM2BIT}"]
         bitstream_target = "${BITSTREAM_FILE}"
-        bitstream_depend = f"{name}.fasm"
+        bitstream_depend = "${FASM_FILE}"
 
         self.commands.add(fasm_command, [fasm_target], [fasm_depend])
         self.commands.add(bitstream_command, [bitstream_target], [bitstream_depend])
