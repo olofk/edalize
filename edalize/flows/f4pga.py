@@ -51,11 +51,8 @@ class F4pga(Edaflow):
         top = self.edam["toplevel"]
         self.commands.set_default_target("${BITSTREAM_FILE}")
 
-        verilog_file_list = []
         constraint_file_list = []
         for f in self.edam["files"]:
-            if f["file_type"] in ["verilogSource"]:
-                verilog_file_list.append(f["name"])
             if f["file_type"] in ["xdc"]:
                 constraint_file_list.append(f["name"])
 
