@@ -15,7 +15,6 @@ class F4pga(Edaflow):
 
     FLOW = [
         ("yosys", ["vpr"], {
-            "arch": "xilinx", 
             "output_format": "eblif",
             "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
             "yosys_synth_options": [],
@@ -26,7 +25,7 @@ class F4pga(Edaflow):
                 "${F4PGA_ENV_SHARE}/scripts/xc7/conv.tcl" # End TCL script
                 ]}),
         ("vpr", [], {
-            "arch_xml": "${F4PGA_ENV_SHARE}/arch/xc7a50t_test/arch.timing.xml", 
+            "arch_xml": "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}/arch.timing.xml", 
             "input_type": "eblif",
             "vpr_options": [
                 "${VPR_OPTIONS}",
@@ -37,7 +36,24 @@ class F4pga(Edaflow):
             "gen_constraints": True})
     ]
 
-    FLOW_OPTIONS = {}
+    FLOW_OPTIONS = {
+        "arch": {
+            "type": "String",
+            "desc": "The architecture name for Yosys (e.g. 'xilinx')"
+        },
+        "device_type": {
+            "type": "String",
+            "desc": "The device type (e.g. 'artix7')"
+        },
+        "device_name": {
+            "type": "String",
+            "desc": "The device name (e.g. 'xc7a50t_test')"
+        },
+        "part": {
+            "type": "String",
+            "desc": "The part name (e.g. 'xc7a35tcpg236-1')"
+        }
+    }
 
     def __init__(self, edam, work_root, verbose=False):
         Edaflow.__init__(self, edam, work_root, verbose)
@@ -46,6 +62,9 @@ class F4pga(Edaflow):
         return super().build_tool_graph()
 
     def configure_tools(self, nodes):
+        # Configure node options
+
+        # Configure nodes    
         super().configure_tools(nodes)
         name = self.edam["name"]
         top = self.edam["toplevel"]
@@ -60,10 +79,10 @@ class F4pga(Edaflow):
         self.commands.add_env_var("FASM_FILE", f"{top}.fasm")
         self.commands.add_env_var("BITSTREAM_FILE", f"{top}.bit")
 
-        self.commands.add_env_var("DEVICE_TYPE", "artix7")
-        self.commands.add_env_var("DEVICE_NAME", "xc7a50t_test")
+        self.commands.add_env_var("DEVICE_TYPE", self.flow_options["device_type"])
+        self.commands.add_env_var("DEVICE_NAME", self.flow_options["device_name"])
         self.commands.add_env_var("DEVICE_NAME_MODIFIED", "$(shell echo ${DEVICE_NAME} | sed -n 's/_/-/p')")
-        self.commands.add_env_var("PART", "xc7a35tcpg236-1")
+        self.commands.add_env_var("PART", self.flow_options["part"])
         self.commands.add_env_var("TOP", f"{top}")
 
         self.commands.add_env_var("INPUT_XDC_FILES", ' '.join(constraint_file_list))

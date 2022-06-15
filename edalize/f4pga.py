@@ -21,7 +21,6 @@ class F4pga(Edatool):
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
         super().__init__(edam, work_root, eda_api, verbose)
-        edam["flow_options"] = edam["tool_options"]["f4pga"]
         self.f4pga = F4PGA_Flow(edam, work_root, verbose)
 
     def configure_main(self):
