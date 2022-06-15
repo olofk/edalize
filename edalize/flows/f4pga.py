@@ -76,8 +76,9 @@ class F4pga(Edaflow):
                 constraint_file_list.append(f["name"])
 
         # F4PGA Variables
-        self.commands.add_env_var("FASM_FILE", f"{top}.fasm")
-        self.commands.add_env_var("BITSTREAM_FILE", f"{top}.bit")
+        self.commands.add_env_var("ANALYSIS_FILE", f"{name}.analysis")
+        self.commands.add_env_var("FASM_FILE", f"{top}.fasm")           # VPR genfasm command generates a fasm file that matches the top module name, by default
+        self.commands.add_env_var("BITSTREAM_FILE", f"{name}.bit")
 
         self.commands.add_env_var("DEVICE_TYPE", self.flow_options["device_type"])
         self.commands.add_env_var("DEVICE_NAME", self.flow_options["device_name"])
@@ -92,14 +93,14 @@ class F4pga(Edaflow):
         self.commands.add_env_var("TECHMAP_PATH", "${F4PGA_ENV_SHARE}/techmaps/xc7_vpr/techmap")
         self.commands.add_env_var("DATABASE_DIR", "$(shell prjxray-config)")
         self.commands.add_env_var("PART_JSON", "${DATABASE_DIR}/${DEVICE_TYPE}/${PART}/part.json")
-        self.commands.add_env_var("OUT_FASM_EXTRA", f"{top}_fasm_extra.fasm")
-        self.commands.add_env_var("OUT_SDC", f"{top}.sdc")
-        self.commands.add_env_var("OUT_SYNTH_V", f"{top}_synth.v")
-        self.commands.add_env_var("OUT_JSON", f"{top}.json")
-        self.commands.add_env_var("PYTHON3", f"$(shell which python3)")
+        self.commands.add_env_var("OUT_FASM_EXTRA", f"{name}_fasm_extra.fasm")
+        self.commands.add_env_var("OUT_SDC", f"{name}.sdc")
+        self.commands.add_env_var("OUT_SYNTH_V", f"{name}_synth.v")
+        self.commands.add_env_var("OUT_JSON", f"{name}.json")
+        self.commands.add_env_var("PYTHON3", "$(shell which python3)")
         self.commands.add_env_var("UTILS_PATH", "${F4PGA_ENV_SHARE}/scripts")
-        self.commands.add_env_var("SYNTH_JSON", f"{top}_io.json")
-        self.commands.add_env_var("OUT_EBLIF", f"{top}.eblif")
+        self.commands.add_env_var("SYNTH_JSON", f"{name}_io.json")
+        self.commands.add_env_var("OUT_EBLIF", f"{name}.eblif")
         self.commands.add_env_var("ARCH_DIR", "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}")
         self.commands.add_env_var("RR_GRAPH", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.rr_graph.real.bin")
         self.commands.add_env_var("LOOKAHEAD", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.lookahead.bin")
@@ -111,7 +112,7 @@ class F4pga(Edaflow):
         self.commands.add_env_var("CONSTR_FILE", "constraints.place")
         self.commands.add_env_var("PINMAP_FILE", "${ARCH_DIR}/${PART}/pinmap.csv")
         self.commands.add_env_var("VPR_GRID_MAP", "${ARCH_DIR}/vpr_grid_map.csv")
-        self.commands.add_env_var("IOPLACE_FILE", f"{top}.ioplace")
+        self.commands.add_env_var("IOPLACE_FILE", f"{name}.ioplace")
 
         self.commands.add_env_var("OUT_NOISY_WARNINGS", "noisy_warnings-${DEVICE_NAME}_fasm.log")
         self.commands.add_env_var("VPR_OPTIONS", ' '.join([
@@ -145,11 +146,10 @@ class F4pga(Edaflow):
         # FASM and bitstream generation
         fasm_command = ["genfasm", "${ARCH_DEF}", "${OUT_EBLIF}", "--device ${DEVICE_NAME_MODIFIED}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
         fasm_target = "${FASM_FILE}"
-        fasm_depend = f"{name}.analysis"
+        fasm_depend = "${ANALYSIS_FILE}"
+        self.commands.add(fasm_command, [fasm_target], [fasm_depend])
 
         bitstream_command = ["xcfasm", "--db-root ${DBROOT}", "--part ${PART}", "--part_file ${DBROOT}/${PART}/part.yaml", "--sparse --emit_pudc_b_pullup", "--fn_in ${FASM_FILE}", "--bit_out ${BITSTREAM_FILE}", "${FRM2BIT}"]
         bitstream_target = "${BITSTREAM_FILE}"
         bitstream_depend = "${FASM_FILE}"
-
-        self.commands.add(fasm_command, [fasm_target], [fasm_depend])
         self.commands.add(bitstream_command, [bitstream_target], [bitstream_depend])
