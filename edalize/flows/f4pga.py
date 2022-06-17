@@ -33,7 +33,30 @@ class F4pga(Edaflow):
                 "--read_router_lookahead ${LOOKAHEAD}",
                 "--read_placement_delay_lookup ${PLACE_DELAY}" 
             ],
-            "gen_constraints": True})
+            "gen_constraints": [
+                [
+                    "${PYTHON}",
+                    "${IOGEN}",
+                    "--blif ${OUT_EBLIF}",
+                    "--map ${PINMAP_FILE}",
+                    "--net ${NET_FILE}",
+                    "> ${IOPLACE_FILE}"
+                ],
+                [
+                    "${PYTHON}",
+                    "${CONSTR_GEN}",
+                    "--net ${NET_FILE}",
+                    "--arch ${ARCH_DEF}",
+                    "--blif ${OUT_EBLIF}",
+                    "--vpr_grid_map ${VPR_GRID_MAP}",
+                    "--input ${IOPLACE_FILE}",
+                    "--db_root ${DATABASE_DIR} " 
+                    "--part ${PART}",
+                    "> ${CONSTR_FILE}"
+                ],
+                "${IOPLACE_FILE}",
+                "${CONSTR_FILE}"
+            ]})
     ]
 
     FLOW_OPTIONS = {
@@ -76,6 +99,7 @@ class F4pga(Edaflow):
                 constraint_file_list.append(f["name"])
 
         # F4PGA Variables
+        self.commands.add_env_var("NET_FILE", f"{name}.net")
         self.commands.add_env_var("ANALYSIS_FILE", f"{name}.analysis")
         self.commands.add_env_var("FASM_FILE", f"{top}.fasm")           # VPR genfasm command generates a fasm file that matches the top module name, by default
         self.commands.add_env_var("BITSTREAM_FILE", f"{name}.bit")

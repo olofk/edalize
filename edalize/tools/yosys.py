@@ -135,6 +135,7 @@ class Yosys(Edatool):
                 "yosys-script-tcl.j2", "edalize_yosys_template.tcl", template_vars
             )
 
+        # Load options for splitting IO
         split_io = False
         split_io_options = []
         script = ""
@@ -152,6 +153,7 @@ class Yosys(Edatool):
         commands = EdaCommands()
 
         if split_io:
+            # Create yosys and python commands for splitting IO
             commands.add(
                 ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'", ' '.join(depfiles)],
                 [infile],

@@ -39,8 +39,9 @@ class Vpr(Edatool):
             "list": True,
         },
         "gen_constraints": {
-            "type": "bool",
-            "desc": "If true, generates constraints"
+            "type": "str",
+            "desc": "A list of arguments for the constraint generation scripts (for F4PGA/Symbiflow)",
+            "list": True
         }
     }
 
@@ -107,36 +108,35 @@ class Vpr(Edatool):
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
+        # Load options for constraint generation
+        gen_constraints = False
+        gen_constraints_options = []
+        first_script_arguments = []
+        second_script_arguments = []
+        first_script_output = ""
+        second_script_output = ""
+        if (self.tool_options.get("gen_constraints")):
+            gen_constraints = True
+            gen_constraints_options = self.tool_options.get("gen_constraints")
+            first_script_arguments = gen_constraints_options[0]
+            second_script_arguments = gen_constraints_options[1]
+            first_script_output = gen_constraints_options[2]
+            second_script_output = gen_constraints_options[3]
+        
+        # Create constraint generation commands
         if self.tool_options.get("gen_constraints"):
             depends = net_name
-            targets = "${IOPLACE_FILE}"
-            commands.add([
-                "${PYTHON}",
-                "${IOGEN}",
-                f"--blif {blif_name}",
-                "--map ${PINMAP_FILE}",
-                f"--net {net_name}",
-                "> ${IOPLACE_FILE}"
-            ], [targets], [depends])
-            depends = "${IOPLACE_FILE}"
-            targets = "${CONSTR_FILE}"
-            commands.add([
-                "${PYTHON}",
-                "${CONSTR_GEN}",
-                f"--net {net_name}",
-                "--arch ${ARCH_DEF}",
-                f"--blif {blif_name}",
-                "--vpr_grid_map ${VPR_GRID_MAP}",
-                "--input ${IOPLACE_FILE}",
-                "--db_root ${DATABASE_DIR} " 
-                "--part ${PART}",
-                "> ${CONSTR_FILE}"
-            ], [targets], [depends])
+            targets = first_script_output
+            commands.add(first_script_arguments, [targets], [depends])
+
+            depends = first_script_output
+            targets = second_script_output
+            commands.add(second_script_arguments, [targets], [depends])
 
         targets = self.name + ".place"
-        if self.tool_options.get("gen_constraints"):
-            depends = "${CONSTR_FILE}"
-            command = ["vpr", arch_xml, blif_name, "--fix_clusters ${CONSTR_FILE}", "--place"]
+        if gen_constraints:
+            depends = second_script_output
+            command = ["vpr", arch_xml, blif_name, f"--fix_clusters {second_script_output}", "--place"]
         else:
             depends = self.name + ".net"
             command = ["vpr", arch_xml, blif_name, "--place"]
