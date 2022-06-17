@@ -145,3 +145,15 @@ Example snippet of a CAPI2 description file
             _s = "{} has unknown file type '{}'"
             logger.warning(_s.format(f.name, f.file_type))
         return ""
+    
+    def run_main(self):
+        args = ["-i"]
+
+        # Set plusargs
+        if self.plusarg:
+            plusargs = []
+            for key, value in self.plusarg.items():
+                plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+            args.append("EXTRA_OPTIONS=" + " ".join(plusargs))
+
+        self._run_tool("make", args)
