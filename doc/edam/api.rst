@@ -100,6 +100,7 @@ Tool options are used to set tool-specific options. Each key corresponds to a sp
 =============== ===================== ===========
 Field Name      Type                  Description
 =============== ===================== ===========
+f4pga           String                Options for F4PGA_
 ghdl            String                Options for GHDL_
 icarus          String                Options for Icarus_ Verilog
 icestorm        String                Options for Project IceStorm_
@@ -117,6 +118,18 @@ vivado          String                Options for Xilinx Vivado_
 vunit           String                Options for VUnit_
 xcelium         String                Options for Cadence Xcelium_
 xsim            String                Options for Xilinx XSim_
+=============== ===================== ===========
+
+f4pga
+~~~~~
+
+=============== ===================== ===========
+Field Name      Type                  Description
+=============== ===================== ===========
+arch            String                Architecture specification for the Yosys tool (e.g. 'xilinx')
+device_type     String                Device type for f4pga/symbiflow tools (e.g. 'artix7')
+device_name     String                Device name for f4pga/symbiflow tools (e.g. 'xc7a50t_test')
+part            String                Part name for f4pga/symbiflow tools (e.g. 'xc7a35tcpg236-1')
 =============== ===================== ===========
 
 ghdl
