@@ -3,3 +3,4 @@ doc/_build/
 __pycache__
 /.eggs
 /.tox
+.vscode/
