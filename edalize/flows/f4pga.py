@@ -38,17 +38,29 @@ class F4pga(Edaflow):
         }
     }
 
+    def get_output_format(self, pnr_tool):
+        if pnr_tool == "vpr":
+            return "eblif"
+        if pnr_tool == "nextpnr":
+            return "json"
+
     def get_synth_node(self, pnr_tool):
-        return ("yosys", [pnr_tool], {
-            "output_format": "eblif",
-            "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
-            "yosys_synth_options": [],
-            "split_io": [
-                "${F4PGA_ENV_SHARE}/scripts/split_inouts.py",   # Python script
-                "${OUT_JSON}", # infile name
-                "${SYNTH_JSON}", # outfile name
-                "${F4PGA_ENV_SHARE}/scripts/xc7/conv.tcl" # End TCL script
+        if pnr_tool == "vpr":
+            return ("yosys", [pnr_tool], {
+                "output_format": "eblif",
+                "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
+                "split_io": [
+                    "${F4PGA_ENV_SHARE}/scripts/split_inouts.py",   # Python script
+                    "${OUT_JSON}", # infile name
+                    "${SYNTH_JSON}", # outfile name
+                    "${F4PGA_ENV_SHARE}/scripts/xc7/conv.tcl" # End TCL script
             ]})
+        if pnr_tool == "nextpnr":
+            return ("yosys", [pnr_tool], {
+                "output_format": "json",
+            })
+
+        
 
     def get_pnr_node(self, pnr_tool):
         if pnr_tool == "vpr":
@@ -92,11 +104,11 @@ class F4pga(Edaflow):
 
     def __init__(self, edam, work_root, verbose=False):
         # Read Place and Route tool if specified, otherwise default to VPR
-        pnr_tool = edam.get("flow_options", {}).get("pnr", "vpr")
+        self.pnr_tool = edam.get("flow_options", {}).get("pnr", "vpr")
 
         # Build flow using class methods
-        self.FLOW.append(self.get_synth_node(pnr_tool))
-        self.FLOW.append(self.get_pnr_node(pnr_tool))
+        self.FLOW.append(self.get_synth_node(self.pnr_tool))
+        self.FLOW.append(self.get_pnr_node(self.pnr_tool))
 
         Edaflow.__init__(self, edam, work_root, verbose)
 
@@ -185,10 +197,11 @@ class F4pga(Edaflow):
         ]))
         
         # FASM and bitstream generation
-        fasm_command = ["genfasm", "${ARCH_DEF}", "${OUT_EBLIF}", "--device ${DEVICE_NAME_MODIFIED}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
-        fasm_target = "${FASM_FILE}"
-        fasm_depend = "${ANALYSIS_FILE}"
-        self.commands.add(fasm_command, [fasm_target], [fasm_depend])
+        if self.pnr_tool == "vpr":
+            fasm_command = ["genfasm", "${ARCH_DEF}", "${OUT_EBLIF}", "--device ${DEVICE_NAME_MODIFIED}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
+            fasm_target = "${FASM_FILE}"
+            fasm_depend = "${ANALYSIS_FILE}"
+            self.commands.add(fasm_command, [fasm_target], [fasm_depend])
 
         bitstream_command = ["xcfasm", "--db-root ${DBROOT}", "--part ${PART}", "--part_file ${DBROOT}/${PART}/part.yaml", "--sparse --emit_pudc_b_pullup", "--fn_in ${FASM_FILE}", "--bit_out ${BITSTREAM_FILE}", "${FRM2BIT}"]
         bitstream_target = "${BITSTREAM_FILE}"
