@@ -13,51 +13,7 @@ class F4pga(Edaflow):
     Uses Yosys for synthesys and VPR or NextPNR for place and route.
     """
 
-    FLOW = [
-        ("yosys", ["vpr"], {
-            "output_format": "eblif",
-            "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
-            "yosys_synth_options": [],
-            "split_io": [
-                "${F4PGA_ENV_SHARE}/scripts/split_inouts.py",   # Python script
-                "${OUT_JSON}", # infile name
-                "${SYNTH_JSON}", # outfile name
-                "${F4PGA_ENV_SHARE}/scripts/xc7/conv.tcl" # End TCL script
-                ]}),
-        ("vpr", [], {
-            "arch_xml": "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}/arch.timing.xml", 
-            "input_type": "eblif",
-            "vpr_options": [
-                "${VPR_OPTIONS}",
-                "--read_rr_graph ${RR_GRAPH}",
-                "--read_router_lookahead ${LOOKAHEAD}",
-                "--read_placement_delay_lookup ${PLACE_DELAY}" 
-            ],
-            "gen_constraints": [
-                [
-                    "${PYTHON}",
-                    "${IOGEN}",
-                    "--blif ${OUT_EBLIF}",
-                    "--map ${PINMAP_FILE}",
-                    "--net ${NET_FILE}",
-                    "> ${IOPLACE_FILE}"
-                ],
-                [
-                    "${PYTHON}",
-                    "${CONSTR_GEN}",
-                    "--net ${NET_FILE}",
-                    "--arch ${ARCH_DEF}",
-                    "--blif ${OUT_EBLIF}",
-                    "--vpr_grid_map ${VPR_GRID_MAP}",
-                    "--input ${IOPLACE_FILE}",
-                    "--db_root ${DATABASE_DIR} " 
-                    "--part ${PART}",
-                    "> ${CONSTR_FILE}"
-                ],
-                "${IOPLACE_FILE}",
-                "${CONSTR_FILE}"
-            ]})
-    ]
+    FLOW = []
 
     FLOW_OPTIONS = {
         "arch": {
@@ -75,20 +31,81 @@ class F4pga(Edaflow):
         "part": {
             "type": "String",
             "desc": "The part name (e.g. 'xc7a35tcpg236-1')"
+        },
+        "pnr": {
+            "type": "String",
+            "desc": "The Place and Route tool (e.g. 'vpr' or 'nextpnr')"
         }
     }
 
+    def get_synth_node(self, pnr_tool):
+        return ("yosys", [pnr_tool], {
+            "output_format": "eblif",
+            "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
+            "yosys_synth_options": [],
+            "split_io": [
+                "${F4PGA_ENV_SHARE}/scripts/split_inouts.py",   # Python script
+                "${OUT_JSON}", # infile name
+                "${SYNTH_JSON}", # outfile name
+                "${F4PGA_ENV_SHARE}/scripts/xc7/conv.tcl" # End TCL script
+            ]})
+
+    def get_pnr_node(self, pnr_tool):
+        if pnr_tool == "vpr":
+            return ("vpr", [], {
+                "arch_xml": "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}/arch.timing.xml", 
+                "input_type": "eblif",
+                "vpr_options": [
+                    "${VPR_OPTIONS}",
+                    "--read_rr_graph ${RR_GRAPH}",
+                    "--read_router_lookahead ${LOOKAHEAD}",
+                    "--read_placement_delay_lookup ${PLACE_DELAY}" 
+                ],
+                "gen_constraints": [
+                    [
+                        "${PYTHON}",
+                        "${IOGEN}",
+                        "--blif ${OUT_EBLIF}",
+                        "--map ${PINMAP_FILE}",
+                        "--net ${NET_FILE}",
+                        "> ${IOPLACE_FILE}"
+                    ],
+                    [
+                        "${PYTHON}",
+                        "${CONSTR_GEN}",
+                        "--net ${NET_FILE}",
+                        "--arch ${ARCH_DEF}",
+                        "--blif ${OUT_EBLIF}",
+                        "--vpr_grid_map ${VPR_GRID_MAP}",
+                        "--input ${IOPLACE_FILE}",
+                        "--db_root ${DATABASE_DIR} " 
+                        "--part ${PART}",
+                        "> ${CONSTR_FILE}"
+                    ],
+                    "${IOPLACE_FILE}",
+                    "${CONSTR_FILE}"
+                ]})
+        if pnr_tool == "nextpnr":
+            return ("nextpnr", [], {
+                "nextpnr_options": []
+                })
+
     def __init__(self, edam, work_root, verbose=False):
+        # Read Place and Route tool if specified, otherwise default to VPR
+        pnr_tool = edam.get("flow_options", {}).get("pnr", "vpr")
+
+        # Build flow using class methods
+        self.FLOW.append(self.get_synth_node(pnr_tool))
+        self.FLOW.append(self.get_pnr_node(pnr_tool))
+
         Edaflow.__init__(self, edam, work_root, verbose)
 
     def build_tool_graph(self):
         return super().build_tool_graph()
 
     def configure_tools(self, nodes):
-        # Configure node options
-
-        # Configure nodes    
         super().configure_tools(nodes)
+
         name = self.edam["name"]
         top = self.edam["toplevel"]
         self.commands.set_default_target("${BITSTREAM_FILE}")
