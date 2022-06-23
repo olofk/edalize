@@ -186,7 +186,8 @@ class Edaflow(object):
 
     def add_scripts(self, depends, hook_name):
         last_script = depends
-        for script in self.hooks.get(hook_name, []):
+        hooks = self.edam.get("hooks", {})
+        for script in hooks.get(hook_name, []):
 
             # _env = self.env.copy()
             # if 'env' in script:
@@ -202,7 +203,6 @@ class Edaflow(object):
 
     def __init__(self, edam, work_root, verbose=False):
         self.edam = edam
-        self.hooks = edam.get("hooks", {})
 
         # Extract all options that affects the flow rather than
         # just a single tool
