@@ -102,7 +102,8 @@ class F4pga(Edaflow):
         self.commands.add_env_var("NET_FILE", f"{name}.net")
         self.commands.add_env_var("ANALYSIS_FILE", f"{name}.analysis")
         self.commands.add_env_var("FASM_FILE", f"{top}.fasm")           # VPR genfasm command generates a fasm file that matches the top module name, by default
-        self.commands.add_env_var("BITSTREAM_FILE", f"{name}.bit")
+        self.bitstream_file=f"{name}.bit"
+        self.commands.add_env_var("BITSTREAM_FILE", self.bitstream_file)
 
         self.commands.add_env_var("DEVICE_TYPE", self.flow_options["device_type"])
         self.commands.add_env_var("DEVICE_NAME", self.flow_options["device_name"])
@@ -177,3 +178,8 @@ class F4pga(Edaflow):
         bitstream_target = "${BITSTREAM_FILE}"
         bitstream_depend = "${FASM_FILE}"
         self.commands.add(bitstream_command, [bitstream_target], [bitstream_depend])
+
+    def run(self, args):
+        if self.flow_options["part"].startswith("xc7") :
+            self._run_tool("export", args = ["BITSTREAM=" + self.bitstream_file])
+            self._run_tool("openocd", args = ["-f", "7series.txt"])
