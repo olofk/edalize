@@ -26,3 +26,6 @@ class F4pga(Edatool):
 
     def configure_main(self):
         self.f4pga.configure()
+
+    def run_main(self):
+        self.f4pga.run(args=[])
