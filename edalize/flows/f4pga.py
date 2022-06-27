@@ -80,6 +80,8 @@ class F4pga(Edaflow):
 
     def __init__(self, edam, work_root, verbose=False):
         Edaflow.__init__(self, edam, work_root, verbose)
+        self.name = self.edam["name"]
+        self.bitstream_file = f"{self.name}.bit"
         self.openocd_config_file = "openocd.txt"
 
     def build_tool_graph(self):
@@ -92,27 +94,26 @@ class F4pga(Edaflow):
         with open(file_path, "w") as file:
             if device_name.startswith("xc7"):
                 lines = [
-                    "interface ftdi", 
-                    "ftdi_device_desc \"Digilent USB Device\"",
-                    "ftdi_vid_pid 0x0403 0x6010",
-                    "ftdi_channel 0",
-                    "ftdi_layout_init 0x0088 0x008b",
-                    "reset_config none",
-                    "adapter_khz 10000",
-                    "source [find cpld/xilinx-xc7.cfg]",
-                    "source [find cpld/jtagspi.cfg]",
-                    "init",
-                    "puts [irscan xc7.tap 0x09]",
-                    "puts [drscan xc7.tap 32 0]",
-                    "puts \"Programming FPGA...\"",
-                    "pld load 0 ${::env(BITSTREAM)}",
-                    "exit"]
+                    "interface ftdi\n", 
+                    "ftdi_device_desc \"Digilent USB Device\"\n",
+                    "ftdi_vid_pid 0x0403 0x6010\n",
+                    "ftdi_channel 0\n",
+                    "ftdi_layout_init 0x0088 0x008b\n",
+                    "reset_config none\n",
+                    "adapter_khz 10000\n",
+                    "source [find cpld/xilinx-xc7.cfg]\n",
+                    "source [find cpld/jtagspi.cfg]\n",
+                    "init\n",
+                    "puts [irscan xc7.tap 0x09]\n",
+                    "puts [drscan xc7.tap 32 0]\n",
+                    "puts \"Programming FPGA...\"\n",
+                    f"pld load 0 {self.bitstream_file}\n",
+                    "exit\n"]
                 file.writelines(lines)
 
     def configure_tools(self, nodes):
         # Configure nodes    
         super().configure_tools(nodes)
-        name = self.edam["name"]
         top = self.edam["toplevel"]
         self.commands.set_default_target("${BITSTREAM_FILE}")
 
@@ -122,10 +123,10 @@ class F4pga(Edaflow):
                 constraint_file_list.append(f["name"])
 
         # F4PGA Variables
-        self.commands.add_env_var("NET_FILE", f"{name}.net")
-        self.commands.add_env_var("ANALYSIS_FILE", f"{name}.analysis")
+        self.commands.add_env_var("NET_FILE", f"{self.name}.net")
+        self.commands.add_env_var("ANALYSIS_FILE", f"{self.name}.analysis")
         self.commands.add_env_var("FASM_FILE", f"{top}.fasm")           # VPR genfasm command generates a fasm file that matches the top module name, by default
-        self.bitstream_file=f"{name}.bit"
+
         self.commands.add_env_var("BITSTREAM_FILE", self.bitstream_file)
 
         self.commands.add_env_var("DEVICE_TYPE", self.flow_options["device_type"])
@@ -141,14 +142,14 @@ class F4pga(Edaflow):
         self.commands.add_env_var("TECHMAP_PATH", "${F4PGA_ENV_SHARE}/techmaps/xc7_vpr/techmap")
         self.commands.add_env_var("DATABASE_DIR", "$(shell prjxray-config)")
         self.commands.add_env_var("PART_JSON", "${DATABASE_DIR}/${DEVICE_TYPE}/${PART}/part.json")
-        self.commands.add_env_var("OUT_FASM_EXTRA", f"{name}_fasm_extra.fasm")
-        self.commands.add_env_var("OUT_SDC", f"{name}.sdc")
-        self.commands.add_env_var("OUT_SYNTH_V", f"{name}_synth.v")
-        self.commands.add_env_var("OUT_JSON", f"{name}.json")
+        self.commands.add_env_var("OUT_FASM_EXTRA", f"{self.name}_fasm_extra.fasm")
+        self.commands.add_env_var("OUT_SDC", f"{self.name}.sdc")
+        self.commands.add_env_var("OUT_SYNTH_V", f"{self.name}_synth.v")
+        self.commands.add_env_var("OUT_JSON", f"{self.name}.json")
         self.commands.add_env_var("PYTHON3", "$(shell which python3)")
         self.commands.add_env_var("UTILS_PATH", "${F4PGA_ENV_SHARE}/scripts")
-        self.commands.add_env_var("SYNTH_JSON", f"{name}_io.json")
-        self.commands.add_env_var("OUT_EBLIF", f"{name}.eblif")
+        self.commands.add_env_var("SYNTH_JSON", f"{self.name}_io.json")
+        self.commands.add_env_var("OUT_EBLIF", f"{self.name}.eblif")
         self.commands.add_env_var("ARCH_DIR", "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}")
         self.commands.add_env_var("RR_GRAPH", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.rr_graph.real.bin")
         self.commands.add_env_var("LOOKAHEAD", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.lookahead.bin")
@@ -160,7 +161,7 @@ class F4pga(Edaflow):
         self.commands.add_env_var("CONSTR_FILE", "constraints.place")
         self.commands.add_env_var("PINMAP_FILE", "${ARCH_DIR}/${PART}/pinmap.csv")
         self.commands.add_env_var("VPR_GRID_MAP", "${ARCH_DIR}/vpr_grid_map.csv")
-        self.commands.add_env_var("IOPLACE_FILE", f"{name}.ioplace")
+        self.commands.add_env_var("IOPLACE_FILE", f"{self.name}.ioplace")
 
         self.commands.add_env_var("OUT_NOISY_WARNINGS", "noisy_warnings-${DEVICE_NAME}_fasm.log")
         self.commands.add_env_var("VPR_OPTIONS", ' '.join([
@@ -205,7 +206,5 @@ class F4pga(Edaflow):
         # Create openocd configuration file for download/run
         self.configure_openocd()
 
-    def run(self, args):
-        if self.flow_options["part"].startswith("xc7") :
-            self._run_tool("export", args = ["BITSTREAM=" + self.bitstream_file])
-            self._run_tool("openocd", args = ["-f", self.openocd_config_file])
+    def set_run_command(self):
+        self.commands.add(["openocd", "-f", self.openocd_config_file], ["run"], ["pre_run"])
