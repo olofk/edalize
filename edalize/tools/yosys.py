@@ -168,7 +168,7 @@ class Yosys(Edatool):
                 [outfile, end_script])
         else:
             commands.add(
-                ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'", ' '.join(depfiles)],
+                ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'"],
                 [default_target],
                 [template] + depfiles,)
 

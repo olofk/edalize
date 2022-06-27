@@ -122,7 +122,7 @@ class Edaflow(object):
                 if opt_name in ToolClass.get_tool_options():
                     tool_options[tool_name] = merge_dict(
                         tool_options[tool_name],
-                        {opt_name: edam_flow_opts.pop(opt_name)},
+                        {opt_name: edam_flow_opts.get(opt_name)},
                     )
 
             self.edam["tool_options"] = tool_options
