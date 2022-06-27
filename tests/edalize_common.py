@@ -130,10 +130,13 @@ def compare_files(ref_dir, work_root, files):
         reference_file = os.path.join(ref_dir, f)
         generated_file = os.path.join(work_root, f)
 
-        assert os.path.exists(generated_file)
-
         if "GOLDEN_RUN" in os.environ:
+            print("EXECUTING GOLDEN RUN - COPYING FILES")
             shutil.copy(generated_file, reference_file)
+        else:
+            print("NO GOLDEN RUN")
+
+        assert os.path.exists(generated_file)
 
         with open(reference_file) as fref, open(generated_file) as fgen:
             assert fref.read() == fgen.read(), f
