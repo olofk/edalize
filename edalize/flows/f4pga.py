@@ -158,7 +158,13 @@ class F4pga(Edaflow):
         # F4PGA Variables
         self.commands.add_env_var("NET_FILE", f"{self.name}.net")
         self.commands.add_env_var("ANALYSIS_FILE", f"{self.name}.analysis")
-        self.commands.add_env_var("FASM_FILE", f"{top}.fasm")           # VPR genfasm command generates a fasm file that matches the top module name, by default
+        
+        if self.pnr_tool == "vpr":
+            # VPR genfasm command generates a fasm file that matches the top module name, by default
+            self.commands.add_env_var("FASM_FILE", f"{top}.fasm")
+        else:
+            # NextPNR generates fasm file that matches the project name by default
+            self.commands.add_env_var("FASM_FILE", f"{self.name}.fasm")
 
         self.commands.add_env_var("BITSTREAM_FILE", self.bitstream_file)
 

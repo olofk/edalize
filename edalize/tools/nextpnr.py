@@ -27,7 +27,7 @@ class Nextpnr(Edatool):
         lpf_file = ""
         pcf_file = ""
         netlist = ""
-        bba_file = ""
+        chipdb_file = ""
         placement_constraints = []
         unused_files = []
         for f in self.files:
@@ -56,14 +56,14 @@ class Nextpnr(Edatool):
                         )
                     )
                 pcf_file = f["name"]
-            if file_type == "bba":
-                if bba_file:
+            if file_type in ["bin", "bba"]:
+                if chipdb_file:
                     raise RuntimeError(
-                        "Nextpnr only supports one bba file. Found {} and {}".format(
-                            bba_file, f["name"]
+                        "Nextpnr only supports one ChipDB (bin/bba) file. Found {} and {}".format(
+                            chipdb_file, f["name"]
                         )
                     )
-                bba_file = f["name"]
+                chipdb_file = f["name"]
             if file_type == "xdc":
                 placement_constraints.append(f["name"])
             elif file_type == "jsonNetlist":
@@ -92,12 +92,13 @@ class Nextpnr(Edatool):
 
         # Specific commands for nextpnr-xilinx
         if arch == "xilinx":
-            if not bba_file:
-                raise RuntimeError("Missing required chipdb (bba) file")
+            depends = netlist
+            if not chipdb_file:
+                raise RuntimeError("Missing required chipdb (bba/bin) file")
             if not placement_constraints:
                 raise RuntimeError("Missing required XDC file(s)")
             targets = self.name + ".fasm"
-            command = ["nextpnr-" + arch, "--chipdb", bba_file]
+            command = ["nextpnr-" + arch, "--chipdb", chipdb_file]
             xdcs = []
             for x in placement_constraints:
                 xdcs += ["--xdc", x]
@@ -136,4 +137,4 @@ class Nextpnr(Edatool):
 
             # GUI target
             commands.add(command + ["--gui"], ["build-gui"], [depends])
-            self.commands = commands.commands
+        self.commands = commands.commands
