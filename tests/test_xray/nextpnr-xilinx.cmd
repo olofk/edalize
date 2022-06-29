@@ -1,0 +1,1 @@
+--verbose --debug --chipdb ${CHIPDB}/xc7k325tffg676-1.bin --xdc constraints.xdc --json test_xray_0.json --write test_xray_0_routed.json --fasm test_xray_0.fasm
