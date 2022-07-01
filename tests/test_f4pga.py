@@ -50,7 +50,7 @@ def test_f4pga_nextpnr(make_edalize_test):
     files = [
         {"name": "top.xdc", "file_type": "xdc"},
         {"name": "top.v", "file_type": "verilogSource"},
-        {"name": "board.bin", "file_type": "bba"}
+        {"name": "board.bin", "file_type": "bin"}
     ]
 
     tf = make_edalize_test(
@@ -64,7 +64,6 @@ def test_f4pga_nextpnr(make_edalize_test):
 
     config_files = [
         "edalize_yosys_procs.tcl",
-        "edalize_yosys_template.tcl",
         "openocd.txt"
     ]
 
