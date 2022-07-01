@@ -39,13 +39,13 @@ class F4pga(Edaflow):
     }
 
     def get_output_format(self, pnr_tool):
-        if pnr_tool == "vpr":
+        if pnr_tool in ["vpr", "vtr"]:
             return "eblif"
         if pnr_tool == "nextpnr":
             return "json"
 
     def get_synth_node(self, pnr_tool):
-        if pnr_tool == "vpr":
+        if pnr_tool in ["vpr", "vtr"]:
             return ("yosys", [pnr_tool], {
                 "output_format": "eblif",
                 "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
@@ -63,7 +63,7 @@ class F4pga(Edaflow):
         
 
     def get_pnr_node(self, pnr_tool):
-        if pnr_tool == "vpr":
+        if pnr_tool in ["vpr", "vtr"]:
             return ("vpr", [], {
                 "arch_xml": "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}/arch.timing.xml", 
                 "input_type": "eblif",
@@ -143,7 +143,6 @@ class F4pga(Edaflow):
                 file.writelines(lines)
 
     def configure_tools(self, nodes):
-        # Configure nodes    
         super().configure_tools(nodes)
 
         name = self.edam["name"]
@@ -159,11 +158,10 @@ class F4pga(Edaflow):
         self.commands.add_env_var("NET_FILE", f"{self.name}.net")
         self.commands.add_env_var("ANALYSIS_FILE", f"{self.name}.analysis")
         
-        if self.pnr_tool == "vpr":
-            # VPR genfasm command generates a fasm file that matches the top module name, by default
+        # VPR and NextPNR don't default to the same fasm name, so this is temporary fix
+        if self.pnr_tool in ["vpr", "vtr"]:
             self.commands.add_env_var("FASM_FILE", f"{top}.fasm")
         else:
-            # NextPNR generates fasm file that matches the project name by default
             self.commands.add_env_var("FASM_FILE", f"{self.name}.fasm")
 
         self.commands.add_env_var("BITSTREAM_FILE", self.bitstream_file)
@@ -231,13 +229,14 @@ class F4pga(Edaflow):
                 "--suppress_warnings ${OUT_NOISY_WARNINGS},sum_pin_class:check_unbuffered_edges:load_rr_indexed_data_T_values:check_rr_node:trans_per_R:check_route:set_rr_graph_tool_comment:calculate_average_switch",
         ]))
         
-        # FASM and bitstream generation
-        if self.pnr_tool == "vpr":
+        # VPR doesn't automatically generate FASM (NextPNR does)
+        if self.pnr_tool in ["vpr", "vtr"]:
             fasm_command = ["genfasm", "${ARCH_DEF}", "${OUT_EBLIF}", "--device ${DEVICE_NAME_MODIFIED}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
             fasm_target = "${FASM_FILE}"
             fasm_depend = "${ANALYSIS_FILE}"
             self.commands.add(fasm_command, [fasm_target], [fasm_depend])
 
+        # Generate bitstream
         bitstream_command = ["xcfasm", "--db-root ${DBROOT}", "--part ${PART}", "--part_file ${DBROOT}/${PART}/part.yaml", "--sparse --emit_pudc_b_pullup", "--fn_in ${FASM_FILE}", "--bit_out ${BITSTREAM_FILE}", "${FRM2BIT}"]
         bitstream_target = "${BITSTREAM_FILE}"
         bitstream_depend = "${FASM_FILE}"
