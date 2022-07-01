@@ -27,6 +27,7 @@ It can create project files for supported tools and run them in batch or GUI mod
 
    edam/api
    Modules <edalize>
+   examples/examples
 
 .. toctree::
    :caption: Developer's Guide
