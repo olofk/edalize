@@ -130,6 +130,7 @@ arch            String                Architecture specification for the Yosys t
 device_type     String                Device type for f4pga/symbiflow tools (e.g. 'artix7')
 device_name     String                Device name for f4pga/symbiflow tools (e.g. 'xc7a50t_test')
 part            String                Part name for f4pga/symbiflow tools (e.g. 'xc7a35tcpg236-1')
+pnr             String                Place and route tool to use (valid options are 'vpr'/'vtr' and 'nextpnr', default is 'vpr)
 =============== ===================== ===========
 
 ghdl
