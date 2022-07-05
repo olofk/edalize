@@ -35,6 +35,10 @@ class F4pga(Edaflow):
         "pnr": {
             "type": "String",
             "desc": "The Place and Route tool (e.g. 'vpr' or 'nextpnr')"
+        },
+        "board": {
+            "type": "String",
+            "desc": "The name of the board (used by openFPGALoader to download bitstream, e.g. 'basys3')"
         }
     }
 
@@ -59,8 +63,6 @@ class F4pga(Edaflow):
             return ("yosys", [pnr_tool], {
                 "output_format": "json",
             })
-
-        
 
     def get_pnr_node(self, pnr_tool):
         if pnr_tool == "vpr":
@@ -113,37 +115,11 @@ class F4pga(Edaflow):
         Edaflow.__init__(self, edam, work_root, verbose)
         self.name = self.edam["name"]
         self.bitstream_file = f"{self.name}.bit"
-        self.openocd_config_file = "openocd.txt"
 
     def build_tool_graph(self):
         return super().build_tool_graph()
 
-    def configure_openocd(self):
-        device_name = self.flow_options["device_name"]
-        file_path = os.path.join(self.work_root, self.openocd_config_file)
-
-        with open(file_path, "w") as file:
-            if device_name.startswith("xc7"):
-                lines = [
-                    "interface ftdi\n", 
-                    "ftdi_device_desc \"Digilent USB Device\"\n",
-                    "ftdi_vid_pid 0x0403 0x6010\n",
-                    "ftdi_channel 0\n",
-                    "ftdi_layout_init 0x0088 0x008b\n",
-                    "reset_config none\n",
-                    "adapter_khz 10000\n",
-                    "source [find cpld/xilinx-xc7.cfg]\n",
-                    "source [find cpld/jtagspi.cfg]\n",
-                    "init\n",
-                    "puts [irscan xc7.tap 0x09]\n",
-                    "puts [drscan xc7.tap 32 0]\n",
-                    "puts \"Programming FPGA...\"\n",
-                    f"pld load 0 {self.bitstream_file}\n",
-                    "exit\n"]
-                file.writelines(lines)
-
     def configure_tools(self, nodes):
-        # Configure nodes    
         super().configure_tools(nodes)
 
         name = self.edam["name"]
@@ -172,6 +148,7 @@ class F4pga(Edaflow):
         self.commands.add_env_var("DEVICE_NAME", self.flow_options["device_name"])
         self.commands.add_env_var("DEVICE_NAME_MODIFIED", "$(shell echo ${DEVICE_NAME} | sed -n 's/_/-/p')")
         self.commands.add_env_var("PART", self.flow_options["part"])
+        self.commands.add_env_var("BOARD", self.flow_options["board"])
         self.commands.add_env_var("TOP", f"{top}")
 
         self.commands.add_env_var("INPUT_XDC_FILES", ' '.join(constraint_file_list))
@@ -243,8 +220,5 @@ class F4pga(Edaflow):
         bitstream_depend = "${FASM_FILE}"
         self.commands.add(bitstream_command, [bitstream_target], [bitstream_depend])
 
-        # Create openocd configuration file for download/run
-        self.configure_openocd()
-
     def set_run_command(self):
-        self.commands.add(["openocd", "-f", self.openocd_config_file], ["run"], ["pre_run"])
+        self.commands.add(["openFPGALoader", "-b", "${BOARD}", "${BITSTREAM_FILE}"], ["run"], ["pre_run"])
