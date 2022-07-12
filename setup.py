@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name="edalize",
-    version="0.3.3",
+    version="0.4.0",
     packages=["edalize", "edalize.tools", "edalize.flows"],
     package_data={
         "edalize": [
@@ -52,7 +52,7 @@ setup(
     author="Olof Kindgren",
     author_email="olof.kindgren@gmail.com",
     description=(
-        "Edalize is a library for interfacing EDA tools, primarily for FPGA development"
+        "Library for interfacing EDA tools such as simulators, linters or synthesis tools, using a common interface"
     ),
     license="BSD-2-Clause",
     keywords=[
@@ -70,15 +70,12 @@ setup(
     url="https://github.com/olofk/edalize",
     long_description=read("README.rst"),
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: BSD License",
         "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
         "Topic :: Utilities",
     ],
     install_requires=[
-        # 2.11.0 and .1 introduced an incompatible change in template output,
-        # which was fixed in 2.11.2 and later.
-        # https://github.com/pallets/jinja/issues/1138
         "Jinja2>=3",
     ],
     tests_require=["pytest>=3.3.0", "vunit_hdl>=4.0.8"],
