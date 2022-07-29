@@ -29,9 +29,9 @@ class Vpr(Edatool):
             "type": "str",
             "desc": "Path to target architecture in XML format",
         },
-        "input_type": {
+        "input_file": {
             "type": "str",
-            "desc": "The type of file to input (e.g. blif or eblif)"
+            "desc": "The name of the input file for the make recipe"
         },
         "vpr_options": {
             "type": "str",
@@ -88,6 +88,9 @@ class Vpr(Edatool):
             if f.file_type in ["SDC"]:
                 timing_constraints.append(f.name)
 
+        if self.tool_options.get("input_file", "") != "":
+            file_netlist += [self.tool_options.get("input_file", "")];
+
         arch_xml = self.tool_options.get("arch_xml")
         if not arch_xml:
             logger.error('Missing required "arch" parameter')
@@ -99,14 +102,12 @@ class Vpr(Edatool):
 
         commands = EdaCommands()
 
-        blif_name = self.name + "." + self.tool_options.get("input_type", "blif")
         net_name = self.name + ".net"
 
-        depends = blif_name
         targets = net_name
-        command = ["vpr", arch_xml, blif_name, "--pack"]
+        command = ["vpr", arch_xml] + file_netlist + ["--pack"]
         command += sdc_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        commands.add(command, [targets], file_netlist)
 
         # Load options for constraint generation
         gen_constraints = False
@@ -136,22 +137,22 @@ class Vpr(Edatool):
         targets = self.name + ".place"
         if gen_constraints:
             depends = second_script_output
-            command = ["vpr", arch_xml, blif_name, f"--fix_clusters {second_script_output}", "--place"]
+            command = ["vpr", arch_xml] + file_netlist + [f"--fix_clusters {second_script_output}", "--place"]
         else:
             depends = self.name + ".net"
-            command = ["vpr", arch_xml, blif_name, "--place"]
+            command = ["vpr", arch_xml] + file_netlist + ["--place"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".place"
         targets = self.name + ".route"
-        command = ["vpr", arch_xml, blif_name, "--route"]
+        command = ["vpr", arch_xml] + file_netlist + ["--route"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".route"
         targets = self.name + ".analysis"
-        command = ["vpr", arch_xml, blif_name, "--analysis"]
+        command = ["vpr", arch_xml] + file_netlist + ["--analysis"]
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 

@@ -66,7 +66,7 @@ class F4pga(Edaflow):
         if pnr_tool in ["vpr", "vtr"]:
             return ("vpr", [], {
                 "arch_xml": "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}/arch.timing.xml", 
-                "input_type": "eblif",
+                "input_file": "${OUT_EBLIF}",
                 "vpr_options": [
                     "${VPR_OPTIONS}",
                     "--read_rr_graph ${RR_GRAPH}",
