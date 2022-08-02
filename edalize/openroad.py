@@ -176,6 +176,7 @@ class Openroad(Edatool):
             "DESIGN_CONFIG=./config.mk",
             f"FLOW_HOME={self.flow_path}",
             f"DESIGN_NAME={self.toplevel}",
+            "SHELL=/bin/bash",
             self.make_target,
         ]
 
