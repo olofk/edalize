@@ -13,4 +13,4 @@ verilog_defaults -pop
 
 synth $top
 
-write_json $name.json
+write_json test_mistral_0.json

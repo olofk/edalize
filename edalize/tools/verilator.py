@@ -37,8 +37,7 @@ class Verilator(Edatool):
         super().configure(edam)
 
         # Future improvement: Separate include directories of c and verilog files
-        incdirs = set()
-        src_files = []
+        incdirs = []
 
         verilator_file = self.name + ".vc"
 
@@ -56,10 +55,6 @@ class Verilator(Edatool):
         vc.append("--" + mode)
 
         vc += self.tool_options.get("verilator_options", [])
-
-        for include_dir in incdirs:
-            vc.append(f"+incdir+" + include_dir)
-            vc.append("-CFLAGS -I" + include_dir)
 
         vlt_files = []
         vlog_files = []
@@ -96,6 +91,10 @@ class Verilator(Edatool):
 
         if uhdm_files:
             vc.append("--uhdm-ast-sv")
+
+        for include_dir in incdirs:
+            vc.append(f"+incdir+" + include_dir)
+            vc.append("-CFLAGS -I" + include_dir)
 
         vc += vlt_files + uhdm_files + vlog_files
 

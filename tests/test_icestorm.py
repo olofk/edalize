@@ -1,6 +1,6 @@
 import os
 import pytest
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 
 
 def run_icestorm_test(tf, pnr_cmdfile="nextpnr-ice40.cmd"):
@@ -87,16 +87,15 @@ def test_icestorm_nextpnr(make_edalize_test):
 
 def test_icestorm_invalid_pnr(make_edalize_test):
     name = "test_icestorm_0"
-    tf = make_edalize_test(
-        "icestorm",
-        test_name=name,
-        param_types=["vlogdefine", "vlogparam"],
-        tool_options={"pnr": "invalid"},
-        ref_dir="nextpnr",
-    )
 
     with pytest.raises(RuntimeError) as e:
-        tf.backend.configure()
+        tf = make_edalize_test(
+            "icestorm",
+            test_name=name,
+            param_types=["vlogdefine", "vlogparam"],
+            tool_options={"pnr": "invalid"},
+            ref_dir="nextpnr",
+        )
     assert (
         "Invalid pnr option 'invalid'. Valid values are 'next' for nextpnr or 'none' to only perform synthesis"
         in str(e.value)

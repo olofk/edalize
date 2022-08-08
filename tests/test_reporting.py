@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import pandas as pd
 
-from edalize_common import tests_dir
+from .edalize_common import tests_dir
 
 
 def check_types(s, allowed=[int, float]):

@@ -151,7 +151,9 @@ quit
                 )
             )
 
-        (src_files, incdirs) = self._get_fileset_files()
+        (src_files, incdirs) = self._get_fileset_files(
+            force_slash=True
+        )  # ISE tcl doesn't like '\', so '/' is forced
 
         if incdirs:
             tcl_file.write(
