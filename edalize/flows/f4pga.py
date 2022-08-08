@@ -6,10 +6,11 @@ import os.path
 
 from edalize.flows.edaflow import Edaflow
 
+
 class F4pga(Edaflow):
     """
-    Free and open-source 'flow for FPGA's'. 
-    
+    Free and open-source 'flow for FPGA's'.
+
     Uses Yosys for synthesys and VPR or NextPNR for place and route.
     """
 
@@ -18,24 +19,18 @@ class F4pga(Edaflow):
     FLOW_OPTIONS = {
         "arch": {
             "type": "String",
-            "desc": "The architecture name for Yosys (e.g. 'xilinx')"
+            "desc": "The architecture name for Yosys (e.g. 'xilinx')",
         },
-        "device_type": {
-            "type": "String",
-            "desc": "The device type (e.g. 'artix7')"
-        },
+        "device_type": {"type": "String", "desc": "The device type (e.g. 'artix7')"},
         "device_name": {
             "type": "String",
-            "desc": "The device name (e.g. 'xc7a50t_test')"
+            "desc": "The device name (e.g. 'xc7a50t_test')",
         },
-        "part": {
-            "type": "String",
-            "desc": "The part name (e.g. 'xc7a35tcpg236-1')"
-        },
+        "part": {"type": "String", "desc": "The part name (e.g. 'xc7a35tcpg236-1')"},
         "pnr": {
             "type": "String",
-            "desc": "The Place and Route tool (e.g. 'vpr' or 'nextpnr')"
-        }
+            "desc": "The Place and Route tool (e.g. 'vpr' or 'nextpnr')",
+        },
     }
 
     def get_output_format(self, pnr_tool):
@@ -46,61 +41,70 @@ class F4pga(Edaflow):
 
     def get_synth_node(self, pnr_tool):
         if pnr_tool in ["vpr", "vtr"]:
-            return ("yosys", [pnr_tool], {
-                "output_format": "eblif",
-                "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
-                "split_io": [
-                    "${F4PGA_ENV_SHARE}/scripts/split_inouts.py",   # Python script
-                    "${OUT_JSON}", # infile name
-                    "${SYNTH_JSON}", # outfile name
-                    "${F4PGA_ENV_SHARE}/scripts/xc7/conv.tcl" # End TCL script
-            ]})
+            return (
+                "yosys",
+                [pnr_tool],
+                {
+                    "output_format": "eblif",
+                    "yosys_template": "${F4PGA_ENV_SHARE}/scripts/xc7/synth.tcl",
+                    "split_io": [
+                        "${F4PGA_ENV_SHARE}/scripts/split_inouts.py",  # Python script
+                        "${OUT_JSON}",  # infile name
+                        "${SYNTH_JSON}",  # outfile name
+                        "${F4PGA_ENV_SHARE}/scripts/xc7/conv.tcl",  # End TCL script
+                    ],
+                },
+            )
         if pnr_tool == "nextpnr":
-            return ("yosys", [pnr_tool], {
-                "output_format": "json",
-            })
-
-        
+            return (
+                "yosys",
+                [pnr_tool],
+                {
+                    "output_format": "json",
+                },
+            )
 
     def get_pnr_node(self, pnr_tool):
         if pnr_tool in ["vpr", "vtr"]:
-            return ("vpr", [], {
-                "arch_xml": "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}/arch.timing.xml", 
-                "input_file": "${OUT_EBLIF}",
-                "vpr_options": [
-                    "${VPR_OPTIONS}",
-                    "--read_rr_graph ${RR_GRAPH}",
-                    "--read_router_lookahead ${LOOKAHEAD}",
-                    "--read_placement_delay_lookup ${PLACE_DELAY}" 
-                ],
-                "gen_constraints": [
-                    [
-                        "${PYTHON}",
-                        "${IOGEN}",
-                        "--blif ${OUT_EBLIF}",
-                        "--map ${PINMAP_FILE}",
-                        "--net ${NET_FILE}",
-                        "> ${IOPLACE_FILE}"
+            return (
+                "vpr",
+                [],
+                {
+                    "arch_xml": "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}/arch.timing.xml",
+                    "input_file": "${OUT_EBLIF}",
+                    "vpr_options": [
+                        "${VPR_OPTIONS}",
+                        "--read_rr_graph ${RR_GRAPH}",
+                        "--read_router_lookahead ${LOOKAHEAD}",
+                        "--read_placement_delay_lookup ${PLACE_DELAY}",
                     ],
-                    [
-                        "${PYTHON}",
-                        "${CONSTR_GEN}",
-                        "--net ${NET_FILE}",
-                        "--arch ${ARCH_DEF}",
-                        "--blif ${OUT_EBLIF}",
-                        "--vpr_grid_map ${VPR_GRID_MAP}",
-                        "--input ${IOPLACE_FILE}",
-                        "--db_root ${DATABASE_DIR} " 
-                        "--part ${PART}",
-                        "> ${CONSTR_FILE}"
+                    "gen_constraints": [
+                        [
+                            "${PYTHON}",
+                            "${IOGEN}",
+                            "--blif ${OUT_EBLIF}",
+                            "--map ${PINMAP_FILE}",
+                            "--net ${NET_FILE}",
+                            "> ${IOPLACE_FILE}",
+                        ],
+                        [
+                            "${PYTHON}",
+                            "${CONSTR_GEN}",
+                            "--net ${NET_FILE}",
+                            "--arch ${ARCH_DEF}",
+                            "--blif ${OUT_EBLIF}",
+                            "--vpr_grid_map ${VPR_GRID_MAP}",
+                            "--input ${IOPLACE_FILE}",
+                            "--db_root ${DATABASE_DIR} " "--part ${PART}",
+                            "> ${CONSTR_FILE}",
+                        ],
+                        "${IOPLACE_FILE}",
+                        "${CONSTR_FILE}",
                     ],
-                    "${IOPLACE_FILE}",
-                    "${CONSTR_FILE}"
-                ]})
+                },
+            )
         if pnr_tool == "nextpnr":
-            return ("nextpnr", [], {
-                "nextpnr_options": []
-                })
+            return ("nextpnr", [], {"nextpnr_options": []})
 
     def __init__(self, edam, work_root, verbose=False):
         # Read Place and Route tool if specified, otherwise default to VPR
@@ -125,8 +129,8 @@ class F4pga(Edaflow):
         with open(file_path, "w") as file:
             if device_name.startswith("xc7"):
                 lines = [
-                    "interface ftdi\n", 
-                    "ftdi_device_desc \"Digilent USB Device\"\n",
+                    "interface ftdi\n",
+                    'ftdi_device_desc "Digilent USB Device"\n',
                     "ftdi_vid_pid 0x0403 0x6010\n",
                     "ftdi_channel 0\n",
                     "ftdi_layout_init 0x0088 0x008b\n",
@@ -137,9 +141,10 @@ class F4pga(Edaflow):
                     "init\n",
                     "puts [irscan xc7.tap 0x09]\n",
                     "puts [drscan xc7.tap 32 0]\n",
-                    "puts \"Programming FPGA...\"\n",
+                    'puts "Programming FPGA..."\n',
                     f"pld load 0 {self.bitstream_file}\n",
-                    "exit\n"]
+                    "exit\n",
+                ]
                 file.writelines(lines)
 
     def configure_tools(self, nodes):
@@ -157,7 +162,7 @@ class F4pga(Edaflow):
         # F4PGA Variables
         self.commands.add_env_var("NET_FILE", f"{self.name}.net")
         self.commands.add_env_var("ANALYSIS_FILE", f"{self.name}.analysis")
-        
+
         # VPR and NextPNR don't default to the same fasm name, so this is temporary fix
         if self.pnr_tool in ["vpr", "vtr"]:
             self.commands.add_env_var("FASM_FILE", f"{top}.fasm")
@@ -168,17 +173,23 @@ class F4pga(Edaflow):
 
         self.commands.add_env_var("DEVICE_TYPE", self.flow_options["device_type"])
         self.commands.add_env_var("DEVICE_NAME", self.flow_options["device_name"])
-        self.commands.add_env_var("DEVICE_NAME_MODIFIED", "$(shell echo ${DEVICE_NAME} | sed -n 's/_/-/p')")
+        self.commands.add_env_var(
+            "DEVICE_NAME_MODIFIED", "$(shell echo ${DEVICE_NAME} | sed -n 's/_/-/p')"
+        )
         self.commands.add_env_var("PART", self.flow_options["part"])
         self.commands.add_env_var("TOP", f"{top}")
 
-        self.commands.add_env_var("INPUT_XDC_FILES", ' '.join(constraint_file_list))
+        self.commands.add_env_var("INPUT_XDC_FILES", " ".join(constraint_file_list))
         self.commands.add_env_var("PYTHON", "python3")
 
-        self.commands.add_env_var("USE_ROI", "\"FALSE\"")
-        self.commands.add_env_var("TECHMAP_PATH", "${F4PGA_ENV_SHARE}/techmaps/xc7_vpr/techmap")
+        self.commands.add_env_var("USE_ROI", '"FALSE"')
+        self.commands.add_env_var(
+            "TECHMAP_PATH", "${F4PGA_ENV_SHARE}/techmaps/xc7_vpr/techmap"
+        )
         self.commands.add_env_var("DATABASE_DIR", "$(shell prjxray-config)")
-        self.commands.add_env_var("PART_JSON", "${DATABASE_DIR}/${DEVICE_TYPE}/${PART}/part.json")
+        self.commands.add_env_var(
+            "PART_JSON", "${DATABASE_DIR}/${DEVICE_TYPE}/${PART}/part.json"
+        )
         self.commands.add_env_var("OUT_FASM_EXTRA", f"{self.name}_fasm_extra.fasm")
         self.commands.add_env_var("OUT_SDC", f"{self.name}.sdc")
         self.commands.add_env_var("OUT_SYNTH_V", f"{self.name}_synth.v")
@@ -188,56 +199,90 @@ class F4pga(Edaflow):
         self.commands.add_env_var("SYNTH_JSON", f"{self.name}_io.json")
         self.commands.add_env_var("OUT_EBLIF", f"{self.name}.eblif")
         self.commands.add_env_var("ARCH_DIR", "${F4PGA_ENV_SHARE}/arch/${DEVICE_NAME}")
-        self.commands.add_env_var("RR_GRAPH", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.rr_graph.real.bin")
-        self.commands.add_env_var("LOOKAHEAD", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.lookahead.bin")
-        self.commands.add_env_var("PLACE_DELAY", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.place_delay.bin")
+        self.commands.add_env_var(
+            "RR_GRAPH", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.rr_graph.real.bin"
+        )
+        self.commands.add_env_var(
+            "LOOKAHEAD", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.lookahead.bin"
+        )
+        self.commands.add_env_var(
+            "PLACE_DELAY", "${ARCH_DIR}/rr_graph_${DEVICE_NAME}.place_delay.bin"
+        )
         self.commands.add_env_var("ARCH_DEF", "${ARCH_DIR}/arch.timing.xml")
         self.commands.add_env_var("DBROOT", "${DATABASE_DIR}/${DEVICE_TYPE}")
-        self.commands.add_env_var("IOGEN", "${F4PGA_ENV_SHARE}/scripts/prjxray_create_ioplace.py")
-        self.commands.add_env_var("CONSTR_GEN", "${F4PGA_ENV_SHARE}/scripts/prjxray_create_place_constraints.py")
+        self.commands.add_env_var(
+            "IOGEN", "${F4PGA_ENV_SHARE}/scripts/prjxray_create_ioplace.py"
+        )
+        self.commands.add_env_var(
+            "CONSTR_GEN",
+            "${F4PGA_ENV_SHARE}/scripts/prjxray_create_place_constraints.py",
+        )
         self.commands.add_env_var("CONSTR_FILE", "constraints.place")
         self.commands.add_env_var("PINMAP_FILE", "${ARCH_DIR}/${PART}/pinmap.csv")
         self.commands.add_env_var("VPR_GRID_MAP", "${ARCH_DIR}/vpr_grid_map.csv")
         self.commands.add_env_var("IOPLACE_FILE", f"{self.name}.ioplace")
 
-        self.commands.add_env_var("OUT_NOISY_WARNINGS", "noisy_warnings-${DEVICE_NAME}_fasm.log")
-        self.commands.add_env_var("VPR_OPTIONS", ' '.join([
-                "--disp on",
-                "--max_router_iterations 500",
-                "--routing_failure_predictor off",
-                "--router_high_fanout_threshold -1",
-                "--constant_net_method route",
-                "--route_chan_width 500",
-                "--router_heap bucket",
-                "--clock_modeling route",
-                "--place_delta_delay_matrix_calculation_method dijkstra",
-                "--place_delay_model delta",
-                "--router_lookahead extended_map",
-                "--check_route quick",
-                "--strict_checks off",
-                "--allow_dangling_combinational_nodes on",
-                "--disable_errors check_unbuffered_edges:check_route",
-                "--congested_routing_iteration_threshold 0.8",
-                "--incremental_reroute_delay_ripup off",
-                "--base_cost_type delay_normalized_length_bounded",
-                "--bb_factor 10",
-                "--acc_fac 0.7",
-                "--astar_fac 1.8",
-                "--initial_pres_fac 2.828",
-                "--pres_fac_mult 1.2",
-                "--check_rr_graph off",
-                "--suppress_warnings ${OUT_NOISY_WARNINGS},sum_pin_class:check_unbuffered_edges:load_rr_indexed_data_T_values:check_rr_node:trans_per_R:check_route:set_rr_graph_tool_comment:calculate_average_switch",
-        ]))
-        
+        self.commands.add_env_var(
+            "OUT_NOISY_WARNINGS", "noisy_warnings-${DEVICE_NAME}_fasm.log"
+        )
+        self.commands.add_env_var(
+            "VPR_OPTIONS",
+            " ".join(
+                [
+                    "--disp on",
+                    "--max_router_iterations 500",
+                    "--routing_failure_predictor off",
+                    "--router_high_fanout_threshold -1",
+                    "--constant_net_method route",
+                    "--route_chan_width 500",
+                    "--router_heap bucket",
+                    "--clock_modeling route",
+                    "--place_delta_delay_matrix_calculation_method dijkstra",
+                    "--place_delay_model delta",
+                    "--router_lookahead extended_map",
+                    "--check_route quick",
+                    "--strict_checks off",
+                    "--allow_dangling_combinational_nodes on",
+                    "--disable_errors check_unbuffered_edges:check_route",
+                    "--congested_routing_iteration_threshold 0.8",
+                    "--incremental_reroute_delay_ripup off",
+                    "--base_cost_type delay_normalized_length_bounded",
+                    "--bb_factor 10",
+                    "--acc_fac 0.7",
+                    "--astar_fac 1.8",
+                    "--initial_pres_fac 2.828",
+                    "--pres_fac_mult 1.2",
+                    "--check_rr_graph off",
+                    "--suppress_warnings ${OUT_NOISY_WARNINGS},sum_pin_class:check_unbuffered_edges:load_rr_indexed_data_T_values:check_rr_node:trans_per_R:check_route:set_rr_graph_tool_comment:calculate_average_switch",
+                ]
+            ),
+        )
+
         # VPR doesn't automatically generate FASM (NextPNR does)
         if self.pnr_tool in ["vpr", "vtr"]:
-            fasm_command = ["genfasm", "${ARCH_DEF}", "${OUT_EBLIF}", "--device ${DEVICE_NAME_MODIFIED}", "${VPR_OPTIONS}", "--read_rr_graph ${RR_GRAPH}"]
+            fasm_command = [
+                "genfasm",
+                "${ARCH_DEF}",
+                "${OUT_EBLIF}",
+                "--device ${DEVICE_NAME_MODIFIED}",
+                "${VPR_OPTIONS}",
+                "--read_rr_graph ${RR_GRAPH}",
+            ]
             fasm_target = "${FASM_FILE}"
             fasm_depend = "${ANALYSIS_FILE}"
             self.commands.add(fasm_command, [fasm_target], [fasm_depend])
 
         # Generate bitstream
-        bitstream_command = ["xcfasm", "--db-root ${DBROOT}", "--part ${PART}", "--part_file ${DBROOT}/${PART}/part.yaml", "--sparse --emit_pudc_b_pullup", "--fn_in ${FASM_FILE}", "--bit_out ${BITSTREAM_FILE}", "${FRM2BIT}"]
+        bitstream_command = [
+            "xcfasm",
+            "--db-root ${DBROOT}",
+            "--part ${PART}",
+            "--part_file ${DBROOT}/${PART}/part.yaml",
+            "--sparse --emit_pudc_b_pullup",
+            "--fn_in ${FASM_FILE}",
+            "--bit_out ${BITSTREAM_FILE}",
+            "${FRM2BIT}",
+        ]
         bitstream_target = "${BITSTREAM_FILE}"
         bitstream_depend = "${FASM_FILE}"
         self.commands.add(bitstream_command, [bitstream_target], [bitstream_depend])
@@ -246,4 +291,6 @@ class F4pga(Edaflow):
         self.configure_openocd()
 
     def set_run_command(self):
-        self.commands.add(["openocd", "-f", self.openocd_config_file], ["run"], ["pre_run"])
+        self.commands.add(
+            ["openocd", "-f", self.openocd_config_file], ["run"], ["pre_run"]
+        )

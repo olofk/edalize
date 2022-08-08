@@ -5,6 +5,7 @@
 from edalize.edatool import Edatool
 from edalize.flows.f4pga import F4pga as F4PGA_Flow
 
+
 class F4pga(Edatool):
     """
     F4PGA backend (Edatool portion)
@@ -15,9 +16,7 @@ class F4pga(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {
-                "description" : "F4PGA Edatool backend (Yosys and VPR)"
-            }
+            return {"description": "F4PGA Edatool backend (Yosys and VPR)"}
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
         super().__init__(edam, work_root, eda_api, verbose)

@@ -31,7 +31,7 @@ class Vpr(Edatool):
         },
         "input_file": {
             "type": "str",
-            "desc": "The name of the input file for the make recipe"
+            "desc": "The name of the input file for the make recipe",
         },
         "vpr_options": {
             "type": "str",
@@ -41,8 +41,8 @@ class Vpr(Edatool):
         "gen_constraints": {
             "type": "str",
             "desc": "A list of arguments for the constraint generation scripts (for F4PGA/Symbiflow)",
-            "list": True
-        }
+            "list": True,
+        },
     }
 
     def get_version(self):
@@ -89,7 +89,7 @@ class Vpr(Edatool):
                 timing_constraints.append(f.name)
 
         if self.tool_options.get("input_file", "") != "":
-            file_netlist += [self.tool_options.get("input_file", "")];
+            file_netlist += [self.tool_options.get("input_file", "")]
 
         arch_xml = self.tool_options.get("arch_xml")
         if not arch_xml:
@@ -116,14 +116,14 @@ class Vpr(Edatool):
         second_script_arguments = []
         first_script_output = ""
         second_script_output = ""
-        if (self.tool_options.get("gen_constraints")):
+        if self.tool_options.get("gen_constraints"):
             gen_constraints = True
             gen_constraints_options = self.tool_options.get("gen_constraints")
             first_script_arguments = gen_constraints_options[0]
             second_script_arguments = gen_constraints_options[1]
             first_script_output = gen_constraints_options[2]
             second_script_output = gen_constraints_options[3]
-        
+
         # Create constraint generation commands
         if self.tool_options.get("gen_constraints"):
             depends = net_name
@@ -137,7 +137,11 @@ class Vpr(Edatool):
         targets = self.name + ".place"
         if gen_constraints:
             depends = second_script_output
-            command = ["vpr", arch_xml] + file_netlist + [f"--fix_clusters {second_script_output}", "--place"]
+            command = (
+                ["vpr", arch_xml]
+                + file_netlist
+                + [f"--fix_clusters {second_script_output}", "--place"]
+            )
         else:
             depends = self.name + ".net"
             command = ["vpr", arch_xml] + file_netlist + ["--place"]

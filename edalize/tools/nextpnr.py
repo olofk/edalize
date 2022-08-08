@@ -117,7 +117,9 @@ class Nextpnr(Edatool):
             elif arch == "gowin":
                 device = self.tool_options.get("device")
                 if not device:
-                    raise RuntimeError("Missing required option 'device' for nextpnr-gowin")
+                    raise RuntimeError(
+                        "Missing required option 'device' for nextpnr-gowin"
+                    )
                 arch_options += ["--device", device]
                 targets = self.name + ".pack"
                 constraints = ["--cst", cst_file] if cst_file else []

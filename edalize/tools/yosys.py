@@ -37,7 +37,7 @@ class Yosys(Edatool):
             "type": "str",
             "desc": "A list of arguments for an optional split IO script (for F4PGA/Symbiflow)",
             "list": True,
-        }
+        },
     }
 
     def write_config_files(self, edam):
@@ -155,21 +155,38 @@ class Yosys(Edatool):
         if split_io:
             # Create yosys and python commands for splitting IO
             commands.add(
-                ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'", ' '.join(depfiles)],
+                [
+                    "yosys",
+                    "-l",
+                    "yosys.log",
+                    "-p",
+                    f"'tcl {template}'",
+                    " ".join(depfiles),
+                ],
                 [infile],
-                [template] + depfiles)
+                [template] + depfiles,
+            )
             commands.add(
                 ["${PYTHON}", script, "-i", infile, "-o", outfile],
                 [outfile],
-                [script, infile])
+                [script, infile],
+            )
             commands.add(
-                ["yosys", "-l", "yosys.log", "-p", f"'read_json {outfile}; tcl {end_script}'"],
+                [
+                    "yosys",
+                    "-l",
+                    "yosys.log",
+                    "-p",
+                    f"'read_json {outfile}; tcl {end_script}'",
+                ],
                 [default_target],
-                [outfile, end_script])
+                [outfile, end_script],
+            )
         else:
             commands.add(
                 ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'"],
                 [default_target],
-                [template] + depfiles,)
+                [template] + depfiles,
+            )
 
         self.commands = commands.commands
