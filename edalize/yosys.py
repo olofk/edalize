@@ -130,7 +130,9 @@ class Yosys(Edatool):
             "synth_options": " ".join(self.tool_options.get("yosys_synth_options", "")),
             "write_command": "write_" + output_format,
             "output_name": default_target,
-            "output_opts": "-pvector bra " if arch == "xilinx" else "",
+            "output_opts": "-pvector bra "
+            if (arch == "xilinx" and output_format == "edif")
+            else "",
             "yosys_template": template,
             "name": self.name,
         }
