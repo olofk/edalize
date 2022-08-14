@@ -139,8 +139,9 @@ class Cocotb(Edatool):
         args = [
             "SHELL=/bin/bash",
         ]
-        for arg in self.tool_options["make_args"].split(" "):
-            if len(arg):
-                args.append(arg)
+        if "make_args" in self.tool_options:
+            for arg in self.tool_options["make_args"].split(" "):
+                if len(arg):
+                    args.append(arg)
 
         self._run_tool("make", args)
