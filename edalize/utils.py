@@ -27,7 +27,7 @@ class EdaCommands(object):
             return "set"
         return ""
 
-    # Simplify the creation flow environmental variables in the Makefile
+    # Simplify the creation of flow environmental variables in the Makefile
     def add_env_var(self, key, value):
         self.vars.append(f"{self.find_env_var_command()} {key}={value}")
 
