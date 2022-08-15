@@ -17,6 +17,20 @@ class EdaCommands(object):
     def add_var(self, var):
         self.vars.append(var)
 
+    # Allow for portability between the main platforms
+    def find_env_var_command(self):
+        from sys import platform
+
+        if platform == "linux" or platform == "linux2" or platform == "darwin":
+            return "export"
+        elif platform == "win32":
+            return "set"
+        return ""
+
+    # Simplify the creation flow environmental variables in the Makefile
+    def add_env_var(self, key, value):
+        self.vars.append(f"{self.find_env_var_command()} {key}={value}")
+
     def set_default_target(self, target):
         self.default_target = target
 
