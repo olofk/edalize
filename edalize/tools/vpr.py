@@ -105,8 +105,8 @@ class Vpr(Edatool):
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
-        # Run generate constraints script of flag set to true
-        if self.tool_options.get("gen_constraints", False):
+        # Run generate constraints script if flag set to true
+        if self.tool_options.get("gen_constraints"):
             depends = self.name + ".net"
             targets = "${IOPLACE_FILE}"
             commands.add(
@@ -143,7 +143,7 @@ class Vpr(Edatool):
         targets = self.name + ".place"
         command = ["vpr", arch_xml, netlist_file]
         # Modify place stage if running generate constraints script
-        if self.tool_options.get("gen_constraints", False):
+        if self.tool_options.get("gen_constraints"):
             depends = "${CONSTR_FILE}"
             command += ["--fix_clusters ${CONSTR_FILE}"]
         else:
