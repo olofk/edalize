@@ -56,7 +56,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 pcf_file = f["name"]
-            if file_type in ["bin", "bba"]:
+            if file_type == "chipdb":
                 if chipdb_file:
                     raise RuntimeError(
                         "Nextpnr only supports one ChipDB (bin/bba) file. Found {} and {}".format(
