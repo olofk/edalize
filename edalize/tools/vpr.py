@@ -30,8 +30,8 @@ class Vpr(Edatool):
             "desc": "Path to target architecture in XML format",
         },
         "gen_constraints": {
-            "type": "bool",
-            "desc": "If true, activates the symbiflow gen_constraints python script as part of the VPR process",
+            "type": "list",
+            "desc": "A list to be used for inserting two commands between the pack and place step",
         },
         "vpr_options": {
             "type": "str",
@@ -105,37 +105,28 @@ class Vpr(Edatool):
         command += sdc_opts + vpr_options
         commands.add(command, [targets], [depends])
 
-        # Run generate constraints script if flag set to true
-        if self.tool_options.get("gen_constraints"):
+        # First, check if gen_constraint value list is passed in and is the correct size
+        gen_constr_list = []
+        if (
+            self.tool_options.get("gen_constraints")
+            and len(self.tool_options.get("gen_constraints")) == 4
+        ):
+            gen_constr_list = self.tool_options.get("gen_constraints")
+
+        # Run generate constraints scripts if correct list exists
+        if gen_constr_list:
             depends = self.name + ".net"
-            targets = "${IOPLACE_FILE}"
+            targets = gen_constr_list[0]
             commands.add(
-                [
-                    "${PYTHON}",
-                    "${IOGEN}",
-                    "--blif ${OUT_EBLIF}",
-                    "--map ${PINMAP_FILE}",
-                    "--net ${NET_FILE}",
-                    "> ${IOPLACE_FILE}",
-                ],
+                gen_constr_list[2],
                 [targets],
                 [depends],
             )
 
-            depends = "${IOPLACE_FILE}"
-            targets = "${CONSTR_FILE}"
+            targets = gen_constr_list[0]
+            targets = gen_constr_list[1]
             commands.add(
-                [
-                    "${PYTHON}",
-                    "${CONSTR_GEN}",
-                    "--net ${NET_FILE}",
-                    "--arch ${ARCH_DEF}",
-                    "--blif ${OUT_EBLIF}",
-                    "--vpr_grid_map ${VPR_GRID_MAP}",
-                    "--input ${IOPLACE_FILE}",
-                    "--db_root ${DATABASE_DIR} " "--part ${PART}",
-                    "> ${CONSTR_FILE}",
-                ],
+                gen_constr_list[3],
                 [targets],
                 [depends],
             )
@@ -143,9 +134,9 @@ class Vpr(Edatool):
         targets = self.name + ".place"
         command = ["vpr", arch_xml, netlist_file]
         # Modify place stage if running generate constraints script
-        if self.tool_options.get("gen_constraints"):
-            depends = "${CONSTR_FILE}"
-            command += ["--fix_clusters ${CONSTR_FILE}"]
+        if gen_constr_list:
+            depends = gen_constr_list[1]
+            command += [f"--fix_clusters {gen_constr_list[1]}"]
         else:
             depends = self.name + ".net"
         command += ["--place"]
