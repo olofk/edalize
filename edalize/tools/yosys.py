@@ -28,6 +28,10 @@ class Yosys(Edatool):
             "type": "str",
             "desc": "TCL template file to use instead of default template",
         },
+        "f4pga_synth": {
+            "type": "list",
+            "desc": "A list containing two values for the f4pga synth configuration",
+        },
         "yosys_synth_options": {
             "type": "str",
             "desc": "Additional options for the synth command",
@@ -131,9 +135,45 @@ class Yosys(Edatool):
             )
 
         commands = EdaCommands()
-        commands.add(
-            ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'"],
-            [default_target],
-            [template] + depfiles,
-        )
+
+        # First, check if split_io list is passed in and is the correct size
+        f4pga_synth = []
+        if (
+            self.tool_options.get("f4pga_synth")
+            and len(self.tool_options.get("f4pga_synth")) == 2
+        ):
+            f4pga_synth = self.tool_options.get("f4pga_synth")
+
+        # Configure first call to Yosys
+        targets = []
+        depends = depfiles
+        variables = []
+
+        if f4pga_synth:
+            targets = f"{self.name}.json"
+            variables = {
+                "USE_ROI": "FALSE",
+                "TECHMAP_PATH": "$F4PGA_SHARE_DIR/techmaps/xc7_vpr/techmap",
+                "TOP": self.toplevel,
+                "INPUT_XDC_FILES": f4pga_synth[0],
+                "PART_JSON": f4pga_synth[1],
+                "OUT_FASM_EXTRA": f"{self.name}_fasm_extra.fasm",
+                "OUT_SDC": f"{self.name}.sdc",
+                "OUT_SYNTH_V": f"{self.name}_synth.v",
+                "PYTHON3": "$(which python3)",
+                "UTILS_PATH": "$F4PGA_SHARE_DIR/scripts",
+                "OUT_JSON": targets,
+                "OUT_EBLIF": default_target,
+            }
+        else:
+            targets = [default_target]
+            depends = [template] + depends
+
+        command = ["yosys", "-l yosys.log", f"-p 'tcl {template}'"]
+
+        if f4pga_synth:
+            command += depfiles
+
+        commands.add(command, targets, depends, variables=variables)
+
         self.commands = commands.commands
