@@ -160,7 +160,7 @@ class Yosys(Edatool):
             depends = [template] + depfiles
             args = f"-p 'tcl {template}'"
 
-        command += ["yosys", args, "-l yosys.log"]
+        command += ["yosys", "-l yosys.log", args]
         commands.add(command, targets, depends)
 
         # Configure python script and additional call to Yosys
