@@ -28,6 +28,10 @@ class Yosys(Edatool):
             "type": "str",
             "desc": "TCL template file to use instead of default template",
         },
+        "split_io": {
+            "type": "list",
+            "desc": "A list to be used for inserting a python command and extra yosys script",
+        },
         "yosys_synth_options": {
             "type": "str",
             "desc": "Additional options for the synth command",
@@ -131,9 +135,47 @@ class Yosys(Edatool):
             )
 
         commands = EdaCommands()
-        commands.add(
-            ["yosys", "-l", "yosys.log", "-p", f"'tcl {template}'"],
-            [default_target],
-            [template] + depfiles,
-        )
+
+        # First, check if split_io list is passed in and is the correct size
+        split_io_list = []
+        if (
+            self.tool_options.get("split_io")
+            and len(self.tool_options.get("split_io")) == 6
+        ):
+            split_io_list = self.tool_options.get("split_io")
+
+        # Configure first call to Yosys
+        targets = []
+        depends = []
+        args = ""
+
+        if split_io_list:
+            targets = [split_io_list[1]]
+            depends = [split_io_list[0]]
+            args = split_io_list[4]
+        else:
+            targets = [default_target]
+            depends = [template] + depfiles
+            args = f"-p 'tcl {template}'"
+
+        command = ["yosys", args, "-l yosys.log"]
+        commands.add(command, targets, depends)
+
+        # Configure python script and additional call to Yosys
+        if split_io_list:
+            targets = split_io_list[2]
+            depends = split_io_list[1]
+            command = [
+                "python3",
+                split_io_list[3],
+                f"-i {split_io_list[1]}",
+                f"-o {split_io_list[2]}",
+            ]
+            commands.add(command, [targets], [depends])
+
+            targets = default_target
+            depends = split_io_list[2]
+            command = ["yosys", split_io_list[5]]
+            commands.add(command, [targets], [depends])
+
         self.commands = commands.commands
