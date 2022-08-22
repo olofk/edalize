@@ -140,7 +140,7 @@ class Yosys(Edatool):
         split_io_list = []
         if (
             self.tool_options.get("split_io")
-            and len(self.tool_options.get("split_io")) == 6
+            and len(self.tool_options.get("split_io")) == 8
         ):
             split_io_list = self.tool_options.get("split_io")
 
@@ -148,17 +148,19 @@ class Yosys(Edatool):
         targets = []
         depends = []
         args = ""
+        command = []
 
         if split_io_list:
             targets = [split_io_list[1]]
             depends = [split_io_list[0]]
             args = split_io_list[4]
+            command += split_io_list[6]
         else:
             targets = [default_target]
             depends = [template] + depfiles
             args = f"-p 'tcl {template}'"
 
-        command = ["yosys", args, "-l yosys.log"]
+        command += ["yosys", args, "-l yosys.log"]
         commands.add(command, targets, depends)
 
         # Configure python script and additional call to Yosys
@@ -175,7 +177,7 @@ class Yosys(Edatool):
 
             targets = default_target
             depends = split_io_list[2]
-            command = ["yosys", split_io_list[5]]
+            command = [split_io_list[7], "yosys", split_io_list[5]]
             commands.add(command, [targets], [depends])
 
         self.commands = commands.commands
