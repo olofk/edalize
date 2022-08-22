@@ -123,7 +123,7 @@ class Vpr(Edatool):
                 [depends],
             )
 
-            targets = gen_constr_list[0]
+            depends = gen_constr_list[0]
             targets = gen_constr_list[1]
             commands.add(
                 gen_constr_list[3],
