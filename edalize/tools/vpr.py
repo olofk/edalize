@@ -118,7 +118,7 @@ class Vpr(Edatool):
             depends = self.name + ".net"
             targets = gen_constr_list[0]
             commands.add(
-                gen_constr_list[2],
+                ["python3", gen_constr_list[2]],
                 [targets],
                 [depends],
             )
@@ -126,7 +126,7 @@ class Vpr(Edatool):
             depends = gen_constr_list[0]
             targets = gen_constr_list[1]
             commands.add(
-                gen_constr_list[3],
+                ["python3", gen_constr_list[3]],
                 [targets],
                 [depends],
             )
