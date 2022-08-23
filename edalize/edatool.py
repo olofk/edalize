@@ -150,7 +150,7 @@ class Edatool(object):
         except KeyError:
             raise RuntimeError("Missing required parameter 'name'")
 
-        self.tool_options = edam.get("tool_options", {}).get(_tool_name, {})
+        self.tool_options = edam.get("tool_options", {}).get(_tool_name, {}).copy()
 
         self.files = edam.get("files", [])
         self.toplevel = edam.get("toplevel", [])
