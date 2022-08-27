@@ -86,12 +86,12 @@ quit
                     },
                     {
                         "name": "speed",
-                        "type": "String",
+                        "type": "Integer",
                         "desc": "FPGA speed grade (e.g. -2)",
                     },
                     {
                         "name": "board_device_index",
-                        "type": "String",
+                        "type": "Integer",
                         "desc": "Specifies the FPGA's device number in the JTAG chain, starting at 1",
                     },
                 ],
