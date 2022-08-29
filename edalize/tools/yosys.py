@@ -151,10 +151,10 @@ class Yosys(Edatool):
         variables = []
 
         if split_io_list:
-            targets = [split_io_list[1]]
-            depends = [split_io_list[0]]
-            args = split_io_list[4]
-            variables = split_io_list[6]
+            targets = f"{self.name}.json"
+            depends += depfiles
+            args = split_io_list[1]
+            variables = split_io_list[3]
         else:
             targets = [default_target]
             depends = [template] + depfiles
@@ -165,19 +165,19 @@ class Yosys(Edatool):
 
         # Configure python script and additional call to Yosys
         if split_io_list:
-            targets = split_io_list[2]
-            depends = split_io_list[1]
+            targets = f"{self.name}_io.json"
+            depends = f"{self.name}.json"
             command = [
                 "python3",
-                split_io_list[3],
-                f"-i {split_io_list[1]}",
-                f"-o {split_io_list[2]}",
+                split_io_list[0],
+                f"-i {self.name}.json",
+                f"-o {self.name}_io.json",
             ]
             commands.add(command, [targets], [depends])
 
             targets = default_target
-            depends = split_io_list[2]
-            command = [split_io_list[7], "yosys", split_io_list[5]]
-            commands.add(command, [targets], [depends], variables=split_io_list[7])
+            depends = f"{self.name}_io.json"
+            command = ["yosys", split_io_list[2]]
+            commands.add(command, [targets], [depends], variables=split_io_list[4])
 
         self.commands = commands.commands
