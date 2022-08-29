@@ -153,8 +153,8 @@ class Yosys(Edatool):
         if split_io_list:
             targets = f"{self.name}.json"
             depends += depfiles
-            args = split_io_list[1]
-            variables = split_io_list[3]
+            args = split_io_list[0]
+            variables = split_io_list[2]
         else:
             targets = [default_target]
             depends = [template] + depfiles
@@ -169,7 +169,7 @@ class Yosys(Edatool):
             depends = f"{self.name}.json"
             command = [
                 "python3",
-                split_io_list[0],
+                "-m f4pga.utils.split_inouts",
                 f"-i {self.name}.json",
                 f"-o {self.name}_io.json",
             ]
@@ -177,7 +177,7 @@ class Yosys(Edatool):
 
             targets = default_target
             depends = f"{self.name}_io.json"
-            command = ["yosys", split_io_list[2]]
-            commands.add(command, [targets], [depends], variables=split_io_list[4])
+            command = ["yosys", split_io_list[1]]
+            commands.add(command, [targets], [depends], variables=split_io_list[3])
 
         self.commands = commands.commands
