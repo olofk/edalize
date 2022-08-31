@@ -144,4 +144,13 @@ class Cocotb(Edatool):
                 if len(arg):
                     args.append(arg)
 
-        self._run_tool("make", args)
+        return_code, _, _ = self._run_tool("make", args)
+
+        at_least_one_test_failed = 0
+        with open(f"{self.work_root}/results.xml") as f:
+            if "<failure />" in f.read():
+                at_least_one_test_failed = 1
+
+        if return_code + at_least_one_test_failed > 0:
+            print("Cocotb test FAILED")
+        exit(return_code + at_least_one_test_failed)
