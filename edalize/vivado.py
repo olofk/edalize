@@ -96,7 +96,7 @@ class Vivado(Edatool):
 
     def configure_main(self):
         self.vivado.configure()
-        
+
     def build_main(self):
         logger.info("Building")
         args = []
@@ -106,7 +106,6 @@ class Vivado(Edatool):
             elif self.tool_options["pnr"] == "none":
                 args.append("synth")
         self._run_tool("make", args)
-
 
     def run_main(self):
         """
