@@ -146,21 +146,33 @@ class Yosys(Edatool):
 
         # Configure first call to Yosys
         targets = []
-        depends = []
-        args = ""
+        depends = depfiles
         variables = []
 
         if split_io_list:
             targets = f"{self.name}.json"
-            depends += depfiles
-            args = split_io_list[0]
-            variables = split_io_list[2]
+            variables = {
+                "USE_ROI": "FALSE",
+                "TECHMAP_PATH": "$F4PGA_SHARE_DIR/techmaps/xc7_vpr/techmap",
+                "TOP": self.toplevel,
+                "INPUT_XDC_FILES": split_io_list[0],
+                "PART_JSON": split_io_list[1],
+                "OUT_FASM_EXTRA": f"{self.name}_fasm_extra.fasm",
+                "OUT_SDC": f"{self.name}.sdc",
+                "OUT_SYNTH_V": f"{self.name}_synth.v",
+                "PYTHON3": "$(which python3)",
+                "UTILS_PATH": "$F4PGA_SHARE_DIR/scripts",
+                "OUT_JSON": targets,
+            }
         else:
             targets = [default_target]
-            depends = [template] + depfiles
-            args = f"-p 'tcl {template}'"
+            depends = [template] + depends
 
-        command = ["yosys", "-l yosys.log", args]
+        command = ["yosys", "-l yosys.log", f"-p 'tcl {template}'"]
+
+        if split_io_list:
+            command += depfiles
+
         commands.add(command, targets, depends, variables=variables)
 
         # Configure python script and additional call to Yosys
@@ -168,8 +180,7 @@ class Yosys(Edatool):
             targets = f"{self.name}_io.json"
             depends = f"{self.name}.json"
             command = [
-                "python3",
-                "-m f4pga.utils.split_inouts",
+                "python3 -m f4pga.utils.split_inouts",
                 f"-i {self.name}.json",
                 f"-o {self.name}_io.json",
             ]
@@ -177,7 +188,12 @@ class Yosys(Edatool):
 
             targets = default_target
             depends = f"{self.name}_io.json"
-            command = ["yosys", split_io_list[1]]
-            commands.add(command, [targets], [depends], variables=split_io_list[3])
+            command = [
+                "yosys",
+                f"-p 'read_json {depends}; tcl $(python3 -m f4pga.wrappers.tcl conv)'",
+            ]
+            commands.add(
+                command, [targets], [depends], variables={"OUT_EBLIF": default_target}
+            )
 
         self.commands = commands.commands
