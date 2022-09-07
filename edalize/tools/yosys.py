@@ -28,9 +28,9 @@ class Yosys(Edatool):
             "type": "str",
             "desc": "TCL template file to use instead of default template",
         },
-        "split_io": {
+        "f4pga_synth": {
             "type": "list",
-            "desc": "A list to be used for inserting a python command and extra yosys script",
+            "desc": "A list containing two values for the f4pga synth configuration",
         },
         "yosys_synth_options": {
             "type": "str",
@@ -137,32 +137,33 @@ class Yosys(Edatool):
         commands = EdaCommands()
 
         # First, check if split_io list is passed in and is the correct size
-        split_io_list = []
+        f4pga_synth = []
         if (
-            self.tool_options.get("split_io")
-            and len(self.tool_options.get("split_io")) == 8
+            self.tool_options.get("f4pga_synth")
+            and len(self.tool_options.get("f4pga_synth")) == 2
         ):
-            split_io_list = self.tool_options.get("split_io")
+            f4pga_synth = self.tool_options.get("f4pga_synth")
 
         # Configure first call to Yosys
         targets = []
         depends = depfiles
         variables = []
 
-        if split_io_list:
+        if f4pga_synth:
             targets = f"{self.name}.json"
             variables = {
                 "USE_ROI": "FALSE",
                 "TECHMAP_PATH": "$F4PGA_SHARE_DIR/techmaps/xc7_vpr/techmap",
                 "TOP": self.toplevel,
-                "INPUT_XDC_FILES": split_io_list[0],
-                "PART_JSON": split_io_list[1],
+                "INPUT_XDC_FILES": f4pga_synth[0],
+                "PART_JSON": f4pga_synth[1],
                 "OUT_FASM_EXTRA": f"{self.name}_fasm_extra.fasm",
                 "OUT_SDC": f"{self.name}.sdc",
                 "OUT_SYNTH_V": f"{self.name}_synth.v",
                 "PYTHON3": "$(which python3)",
                 "UTILS_PATH": "$F4PGA_SHARE_DIR/scripts",
                 "OUT_JSON": targets,
+                "OUT_EBLIF": default_target,
             }
         else:
             targets = [default_target]
@@ -170,30 +171,9 @@ class Yosys(Edatool):
 
         command = ["yosys", "-l yosys.log", f"-p 'tcl {template}'"]
 
-        if split_io_list:
+        if f4pga_synth:
             command += depfiles
 
         commands.add(command, targets, depends, variables=variables)
-
-        # Configure python script and additional call to Yosys
-        if split_io_list:
-            targets = f"{self.name}_io.json"
-            depends = f"{self.name}.json"
-            command = [
-                "python3 -m f4pga.utils.split_inouts",
-                f"-i {self.name}.json",
-                f"-o {self.name}_io.json",
-            ]
-            commands.add(command, [targets], [depends])
-
-            targets = default_target
-            depends = f"{self.name}_io.json"
-            command = [
-                "yosys",
-                f"-p 'read_json {depends}; tcl $(python3 -m f4pga.wrappers.tcl conv)'",
-            ]
-            commands.add(
-                command, [targets], [depends], variables={"OUT_EBLIF": default_target}
-            )
 
         self.commands = commands.commands
