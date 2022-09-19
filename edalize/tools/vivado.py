@@ -4,6 +4,7 @@
 
 import logging
 import os.path
+from pickle import TRUE
 import platform
 import re
 import subprocess
@@ -138,7 +139,7 @@ class Vivado(Edatool):
                 bd_files.append(f["name"])
 
             if cmd:
-                if not self._add_include_dir(f, incdirs):
+                if not self._add_include_dir(f, incdirs, True):
                     src_files.append(cmd + " {" + f["name"] + "}")
             else:
                 unused_files.append(f)
