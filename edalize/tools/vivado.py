@@ -139,7 +139,7 @@ class Vivado(Edatool):
                 bd_files.append(f["name"])
 
             if cmd:
-                if not self._add_include_dir(f, incdirs, True):
+                if not self._add_include_dir(f, incdirs):
                     src_files.append(cmd + " {" + f["name"] + "}")
             else:
                 unused_files.append(f)
