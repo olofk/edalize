@@ -4,7 +4,6 @@
 
 import logging
 import os.path
-from pickle import TRUE
 import platform
 import re
 import subprocess
