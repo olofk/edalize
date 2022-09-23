@@ -114,7 +114,9 @@ class Edatool(object):
 
     def _add_include_dir(self, f, incdirs, force_slash=False):
         if f.get("is_include_file"):
-            _incdir = "{" + (f.get("include_path") or os.path.dirname(f["name"]) or ".") + "}"
+            _incdir = (
+                "{" + (f.get("include_path") or os.path.dirname(f["name"]) or ".") + "}"
+            )
             if force_slash:
                 _incdir = _incdir.replace("\\", "/")
             if not _incdir in incdirs:
