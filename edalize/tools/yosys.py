@@ -153,10 +153,10 @@ class Yosys(Edatool):
             targets = f"{self.name}.json"
             variables = {
                 "USE_ROI": "FALSE",
-                "TECHMAP_PATH": f"$F4PGA_SHARE_DIR/techmaps/{f4pga_synth[0]}/techmap",
+                "TECHMAP_PATH": "$F4PGA_SHARE_DIR/techmaps/xc7_vpr/techmap",
                 "TOP": self.toplevel,
-                "INPUT_XDC_FILES": f4pga_synth[1],
-                "PART_JSON": f4pga_synth[2],
+                "INPUT_XDC_FILES": f4pga_synth[0],
+                "PART_JSON": f4pga_synth[1],
                 "OUT_FASM_EXTRA": f"{self.name}_fasm_extra.fasm",
                 "OUT_SDC": f"{self.name}.sdc",
                 "OUT_SYNTH_V": f"{self.name}_synth.v",
