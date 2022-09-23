@@ -97,6 +97,16 @@ class Vivado(Edatool):
     def configure_main(self):
         self.vivado.configure()
 
+    def build_main(self):
+        logger.info("Building")
+        args = []
+        if "pnr" in self.tool_options:
+            if self.tool_options["pnr"] == "vivado":
+                pass
+            elif self.tool_options["pnr"] == "none":
+                args.append("synth")
+        self._run_tool("make", args)
+
     def run_main(self):
         """
         Program the FPGA.

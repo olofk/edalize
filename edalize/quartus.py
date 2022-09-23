@@ -49,7 +49,7 @@ class Quartus(Edatool):
                     },
                     {
                         "name": "board_device_index",
-                        "type": "String",
+                        "type": "Integer",
                         "desc": "Specifies the FPGA's device number in the JTAG chain. The device index specifies the device where the flash programmer looks for the Nios® II JTAG debug module. JTAG devices are numbered relative to the JTAG chain, starting at 1. Use the tool `jtagconfig` to determine the index.",
                     },
                     {
