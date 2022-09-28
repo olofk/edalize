@@ -102,7 +102,7 @@ else:
     run = subprocess.run
 
 # Jinja2 tests and filters, available in all templates
-def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
+def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False, str_quote_close=None):
     """
     Convert a parameter value to string suitable to be passed to an EDA tool.
 
@@ -111,17 +111,20 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     - Booleans are represented as 0/1 or "true"/"false" depending on the
       bool_is_str argument
     - Strings are either passed through or enclosed in the characters specified
-      in str_quote_style (e.g. '"' or '\\"')
+      in str_quote_style (e.g. '"' or '\\"').
+    - Closing character is str_quote_close or str_quote_style if str_quote_close
+      is None
     - Everything else (including int, float, etc.) are converted using the str()
       function.
     """
+    str_quote_style_close = str_quote_style if str_quote_close is None else str_quote_close
     if type(value) == bool:
         if bool_is_str:
             return "true" if value else "false"
         else:
             return "1" if value else "0"
     elif type(value) == str:
-        return str_quote_style + str(value) + str_quote_style
+        return str_quote_style + str(value) + str_quote_style_close
     else:
         return str(value)
 
@@ -390,9 +393,7 @@ class Edatool(object):
 
     def _add_include_dir(self, f, incdirs, force_slash=False):
         if f.get("is_include_file"):
-            _incdir = (
-                "{" + (f.get("include_path") or os.path.dirname(f["name"]) or ".") + "}"
-            )
+            _incdir = f.get("include_path") or os.path.dirname(f["name"]) or "."
             if force_slash:
                 _incdir = _incdir.replace("\\", "/")
             if not _incdir in incdirs:
