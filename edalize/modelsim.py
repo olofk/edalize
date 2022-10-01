@@ -172,10 +172,6 @@ class Modelsim(Edatool):
         for key, value in self.plusarg.items():
             _plusargs += ["{}={}".format(key, self._param_value_str(value))]
 
-        print("******************************************")
-        print(self.tool_options.get("prerun_tcl", None))
-        print("******************************************")
-
         _vsim_options = self.tool_options.get("vsim_options", [])
         _prerun_tcl_file = self.tool_options.get("prerun_tcl", None)
         if _prerun_tcl_file is None:
