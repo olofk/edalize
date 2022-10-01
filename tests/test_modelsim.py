@@ -8,6 +8,7 @@ def test_modelsim(make_edalize_test):
         "vcom_options": ["various", "vcom_options"],
         "vlog_options": ["some", "vlog_options"],
         "vsim_options": ["a", "few", "vsim_options"],
+        "prerun_tcl": "settings.tcl"
     }
 
     # FIXME: Add VPI tests

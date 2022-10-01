@@ -39,12 +39,13 @@ VPI_MODULES   := {modules}
 PARAMETERS    ?= {parameters}
 PLUSARGS      ?= {plusargs}
 VSIM_OPTIONS  ?= {vsim_options}
+PRERUN_TCL    ?= {prerun_tcl_file}
 EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
 
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
-	$(VSIM) -do "run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
+	$(VSIM) -do "{prerun_tcl} run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
 
 run-gui: work $(VPI_MODULES)
 	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
@@ -95,6 +96,11 @@ class Modelsim(Edatool):
                         "type": "String",
                         "desc": "Additional run options for vsim",
                     },
+					{
+						"name": "prerun_tcl",
+						"type": "String",
+						"desc": "Path to Tcl script to run before simulation",
+					},
                 ],
             }
 
@@ -166,7 +172,16 @@ class Modelsim(Edatool):
         for key, value in self.plusarg.items():
             _plusargs += ["{}={}".format(key, self._param_value_str(value))]
 
+        print("******************************************")
+        print(self.tool_options.get("prerun_tcl", None))
+        print("******************************************")
+
         _vsim_options = self.tool_options.get("vsim_options", [])
+        _prerun_tcl_file = self.tool_options.get("prerun_tcl", None)
+        if _prerun_tcl_file is None:
+            _prerun_tcl_file = ""
+        _prerun_tcl_file = "".join(_prerun_tcl_file)
+        _prerun_tcl = "" if _prerun_tcl_file == "" else "do $(PRERUN_TCL);"
 
         _modules = [m["name"] for m in self.vpi_modules]
         _clean_targets = " ".join(["clean_" + m for m in _modules])
@@ -175,6 +190,8 @@ class Modelsim(Edatool):
             parameters=" ".join(_parameters),
             plusargs=" ".join(_plusargs),
             vsim_options=" ".join(_vsim_options),
+            prerun_tcl_file=_prerun_tcl_file,
+            prerun_tcl=_prerun_tcl,
             modules=" ".join(_modules),
             clean_targets=_clean_targets,
         )
