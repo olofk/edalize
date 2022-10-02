@@ -110,6 +110,7 @@ if [c for c in containers if c["tool"] == toolname]:
         logger.error("ERROR: Tool {} not found in container list.".format(toolname))
         exit(1)
 
+    extra = os.environ["EDALIZE_EXTRA_DOCKER_FLAGS"].split(" ")
     prefix = [
         "docker",
         "run",
@@ -117,6 +118,7 @@ if [c for c in containers if c["tool"] == toolname]:
         "-v",
         build_root + ":/src",
         #    '-e', dockerEnv,
+        ] + extra + [
         "-u",
         f"{os.getuid()}:{os.getgid()}",
         "-w",
