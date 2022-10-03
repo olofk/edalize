@@ -17,6 +17,10 @@ class F4pga(Edaflow):
 
     # Inputs to the F4PGA flow
     FLOW_OPTIONS = {
+        # Required
+        "device": {"type": "str", "desc": "Example: 'artix7'"},
+        # Required
+        "part": {"type": "str", "desc": "Example: 'xc7a35tcpg236-1'"},
         # Optional, defaults to xilinx
         "arch": {
             "type": "str",
@@ -32,6 +36,11 @@ class F4pga(Edaflow):
     # Define which tools are called and in what order
     def configure_flow(self, flow_options):
 
+        # Set target
+        # toplevel = self.edam["toplevel"]
+        name = self.edam["name"]
+        self.commands.set_default_target(f"{name}.bit")
+
         # Set up nodes
         synth_tool = "yosys"
         pnr_tool = ""
@@ -40,8 +49,17 @@ class F4pga(Edaflow):
         else:
             pnr_tool = "vpr"
 
-        in_xdc = "IN_XDC"
-        part_json = "PART_JSON"
+        device = flow_options.get("device")
+        if not device:
+            print("F4PGA flow error: missing 'device' specifier")
+            return []
+
+        part = flow_options.get("part")
+        if not part:
+            print("F4PGA flow error: missing 'part' specifier")
+            return []
+
+        part_json = f"$(shell prjxray-config)/{device}/{part}/part.json"
 
         # Set up node options
         synth_options = {}
@@ -52,8 +70,10 @@ class F4pga(Edaflow):
         synth_options.update(
             {"output_format": "eblif"}
         )  # <- Make this variable because NextPNR wants a JSON
-        synth_options.update({"yosys_template": "$(python3 -m f4pga.wrappers.tcl)"})
-        synth_options.update({"f4pga_synth": [in_xdc, part_json]})
+        synth_options.update(
+            {"yosys_template": "$(shell python3 -m f4pga.wrappers.tcl)"}
+        )
+        synth_options.update({"f4pga_synth_part_file": part_json})
 
         pnr_options = {}
         if pnr_tool == "vpr":
@@ -62,9 +82,5 @@ class F4pga(Edaflow):
             pnr_options.update({"gen_constraints": []})
         elif pnr_tool == "nextpnr":
             pnr_options.update({"arch": flow_options.get("arch")})
-
-        # Set target
-        toplevel = self.edam["toplevel"]
-        self.commands.set_default_target(f"{toplevel}.bit")
 
         return [(synth_tool, [pnr_tool], synth_options), (pnr_tool, [], pnr_options)]
