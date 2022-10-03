@@ -8,7 +8,7 @@ from edalize.flows.edaflow import Edaflow
 
 
 class F4pga(Edaflow):
-    """Edalize implementation of F4PGA (Free and Open-Source Flow For FPGAs)"""
+    """Edalize back-end implementation of F4PGA (Free and Open-Source Flow For FPGAs)"""
 
     """Currently supports Xilinx 7-series chips"""
 
