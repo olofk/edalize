@@ -43,11 +43,9 @@ class F4pga(Edaflow):
 
         # Set up nodes
         synth_tool = "yosys"
-        pnr_tool = ""
+        pnr_tool = "vpr"
         if "pnr" in flow_options and flow_options.get("pnr") in ["nextpnr"]:
             pnr_tool = "nextpnr"
-        else:
-            pnr_tool = "vpr"
 
         device = flow_options.get("device")
         if not device:
