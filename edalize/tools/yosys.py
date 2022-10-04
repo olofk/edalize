@@ -29,8 +29,8 @@ class Yosys(Edatool):
             "desc": "TCL template file to use instead of default template",
         },
         "f4pga_synth_part_file": {
-            "type": "list",
-            "desc": "A list containing two values for the f4pga synth configuration",
+            "type": "str",
+            "desc": "The JSON part file used for Yosys synthesis",
         },
         "yosys_synth_options": {
             "type": "str",
@@ -170,6 +170,7 @@ class Yosys(Edatool):
                 "PYTHON3": "$(shell which python3)",
                 "UTILS_PATH": "${F4PGA_SHARE_DIR}/scripts",
                 "OUT_JSON": f"{self.name}.json",
+                "SYNTH_JSON": f"{self.name}_io.json",
                 "OUT_EBLIF": default_target,
             }
             logfile = f"{self.name}_synth.log"
