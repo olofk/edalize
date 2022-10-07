@@ -29,7 +29,7 @@ class F4pga(Edaflow):
             "desc": "Targeting architecture for Yosys. Currently supported is 'xilinx' and that is the default if none specified.",
         },
         # Optional, defaults to VPR
-        "pnr": {
+        "pnr_tool": {
             "type": "str",
             "desc": "Place and route tool. Valid options are 'vpr'/'vtr' and 'nextpnr'. Defaults to VPR.",
         },
@@ -98,7 +98,7 @@ class F4pga(Edaflow):
         # Set up nodes
         synth_tool = "yosys"
         pnr_tool = "vpr"
-        if "pnr" in flow_options and flow_options.get("pnr") in ["nextpnr"]:
+        if "pnr" in flow_options and flow_options.get("pnr_tool") in ["nextpnr"]:
             pnr_tool = "nextpnr"
 
         self.device = flow_options.get("device")
