@@ -142,11 +142,11 @@ class F4pga(Edaflow):
             pnr_options.update({"arch_xml": self.arch_xml})
             pnr_options.update(
                 {
-                    "gen_constraints": [
+                    "generate_constraints": [
                         self.eblif_file,
                         f"{self.name}.net",
                         self.part,
-                        self.device,
+                        chip,
                         self.arch_xml,
                     ]
                 }
@@ -179,8 +179,8 @@ class F4pga(Edaflow):
     def configure_tools(self, nodes):
         super().configure_tools(nodes)
 
-        target = [f"{self.name}.fasm"]
-        depends = [f"{self.name}.analysis"]
+        target = f"{self.name}.fasm"
+        depends = f"{self.name}.analysis"
         command = (
             ["genfasm", self.arch_xml, self.eblif_file, "--device", self.device_name]
             + self.VPR_OPTIONS
@@ -192,16 +192,20 @@ class F4pga(Edaflow):
                 f"{self.name}_fasm_extra.fasm",
                 ">>",
                 f"{self.name}.fasm",
+                ";",
+                "mv",
+                "vpr_stdout.log",
+                "fasm.log",
             ]
         )
-        self.commands.add(command, target, depends)
+        self.commands.add(command, [target], [depends])
 
-        target = [f"{self.name}.bit"]
-        depends = [f"{self.name}.fasm"]
+        target = f"{self.name}.bit"
+        depends = f"{self.name}.fasm"
         command = [
             "xcfasm",
             "--db-root",
-            self.db_dir + self.device + "/",
+            self.db_dir + self.device,
             "--part",
             self.part,
             "--part_file",
@@ -209,8 +213,8 @@ class F4pga(Edaflow):
             "--sparse",
             "--emit_pudc_b_pullup",
             "--fn_in",
-            "FASM",
+            depends,
             "--bit_out",
-            "BIT",
+            target,
         ]
-        self.commands.add(command, target, depends)
+        self.commands.add(command, [target], [depends])
