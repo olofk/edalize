@@ -111,20 +111,24 @@ if [c for c in containers if c["tool"] == toolname]:
         exit(1)
 
     extra = os.environ["EDALIZE_EXTRA_DOCKER_FLAGS"].split(" ")
-    prefix = [
-        "docker",
-        "run",
-        "--rm",
-        "-v",
-        build_root + ":/src",
-        #    '-e', dockerEnv,
-        ] + extra + [
-        "-u",
-        f"{os.getuid()}:{os.getgid()}",
-        "-w",
-        "/src/" + work,
-        image,
-    ]
+    prefix = (
+        [
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            build_root + ":/src",
+            #    '-e', dockerEnv,
+        ]
+        + extra
+        + [
+            "-u",
+            f"{os.getuid()}:{os.getgid()}",
+            "-w",
+            "/src/" + work,
+            image,
+        ]
+    )
     if init:
         c = init.format(shlex.quote(runtool + " " + shlex.join(sys.argv[2:])))
     elif tool == "verilator":
