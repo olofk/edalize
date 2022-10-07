@@ -99,14 +99,18 @@ class Vpr(Edatool):
 
         commands = EdaCommands()
 
+        # First, check if gen_constraint value list is passed in and is the correct size
+        gen_constr_list = self.tool_options.get("generate_constraints", [])
+
         depends = netlist_file
         targets = self.name + ".net"
         command = ["vpr", arch_xml, netlist_file, "--pack"]
-        command += sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "pack.log"]
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "pack.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
-
-        # First, check if gen_constraint value list is passed in and is the correct size
-        gen_constr_list = self.tool_options.get("generate_constraints", [])
 
         # Run generate constraints script if correct list exists
         constraints_file = "constraints.place"
@@ -133,13 +137,21 @@ class Vpr(Edatool):
             command += [f"--fix_clusters {constraints_file}"]
 
         command += ["--place"]
-        command += sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "place.log"]
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "place.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], depends)
 
         depends = self.name + ".place"
         targets = self.name + ".route"
         command = ["vpr", arch_xml, netlist_file, "--route"]
-        command += sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "route.log"]
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "route.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".route"
@@ -147,6 +159,8 @@ class Vpr(Edatool):
         command = ["vpr", arch_xml, netlist_file, "--analysis"]
         command += (
             sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "analysis.log"]
+            if gen_constr_list
+            else []
         )
         commands.add(command, [targets], [depends])
 
