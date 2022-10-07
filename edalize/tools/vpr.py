@@ -102,7 +102,9 @@ class Vpr(Edatool):
         depends = netlist_file
         targets = self.name + ".net"
         command = ["vpr", arch_xml, netlist_file, "--pack"]
-        command += sdc_opts + vpr_options
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "vpr_pack.log"]
+        )
         commands.add(command, [targets], [depends])
 
         # First, check if gen_constraint value list is passed in and is the correct size
@@ -115,44 +117,59 @@ class Vpr(Edatool):
 
         # Run generate constraints scripts if correct list exists
         if gen_constr_list:
+            # ioplace_file = f"{self.name}.ioplace"
+            constraints_file = "constraints.place"
+
+            # depends = self.name + ".net"
+            # targets = ioplace_file
+            # commands.add(
+            #    ["python3", gen_constr_list[2]],
+            #    [targets],
+            #    [depends],
+            # )
+
+            # depends = ioplace_file
             depends = self.name + ".net"
-            targets = gen_constr_list[0]
+            targets = constraints_file
             commands.add(
-                ["python3", gen_constr_list[2]],
+                [
+                    "python3",
+                    "-m f4pga.wrappers.sh.generate_constraints",
+                    " ".join(gen_constr_list),
+                ],
                 [targets],
                 [depends],
             )
 
-            depends = gen_constr_list[0]
-            targets = gen_constr_list[1]
-            commands.add(
-                ["python3", gen_constr_list[3]],
-                [targets],
-                [depends],
-            )
-
+        depends = [self.name + ".net"]
         targets = self.name + ".place"
         command = ["vpr", arch_xml, netlist_file]
+
         # Modify place stage if running generate constraints script
         if gen_constr_list:
-            depends = gen_constr_list[1]
-            command += [f"--fix_clusters {gen_constr_list[1]}"]
-        else:
-            depends = self.name + ".net"
+            depends += constraints_file
+            command += [f"--fix_clusters {constraints_file}"]
+
         command += ["--place"]
-        command += sdc_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "vpr_place.log"]
+        )
+        commands.add(command, [targets], depends)
 
         depends = self.name + ".place"
         targets = self.name + ".route"
         command = ["vpr", arch_xml, netlist_file, "--route"]
-        command += sdc_opts + vpr_options
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "vpr_route.log"]
+        )
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".route"
         targets = self.name + ".analysis"
         command = ["vpr", arch_xml, netlist_file, "--analysis"]
-        command += sdc_opts + vpr_options
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "vpr_analysis.log"]
+        )
         commands.add(command, [targets], [depends])
 
         for ext in [".net", ".place", ".route", ".analysis"]:
