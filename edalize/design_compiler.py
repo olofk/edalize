@@ -113,6 +113,7 @@ class Design_compiler(Edatool):
         file_types = {
             'verilogSource'       : 'analyze -format verilog -work work',
             'systemVerilogSource' : 'analyze -format sverilog -work work',
+            'vhdlSource'          : 'analyze -format vhdl -work work',
             # 'xci'                 : 'read_ip',
             # 'xdc'                 : 'read_xdc',
             # 'tclSource'           : 'source',
