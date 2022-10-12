@@ -29,7 +29,7 @@ class F4pga(Edaflow):
             "desc": "Targeting architecture for Yosys. Currently supported is 'xilinx' and that is the default if none specified.",
         },
         # Optional, defaults to VPR
-        "pnr_tool": {
+        "pnr": {
             "type": "str",
             "desc": "Place and route tool. Valid options are 'vpr'/'vtr' and 'nextpnr'. Defaults to VPR.",
         },
@@ -97,27 +97,24 @@ class F4pga(Edaflow):
 
         # Set up nodes
         synth_tool = "yosys"
-        pnr_tool = "vpr"
-        if "pnr" in flow_options and flow_options.get("pnr_tool") in ["nextpnr"]:
-            pnr_tool = "nextpnr"
+        pnr_tool = flow_options.get("pnr", "vpr")
+        if not pnr_tool in ["vpr", "nextpnr"]:
+            raise RuntimeError(f"F4PGA flow error: invalid P&R tool: {pnr_tool}")
 
         self.device = flow_options.get("device")
         if not self.device:
-            print("F4PGA flow error: missing 'device' specifier")
-            return []
+            raise RuntimeError("F4PGA flow error: missing 'device' specifier")
 
         self.part = flow_options.get("part")
         if not self.part:
-            print("F4PGA flow error: missing 'part' specifier")
-            return []
+            raise RuntimeError("F4PGA flow error: missing 'part' specifier")
 
         self.db_dir = "$(shell prjxray-config)/"
         part_json = self.db_dir + f"{self.device}/{self.part}/part.json"
 
         chip = flow_options.get("chip")
         if not chip:
-            print("F4PGA flow error: missing 'chip' specifier")
-            return []
+            raise RuntimeError("F4PGA flow error: missing 'chip' specifier")
 
         arch_dir = "${F4PGA_SHARE_DIR}/arch/"
         self.arch_xml = arch_dir + f"{chip}/arch.timing.xml"
