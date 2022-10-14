@@ -45,7 +45,7 @@ set_property verilog_define {
 {{ src_files }}
 
 {% if incdirs -%}
-set_property include_dirs [list {%- for i in incdirs %}{{" {%s}" % i }}{% endfor -%}] [get_filesets sources_1]
+set_property include_dirs [list {{ incdirs|join(' ') }}] [get_filesets sources_1]
 {%- endif %}
 
 {% if toplevel -%}
