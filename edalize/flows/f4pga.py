@@ -33,10 +33,15 @@ class F4pga(Edaflow):
             "type": "str",
             "desc": "Place and route tool. Valid options are 'vpr'/'vtr' and 'nextpnr'. Defaults to VPR.",
         },
+        # Optional, if empty uses default F4PGA VPR options
+        "vpr_options": {
+            "type": "list",
+            "desc": "Options to VPR, if the standard F4PGA values are not sufficient",
+        },
     }
 
     # Standard F4PGA command line arguments to VPR
-    VPR_OPTIONS = [
+    DEFAULT_VPR_OPTIONS = [
         "--max_router_iterations",
         "500",
         "--routing_failure_predictor",
@@ -152,6 +157,7 @@ class F4pga(Edaflow):
             lookahead_file = arch_dir + f"{chip}/rr_graph_{chip}.lookahead.bin"
             place_delay_file = arch_dir + f"{chip}/rr_graph_{chip}.place_delay.bin"
             self.device_name = chip.replace("_", "-")
+            self.VPR_OPTIONS = flow_options.get("vpr_options", self.DEFAULT_VPR_OPTIONS)
             pnr_options.update(
                 {
                     "vpr_options": [
