@@ -102,9 +102,9 @@ class F4pga(Edaflow):
 
         # Set up nodes
         synth_tool = "yosys"
-        pnr_tool = flow_options.get("pnr", "vpr")
-        if not pnr_tool in ["vpr", "nextpnr"]:
-            raise RuntimeError(f"F4PGA flow error: invalid P&R tool: {pnr_tool}")
+        self.pnr_tool = flow_options.get("pnr", "vpr")
+        if not self.pnr_tool in ["vpr", "nextpnr"]:
+            raise RuntimeError(f"F4PGA flow error: invalid P&R tool: {self.pnr_tool}")
 
         self.device = flow_options.get("device")
         if not self.device:
@@ -126,20 +126,28 @@ class F4pga(Edaflow):
 
         # Set up node options
         synth_options = {}
+
+        # If arch is not configured, default to xilinx (will be changed in the future)
         if "arch" in flow_options:
             synth_options.update({"arch": flow_options.get("arch")})
         else:
             synth_options.update({"arch": "xilinx"})
-        synth_options.update(
-            {"output_format": "eblif"}
-        )  # <- Make this variable because NextPNR wants a JSON
-        synth_options.update(
-            {"yosys_template": "$(shell python3 -m f4pga.wrappers.tcl)"}
-        )
-        synth_options.update({"f4pga_synth_part_file": part_json})
+
+        # If NextPNR, target JSON netlist, otherwise target EBLIF netlist for VPR
+        if self.pnr_tool == "nextpnr":
+            synth_options.update({"output_format": "json"})
+        else:
+            synth_options.update({"output_format": "eblif"})
+
+        # If NextPNR, use built in Yosys template script, otherwise for VPR use custom F4PGA script
+        if self.pnr_tool != "nextpnr":
+            synth_options.update(
+                {"yosys_template": "$(shell python3 -m f4pga.wrappers.tcl)"}
+            )
+            synth_options.update({"f4pga_synth_part_file": part_json})
 
         pnr_options = {}
-        if pnr_tool == "vpr":
+        if self.pnr_tool == "vpr":
             self.eblif_file = f"{self.name}.eblif"
             pnr_options.update({"arch_xml": self.arch_xml})
             pnr_options.update(
@@ -173,35 +181,45 @@ class F4pga(Edaflow):
                     + self.VPR_OPTIONS
                 }
             )
-        elif pnr_tool == "nextpnr":
-            pnr_options.update({"arch": flow_options.get("arch")})
+        elif self.pnr_tool == "nextpnr":
+            pnr_options.update({"arch": flow_options.get("arch", "xilinx")})
 
-        return [(synth_tool, [pnr_tool], synth_options), (pnr_tool, [], pnr_options)]
+        return [
+            (synth_tool, [self.pnr_tool], synth_options),
+            (self.pnr_tool, [], pnr_options),
+        ]
 
     # Adds the FASM and bitstream generation
     def configure_tools(self, nodes):
         super().configure_tools(nodes)
 
-        target = f"{self.name}.fasm"
-        depends = f"{self.name}.analysis"
-        command = (
-            ["genfasm", self.arch_xml, self.eblif_file, "--device", self.device_name]
-            + self.VPR_OPTIONS
-            + [
-                "--read_rr_graph",
-                self.rr_graph_file,
-                ";",
-                "cat",
-                f"{self.name}_fasm_extra.fasm",
-                ">>",
-                f"{self.name}.fasm",
-                ";",
-                "mv",
-                "vpr_stdout.log",
-                "fasm.log",
-            ]
-        )
-        self.commands.add(command, [target], [depends])
+        if self.pnr_tool != "nextpnr":
+            target = f"{self.name}.fasm"
+            depends = f"{self.name}.analysis"
+            command = (
+                [
+                    "genfasm",
+                    self.arch_xml,
+                    self.eblif_file,
+                    "--device",
+                    self.device_name,
+                ]
+                + self.VPR_OPTIONS
+                + [
+                    "--read_rr_graph",
+                    self.rr_graph_file,
+                    ";",
+                    "cat",
+                    f"{self.name}_fasm_extra.fasm",
+                    ">>",
+                    f"{self.name}.fasm",
+                    ";",
+                    "mv",
+                    "vpr_stdout.log",
+                    "fasm.log",
+                ]
+            )
+            self.commands.add(command, [target], [depends])
 
         target = f"{self.name}.bit"
         depends = f"{self.name}.fasm"
