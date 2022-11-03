@@ -13,7 +13,7 @@ MAKEFILE_TEMPLATE = """
 all: $(VPI_MODULES) $(TARGET)
 
 $(TARGET):
-	iverilog -s$(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
+	iverilog $(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
 
 run: $(VPI_MODULES) $(TARGET)
 	vvp -n -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(VVP_OPTIONS) $(TARGET) -fst $(EXTRA_OPTIONS)
@@ -109,7 +109,11 @@ class Icarus(Edatool):
             _vpi_modules = " ".join([m["name"] + ".vpi" for m in self.vpi_modules])
             if _vpi_modules:
                 f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
-            f.write("TOPLEVEL         := {}\n".format(self.toplevel))
+            f.write(
+                "TOPLEVEL         := {}\n".format(
+                    " ".join(["-s" + x for x in self.toplevel.split()])
+                )
+            )
             f.write(
                 "IVERILOG_OPTIONS := {}\n".format(
                     " ".join(self.tool_options.get("iverilog_options", []))
