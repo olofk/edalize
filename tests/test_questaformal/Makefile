@@ -7,7 +7,7 @@ QVERIFY_OPTIONS  ?= a few qverify_options
 all: work
 
 run: work
-	$(QVERIFY) $(QVERIFY_OPTIONS) -do "run -all; exit"
+	$(QVERIFY) $(QVERIFY_OPTIONS) -do "do edalize_autocheck.tcl; exit"
 
 run-gui: work
 	$(QVERIFY) -gui
