@@ -5,3 +5,7 @@ __pycache__
 /.tox
 .vscode/
 build/
+dist/
+venv/
+.project
+.pydevproject
