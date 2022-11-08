@@ -9,3 +9,4 @@ dist/
 venv/
 .project
 .pydevproject
+/.pytest_cache/
