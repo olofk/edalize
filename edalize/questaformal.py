@@ -69,6 +69,11 @@ class Questaformal(Edatool):
                         "type": "String",
                         "desc": "Additional run options for qverify",
                     },
+					{
+						"name": "autocheck_options",
+						"type": "String",
+						"desc": "Options for Autochecker",
+					},
                 ],
             }
 
@@ -175,7 +180,9 @@ class Questaformal(Edatool):
         tcl_main.write("do edalize_build_rtl.tcl\n")
 
         tcl_autocheck = open(os.path.join(self.work_root, "edalize_autocheck.tcl"), "w")
-        _autocheck_options = self.tool_options.get("autocheck_options", ["enable", "verify"])
+        _autocheck_options = self.tool_options.get(
+			"autocheck_options", ["enable", "verify", "compile -d {}".format(self.toplevel)]
+		)
         for ac_option in _autocheck_options:
             tcl_autocheck.write("autocheck {}\n".format(ac_option))
         tcl_autocheck.close()
