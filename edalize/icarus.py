@@ -69,11 +69,12 @@ class Icarus(Edatool):
             f.write("+define+{}={}\n".format(key, self._param_value_str(value, "")))
 
         for key, value in self.vlogparam.items():
-            f.write(
-                "+parameter+{}.{}={}\n".format(
-                    self.toplevel, key, self._param_value_str(value, '"')
+            for top in self.toplevel.split(" "):
+                f.write(
+                    "+parameter+{}.{}={}\n".format(
+                        top, key, self._param_value_str(value, '"')
+                    )
                 )
-            )
         for id in incdirs:
             f.write("+incdir+" + id + "\n")
         timescale = self.tool_options.get("timescale")
