@@ -400,10 +400,17 @@ class Edatool(object):
 
     def _get_fileset_files(self, force_slash=False):
         class File:
-            def __init__(self, name, file_type, logical_name):
+            def __init__(
+                self,
+                name,
+                file_type,
+                logical_name,
+                core=None,
+            ):
                 self.name = name
                 self.file_type = file_type
                 self.logical_name = logical_name
+                self.core = core
 
         incdirs = []
         src_files = []
@@ -414,7 +421,8 @@ class Edatool(object):
                     _name = _name.replace("\\", "/")
                 file_type = f.get("file_type", "")
                 logical_name = f.get("logical_name", "")
-                src_files.append(File(_name, file_type, logical_name))
+                core = f.get("core", None)
+                src_files.append(File(_name, file_type, logical_name, core))
         return (src_files, incdirs)
 
     def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):
