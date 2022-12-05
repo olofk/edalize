@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os.path
+from importlib import import_module
 
 from edalize.flows.edaflow import Edaflow
 
@@ -12,13 +13,10 @@ class Icestorm(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    FLOW = [
-        ("yosys", ["nextpnr"], {"arch": "ice40", "output_format": "json"}),
-        ("nextpnr", ["icepack", "icetime"], {"arch": "ice40"}),
-        ("icepack", [], {}),
-        ("icetime", [], {}),
-        #        ('icebox_stat', [], {}),
-    ]
+    FLOW_DEFINED_TOOL_OPTIONS = {
+        "yosys": {"arch": "ice40", "output_format": "json"},
+        "nextpnr": {"arch": "ice40"},
+    }
 
     FLOW_OPTIONS = {
         "frontends": {
@@ -32,26 +30,43 @@ class Icestorm(Edaflow):
         },
     }
 
-    def build_tool_graph(self):
-        # FIXME: This makes an assumption that the first tool in self.FLOW is
-        # a single entry point to the flow
-        next_tool = self.FLOW[0][0]
+    @classmethod
+    def get_flow_options(cls):
+        return cls.FLOW_OPTIONS.copy()
 
-        for frontend in reversed(self.flow_options.get("frontends", [])):
-            self.FLOW[0:0] = [(frontend, [next_tool], {})]
-            next_tool = frontend
-        return super().build_tool_graph()
-
-    def configure_tools(self, nodes):
-        super().configure_tools(nodes)
-
-        # Set output from syntheis or pnr as default target depending on
-        # value of pnr flow option
-        name = self.edam["name"]
-        pnr = self.flow_options.get("pnr", "next")
+    @classmethod
+    def get_tool_options(cls, flow_options):
+        flow = flow_options.get("frontends", [])
+        flow += ["yosys"]
+        pnr = flow_options.get("pnr", "next")
         if pnr == "next":
+            flow += ["nextpnr", "icepack", "icetime"]
+
+        return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
+
+    def extract_flow_options(self):
+        return {
+            k: v
+            for (k, v) in self.edam.get("flow_options", {}).items()
+            if k in self.get_flow_options()
+        }
+
+    def configure_flow(self, flow_options):
+        name = self.edam["name"]
+        # Check whether to run nextpnr or stop after synthesis
+        # and set output from syntheis or pnr as default target depending
+        # on value of pnr flow option
+        pnr = flow_options.get("pnr", "next")
+        if pnr == "next":
+            flow = [
+                ("yosys", ["nextpnr"], {"arch": "ice40", "output_format": "json"}),
+                ("nextpnr", ["icepack", "icetime"], {"arch": "ice40"}),
+                ("icepack", [], {}),
+                ("icetime", [], {}),
+            ]
             self.commands.set_default_target(name + ".bin")
         elif pnr == "none":
+            flow = [("yosys", [], {"arch": "ice40", "output_format": "json"})]
             self.commands.set_default_target(name + ".json")
         else:
             raise RuntimeError(
@@ -60,6 +75,19 @@ class Icestorm(Edaflow):
                 )
             )
 
+        # Add any user-specified frontends to the flow
+        next_tool = "yosys"
+
+        for frontend in reversed(flow_options.get("frontends", [])):
+            flow[0:0] = [(frontend, [next_tool], {})]
+            next_tool = frontend
+
+        return flow
+
+    def configure_tools(self, nodes):
+        super().configure_tools(nodes)
+
+        name = self.edam["name"]
         # Slot in statistics command which doesn't have an EdaTool class
         depends = name + ".asc"
         targets = name + ".stat"

@@ -12,30 +12,53 @@ class Vivado(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    FLOW = [
-        ("yosys", ["vivado"], {"arch": "xilinx", "output_format": "edif"}),
-        ("vivado", [], {}),
-    ]
+    FLOW_DEFINED_TOOL_OPTIONS = {
+        "yosys": {"arch": "xilinx", "output_format": "edif"},
+    }
 
     FLOW_OPTIONS = {
+        "frontends": {
+            "type": "str",
+            "desc": "Tools to run before yosys (e.g. sv2v)",
+            "list": True,
+        },
         "pnr": {
-            "type": "String",
+            "type": "str",
             "desc": "Select Place & Route tool.",
         },
         "synth": {
-            "type": "String",
+            "type": "str",
             "desc": "Synthesis tool. Allowed values are vivado (default) and yosys.",
         },
     }
 
-    def __init__(self, edam, work_root, verbose=False):
-        if edam.get("flow_options", {}).get("synth", {}) != "yosys":
-            # Remove from flow Yosys node
-            self.FLOW = [("vivado", [], {})]
-        Edaflow.__init__(self, edam, work_root, verbose)
+    @classmethod
+    def get_tool_options(cls, flow_options):
+        flow = flow_options.get("frontends", [])
 
-    def build_tool_graph(self):
-        return super().build_tool_graph()
+        if flow_options.get("synth") == "yosys":
+            flow.append("yosys")
+        flow.append("vivado")
+
+        return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
+
+    def configure_flow(self, flow_options):
+        flow = []
+        if flow_options.get("synth") == "yosys":
+            flow = [
+                ("yosys", ["vivado"], self.FLOW_DEFINED_TOOL_OPTIONS["yosys"]),
+                ("vivado", [], {"synth": "yosys"}),
+            ]
+            next_tool = "yosys"
+        else:
+            flow = [("vivado", [], {})]
+            next_tool = "vivado"
+
+        # Add any user-specified frontends to the flow
+        for frontend in reversed(flow_options.get("frontends", [])):
+            flow[0:0] = [(frontend, [next_tool], {})]
+            next_tool = frontend
+        return flow
 
     def configure_tools(self, nodes):
         super().configure_tools(nodes)

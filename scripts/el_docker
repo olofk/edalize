@@ -110,17 +110,27 @@ if [c for c in containers if c["tool"] == toolname]:
         logger.error("ERROR: Tool {} not found in container list.".format(toolname))
         exit(1)
 
-    prefix = [
-        "docker",
-        "run",
-        "--rm",
-        "-v",
-        build_root + ":/src",
-        #    '-e', dockerEnv,
-        "-w",
-        "/src/" + work,
-        image,
-    ]
+    _extra = os.environ.get("EDALIZE_EXTRA_DOCKER_FLAGS")
+    extra = _extra.split(" ") if _extra else []
+
+    prefix = (
+        [
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            build_root + ":/src",
+            #    '-e', dockerEnv,
+        ]
+        + extra
+        + [
+            "-u",
+            f"{os.getuid()}:{os.getgid()}",
+            "-w",
+            "/src/" + work,
+            image,
+        ]
+    )
     if init:
         c = init.format(shlex.quote(runtool + " " + shlex.join(sys.argv[2:])))
     elif tool == "verilator":

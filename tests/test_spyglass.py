@@ -1,4 +1,4 @@
-from edalize_common import make_edalize_test, tests_dir
+from .edalize_common import make_edalize_test, tests_dir
 
 
 def run_spyglass_test(tf):

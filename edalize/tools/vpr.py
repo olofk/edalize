@@ -29,6 +29,10 @@ class Vpr(Edatool):
             "type": "str",
             "desc": "Path to target architecture in XML format",
         },
+        "generate_constraints": {
+            "type": "list",
+            "desc": "A list of values used to generate constraints at the place stage (used by F4PGA flow)",
+        },
         "vpr_options": {
             "type": "str",
             "desc": "Additional options for VPR.",
@@ -67,16 +71,21 @@ class Vpr(Edatool):
         """
         super().configure(edam)
 
-        src_files = []
-        incdirs = set()
-
-        file_netlist = []
+        netlist_file = ""
         timing_constraints = []
 
-        for f in src_files:
-            if f.file_type in ["blif", "eblif"]:
-                file_netlist.append(f.name)
-            if f.file_type in ["SDC"]:
+        for f in self.files:
+            file_type = f.get("file_type", "")
+
+            if file_type in ["blif", "eblif"]:
+                if netlist_file:
+                    raise RuntimeError(
+                        "VPR only supports one netlist file. Found {} and {}".format(
+                            netlist_file, f["name"]
+                        )
+                    )
+                netlist_file = f["name"]
+            if file_type in ["SDC"]:
                 timing_constraints.append(f.name)
 
         arch_xml = self.tool_options.get("arch_xml")
@@ -90,28 +99,69 @@ class Vpr(Edatool):
 
         commands = EdaCommands()
 
-        depends = self.name + ".blif"
+        # First, check if gen_constraint value list is passed in and is the correct size
+        gen_constr_list = self.tool_options.get("generate_constraints", [])
+
+        depends = netlist_file
         targets = self.name + ".net"
-        command = ["vpr", arch_xml, self.name + ".blif", "--pack"]
-        command += sdc_opts + vpr_options
+        command = ["vpr", arch_xml, netlist_file, "--pack"]
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "pack.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
 
-        depends = self.name + ".net"
+        # Run generate constraints script if correct list exists
+        constraints_file = "constraints.place"
+        if gen_constr_list:
+            depends = self.name + ".net"
+            targets = constraints_file
+            commands.add(
+                [
+                    "python3",
+                    "-m f4pga.wrappers.sh.generate_constraints",
+                    " ".join(gen_constr_list),
+                ],
+                [targets],
+                [depends],
+            )
+
+        depends = [self.name + ".net"]
         targets = self.name + ".place"
-        command = ["vpr", arch_xml, self.name + ".blif", "--place"]
-        command += sdc_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        command = ["vpr", arch_xml, netlist_file]
+
+        # Modify place stage if running generate constraints script
+        if gen_constr_list:
+            depends += [constraints_file]
+            command += [f"--fix_clusters {constraints_file}"]
+
+        command += ["--place"]
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "place.log"]
+            if gen_constr_list
+            else []
+        )
+        commands.add(command, [targets], depends)
 
         depends = self.name + ".place"
         targets = self.name + ".route"
-        command = ["vpr", arch_xml, self.name + ".blif", "--route"]
-        command += sdc_opts + vpr_options
+        command = ["vpr", arch_xml, netlist_file, "--route"]
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "route.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".route"
         targets = self.name + ".analysis"
-        command = ["vpr", arch_xml, self.name + ".blif", "--analysis"]
-        command += sdc_opts + vpr_options
+        command = ["vpr", arch_xml, netlist_file, "--analysis"]
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "analysis.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
 
         for ext in [".net", ".place", ".route", ".analysis"]:

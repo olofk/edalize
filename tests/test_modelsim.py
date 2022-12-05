@@ -1,6 +1,6 @@
 import filecmp
 import os
-from edalize_common import make_edalize_test, tests_dir
+from .edalize_common import make_edalize_test, tests_dir
 
 
 def test_modelsim(make_edalize_test):

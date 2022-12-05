@@ -70,7 +70,10 @@ Example snippet of a CAPI2 description file for VCS:
         plusargs = []
         if self.plusarg:
             for key, value in self.plusarg.items():
-                plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+                plusarg = "+" + key
+                if value != True:
+                    plusarg += "=" + self._param_value_str(value)
+                plusargs.append(plusarg)
 
         vcs_options = self.tool_options.get("vcs_options", [])
 
