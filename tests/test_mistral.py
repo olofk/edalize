@@ -2,7 +2,7 @@ import os
 import pytest
 
 
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 
 
 def run_mistral_test(tf):

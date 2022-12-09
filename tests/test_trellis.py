@@ -1,6 +1,6 @@
 import os
 import pytest
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 
 
 def run_trellis_test(tf, pnr_cmdfile="nextpnr-ice40.cmd"):

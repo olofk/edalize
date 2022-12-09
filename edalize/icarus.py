@@ -13,10 +13,10 @@ MAKEFILE_TEMPLATE = """
 all: $(VPI_MODULES) $(TARGET)
 
 $(TARGET):
-	iverilog -s$(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
+	iverilog $(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
 
 run: $(VPI_MODULES) $(TARGET)
-	vvp -n -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) -fst $(EXTRA_OPTIONS)
+	vvp -n -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(VVP_OPTIONS) $(TARGET) -fst $(EXTRA_OPTIONS)
 
 clean:
 	$(RM) $(VPI_MODULES) $(TARGET)
@@ -53,6 +53,11 @@ class Icarus(Edatool):
                         "type": "String",
                         "desc": "Additional options for iverilog",
                     },
+                    {
+                        "name": "vvp_options",
+                        "type": "String",
+                        "desc": "Additional options for vvp",
+                    },
                 ],
             }
 
@@ -64,11 +69,12 @@ class Icarus(Edatool):
             f.write("+define+{}={}\n".format(key, self._param_value_str(value, "")))
 
         for key, value in self.vlogparam.items():
-            f.write(
-                "+parameter+{}.{}={}\n".format(
-                    self.toplevel, key, self._param_value_str(value, '"')
+            for top in self.toplevel.split(" "):
+                f.write(
+                    "+parameter+{}.{}={}\n".format(
+                        top, key, self._param_value_str(value, '"')
+                    )
                 )
-            )
         for id in incdirs:
             f.write("+incdir+" + id + "\n")
         timescale = self.tool_options.get("timescale")
@@ -104,10 +110,19 @@ class Icarus(Edatool):
             _vpi_modules = " ".join([m["name"] + ".vpi" for m in self.vpi_modules])
             if _vpi_modules:
                 f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
-            f.write("TOPLEVEL         := {}\n".format(self.toplevel))
+            f.write(
+                "TOPLEVEL         := {}\n".format(
+                    " ".join(["-s" + x for x in self.toplevel.split()])
+                )
+            )
             f.write(
                 "IVERILOG_OPTIONS := {}\n".format(
                     " ".join(self.tool_options.get("iverilog_options", []))
+                )
+            )
+            f.write(
+                "VVP_OPTIONS := {}\n".format(
+                    " ".join(self.tool_options.get("vvp_options", []))
                 )
             )
             if self.plusarg:

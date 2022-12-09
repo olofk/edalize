@@ -13,4 +13,4 @@ verilog_defaults -pop
 
 synth $top
 
-write_json -pvector bra $name.json
+write_json test_symbiflow_nextpnr_xilinx_0.json

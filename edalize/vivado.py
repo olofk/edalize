@@ -97,6 +97,32 @@ class Vivado(Edatool):
     def configure_main(self):
         self.vivado.configure()
 
+    def build_main(self):
+        logger.info("Building")
+        args = []
+        if "pnr" in self.tool_options:
+            if self.tool_options["pnr"] == "vivado":
+                pass
+            elif self.tool_options["pnr"] == "none":
+                args.append("synth")
+        self._run_tool("make", args)
+
+    def run_main(self):
+        """
+        Program the FPGA.
+
+        For programming the FPGA a vivado tcl script is written that searches for the
+        correct FPGA board and then downloads the bitstream. The tcl script is then
+        executed in Vivado's batch mode.
+        """
+        if "pnr" in self.tool_options:
+            if self.tool_options["pnr"] == "vivado":
+                pass
+            elif self.tool_options["pnr"] == "none":
+                return
+
+        self._run_tool("make", ["pgm"])
+
     def build_pre(self):
         pass
 

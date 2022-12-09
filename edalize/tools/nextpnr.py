@@ -27,6 +27,8 @@ class Nextpnr(Edatool):
         lpf_file = ""
         pcf_file = ""
         netlist = ""
+        chipdb_file = ""
+        placement_constraints = []
         unused_files = []
         for f in self.files:
             file_type = f.get("file_type", "")
@@ -54,6 +56,16 @@ class Nextpnr(Edatool):
                         )
                     )
                 pcf_file = f["name"]
+            if file_type == "chipdb":
+                if chipdb_file:
+                    raise RuntimeError(
+                        "Nextpnr only supports one ChipDB (bin/bba) file. Found {} and {}".format(
+                            chipdb_file, f["name"]
+                        )
+                    )
+                chipdb_file = f["name"]
+            if file_type == "xdc":
+                placement_constraints.append(f["name"])
             elif file_type == "jsonNetlist":
                 if netlist:
                     raise RuntimeError(
@@ -77,31 +89,54 @@ class Nextpnr(Edatool):
 
         arch = self.tool_options["arch"]
         arch_options = []
-        if arch == "ecp5":
-            targets = self.name + ".config"
-            constraints = ["--lpf", lpf_file] if lpf_file else []
-            output = ["--textcfg", targets]
-        elif arch == "gowin":
-            device = self.tool_options.get("device")
-            if not device:
-                raise RuntimeError("Missing required option 'device' for nextpnr-gowin")
-            arch_options += ["--device", device]
-            targets = self.name + ".pack"
-            constraints = ["--cst", cst_file] if cst_file else []
-            output = ["--write", targets]
+
+        # Specific commands for nextpnr-xilinx
+        if arch == "xilinx":
+            depends = netlist
+            if not chipdb_file:
+                raise RuntimeError("Missing required chipdb (bba/bin) file")
+            if not placement_constraints:
+                raise RuntimeError("Missing required XDC file(s)")
+            targets = self.name + ".fasm"
+            command = ["nextpnr-" + arch, "--chipdb", chipdb_file]
+            xdcs = []
+            for x in placement_constraints:
+                xdcs += ["--xdc", x]
+            command += xdcs
+            command += ["--json", depends]
+            command += ["--write", self.name + ".routed.json"]
+            command += ["--fasm", targets]
+            command += ["--log", "nextpnr.log"]
+            command += self.tool_options.get("nextpnr_options", [])
+            commands.add(command, [targets], [depends])
         else:
-            targets = self.name + ".asc"
-            constraints = ["--pcf", pcf_file] if pcf_file else []
-            output = ["--asc", targets]
+            if arch == "ecp5":
+                targets = self.name + ".config"
+                constraints = ["--lpf", lpf_file] if lpf_file else []
+                output = ["--textcfg", targets]
+            elif arch == "gowin":
+                device = self.tool_options.get("device")
+                if not device:
+                    raise RuntimeError(
+                        "Missing required option 'device' for nextpnr-gowin"
+                    )
+                arch_options += ["--device", device]
+                targets = self.name + ".pack"
+                constraints = ["--cst", cst_file] if cst_file else []
+                output = ["--write", targets]
+            else:
+                targets = self.name + ".asc"
+                constraints = ["--pcf", pcf_file] if pcf_file else []
+                output = ["--asc", targets]
 
-        depends = netlist
-        command = ["nextpnr-" + arch, "-l", "next.log"]
-        command += arch_options + self.tool_options.get("nextpnr_options", [])
-        command += constraints + ["--json", depends] + output
+            depends = netlist
+            command = ["nextpnr-" + arch, "-l", "next.log"]
+            command += arch_options + self.tool_options.get("nextpnr_options", [])
+            command += constraints + ["--json", depends] + output
 
-        # CLI target
-        commands.add(command, [targets], [depends])
+            # CLI target
+            commands.add(command, [targets], [depends])
 
-        # GUI target
-        commands.add(command + ["--gui"], ["build-gui"], [depends])
+            # GUI target
+            commands.add(command + ["--gui"], ["build-gui"], [depends])
         self.commands = commands.commands
