@@ -42,10 +42,10 @@ class Design_compiler(Edatool):
                          'desc' : 'Path to where reports should be stored (e.g. /home/user/project/synopsys/reports)'},
                          {'name' : 'target_library',
                          'type' : 'String',
-                         'desc' : 'Path to where reports should be stored (e.g. /home/user/project/synopsys/reports)'},
+                         'desc' : 'The Design Compiler target_library'},
                          {'name' : 'libs',
                          'type' : 'String',
-                         'desc' : 'Libraries to use'},
+                         'desc' : 'Libraries to use in the Design Compiler link_library'},
                         {'name' : 'jobs',
                          'type' : 'Integer',
                          'desc' : 'Number of jobs. Useful for parallelizing syntheses.'},
@@ -114,27 +114,29 @@ class Design_compiler(Edatool):
             'verilogSource'       : 'analyze -format verilog',
             'systemVerilogSource' : 'analyze -format sverilog',
             'vhdlSource'          : 'analyze -format vhdl',
-            # 'xci'                 : 'read_ip',
-            # 'xdc'                 : 'read_xdc',
-            # 'tclSource'           : 'source',
-            # 'SDC'                 : 'read_xdc -unmanaged',
-            # 'mem'                 : 'read_mem',
+            'tclSource'           : 'source',
+             'SDC'                : 'source',
         }
+
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
             cmd = ""
             cmd += file_types[_file_type] + ' '
-            
-            cmd_define = ""
-            if self.vlogdefine.items() != {}:
-                cmd_define = "-define {"
-                for k, v in self.vlogdefine.items():
-                    # SKip reddefinition of SYNTHESIS which is a reserved macro in IEEE Verilog synthesizable subset
-                    if k != 'SYNTHESIS':
-                        cmd_define += " {}={}".format(k, self._param_value_str(v))
-                cmd_define += " }"
 
-            cmd += cmd_define + ' ' + '-work work ' + f.name
+            if (_file_type != 'tclSource') and (_file_type != 'SDC'):
+                cmd_define = ""
+                if self.vlogdefine.items() != {}:
+                    cmd_define = "-define {"
+                    for k, v in self.vlogdefine.items():
+                        # Skip reddefinition of SYNTHESIS which is a reserved macro in IEEE Verilog synthesizable subset
+                        if k != 'SYNTHESIS':
+                            cmd_define += " {}={}".format(k, self._param_value_str(v))
+                    cmd_define += " }"
+
+                cmd += cmd_define + ' ' + '-work work ' + f.name
+            else:
+                cmd += ' ' + f.name
+
             return cmd
 
         if _file_type == 'user':
