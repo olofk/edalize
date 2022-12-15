@@ -42,6 +42,9 @@ setup(
             "templates/design_compiler/design-compiler-makefile.j2",
             "templates/design_compiler/design-compiler-project.tcl.j2",
             "templates/design_compiler/design-compiler-read-sources.tcl.j2",
+            "templates/genus/genus-makefile.j2",
+            "templates/genus/genus-project.tcl.j2",
+            "templates/genus/genus-read-sources.tcl.j2",
         ],
         "edalize.tools": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
