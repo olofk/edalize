@@ -44,7 +44,7 @@ EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(P
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
-	$(VSIM) -do "run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
+	$(VSIM) -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) -do "run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" $(TOPLEVEL)
 
 run-gui: work $(VPI_MODULES)
 	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)

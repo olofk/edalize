@@ -29,9 +29,9 @@ class Vpr(Edatool):
             "type": "str",
             "desc": "Path to target architecture in XML format",
         },
-        "gen_constraints": {
+        "generate_constraints": {
             "type": "list",
-            "desc": "A list to be used for inserting two commands between the pack and place step",
+            "desc": "A list of values used to generate constraints at the place stage (used by F4PGA flow)",
         },
         "vpr_options": {
             "type": "str",
@@ -99,60 +99,69 @@ class Vpr(Edatool):
 
         commands = EdaCommands()
 
+        # First, check if gen_constraint value list is passed in and is the correct size
+        gen_constr_list = self.tool_options.get("generate_constraints", [])
+
         depends = netlist_file
         targets = self.name + ".net"
         command = ["vpr", arch_xml, netlist_file, "--pack"]
-        command += sdc_opts + vpr_options
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "pack.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
 
-        # First, check if gen_constraint value list is passed in and is the correct size
-        gen_constr_list = []
-        if (
-            self.tool_options.get("gen_constraints")
-            and len(self.tool_options.get("gen_constraints")) == 4
-        ):
-            gen_constr_list = self.tool_options.get("gen_constraints")
-
-        # Run generate constraints scripts if correct list exists
+        # Run generate constraints script if correct list exists
+        constraints_file = "constraints.place"
         if gen_constr_list:
             depends = self.name + ".net"
-            targets = gen_constr_list[0]
+            targets = constraints_file
             commands.add(
-                ["python3", gen_constr_list[2]],
+                [
+                    "python3",
+                    "-m f4pga.wrappers.sh.generate_constraints",
+                    " ".join(gen_constr_list),
+                ],
                 [targets],
                 [depends],
             )
 
-            depends = gen_constr_list[0]
-            targets = gen_constr_list[1]
-            commands.add(
-                ["python3", gen_constr_list[3]],
-                [targets],
-                [depends],
-            )
-
+        depends = [self.name + ".net"]
         targets = self.name + ".place"
         command = ["vpr", arch_xml, netlist_file]
+
         # Modify place stage if running generate constraints script
         if gen_constr_list:
-            depends = gen_constr_list[1]
-            command += [f"--fix_clusters {gen_constr_list[1]}"]
-        else:
-            depends = self.name + ".net"
+            depends += [constraints_file]
+            command += [f"--fix_clusters {constraints_file}"]
+
         command += ["--place"]
-        command += sdc_opts + vpr_options
-        commands.add(command, [targets], [depends])
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "place.log"]
+            if gen_constr_list
+            else []
+        )
+        commands.add(command, [targets], depends)
 
         depends = self.name + ".place"
         targets = self.name + ".route"
         command = ["vpr", arch_xml, netlist_file, "--route"]
-        command += sdc_opts + vpr_options
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "route.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
 
         depends = self.name + ".route"
         targets = self.name + ".analysis"
         command = ["vpr", arch_xml, netlist_file, "--analysis"]
-        command += sdc_opts + vpr_options
+        command += (
+            sdc_opts + vpr_options + [";", "mv", "vpr_stdout.log", "analysis.log"]
+            if gen_constr_list
+            else []
+        )
         commands.add(command, [targets], [depends])
 
         for ext in [".net", ".place", ".route", ".analysis"]:

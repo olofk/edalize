@@ -28,9 +28,9 @@ class Yosys(Edatool):
             "type": "str",
             "desc": "TCL template file to use instead of default template",
         },
-        "f4pga_synth": {
-            "type": "list",
-            "desc": "A list containing two values for the f4pga synth configuration",
+        "f4pga_synth_part_file": {
+            "type": "str",
+            "desc": "The JSON part file used for Yosys synthesis",
         },
         "yosys_synth_options": {
             "type": "str",
@@ -125,9 +125,10 @@ class Yosys(Edatool):
             "name": self.name,
         }
 
-        self.render_template(
-            "edalize_yosys_procs.tcl.j2", "edalize_yosys_procs.tcl", template_vars
-        )
+        if not yosys_template:
+            self.render_template(
+                "edalize_yosys_procs.tcl.j2", "edalize_yosys_procs.tcl", template_vars
+            )
 
         if not yosys_template:
             self.render_template(
@@ -137,41 +138,49 @@ class Yosys(Edatool):
         commands = EdaCommands()
 
         # First, check if split_io list is passed in and is the correct size
-        f4pga_synth = []
-        if (
-            self.tool_options.get("f4pga_synth")
-            and len(self.tool_options.get("f4pga_synth")) == 2
-        ):
-            f4pga_synth = self.tool_options.get("f4pga_synth")
+        f4pga_synth_part_file = ""
+        if "f4pga_synth_part_file" in self.tool_options:
+            f4pga_synth_part_file = self.tool_options.get("f4pga_synth_part_file")
 
         # Configure first call to Yosys
         targets = []
         depends = depfiles
         variables = []
+        logfile = ""
 
-        if f4pga_synth:
-            targets = f"{self.name}.json"
+        targets = [default_target]
+        if f4pga_synth_part_file:
+            in_xdc = ""
+            for f in self.files:
+                if f.get("file_type") == "xdc":
+                    in_xdc = f["name"]
+            if not in_xdc:
+                print(
+                    "F4PGA flow warning: no Xilinx Design Constraint file (.xdc) specified"
+                )
             variables = {
                 "USE_ROI": "FALSE",
-                "TECHMAP_PATH": "$F4PGA_SHARE_DIR/techmaps/xc7_vpr/techmap",
+                "TECHMAP_PATH": "${F4PGA_SHARE_DIR}/techmaps/xc7_vpr/techmap",
                 "TOP": self.toplevel,
-                "INPUT_XDC_FILES": f4pga_synth[0],
-                "PART_JSON": f4pga_synth[1],
+                "INPUT_XDC_FILES": in_xdc,
+                "PART_JSON": f4pga_synth_part_file,
                 "OUT_FASM_EXTRA": f"{self.name}_fasm_extra.fasm",
                 "OUT_SDC": f"{self.name}.sdc",
                 "OUT_SYNTH_V": f"{self.name}_synth.v",
-                "PYTHON3": "$(which python3)",
-                "UTILS_PATH": "$F4PGA_SHARE_DIR/scripts",
-                "OUT_JSON": targets,
+                "PYTHON3": "$(shell which python3)",
+                "UTILS_PATH": "${F4PGA_SHARE_DIR}/scripts",
+                "OUT_JSON": f"{self.name}.json",
+                "SYNTH_JSON": f"{self.name}_io.json",
                 "OUT_EBLIF": default_target,
             }
+            logfile = f"{self.name}_synth.log"
         else:
-            targets = [default_target]
             depends = [template] + depends
+            logfile = "yosys.log"
 
-        command = ["yosys", "-l yosys.log", f"-p 'tcl {template}'"]
+        command = ["yosys", f"-l {logfile}", f"-p 'tcl {template}'"]
 
-        if f4pga_synth:
+        if f4pga_synth_part_file:
             command += depfiles
 
         commands.add(command, targets, depends, variables=variables)
