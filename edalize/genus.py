@@ -105,14 +105,36 @@ class Genus(Edatool):
 
     def src_file_filter(self, f):
         file_types = {
-            'verilogSource'       : 'read_hdl -language v2001 -work work',
-            'systemVerilogSource' : 'read_hdl -language sv -work work',
-            'vhdlSource'          : 'read_hdl -language vhdl -work work',
+            'verilogSource'       : 'read_hdl -language v2001',
+            'systemVerilogSource' : 'read_hdl -language sv',
+            'vhdlSource'          : 'read_hdl -language vhdl',
             'tclSource'           : 'source',
             # Note: we do not add an SDC source here as the constraint files are 
             # referenced inside the MMMC view file on a per corner base 
         }
         _file_type = f.file_type.split('-')[0]
+
+        if _file_type in file_types:
+            cmd = ""
+            cmd += file_types[_file_type] + ' '
+
+            if (_file_type != 'tclSource') and (_file_type != 'SDC'):
+                cmd_define = ""
+                if (_file_type != 'vhdlSource') and (self.vlogdefine.items() != {}):
+                    cmd_define = "-define {"
+                    for k, v in self.vlogdefine.items():
+                        # Skip reddefinition of SYNTHESIS which is a reserved macro in IEEE Verilog synthesizable subset
+                        if k != 'SYNTHESIS':
+                            cmd_define += " {}={}".format(k, self._param_value_str(v))
+                    cmd_define += " }"
+
+                cmd += cmd_define + ' ' + '-library work ' + f.name
+            else:
+                cmd += ' ' + f.name
+
+            return cmd
+
+
         if _file_type in file_types:
             return file_types[_file_type] + ' ' + f.name
 

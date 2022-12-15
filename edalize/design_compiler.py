@@ -125,7 +125,7 @@ class Design_compiler(Edatool):
 
             if (_file_type != 'tclSource') and (_file_type != 'SDC'):
                 cmd_define = ""
-                if self.vlogdefine.items() != {}:
+                if (_file_type != 'vhdlSource') and (self.vlogdefine.items() != {}):
                     cmd_define = "-define {"
                     for k, v in self.vlogdefine.items():
                         # Skip reddefinition of SYNTHESIS which is a reserved macro in IEEE Verilog synthesizable subset
