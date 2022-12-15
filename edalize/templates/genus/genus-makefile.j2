@@ -1,0 +1,12 @@
+SHELL=/bin/bash
+NAME := {{ name }}
+{% if report_dir -%}
+REPORT_DIR := {{ report_dir }}
+{% else %}
+REPORT_DIR := "./"
+{%- endif %}
+
+
+all:
+			mkdir -p ${REPORT_DIR}
+			genus -files ${NAME}.tcl -log ${REPORT_DIR}/synth.log

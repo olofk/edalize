@@ -1,0 +1,56 @@
+############################################
+#
+# Auto-generated project tcl file:
+#  * sets up variable
+#  * runs customized script
+#
+############################################
+sh date
+
+{% if toplevel -%}
+set TOP_MODULE {{ toplevel }}
+{%- endif %}
+
+{% if genus_script -%}
+set GENUS_SCRIPT {{ genus_script }}
+{% else %}
+set GENUS_SCRIPT genus_script.tcl
+{%- endif %}
+
+{% if common_config -%}
+source {{ common_config }}
+{%- endif %}
+
+{% if jobs -%}
+set nproc [exec nproc]
+set_multi_cpu_usage -local_cpu {{jobs}}
+{%- endif %}
+
+set READ_SOURCES {{ name }}-read-sources
+
+{% if script_dir -%}
+set SCRIPT_DIR {{ script_dir }}
+{% else %}
+set SCRIPT_DIR "./"
+{% endif %}
+
+{% if report_dir -%}
+set REPORT_DIR {{ report_dir }}
+sh mkdir -p ${REPORT_DIR}
+{% else %}
+set REPORT_DIR "./"
+{%- endif %}
+
+############################################
+#
+# Run custom script
+#
+############################################
+source ${SCRIPT_DIR}/${GENUS_SCRIPT}
+
+############################################
+#
+#  all done -- exit
+#
+############################################
+sh date
