@@ -108,6 +108,9 @@ class Genus(Edatool):
             'verilogSource'       : 'read_hdl -language v2001 -work work',
             'systemVerilogSource' : 'read_hdl -language sv -work work',
             'vhdlSource'          : 'read_hdl -language vhdl -work work',
+            'tclSource'           : 'source',
+            # Note: we do not add an SDC source here as the constraint files are 
+            # referenced inside the MMMC view file on a per corner base 
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
