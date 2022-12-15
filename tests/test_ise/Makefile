@@ -4,7 +4,7 @@ include config.mk
 all: $(TOPLEVEL).bit
 
 $(TOPLEVEL).bit:  $(NAME)_run.tcl $(NAME).xise
-	xtclsh $^
+	$(EDALIZE_LAUNCHER) xtclsh $^
 
 $(NAME).xise: $(NAME).tcl
-	xtclsh $<
+	$(EDALIZE_LAUNCHER) xtclsh $<

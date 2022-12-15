@@ -73,6 +73,9 @@ def merge_dict(d1, d2):
 
 
 class Edaflow(object):
+
+    FLOW = []
+
     @classmethod
     def get_flow_options(cls):
         flow_opts = cls.FLOW_OPTIONS.copy()
@@ -90,6 +93,36 @@ class Edaflow(object):
                     flow_opts[opt_name]["tool"] = tool_name
         return flow_opts
 
+    @classmethod
+    def get_tool_options(cls, flow_options):
+        return {}
+
+    # Takes a list of tool names and a dict of pre-defined tool options
+    # Imports the tool class for every tool in the list, extracts their
+    # tool options and return then all, except for the ones listed in
+    # flow_defined_tool_options
+    @classmethod
+    def get_filtered_tool_options(cls, tools, flow_defined_tool_options):
+        tool_opts = {}
+        for tool_name in tools:
+
+            # Get available tool options from each tool in the list
+            try:
+                class_tool_options = getattr(
+                    import_module(f"edalize.tools.{tool_name}"), tool_name.capitalize()
+                ).get_tool_options()
+            except ModuleNotFoundError:
+                raise RuntimeError(f"Could not find tool '{tool_name}'")
+            # Add them to the dict unless they are already set by the flow
+            filtered_tool_options = flow_defined_tool_options.get(tool_name, {})
+            for opt_name in class_tool_options:
+                # Filter out tool options that are already set by the flow
+                if not opt_name in filtered_tool_options:
+                    tool_opts[opt_name] = class_tool_options[opt_name]
+                    tool_opts[opt_name]["tool"] = tool_name
+
+        return tool_opts
+
     def extract_flow_options(self):
         # Extract flow options from the EDAM
         flow_options = {}
@@ -106,7 +139,7 @@ class Edaflow(object):
     def extract_tool_options(self):
         tool_options = {}
         edam_flow_opts = self.edam.get("flow_options", {})
-        for (tool_name, next_nodes, flow_defined_tool_options) in self.FLOW:
+        for (tool_name, next_nodes, flow_defined_tool_options) in self.flow:
 
             # Get the tool class
             ToolClass = getattr(
@@ -122,7 +155,7 @@ class Edaflow(object):
                 if opt_name in ToolClass.get_tool_options():
                     tool_options[tool_name] = merge_dict(
                         tool_options[tool_name],
-                        {opt_name: edam_flow_opts.pop(opt_name)},
+                        {opt_name: edam_flow_opts.get(opt_name)},
                     )
 
             self.edam["tool_options"] = tool_options
@@ -130,7 +163,7 @@ class Edaflow(object):
     def build_tool_graph(self):
         # Instantiate the tools
         nodes = {}
-        for (tool_name, next_nodes, flow_defined_tool_options) in self.FLOW:
+        for (tool_name, next_nodes, flow_defined_tool_options) in self.flow:
 
             # Instantiate the tool class
             tool_inst = getattr(
@@ -186,7 +219,8 @@ class Edaflow(object):
 
     def add_scripts(self, depends, hook_name):
         last_script = depends
-        for script in self.hooks.get(hook_name, []):
+        hooks = self.edam.get("hooks", {})
+        for script in hooks.get(hook_name, []):
 
             # _env = self.env.copy()
             # if 'env' in script:
@@ -200,13 +234,18 @@ class Edaflow(object):
             last_script = script["name"]
         self.commands.add([], [hook_name], [last_script])
 
+    def configure_flow(self, flow_options):
+        return self.FLOW
+
     def __init__(self, edam, work_root, verbose=False):
         self.edam = edam
-        self.hooks = edam.get("hooks", {})
+        self.commands = EdaCommands()
 
         # Extract all options that affects the flow rather than
         # just a single tool
         self.flow_options = self.extract_flow_options()
+
+        self.flow = self.configure_flow(self.flow_options)
 
         # Rearrange tool_options so that each tool gets their
         # own tool_options
@@ -216,7 +255,6 @@ class Edaflow(object):
 
         self.stdout = None
         self.stderr = None
-        self.commands = EdaCommands()
 
     def set_run_command(self):
         self.commands.add([], ["run"], ["pre_run"])

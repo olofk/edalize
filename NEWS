@@ -1,0 +1,12 @@
+0.4.0 2022-07-12 Olof Kindgren
+======================================================
+* New backends: OpenFPGA, VPR, Mistral, gatemate
+* symbiflow: Support Quicklogic
+* xsim: :Fix VHDL generics quotation
+* ISE: Added option to Specify JTAG chain index, fix windows path handling
+* verilator: Support EDALIZE_LAUNCHER, limit CPU usage
+* icestorm: Add icepack_options
+* el_docker: Run as user instead of root
+* vcs: Support boolean plusargs without value
+* yosys: Support verilog output
+* Flow API: Add get_tool_options function

@@ -1,4 +1,4 @@
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 
 
 def test_icarus(make_edalize_test):
@@ -28,9 +28,8 @@ def test_icarus_minimal(tmpdir):
 
     from edalize import get_edatool
 
-    from edalize_common import compare_files, tests_dir
+    from .edalize_common import compare_files, tests_dir
 
-    ref_dir = os.path.join(tests_dir, __name__, "minimal")
     os.environ["PATH"] = (
         os.path.join(tests_dir, "mock_commands") + ":" + os.environ["PATH"]
     )
@@ -43,6 +42,7 @@ def test_icarus_minimal(tmpdir):
     backend = get_edatool(tool)(edam=edam, work_root=work_root)
     backend.configure()
 
+    ref_dir = os.path.join(tests_dir, "test_" + tool, "minimal")
     compare_files(
         ref_dir,
         work_root,

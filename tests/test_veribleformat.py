@@ -1,4 +1,4 @@
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 
 
 def test_veribleformat_default(make_edalize_test):

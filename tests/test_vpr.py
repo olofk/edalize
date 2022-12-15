@@ -1,16 +1,15 @@
 import os
 import pytest
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 
 
 @pytest.mark.parametrize("params", [("minimal", "vpr")])
 def test_vpr(params, tmpdir):
     import os
     import edalize
-    from edalize_common import compare_files, tests_dir
+    from .edalize_common import compare_files, tests_dir
 
     test_name = "vpr"
-    ref_dir = os.path.join(tests_dir, __name__, test_name)
     os.environ["PATH"] = (
         os.path.join(tests_dir, "mock_commands") + ":" + os.environ["PATH"]
     )
@@ -33,4 +32,5 @@ def test_vpr(params, tmpdir):
     config_file_list = [
         "Makefile",
     ]
+    ref_dir = os.path.join(tests_dir, "test_" + tool, test_name)
     compare_files(ref_dir, work_root, config_file_list)

@@ -29,39 +29,39 @@ class Vivado(Edatool):
 
     TOOL_OPTIONS = {
         "part": {
-            "type": "String",
+            "type": "str",
             "desc": "FPGA part number (e.g. xc7a35tcsg324-1)",
         },
         "synth": {
-            "type": "String",
+            "type": "str",
             "desc": "Synthesis tool. Allowed values are vivado or none.",
         },
         "board_part": {
-            "type": "String",
+            "type": "str",
             "desc": "Board part number (e.g. xilinx.com:kc705:part0:0.9)",
         },
         "board_repo_paths": {
-            "type": "String",
+            "type": "str",
             "desc": "Board repository paths. A list of paths to search for board files.",
         },
         "pnr": {
-            "type": "String",
+            "type": "str",
             "desc": "P&R tool. Allowed values are vivado (default) and none (to just run synthesis)",
         },
         "jobs": {
-            "type": "Integer",
+            "type": "int",
             "desc": "Number of jobs. Useful for parallelizing OOC (Out Of Context) syntheses.",
         },
         "jtag_freq": {
-            "type": "Integer",
+            "type": "int",
             "desc": "The frequency for jtag communication",
         },
         "source_mgmt_mode": {
-            "type": "String",
+            "type": "str",
             "desc": "Source managment mode. Allowed values are None (unmanaged, default), DisplayOnly (automatically update sources) and All (automatically update sources and compile order)",
         },
         "hw_target": {
-            "type": "Description",
+            "type": "str",
             "desc": "A pattern matching a board identifier. Refer to the Vivado documentation for ``get_hw_targets`` for details. Example: ``*/xilinx_tcf/Digilent/123456789123A``",
         },
     }

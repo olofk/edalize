@@ -1,7 +1,7 @@
 import pytest
 import os.path
 from unittest.mock import patch, MagicMock
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 import edalize.edatool
 
 
@@ -12,7 +12,7 @@ def test_vunit_codegen(make_edalize_test):
 
 
 def test_vunit_hooks(tmpdir):
-    from edalize_common import tests_dir
+    from .edalize_common import tests_dir
 
     import subprocess
     import sys
@@ -20,9 +20,9 @@ def test_vunit_hooks(tmpdir):
     from unittest import mock
     from edalize import get_edatool
 
-    sys.path = [os.path.join(tests_dir, __name__, "vunit_mock")] + sys.path
+    sys.path = [os.path.join(tests_dir, "test_vunit", "vunit_mock")] + sys.path
 
-    ref_dir = os.path.join(tests_dir, __name__, "minimal")
+    ref_dir = os.path.join(tests_dir, "test_vunit", "minimal")
     tool = "vunit"
     name = "test_" + tool + "_minimal_0"
     work_root = str(tmpdir)

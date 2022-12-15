@@ -1,5 +1,5 @@
 import pytest
-from edalize_common import make_edalize_test
+from .edalize_common import make_edalize_test
 
 
 def test_vivado(make_edalize_test):
@@ -28,11 +28,10 @@ def test_vivado_minimal(params, tmpdir, make_edalize_test):
     import os
 
     import edalize
-    from edalize_common import compare_files, tests_dir
+    from .edalize_common import compare_files, tests_dir
 
     test_name, synth_tool = params
 
-    ref_dir = os.path.join(tests_dir, __name__, test_name)
     os.environ["PATH"] = (
         os.path.join(tests_dir, "mock_commands") + ":" + os.environ["PATH"]
     )
@@ -63,6 +62,7 @@ def test_vivado_minimal(params, tmpdir, make_edalize_test):
     else:
         config_file_list.append(name + "_synth.tcl")
 
+    ref_dir = os.path.join(tests_dir, "test_" + tool, test_name)
     compare_files(ref_dir, work_root, config_file_list)
 
     build_file_list = ["vivado.cmd"]

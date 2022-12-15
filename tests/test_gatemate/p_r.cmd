@@ -1,0 +1,1 @@
+-A 1 -i test_gatemate_0_synth.v -o test_gatemate_0 -lib ccag some p_r_synth_options

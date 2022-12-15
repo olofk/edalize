@@ -1,6 +1,6 @@
 import os
 import pytest
-from edalize_common import make_edalize_test, tests_dir
+from .edalize_common import make_edalize_test, tests_dir
 
 
 def run_symbiflow_test(tf, config_files=list()):
