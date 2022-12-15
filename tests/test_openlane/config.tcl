@@ -2,7 +2,7 @@
 
 set ::env(DESIGN_NAME) top_module
 
-set ::env(VERILOG_FILES) [list vlog_file.v vlog05_file.v]
+set ::env(VERILOG_FILES) [list sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv]
 set ::env(SYNTH_DEFINES) [list vlogdefine_bool=1 vlogdefine_int=42 vlogdefine_str=hello]
 
 source tcl_file.tcl
