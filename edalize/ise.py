@@ -42,7 +42,7 @@ proc xfile_add_exist_ok name {{
 }}
 
 project_new_exist_ok {design}
-project set family {family}
+project set family "{family}"
 project set device {device}
 project set package {package}
 project set speed {speed}
