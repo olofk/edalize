@@ -14,7 +14,7 @@ from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
-""" design-compiler Backend
+""" Cadence Genus Backend
 
 A core (usually the system core) can add the following files:
 
@@ -22,33 +22,30 @@ A core (usually the system core) can add the following files:
 
 - Libraries
 """
-class Design_compiler(Edatool):
+class Genus(Edatool):
 
     argtypes = ['vlogdefine', 'vlogparam', 'generic']
 
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            return {'description' : "The design_compiler backend executes Synopsys design_copiler to build a gate-level netlist",
+            return {'description' : "The genus backend executes cadence genus to build a gate-level netlist",
                     'members' : [
                         {'name' : 'script_dir',
                          'type' : 'String',
-                         'desc' : 'Path to Syopsys scripts (e.g. /home/user/project/synopsys/scripts)'},
-                         {'name' : 'dc_script',
+                         'desc' : 'Path to Genus scripts (e.g. /home/user/project/genus/scripts)'},
+                         {'name' : 'genus_script',
                          'type' : 'String',
                          'desc' : 'Name of the synthesis script to run [located in script_dir](e.g. synth.tcl)'},
                          {'name' : 'report_dir',
                          'type' : 'String',
-                         'desc' : 'Path to where reports should be stored (e.g. /home/user/project/synopsys/reports)'},
-                         {'name' : 'target_library',
+                         'desc' : 'Path to where reports should be stored (e.g. /home/user/project/genus/reports)'},
+                         {'name' : 'common_config',
                          'type' : 'String',
-                         'desc' : 'The Design Compiler target_library'},
-                         {'name' : 'libs',
+                         'desc' : 'A TCL file to be sourced, defining common project specific variables shared between genus and innovus (Loction of MMMC view, LEFs, DEFs, UPF, Paths, ...)'},
+                         {'name' : 'jobs',
                          'type' : 'String',
-                         'desc' : 'Libraries to use in the Design Compiler link_library'},
-                        {'name' : 'jobs',
-                         'type' : 'Integer',
-                         'desc' : 'Number of jobs. Useful for parallelizing syntheses.'},
+                         'desc' : 'Number of jobs. Useful for parallelizing syntheses. Use "all" to set the number of jobs to the number of cores available.'},
                     ]}
 
 
@@ -67,8 +64,10 @@ class Design_compiler(Edatool):
 
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
 
-        self.synth_tool = self.tool_options.get("synth", "design-compiler")
+        self.synth_tool = self.tool_options.get("synth", "genus")
 
+        jobs = self.tool_options.get('jobs', None)
+        jobs = "$nproc" if "all" in jobs else jobs
 
         template_vars = {
             'name'              : self.name,
@@ -76,49 +75,45 @@ class Design_compiler(Edatool):
             'incdirs'           : incdirs+['.'],
             'tool_options'      : self.tool_options,
             'script_dir'        : make_list(self.tool_options.get('script_dir')),
-            'dc_script'         : make_list(self.tool_options.get('dc_script')),
+            'genus_script'      : make_list(self.tool_options.get('genus_script')),
             'report_dir'        : make_list(self.tool_options.get('report_dir')),
-            'target_library'    : self.tool_options.get('target_library'),
-            'libs'              : make_list(self.tool_options.get('libs')),
+            'common_config'     : make_list(self.tool_options.get('common_config')),
+            'jobs'              : make_list(jobs),
             'toplevel'          : self.toplevel,
         }
 
-        design_compiler_settings = self.tool_options.get('design_compiler-settings', None)
-        design_compiler_command = "source {} && design_compiler".format(design_compiler_settings) if design_compiler_settings else "design_compiler"
+        genus_settings = self.tool_options.get('genus-settings', None)
+        genus_command = "source {} && genus".format(genus_settings) if genus_settings else "genus"
         
-        self.render_template('design-compiler-makefile.j2',
+        self.render_template('genus-makefile.j2',
                              'Makefile',
                              {'name' : self.name,
                                 'report_dir'        : make_list(self.tool_options.get('report_dir')),
-                                'design_compiler_command_command': design_compiler_command
+                                'genus_command_command': genus_command
                               })
                               
                               
-        jobs = self.tool_options.get('jobs', None)
-
-        run_template_vars = {
-            'jobs' : ' -jobs ' + str(jobs) if jobs is not None else ''
-        }
         
-        self.render_template('design-compiler-project.tcl.j2',
+        self.render_template('genus-project.tcl.j2',
                              self.name+".tcl",
                              template_vars)
                              
                              
-        self.render_template('design-compiler-read-sources.tcl.j2',
+        self.render_template('genus-read-sources.tcl.j2',
                              self.name + '-read-sources.tcl',
                              template_vars)
 
     def src_file_filter(self, f):
         file_types = {
-            'verilogSource'       : 'analyze -format verilog',
-            'systemVerilogSource' : 'analyze -format sverilog',
-            'vhdlSource'          : 'analyze -format vhdl',
+            'verilogSource'       : 'read_hdl -language v2001',
+            'systemVerilogSource' : 'read_hdl -language sv',
+            'vhdlSource'          : 'read_hdl -language vhdl',
             'tclSource'           : 'source',
-             'SDC'                : 'source',
+            # Note: we do not add an SDC source here as the constraint files are 
+            # referenced inside the MMMC view file on a per corner base 
         }
-
         _file_type = f.file_type.split('-')[0]
+
         if _file_type in file_types:
             cmd = ""
             cmd += file_types[_file_type] + ' '
@@ -133,22 +128,26 @@ class Design_compiler(Edatool):
                             cmd_define += " {}={}".format(k, self._param_value_str(v))
                     cmd_define += " }"
 
-                cmd += cmd_define + ' ' + '-work work ' + f.name
+                cmd += cmd_define + ' ' + '-library work ' + f.name
             else:
                 cmd += ' ' + f.name
 
             return cmd
 
+
+        if _file_type in file_types:
+            return file_types[_file_type] + ' ' + f.name
+
         if _file_type == 'user':
             return ''
 
-        _s = "{} has unknown file type '{}', interpretation is up to Design Compiler"
+        _s = "{} has unknown file type '{}', interpretation is up to Genus"
         logger.warning(_s.format(f.name,
                                     f.file_type))
         return 'add_files -norecurse' + ' ' + f.name
 
     def build_main(self):
         logger.info("Building")
-        logger.info("(running make, which runs dc_shell which has an unbelievably long lag before printing. be patient)")
+        logger.info("(running make, which runs genus which has an unbelievably long lag before printing. be patient)")
         args = []
         self._run_tool('make', args, quiet=True)
