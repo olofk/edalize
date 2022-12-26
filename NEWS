@@ -1,3 +1,18 @@
+0.4.1 2022-12-26 Olof Kindgren
+======================================================
+* New flows: f4pga
+* New backends: slang, Questa Formal
+* Migrated to flow API: icarus
+* icarus: Add vvp_options, support multiple top levels
+* ise: Support FPGA families with spaces in name
+* openlane: Support SystemVerilog
+* vcs: Support launchers
+* verilator: Fix include files
+* vivado: Support launchers, fix pnr=none, fix include dirs on windows
+* yosys: Only use -pvector for edif
+* el_docker: Support additional docker args, update openlane version
+* Don't capture output of script hooks
+
 0.4.0 2022-07-12 Olof Kindgren
 ======================================================
 * New backends: OpenFPGA, VPR, Mistral, gatemate
