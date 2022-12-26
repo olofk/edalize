@@ -433,7 +433,6 @@ class Edatool(object):
                     script["cmd"],
                     cwd=self.work_root,
                     env=_env,
-                    capture_output=not self.verbose,
                     check=True,
                 )
             except FileNotFoundError as e:
