@@ -13,7 +13,7 @@ symbiflow_init = "bash -lec {}"
 containers = [
     {'tool': 'ghdl',                      'image': 'ghdl/ghdl:buster-llvm-7',                         'init': '', 'vendor': '', 'part': ''},
     {'tool': 'verilator',                 'image': 'verilator/verilator',                             'init': '', 'vendor': '', 'part': ''},
-    {'tool': 'flow.tcl',                  'image':  'edalize/openlane-sky130:v0.12',                  'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'flow.tcl',                  'image':  'edalize/openlane-sky130:mpw4',                  'init': '', 'vendor': '', 'part': ''},
     {'tool': 'mill',                      'image': 'adoptopenjdk:8u282-b08-jre-hotspot',              'init': '', 'vendor': '', 'part': ''},
     {'tool': 'sbt',                       'image': 'adoptopenjdk:8u282-b08-jre-hotspot',              'init': '', 'vendor': '', 'part': ''},
     {'tool': 'yosys',                     'image': 'hdlc/yosys',                                      'init': '', 'vendor': '', 'part': ''},
