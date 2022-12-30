@@ -155,5 +155,5 @@ class Yosys(Edatool):
         if self.tool_options.get("yosys_as_subtool"):
             self.commands = commands.commands
         else:
-            commands.set_default_target(f"{self.name}.{output_format}")
+            commands.set_default_target(default_target)
             commands.write(os.path.join(self.work_root, "Makefile"))
