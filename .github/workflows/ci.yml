@@ -37,11 +37,11 @@ jobs:
         #- { icon: 🍎, name: macos }
         #- { icon: 🧊, name: windows }
         pyver:
-        - '3.6'
         - '3.7'
         - '3.8'
         - '3.9'
         - '3.10'
+        - '3.11'
     runs-on: ${{ matrix.os.name }}-latest
     name: ${{ matrix.os.icon }} ${{ matrix.os.name }} | ${{ matrix.pyver }}
     steps:
