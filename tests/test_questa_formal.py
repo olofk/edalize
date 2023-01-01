@@ -5,9 +5,9 @@ from .edalize_common import make_edalize_test, tests_dir
 
 def test_questa_formal(make_edalize_test):
     tool_options = {
-        "vcom_options":      ["various", "vcom_options"],
-        "vlog_options":      ["some", "vlog_options"],
-        "qverify_options":   ["a", "few", "qverify_options"],
+        "vcom_options": ["various", "vcom_options"],
+        "vlog_options": ["some", "vlog_options"],
+        "qverify_options": ["a", "few", "qverify_options"],
         "autocheck_options": ["a", "few", "autocheck_options"],
     }
 
@@ -20,7 +20,7 @@ def test_questa_formal(make_edalize_test):
 
     orig_env = os.environ.copy()
     try:
-        #os.environ["MODEL_TECH"] = os.path.join(tests_dir, "mock_commands")
+        # os.environ["MODEL_TECH"] = os.path.join(tests_dir, "mock_commands")
 
         tf.backend.build()
         os.makedirs(os.path.join(tf.work_root, "work"))
