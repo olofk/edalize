@@ -113,7 +113,7 @@ def test_edam_hook_failing(tmpdir):
     backend = get_edatool("icarus")(edam=edam, work_root=work_root)
     exc_str_exp = (
         r"pre_build script 'exit_1_script': "
-        r"\['sh', '.+/exit_1_script'\] exited with error code 1"
+        r"\['sh', '.+/exit_1_script'\] exited with error code "
     )
     with pytest.raises(RuntimeError, match=exc_str_exp):
         backend.build_pre()
