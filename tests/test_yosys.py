@@ -6,10 +6,7 @@ def test_symbiyosys(make_edalize_test):
         "default_output_name": {
             "arch": "ice40",
         },
-        "custom_output_name": {
-            "arch": "ice40",
-            "output_name": "test.json"
-        },
+        "custom_output_name": {"arch": "ice40", "output_name": "test.json"},
     }
 
     for test_name, tool_options in output_names.items():
@@ -17,7 +14,7 @@ def test_symbiyosys(make_edalize_test):
             "yosys",
             param_types=["vlogdefine", "vlogparam"],
             tool_options=tool_options,
-            ref_dir=test_name
+            ref_dir=test_name,
         )
 
         tf.backend.configure()
