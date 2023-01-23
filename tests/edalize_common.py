@@ -1,10 +1,11 @@
 from collections import OrderedDict
+from importlib import import_module
 import os.path
 import shutil
 
 import pytest
 
-from edalize import get_edatool
+from edalize.edatool import get_edatool
 
 
 tests_dir = os.path.dirname(__file__)
@@ -138,6 +139,11 @@ def compare_files(ref_dir, work_root, files):
         with open(reference_file) as fref, open(generated_file) as fgen:
             assert fref.read() == fgen.read(), f
 
+
+def get_flow(name):
+    return getattr(
+        import_module("edalize.flows.{}".format(name)), name.capitalize()
+    )
 
 def param_gen(paramtypes):
     """Generate dictionary of definitions in *paramtypes* list."""

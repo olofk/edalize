@@ -24,7 +24,7 @@ def test_radiant(make_edalize_test):
 def test_radiant_minimal(tmpdir):
     import os
 
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     from .edalize_common import compare_files, tests_dir
 
