@@ -6,16 +6,12 @@
    :alt: Join the chat at https://gitter.im/librecores/edalize
    :target: https://gitter.im/librecores/edalize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. image:: https://www.librecores.org/olofk/edalize/badge.svg?style=flat-square
-        :target: https://www.librecores.org/olofk/edalize
-        :alt: LibreCores
-
 .. image:: https://img.shields.io/pypi/dm/edalize.svg?longCache=true&style=flat-square&logo=PyPI&logoColor=e8ecef&label=PyPI%20downloads
         :target: https://pypi.org/project/edalize/
         :alt: PyPI downloads
 
-.. image:: https://img.shields.io/github/workflow/status/olofk/edalize/CI?longCache=true&style=flat-square&label=CI&logo=github%20actions&logoColor=e8ecef
-        :target: https://github.com/olofk/edalize/actions?query=workflow%3ACI
+.. image:: https://img.shields.io/github/actions/workflow/status/olofk/edalize/ci.yml?branch=main&longCache=true&style=flat-square&label=CI&logo=github%20actions&logoColor=e8ecef
+        :target: https://github.com/olofk/edalize/actions/workflows/CI.yml
         :alt: CI status
 
 Edalize
