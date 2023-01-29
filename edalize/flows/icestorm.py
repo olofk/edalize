@@ -41,13 +41,6 @@ class Icestorm(Edaflow):
 
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
 
-    def extract_flow_options(self):
-        return {
-            k: v
-            for (k, v) in self.edam.get("flow_options", {}).items()
-            if k in self.get_flow_options()
-        }
-
     def configure_flow(self, flow_options):
         name = self.edam["name"]
         # Check whether to run nextpnr or stop after synthesis

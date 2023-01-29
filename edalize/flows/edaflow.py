@@ -111,16 +111,11 @@ class Edaflow(object):
         return tool_opts
 
     def extract_flow_options(self):
-        # Extract flow options from the EDAM
-        flow_options = {}
-        available_flow_options = [
-            k for k, v in self.get_flow_options().items() if not v.get("tool")
-        ]
-        edam_flow_opts = self.edam.get("flow_options", {})
-        for opt_name in list(edam_flow_opts.keys()):
-            if opt_name in available_flow_options:  # self.get_flow_options():
-                flow_options[opt_name] = edam_flow_opts.pop(opt_name)
-        return flow_options
+        return {
+            k: v
+            for (k, v) in self.edam.get("flow_options", {}).items()
+            if k in self.get_flow_options()
+        }
 
     # Filter out tool options for each tool from self.flow_options
     def extract_tool_options(self):
