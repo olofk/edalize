@@ -74,7 +74,6 @@ def merge_dict(d1, d2):
 
 class Edaflow(object):
 
-    FLOW = []
     FLOW_OPTIONS = {}
 
     @classmethod
@@ -221,9 +220,6 @@ class Edaflow(object):
 
             last_script = script["name"]
         self.commands.add([], [hook_name], [last_script])
-
-    def configure_flow(self, flow_options):
-        return self.FLOW
 
     def __init__(self, edam, work_root, verbose=False):
         self.edam = edam

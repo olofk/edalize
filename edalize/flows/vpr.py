@@ -12,12 +12,13 @@ class Vpr(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    FLOW = [
-        ("yosys", ["vpr"], {"output_format": "blif"}),
-        ("vpr", [], {}),
-    ]
-
     FLOW_OPTIONS = {}
+
+    def configure_flow(self, flow_options):
+        return [
+            ("yosys", ["vpr"], {"output_format": "blif"}),
+            ("vpr", [], {}),
+        ]
 
     def build_tool_graph(self):
         return super().build_tool_graph()
