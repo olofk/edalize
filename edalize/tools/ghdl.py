@@ -20,19 +20,6 @@ class Ghdl(Edatool):
             "desc": "Select operation mode. verilog to create verilog, sim to run simulation. Default sim",
         }
     }  # Analyze options, elab options, run_options
-    # "lists": [
-    #    {
-    #        "name": "analyze_options",
-    #        "type": "str",
-    #        "desc": "Options to use for the import (ghdl -i) and make (ghdl -m) phases",
-    #    },
-    #    {
-    #        "name": "run_options",
-    #        "type": "str",
-    #        "desc": "Options to use for the run (ghdl -r) phase",
-    #    },
-    # ],
-    # }
 
     def configure(self, edam):
         super().configure(edam)
@@ -156,22 +143,6 @@ class Ghdl(Edatool):
                 [f"work-obj{stdarg[0]}.cf"],
                 depfiles,
             )
-
-    #        self.render_template(
-    #            "Makefile.j2",
-    #            "Makefile",
-    #            {
-    #                "std": " ".join(stdarg),
-    #                "toplevel": top_unit,
-    #                "vhdl_sources": vhdl_sources,
-    #                "standard": standard,
-    #                "analyze_options": analyze_options,
-    #                "run_options": " ".join(run_options),
-    #                "make_libraries_directories": make_libraries_directories,
-    #                "ghdlimport": ghdlimport,
-    #                "top_libraries": top_libraries,
-    #            },
-    #        )
 
     def run_main(self):
         cmd = "make"
