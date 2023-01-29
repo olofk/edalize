@@ -206,7 +206,7 @@ class Edaflow(object):
                 if not input_edam:
                     input_edam = self.edam
 
-                node.configure(input_edam)
+                node.setup(input_edam)
 
                 # This is an input node. Inject dependency on pre_build scripts
                 if not node.prev_nodes:
@@ -256,11 +256,6 @@ class Edaflow(object):
         self.stdout = None
         self.stderr = None
 
-    def set_run_command(self):
-        self.commands.add([], ["run"], ["pre_run"])
-
-    def configure(self):
-
         # Add pre build hooks
         self.add_scripts("", "pre_build")
 
@@ -269,6 +264,7 @@ class Edaflow(object):
 
         # Configure the individual tools in the graph
         self.configure_tools(nodes)
+        self.nodes = nodes
 
         # Add post_build scripts to the end of the build chain
         self.add_scripts(self.commands.default_target, "post_build")
@@ -278,6 +274,15 @@ class Edaflow(object):
         self.add_scripts("", "pre_run")
         self.set_run_command()
         self.add_scripts("run", "post_run")
+
+    def set_run_command(self):
+        self.commands.add([], ["run"], ["pre_run"])
+
+    def configure(self):
+
+        # Write tool-specific config files
+        for node in self.nodes.values():
+            node.configure()
 
         # Write out execution file
         self.commands.write(os.path.join(self.work_root, "Makefile"))

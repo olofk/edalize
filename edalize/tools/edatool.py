@@ -78,8 +78,7 @@ class Edatool(object):
             args[k] = v.get("default")
         self._apply_parameters(args)
 
-    def configure(self, edam):
-        self.setup(edam)
+    def configure(self):
         self.write_config_files()
 
     # Subclasses implement this. Called at the end of configure
