@@ -30,9 +30,6 @@ class Icestorm(Edaflow):
         },
     }
 
-    @classmethod
-    def get_flow_options(cls):
-        return cls.FLOW_OPTIONS.copy()
 
     @classmethod
     def get_tool_options(cls, flow_options):

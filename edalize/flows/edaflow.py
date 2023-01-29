@@ -75,23 +75,11 @@ def merge_dict(d1, d2):
 class Edaflow(object):
 
     FLOW = []
+    FLOW_OPTIONS = {}
 
     @classmethod
     def get_flow_options(cls):
-        flow_opts = cls.FLOW_OPTIONS.copy()
-        for tool in cls.FLOW:
-            (tool_name, next_nodes, flow_defined_tool_options) = tool
-
-            # Get available tool options from each tool in the flow
-            class_tool_options = getattr(
-                import_module(f"edalize.tools.{tool_name}"), tool_name.capitalize()
-            ).get_tool_options()
-            for opt_name in class_tool_options:
-                # Filter out tool options that are already set by the flow
-                if not opt_name in flow_defined_tool_options:
-                    flow_opts[opt_name] = class_tool_options[opt_name]
-                    flow_opts[opt_name]["tool"] = tool_name
-        return flow_opts
+        return cls.FLOW_OPTIONS.copy()
 
     @classmethod
     def get_tool_options(cls, flow_options):
