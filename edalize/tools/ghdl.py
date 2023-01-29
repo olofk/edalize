@@ -21,8 +21,8 @@ class Ghdl(Edatool):
         }
     }  # Analyze options, elab options, run_options
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
         analyze_options = self.tool_options.get("analyze_options", [])
 
         # Check of std=xx analyze option, this overyides the dynamic determination of vhdl standard

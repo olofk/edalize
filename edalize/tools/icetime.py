@@ -23,8 +23,8 @@ class Icetime(Edatool):
         }
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
         unused_files = []
 
         asc_file = ""

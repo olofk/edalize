@@ -21,8 +21,8 @@ class Nextpnr(Edatool):
         },
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
         cst_file = ""
         lpf_file = ""
         pcf_file = ""

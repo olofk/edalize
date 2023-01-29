@@ -88,7 +88,7 @@ class Vivado(Edatool):
 
         return version
 
-    def configure(self, edam):
+    def setup(self, edam):
         """
         Configuration is the first phase of the build.
 
@@ -96,7 +96,7 @@ class Vivado(Edatool):
         sources, IPs and constraints and then writes them to the TCL file along
         with the build steps.
         """
-        super().configure(edam)
+        super().setup(edam)
         src_files = []
         incdirs = []
         edif_files = []
@@ -142,7 +142,7 @@ class Vivado(Edatool):
                     src_files.append(cmd + " {" + f["name"] + "}")
             else:
                 unused_files.append(f)
-        template_vars = {
+        self.template_vars = {
             "name": self.name,
             "src_files": "\n".join(src_files),
             "incdirs": incdirs + ["."],
@@ -156,23 +156,14 @@ class Vivado(Edatool):
             "has_xci": has_xci,
             "bd_files": bd_files,
         }
-        self.render_template("vivado-project.tcl.j2", self.name + ".tcl", template_vars)
-
         jobs = self.tool_options.get("jobs", None)
 
-        run_template_vars = {"jobs": " -jobs " + str(jobs) if jobs is not None else ""}
+        self.run_template_vars = {"jobs": " -jobs " + str(jobs) if jobs is not None else ""}
 
-        self.render_template(
-            "vivado-run.tcl.j2", self.name + "_run.tcl", run_template_vars
-        )
-
-        synth_template_vars = {
+        self.synth_template_vars = {
             "jobs": " -jobs " + str(jobs) if jobs is not None else ""
         }
 
-        self.render_template(
-            "vivado-synth.tcl.j2", self.name + "_synth.tcl", synth_template_vars
-        )
         # Write Makefile
         commands = EdaCommands()
 
@@ -218,8 +209,18 @@ class Vivado(Edatool):
         commands.add(command, ["pgm"], depends)
 
         commands.set_default_target(bitstream)
-        commands.write(os.path.join(self.work_root, "Makefile"))
         self.commands = commands.commands
+
+    def write_config_files(self):
+        self.render_template("vivado-project.tcl.j2", self.name + ".tcl", self.template_vars)
+
+        self.render_template(
+            "vivado-run.tcl.j2", self.name + "_run.tcl", self.run_template_vars
+        )
+
+        self.render_template(
+            "vivado-synth.tcl.j2", self.name + "_synth.tcl", self.synth_template_vars
+        )
         self.render_template("vivado-program.tcl.j2", self.name + "_pgm.tcl")
 
     def build(self):

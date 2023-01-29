@@ -33,8 +33,8 @@ class Verilator(Edatool):
         # run_options?
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
 
         # Future improvement: Separate include directories of c and verilog files
         incdirs = []
@@ -111,8 +111,7 @@ class Verilator(Edatool):
         for k, v in self.vlogdefine.items():
             vc.append("-D{}={}\n".format(k, self._param_value_str(v)))
 
-        with open(os.path.join(self.work_root, verilator_file), "w") as ffile:
-            ffile.write("\n".join(vc) + "\n")
+        self.vc = vc
 
         mk_file = f"V{self.toplevel}.mk"
         exe_file = f"V{self.toplevel}"
@@ -134,6 +133,10 @@ class Verilator(Edatool):
             self.default_target = exe_file
 
         self.commands = commands.commands
+
+    def write_config_files(self):
+        with open(os.path.join(self.work_root, self.name+".vc"), "w") as ffile:
+            ffile.write("\n".join(self.vc) + "\n")
 
     def run(self, args):
         self.args = []

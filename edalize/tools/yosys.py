@@ -39,8 +39,9 @@ class Yosys(Edatool):
         },
     }
 
-    def write_config_files(self, edam):
-        # write Yosys tcl script file
+    def setup(self, edam):
+        super().setup(edam)
+
         yosys_template = self.tool_options.get("yosys_template")
 
         incdirs = []
@@ -124,16 +125,7 @@ class Yosys(Edatool):
             "yosys_template": template,
             "name": self.name,
         }
-
-        if not yosys_template:
-            self.render_template(
-                "edalize_yosys_procs.tcl.j2", "edalize_yosys_procs.tcl", template_vars
-            )
-
-        if not yosys_template:
-            self.render_template(
-                "yosys-script-tcl.j2", "edalize_yosys_template.tcl", template_vars
-            )
+        self.template_vars = template_vars
 
         commands = EdaCommands()
 
@@ -186,3 +178,16 @@ class Yosys(Edatool):
         commands.add(command, targets, depends, variables=variables)
 
         self.commands = commands.commands
+
+    def write_config_files(self):
+        yosys_template = self.tool_options.get("yosys_template")
+        if not yosys_template:
+            self.render_template(
+                "edalize_yosys_procs.tcl.j2", "edalize_yosys_procs.tcl", self.template_vars
+            )
+
+        if not yosys_template:
+            self.render_template(
+                "yosys-script-tcl.j2", "edalize_yosys_template.tcl", self.template_vars
+            )
+

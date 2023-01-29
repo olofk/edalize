@@ -49,7 +49,7 @@ class Edatool(object):
         self.jinja_env.filters["param_value_str"] = jinja_filter_param_value_str
         self.jinja_env.filters["generic_value_str"] = jinja_filter_param_value_str
 
-    def configure(self, edam):
+    def setup(self, edam):
         self.edam = edam
         try:
             self.name = edam["name"]
@@ -78,10 +78,12 @@ class Edatool(object):
             args[k] = v.get("default")
         self._apply_parameters(args)
 
-        self.write_config_files(edam)
+    def configure(self, edam):
+        self.setup(edam)
+        self.write_config_files()
 
     # Subclasses implement this. Called at the end of configure
-    def write_config_files(self, edam):
+    def write_config_files(self):
         pass
 
     def set_default_target(self, target):

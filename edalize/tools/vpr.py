@@ -61,7 +61,7 @@ class Vpr(Edatool):
             logger.warning("Unable to recognize VPR version")
         return version
 
-    def configure(self, edam):
+    def setup(self, edam):
         """
         Configuration is the first phase of the build.
 
@@ -69,7 +69,7 @@ class Vpr(Edatool):
         sources, IPs and constraints and then writes them to the TCL file along
         with the build steps.
         """
-        super().configure(edam)
+        super().setup(edam)
 
         netlist_file = ""
         timing_constraints = []
@@ -171,7 +171,6 @@ class Vpr(Edatool):
 
         self.commands = commands.commands
         commands.set_default_target(targets)
-        commands.write(os.path.join(self.work_root, "Makefile"))
 
     def build(self):
         logger.info("Building")
