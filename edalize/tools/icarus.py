@@ -7,29 +7,6 @@ import os
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
-MAKEFILE_TEMPLATE = """
-all: $(VPI_MODULES) $(TARGET)
-
-run: $(VPI_MODULES) $(TARGET)
-	vvp -n -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) -fst $(EXTRA_OPTIONS)
-
-clean:
-	$(RM) $(VPI_MODULES) $(TARGET)
-"""
-
-VPI_MAKE_SECTION = """
-{name}_LIBS := {libs}
-{name}_INCS := {incs}
-{name}_SRCS := {srcs}
-
-{name}.vpi: $({name}_SRCS)
-	iverilog-vpi --name={name} $({name}_LIBS) $({name}_INCS) $?
-
-clean_{name}:
-	$(RM) {name}.vpi
-"""
-
-
 class Icarus(Edatool):
 
     description = "Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code written in Verilog (IEEE-1364) into some target format"
