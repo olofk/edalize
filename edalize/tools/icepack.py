@@ -61,4 +61,5 @@ class Icepack(Edatool):
 
         commands = EdaCommands()
         commands.add(command, [targets], [depends])
-        self.commands = commands.commands
+        commands.set_default_target(bin_file)
+        self.commands = commands

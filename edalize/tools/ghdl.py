@@ -143,6 +143,8 @@ class Ghdl(Edatool):
                 [f"work-obj{stdarg[0]}.cf"],
                 depfiles,
             )
+            commands.set_default_target(f"work-obj{stdarg[0]}.cf")
+        self.commands = commands
 
     def run_main(self):
         cmd = "make"

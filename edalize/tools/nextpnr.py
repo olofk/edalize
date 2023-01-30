@@ -139,4 +139,5 @@ class Nextpnr(Edatool):
 
             # GUI target
             commands.add(command + ["--gui"], ["build-gui"], [depends])
-        self.commands = commands.commands
+        commands.set_default_target(targets[0])
+        self.commands = commands

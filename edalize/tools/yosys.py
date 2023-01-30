@@ -176,8 +176,8 @@ class Yosys(Edatool):
             command += depfiles
 
         commands.add(command, targets, depends, variables=variables)
-
-        self.commands = commands.commands
+        commands.set_default_target(targets[0])
+        self.commands = commands
 
     def write_config_files(self):
         yosys_template = self.tool_options.get("yosys_template")

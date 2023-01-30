@@ -58,4 +58,5 @@ class Icetime(Edatool):
         commands = EdaCommands()
         commands.add(command, [targets], [depends])
         commands.add([], ["timing"], [targets])
-        self.commands = commands.commands
+        commands.set_default_target("timing")
+        self.commands = commands

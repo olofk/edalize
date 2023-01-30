@@ -102,8 +102,8 @@ class Icarus(Edatool):
             [self.name],
         )
 
-        self.default_target = self.name
-        self.commands = commands.commands
+        commands.set_default_target(self.name)
+        self.commands = commands
         self.scr_file = scr_file
 
     def write_config_files(self):

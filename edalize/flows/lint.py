@@ -70,4 +70,4 @@ class Lint(Edaflow):
         # Set flow default target from the lint tool's default target
         tool = self.flow_options.get("tool")
 
-        self.commands.default_target = graph.get_node(tool).inst.default_target
+        self.commands.default_target = graph.get_node(tool).inst.commands.default_target

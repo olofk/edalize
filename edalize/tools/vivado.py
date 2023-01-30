@@ -209,7 +209,7 @@ class Vivado(Edatool):
         commands.add(command, ["pgm"], depends)
 
         commands.set_default_target(bitstream)
-        self.commands = commands.commands
+        self.commands = commands
 
     def write_config_files(self):
         self.render_template("vivado-project.tcl.j2", self.name + ".tcl", self.template_vars)

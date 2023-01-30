@@ -72,4 +72,5 @@ class Surelog(Edatool):
             depfiles,
         )
 
-        self.commands = commands.commands
+        commands.set_default_target(output_file)
+        self.commands = commands

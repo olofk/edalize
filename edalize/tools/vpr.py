@@ -169,8 +169,8 @@ class Vpr(Edatool):
                 {"name": self.name + str(ext), "file_type": "vpr_" + str(ext[1:])}
             )
 
-        self.commands = commands.commands
         commands.set_default_target(targets)
+        self.commands = commands
 
     def build(self):
         logger.info("Building")

@@ -231,8 +231,8 @@ class Edaflow(object):
                     # that the node executes. Note that this isn't
                     # technically correct since the first command in
                     # the list might not be the first command executed
-                    node.inst.commands[0].order_only_deps = ["pre_build"]
-                self.commands.commands += node.inst.commands
+                    node.inst.commands.commands[0].order_only_deps = ["pre_build"]
+                self.commands.commands += node.inst.commands.commands
 
     def add_scripts(self, depends, hook_name):
         last_script = depends

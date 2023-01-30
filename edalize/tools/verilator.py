@@ -123,16 +123,16 @@ class Verilator(Edatool):
         )
 
         if mode == "lint-only":
-            self.default_target = mk_file
+            commands.set_default_target(mk_file)
         else:
             commands.add(
                 ["make", "-f", mk_file] + self.tool_options.get("make_options", []),
                 [exe_file],
                 [mk_file],
             )
-            self.default_target = exe_file
+            commands.set_default_target(exe_file)
 
-        self.commands = commands.commands
+        self.commands = commands
 
     def write_config_files(self):
         with open(os.path.join(self.work_root, self.name+".vc"), "w") as ffile:
