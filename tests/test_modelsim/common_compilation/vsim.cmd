@@ -1,0 +1,1 @@
+-c -do do edalize_main.tcl; exit
