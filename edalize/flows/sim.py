@@ -10,10 +10,10 @@ class Sim(Generic):
 
     argtypes = ["plusarg", "vlogdefine", "vlogparam"]
 
-    def run(self, args):
+    def run(self, args=None):
         tool = self.flow_options.get("tool")
         run_tool = self.flow.get_node(tool).inst
 
         # Get run command from simulator
-        (cmd, args, cwd) = run_tool.run(args)
+        (cmd, args, cwd) = run_tool.run()
         self._run_tool(cmd, args=args, cwd=cwd)

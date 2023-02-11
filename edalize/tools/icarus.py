@@ -110,7 +110,7 @@ class Icarus(Edatool):
         with open(os.path.join(self.work_root, self.name + ".scr"), "w") as scr_file:
             scr_file.write(self.scr_file.getvalue())
 
-    def run(self, args):
+    def run(self):
         args = ["run"]
 
         # Set plusargs

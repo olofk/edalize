@@ -138,7 +138,7 @@ class Verilator(Edatool):
         with open(os.path.join(self.work_root, self.name+".vc"), "w") as ffile:
             ffile.write("\n".join(self.vc) + "\n")
 
-    def run(self, args):
+    def run(self):
         self.args = []
         for key, value in self.plusarg.items():
             self.args += ["+{}={}".format(key, self._param_value_str(value))]

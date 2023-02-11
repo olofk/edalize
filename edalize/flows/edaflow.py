@@ -334,5 +334,5 @@ class Edaflow(object):
         self._run_tool("make", cwd=self.work_root)
 
     # Most flows won't have a run phase
-    def run(self, args):
+    def run(self, args=None):
         pass
