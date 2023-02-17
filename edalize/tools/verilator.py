@@ -62,7 +62,7 @@ class Verilator(Edatool):
         uhdm_files = []
 
         unused_files = []
-        depfiles = []
+        depfiles = [verilator_file]
         for f in self.files:
             file_type = f.get("file_type", "")
             depfile = True
@@ -135,8 +135,7 @@ class Verilator(Edatool):
         self.commands = commands
 
     def write_config_files(self):
-        with open(os.path.join(self.work_root, self.name+".vc"), "w") as ffile:
-            ffile.write("\n".join(self.vc) + "\n")
+        self.update_config_file(self.name + ".vc", "\n".join(self.vc) + "\n")
 
     def run(self):
         self.args = []
