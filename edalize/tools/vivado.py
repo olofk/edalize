@@ -105,6 +105,7 @@ class Vivado(Edatool):
         unused_files = []
         bd_files = []
 
+        dep_files = []
         for f in self.files:
             file_type = f.get("file_type", "")
             cmd = ""
@@ -140,6 +141,7 @@ class Vivado(Edatool):
             if cmd:
                 if not self._add_include_dir(f, incdirs, True):
                     src_files.append(cmd + " {" + f["name"] + "}")
+                dep_files.append(f["name"])
             else:
                 unused_files.append(f)
         self.template_vars = {
@@ -158,7 +160,9 @@ class Vivado(Edatool):
         }
         jobs = self.tool_options.get("jobs", None)
 
-        self.run_template_vars = {"jobs": " -jobs " + str(jobs) if jobs is not None else ""}
+        self.run_template_vars = {
+            "jobs": " -jobs " + str(jobs) if jobs is not None else ""
+        }
 
         self.synth_template_vars = {
             "jobs": " -jobs " + str(jobs) if jobs is not None else ""
@@ -172,7 +176,9 @@ class Vivado(Edatool):
         # Create project file
         project_file = self.name + ".xpr"
         tcl_file = [self.name + ".tcl"]
-        commands.add(vivado_command + tcl_file, [project_file], tcl_file + edif_files)
+        commands.add(
+            vivado_command + tcl_file, [project_file], tcl_file + dep_files + edif_files
+        )
         synth = self.tool_options.get("synth", "vivado")
         if synth == "vivado":
             depends = [f"{self.name}_synth.tcl", project_file]
@@ -212,7 +218,9 @@ class Vivado(Edatool):
         self.commands = commands
 
     def write_config_files(self):
-        self.render_template("vivado-project.tcl.j2", self.name + ".tcl", self.template_vars)
+        self.render_template(
+            "vivado-project.tcl.j2", self.name + ".tcl", self.template_vars
+        )
 
         self.render_template(
             "vivado-run.tcl.j2", self.name + "_run.tcl", self.run_template_vars
