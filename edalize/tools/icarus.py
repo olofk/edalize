@@ -107,8 +107,8 @@ class Icarus(Edatool):
         self.scr_file = scr_file
 
     def write_config_files(self):
-        with open(os.path.join(self.work_root, self.name + ".scr"), "w") as scr_file:
-            scr_file.write(self.scr_file.getvalue())
+        f = os.path.join(self.work_root, self.name + ".scr")
+        self.update_config_file(f, self.scr_file.getvalue())
 
     def run(self):
         args = ["run"]
