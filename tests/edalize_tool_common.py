@@ -44,12 +44,19 @@ class ToolFixture:
 @pytest.fixture
 def tool_fixture(tmp_path):
     def _tool_fixture(
-        tool_name, files=FILES, toplevel="top_module", ref_subdir="", config_files=[]
+        tool_name,
+        tool_options={},
+        files=FILES,
+        toplevel="top_module",
+        ref_subdir="",
+        config_files=[],
     ):
 
         tf = ToolFixture(tool_name, ref_subdir)
 
-        edam = get_edam(tool_name, files=files, toplevel=toplevel)
+        edam = get_edam(
+            tool_name, tool_options=tool_options, files=files, toplevel=toplevel
+        )
 
         tf.tool.work_root = tmp_path
         tf.tool.setup(edam)

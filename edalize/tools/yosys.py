@@ -22,7 +22,7 @@ class Yosys(Edatool):
         },
         "output_format": {
             "type": "str",
-            "desc": "Output file format. Legal values are *json*, *edif*, *blif*",
+            "desc": "Output file format. Legal values are *json*, *edif*, *blif*, *verilog*",
         },
         "yosys_template": {
             "type": "str",
@@ -74,13 +74,17 @@ class Yosys(Edatool):
         self.edam["files"] = unused_files
 
         output_format = self.tool_options.get("output_format", "blif")
-        default_target = f"{self.name}.{output_format}"
+        default_target = (
+            f"{self.name}.{'v' if output_format == 'verilog' else output_format}"
+        )
 
         self.edam["files"].append(
             {
                 "name": default_target,
                 "file_type": "jsonNetlist"
                 if output_format == "json"
+                else "verilogSource"
+                if output_format == "verilog"
                 else output_format,
             }
         )
@@ -101,7 +105,7 @@ class Yosys(Edatool):
         arch = self.tool_options.get("arch")
 
         if not arch:
-            logger.error("ERROR: arch is not defined.")
+            raise RuntimeError("arch is not defined.")
 
         plugins = []
         if has_uhdm:
@@ -118,7 +122,7 @@ class Yosys(Edatool):
             "synth_command": "synth_" + arch,
             "synth_options": " ".join(self.tool_options.get("yosys_synth_options", "")),
             "write_command": "write_" + output_format,
-            "output_format": output_format,
+            "output_format": "v" if output_format == "verilog" else output_format,
             "output_opts": "-pvector bra "
             if (arch == "xilinx" and output_format == "edif")
             else "",
