@@ -48,16 +48,17 @@ class Vivado(Edaflow):
         # Add any user-specified frontends to the flow
         deps = []
         for frontend in flow_options.get("frontends", []):
-            flow[frontend] = {"deps" : deps}
+            flow[frontend] = {"deps": deps}
             deps = [frontend]
 
         if flow_options.get("synth") == "yosys":
-            flow["yosys"] = {"deps" : deps,
-                             "fdto" : self.FLOW_DEFINED_TOOL_OPTIONS["yosys"]}
-            flow["vivado"] = {"deps" : ["yosys"],
-                              "fdto" : {"synth": "none"}}
+            flow["yosys"] = {
+                "deps": deps,
+                "fdto": self.FLOW_DEFINED_TOOL_OPTIONS["yosys"],
+            }
+            flow["vivado"] = {"deps": ["yosys"], "fdto": {"synth": "none"}}
         else:
-            flow["vivado"] = {"deps" : deps}
+            flow["vivado"] = {"deps": deps}
 
         name = self.edam["name"]
         self.commands.set_default_target(name + ".bit")

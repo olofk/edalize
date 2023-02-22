@@ -42,10 +42,13 @@ def get_edatool(name):
 
 def walk_tool_packages():
     parent_module = __name__.split(".")[0]
-    for _, pkg_name, _ in walk_packages(sys.modules[parent_module].__path__, "edalize."):
+    for _, pkg_name, _ in walk_packages(
+        sys.modules[parent_module].__path__, "edalize."
+    ):
         pkg_parts = pkg_name.split(".")
         if not pkg_parts[1] in NON_TOOL_PACKAGES:
             yield pkg_parts[1]
+
 
 def get_edatools():
     return [get_edatool(pkg) for pkg in walk_tool_packages()]

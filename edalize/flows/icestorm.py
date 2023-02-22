@@ -14,15 +14,10 @@ class Icestorm(Edaflow):
     argtypes = ["vlogdefine", "vlogparam"]
 
     _flow = {
-        "yosys" : {
-            "fdto" : {"arch": "ice40", "output_format": "json"}},
-        "nextpnr" : {
-            "deps" : ["yosys"],
-            "fdto" : {"arch": "ice40"}},
-        "icepack" : {
-            "deps" : ["nextpnr"]},
-        "icetime" : {
-            "deps" : ["nextpnr"]},
+        "yosys": {"fdto": {"arch": "ice40", "output_format": "json"}},
+        "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "ice40"}},
+        "icepack": {"deps": ["nextpnr"]},
+        "icetime": {"deps": ["nextpnr"]},
     }
 
     FLOW_OPTIONS = {
@@ -36,7 +31,6 @@ class Icestorm(Edaflow):
             "desc": "Select Place & Route tool. Legal values are *next* for nextpnr or *none* to only perform synthesis. Default is next",
         },
     }
-
 
     @classmethod
     def get_tool_options(cls, flow_options):
@@ -54,7 +48,7 @@ class Icestorm(Edaflow):
         # Add any user-specified frontends to the flow
         deps = []
         for frontend in flow_options.get("frontends", []):
-            flow[frontend] = {"deps" : deps}
+            flow[frontend] = {"deps": deps}
             deps = [frontend]
 
         flow["yosys"]["deps"] = deps
@@ -63,8 +57,8 @@ class Icestorm(Edaflow):
         # and set output from syntheis or pnr as default target depending
         # on value of pnr flow option
         name = self.edam["name"]
-        self.commands.add([], ["synth"], [name + '.json'])
-        self.commands.add([], ["bitstream"], [name + '.bin'])
+        self.commands.add([], ["synth"], [name + ".json"])
+        self.commands.add([], ["bitstream"], [name + ".bin"])
         self.commands.set_default_target("bitstream")
 
         pnr = flow_options.get("pnr", "next")
