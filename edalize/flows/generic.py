@@ -30,11 +30,7 @@ class Generic(Edaflow):
     @classmethod
     def get_tool_options(cls, flow_options):
         flow = flow_options.get("frontends", []).copy()
-        tool = flow_options.get("tool")
-        if not tool:
-            raise RuntimeError(
-                f"Flow '{cls.__name__.lower()}' requires flow option 'tool' to be set"
-            )
+        tool = cls._require_flow_option(flow_options, "tool")
         flow.append(tool)
 
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
@@ -42,10 +38,6 @@ class Generic(Edaflow):
     def configure_flow(self, flow_options):
         # Check for mandatory flow option "tool"
         tool = self.flow_options.get("tool", "")
-        if not tool:
-            raise RuntimeError(
-                f"Flow '{cls.__name__.lower()}' requires flow option 'tool' to be set"
-            )
 
         # Apply flow-defined tool options if any
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(tool, {})

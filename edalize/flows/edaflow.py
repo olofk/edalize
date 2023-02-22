@@ -138,6 +138,20 @@ class Edaflow(object):
     def get_tool_options(cls, flow_options):
         return {}
 
+    @classmethod
+    def _require_flow_option(cls, flow_options, option_name):
+        """Check for mandatory flow option.
+
+        Returns the value if it exists or otherwise throws a RuntimeError
+        """
+
+        option = flow_options.get(option_name, "")
+        if not option:
+            raise RuntimeError(
+                f"Flow '{cls.__name__.lower()}' requires flow option '{option_name}' to be set"
+            )
+        return option
+
     # Takes a list of tool names and a dict of pre-defined tool options
     # Imports the tool class for every tool in the list, extracts their
     # tool options and return then all, except for the ones listed in
