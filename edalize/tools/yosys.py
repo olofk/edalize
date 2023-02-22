@@ -63,6 +63,9 @@ class Yosys(Edatool):
             elif file_type == "tclSource":
                 cmd = "source"
 
+            if "simulation" in f.get("tags", []):
+                cmd = ""
+
             if cmd:
                 depfiles.append(f["name"])
                 if not self._add_include_dir(f, incdirs):

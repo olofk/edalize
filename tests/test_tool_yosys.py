@@ -33,3 +33,20 @@ def test_tool_yosys_minimal(tool_fixture):
 
     tf.tool.configure()
     tf.compare_config_files(["edalize_yosys_template.tcl", "edalize_yosys_procs.tcl"])
+
+
+def test_tool_yosys_tags(tool_fixture):
+    from .edalize_tool_common import FILES
+
+    tool_options = {"arch": "ice40"}
+    files = FILES.copy()
+    files.append(
+        {"name": "testbench.v", "file_type": "verilogSource", "tags": "simulation"}
+    )
+
+    tf = tool_fixture(
+        "yosys", tool_options=tool_options, files=files, ref_subdir="minimal"
+    )
+
+    tf.tool.configure()
+    tf.compare_config_files(["edalize_yosys_template.tcl", "edalize_yosys_procs.tcl"])
