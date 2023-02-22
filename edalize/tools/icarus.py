@@ -41,11 +41,13 @@ class Icarus(Edatool):
                 )
 
             for key, value in self.vlogparam.items():
-                scr_file.write(
-                    "+parameter+{}.{}={}\n".format(
-                        self.toplevel, key, self._param_value_str(value, '"')
+                # We currently have no way to express for which toplevel these parameters should be applied, so apply for all of them and accept the warnings.
+                for toplevel in self.toplevel.split(" "):
+                    scr_file.write(
+                        "+parameter+{}.{}={}\n".format(
+                            toplevel, key, self._param_value_str(value, '"')
+                        )
                     )
-                )
 
             for id in incdirs:
                 scr_file.write("+incdir+" + id + "\n")
@@ -82,9 +84,9 @@ class Icarus(Edatool):
 
         commands = EdaCommands()
         commands.add(
-            [
-                "iverilog",
-                f"-s{self.toplevel}",
+            ["iverilog"]
+            + [f"-s{t}" for t in self.toplevel.split(" ")]
+            + [
                 "-c",
                 f"{self.name}.scr",
                 "-o",
