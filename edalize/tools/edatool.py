@@ -49,6 +49,14 @@ class Edatool(object):
         self.jinja_env.filters["param_value_str"] = jinja_filter_param_value_str
         self.jinja_env.filters["generic_value_str"] = jinja_filter_param_value_str
 
+    def _require_tool_option(self, option_name):
+        option = self.tool_options.get(option_name)
+        if not option:
+            raise RuntimeError(
+                f"{self.__class__.__name__.lower()} requires tool option '{option_name}'"
+            )
+        return option
+
     def setup(self, edam):
         self.edam = edam
         try:

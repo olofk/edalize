@@ -105,10 +105,7 @@ class Yosys(Edatool):
                 _s.format(key, self._param_value_str(value), self.toplevel)
             )
 
-        arch = self.tool_options.get("arch")
-
-        if not arch:
-            raise RuntimeError("arch is not defined.")
+        arch = self._require_tool_option("arch")
 
         plugins = []
         if has_uhdm:
