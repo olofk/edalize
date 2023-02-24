@@ -7,13 +7,13 @@ pre_build:
 test_vivado_minimal_0.xpr: test_vivado_minimal_0.tcl | pre_build
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_minimal_0.tcl
 
-test_vivado_minimal_0.runs/synth_1/__synthesis_is_complete__: test_vivado_minimal_0_synth.tcl test_vivado_minimal_0.xpr
-	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_minimal_0_synth.tcl test_vivado_minimal_0.xpr
+test_vivado_minimal_0.v test_vivado_minimal_0.edn: test_vivado_minimal_0_synth.tcl test_vivado_minimal_0_netlist.tcl | test_vivado_minimal_0.xpr
+	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_minimal_0_synth.tcl test_vivado_minimal_0_netlist.tcl test_vivado_minimal_0.xpr
 
-synth: test_vivado_minimal_0.runs/synth_1/__synthesis_is_complete__
+synth: test_vivado_minimal_0.v test_vivado_minimal_0.edn
 
-test_vivado_minimal_0.bit: test_vivado_minimal_0_run.tcl test_vivado_minimal_0.xpr
-	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_minimal_0_run.tcl test_vivado_minimal_0.xpr
+test_vivado_minimal_0.bit: test_vivado_minimal_0_synth.tcl test_vivado_minimal_0_run.tcl | test_vivado_minimal_0.xpr
+	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_minimal_0_synth.tcl test_vivado_minimal_0_run.tcl test_vivado_minimal_0.xpr
 
 build-gui: test_vivado_minimal_0.xpr
 	$(EDALIZE_LAUNCHER) vivado test_vivado_minimal_0.xpr

@@ -8,8 +8,6 @@ if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
   # 'wait_on_run'. So launch and wait on synth then launch and wait on impl to
   # get logging to stdout from both.
 
-  launch_runs synth_1{{ jobs }} -quiet
-
   launch_runs impl_1 -to_step write_bitstream{{ jobs }}
   wait_on_run impl_1
   puts "Bitstream generation completed"

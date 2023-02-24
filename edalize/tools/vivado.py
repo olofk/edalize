@@ -144,6 +144,16 @@ class Vivado(Edatool):
                 dep_files.append(f["name"])
             else:
                 unused_files.append(f)
+
+        self.edam = edam.copy()
+        self.edam["files"] = unused_files
+        self.edam["files"].append(
+            {
+                "name": self.name + ".v",
+                "file_type": "verilogSource",
+            }
+        )
+
         self.template_vars = {
             "name": self.name,
             "src_files": "\n".join(src_files),
@@ -173,27 +183,43 @@ class Vivado(Edatool):
 
         vivado_command = ["vivado", "-notrace", "-mode", "batch", "-source"]
 
-        # Create project file
         project_file = self.name + ".xpr"
-        tcl_file = [self.name + ".tcl"]
+        project_tcl = self.name + ".tcl"
+        synth_tcl = self.name + "_synth.tcl"
+        netlist_tcl = self.name + "_netlist.tcl"
+        run_tcl = self.name + "_run.tcl"
+
+        # Create project file
+        tcl_scripts = [project_tcl]
         commands.add(
-            vivado_command + tcl_file, [project_file], tcl_file + dep_files + edif_files
+            vivado_command + tcl_scripts,
+            [project_file],
+            tcl_scripts + dep_files + edif_files,
         )
         synth = self.tool_options.get("synth", "vivado")
         if synth == "vivado":
-            depends = [f"{self.name}_synth.tcl", project_file]
-            targets = [f"{self.name}.runs/synth_1/__synthesis_is_complete__"]
-            commands.add(vivado_command + depends, targets, depends)
+            tcl_scripts = [synth_tcl, netlist_tcl]
+            targets = [f"{self.name}.v", f"{self.name}.edn"]
+            commands.add(
+                vivado_command + tcl_scripts + [project_file],
+                targets,
+                tcl_scripts,
+                [project_file],
+            )
         else:
             targets = edif_files
 
         commands.add([], ["synth"], targets)
 
         # Bitstream generation
-        run_tcl = self.name + "_run.tcl"
-        depends = [run_tcl, project_file]
+        tcl_scripts = [synth_tcl, run_tcl]
         bitstream = self.name + ".bit"
-        commands.add(vivado_command + depends, [bitstream], depends)
+        commands.add(
+            command=vivado_command + tcl_scripts + [project_file],
+            targets=[bitstream],
+            depends=tcl_scripts,
+            order_only_deps=[project_file],
+        )
 
         commands.add(["vivado", project_file], ["build-gui"], [project_file])
 
@@ -220,6 +246,10 @@ class Vivado(Edatool):
     def write_config_files(self):
         self.render_template(
             "vivado-project.tcl.j2", self.name + ".tcl", self.template_vars
+        )
+
+        self.render_template(
+            "vivado-netlist.tcl.j2", self.name + "_netlist.tcl", self.template_vars
         )
 
         self.render_template(

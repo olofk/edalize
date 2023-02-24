@@ -12,8 +12,8 @@ test_vivado_yosys_0.xpr: test_vivado_yosys_0.tcl test_vivado_yosys_0.edif test_v
 
 synth: test_vivado_yosys_0.edif
 
-test_vivado_yosys_0.bit: test_vivado_yosys_0_run.tcl test_vivado_yosys_0.xpr
-	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_yosys_0_run.tcl test_vivado_yosys_0.xpr
+test_vivado_yosys_0.bit: test_vivado_yosys_0_synth.tcl test_vivado_yosys_0_run.tcl | test_vivado_yosys_0.xpr
+	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_yosys_0_synth.tcl test_vivado_yosys_0_run.tcl test_vivado_yosys_0.xpr
 
 build-gui: test_vivado_yosys_0.xpr
 	$(EDALIZE_LAUNCHER) vivado test_vivado_yosys_0.xpr
