@@ -98,6 +98,7 @@ class Vivado(Edatool):
         """
         super().setup(edam)
         src_files = []
+        sim_files = []
         incdirs = []
         edif_files = []
         has_vhdl2008 = False
@@ -141,6 +142,18 @@ class Vivado(Edatool):
             if cmd:
                 if not self._add_include_dir(f, incdirs, True):
                     src_files.append(cmd + " {" + f["name"] + "}")
+                if "simulation" in f.get("tags", []):
+                    sim_files.append(
+                        f"move_files -fileset sim_1 [get_files {f['name']}]"
+                    )
+                    sim_files.append(
+                        f"set_property used_in_synthesis false [get_files {f['name']}]"
+                    )
+                    sim_files.append(
+                        f"set_property used_in_implementation false [get_files {f['name']}]"
+                    )
+                    unused_files.append(f)
+
                 dep_files.append(f["name"])
             else:
                 unused_files.append(f)
@@ -156,7 +169,7 @@ class Vivado(Edatool):
 
         self.template_vars = {
             "name": self.name,
-            "src_files": "\n".join(src_files),
+            "src_files": "\n".join(src_files + sim_files),
             "incdirs": incdirs + ["."],
             "tool_options": self.tool_options,
             "toplevel": self.toplevel,
