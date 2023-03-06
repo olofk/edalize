@@ -4,7 +4,7 @@ all: post_build
 
 pre_build: 
 
-test_vivado_0.xpr: test_vivado_0.tcl | pre_build
+test_vivado_0.xpr: test_vivado_0.tcl sdc_file sv_file.sv tcl_file.tcl vlog_file.v vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file xci_file.xci xdc_file.xdc bootrom.mem another_sv_file.sv | pre_build
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_0.tcl
 
 test_vivado_0.runs/synth_1/__synthesis_is_complete__: test_vivado_0_synth.tcl test_vivado_0.xpr

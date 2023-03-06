@@ -187,6 +187,13 @@ def _setup_backend(
                 with open(_f, "a"):
                     os.utime(_f, None)
 
+    for f in [x["name"] for x in (files or FILES)]:
+        _f = os.path.join(work_root, f)
+        if not os.path.exists(os.path.dirname(_f)):
+            os.makedirs(os.path.dirname(_f))
+        with open(_f, "a"):
+            os.utime(_f, None)
+
     edam = {
         "name": name,
         "files": FILES if files is None else files,
