@@ -13,8 +13,7 @@ class Generic(Edaflow):
 
     argtypes = ["cmdlinearg", "generic", "plusarg", "vlogdefine", "vlogparam"]
 
-    FLOW_DEFINED_TOOL_OPTIONS = {
-    }
+    FLOW_DEFINED_TOOL_OPTIONS = {}
 
     FLOW_OPTIONS = {
         "frontends": {
@@ -33,7 +32,9 @@ class Generic(Edaflow):
         flow = flow_options.get("frontends", []).copy()
         tool = flow_options.get("tool")
         if not tool:
-            raise RuntimeError(f"Flow '{cls.__name__.lower()}' requires flow option 'tool' to be set")
+            raise RuntimeError(
+                f"Flow '{cls.__name__.lower()}' requires flow option 'tool' to be set"
+            )
         flow.append(tool)
 
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
@@ -42,18 +43,20 @@ class Generic(Edaflow):
         # Check for mandatory flow option "tool"
         tool = self.flow_options.get("tool", "")
         if not tool:
-            raise RuntimeError(f"Flow '{cls.__name__.lower()}' requires flow option 'tool' to be set")
+            raise RuntimeError(
+                f"Flow '{cls.__name__.lower()}' requires flow option 'tool' to be set"
+            )
 
         # Apply flow-defined tool options if any
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(tool, {})
 
         # Start flow graph dict
-        flow = {tool : {"fdto" : fdto}}
+        flow = {tool: {"fdto": fdto}}
 
         # Apply frontends
         deps = []
         for frontend in flow_options.get("frontends", []):
-            flow[frontend] = {"deps" : deps}
+            flow[frontend] = {"deps": deps}
             deps = [frontend]
 
         # Connect frontends to main tool

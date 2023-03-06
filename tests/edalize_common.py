@@ -141,9 +141,8 @@ def compare_files(ref_dir, work_root, files):
 
 
 def get_flow(name):
-    return getattr(
-        import_module("edalize.flows.{}".format(name)), name.capitalize()
-    )
+    return getattr(import_module("edalize.flows.{}".format(name)), name.capitalize())
+
 
 def param_gen(paramtypes):
     """Generate dictionary of definitions in *paramtypes* list."""

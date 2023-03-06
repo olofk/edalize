@@ -71,16 +71,16 @@ def merge_dict(d1, d2):
             d1[key] = value
     return d1
 
+
 class Node(object):
     def __init__(self, name, deps=[], fdto={}, tool=None):
         self.deps = deps
         self.fdto = fdto
         self.tool = tool
 
-        #Import and instantiate the tool class requested by "tool"
-        self.inst = getattr(
-            import_module(f"edalize.tools.{tool}"), tool.capitalize()
-        )()
+        # Import and instantiate the tool class requested by "tool"
+        self.inst = getattr(import_module(f"edalize.tools.{tool}"), tool.capitalize())()
+
 
 class FlowGraph(object):
     def __init__(self):
@@ -109,10 +109,9 @@ class FlowGraph(object):
                     # tool name is the key by default
                     tool = v.get("tool", k)
 
-                    c._graph[k] = Node(k,
-                                       deps = deps,
-                                       fdto = node.get("fdto", {}),
-                                       tool = tool)
+                    c._graph[k] = Node(
+                        k, deps=deps, fdto=node.get("fdto", {}), tool=tool
+                    )
             if len(_d) == len(_d2):
                 raise RuntimeError("Unsatisfiable graph")
         return c
@@ -125,6 +124,7 @@ class FlowGraph(object):
 
     def get_nodes(self):
         return self._graph
+
 
 class Edaflow(object):
 
@@ -200,10 +200,10 @@ class Edaflow(object):
             # Yeah, I know. It's just a temporary hack
             return b
 
-        #Instantiate each node and add to list of unconfigured nodes
+        # Instantiate each node and add to list of unconfigured nodes
         unconfigured_nodes = list(graph.get_nodes().values())
 
-        #Configure each node in graph order
+        # Configure each node in graph order
         while unconfigured_nodes:
             node = unconfigured_nodes.pop(0)
             input_edam = {}

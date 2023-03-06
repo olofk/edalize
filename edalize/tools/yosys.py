@@ -183,11 +183,12 @@ class Yosys(Edatool):
         yosys_template = self.tool_options.get("yosys_template")
         if not yosys_template:
             self.render_template(
-                "edalize_yosys_procs.tcl.j2", "edalize_yosys_procs.tcl", self.template_vars
+                "edalize_yosys_procs.tcl.j2",
+                "edalize_yosys_procs.tcl",
+                self.template_vars,
             )
 
         if not yosys_template:
             self.render_template(
                 "yosys-script-tcl.j2", "edalize_yosys_template.tcl", self.template_vars
             )
-

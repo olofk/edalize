@@ -1,5 +1,6 @@
 from edalize.flows.edaflow import Edaflow
 
+
 class Customexternalflow(Edaflow):
 
     argtypes = ["plusarg", "vlogdefine", "vlogparam"]

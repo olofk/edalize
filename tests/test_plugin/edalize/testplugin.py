@@ -21,7 +21,6 @@ class Testplugin(Edatool):
 
     argtypes = ["vlogdefine", "vlogparam", "generic"]
 
-
     def configure_main(self):
         """
         Configuration is the first phase of the build.

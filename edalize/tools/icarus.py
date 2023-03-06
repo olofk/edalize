@@ -8,6 +8,7 @@ import os
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
+
 class Icarus(Edatool):
 
     description = "Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code written in Verilog (IEEE-1364) into some target format"

@@ -28,7 +28,7 @@ class Customtool(Edatool):
                 used_files.append(f["name"])
             else:
                 unused_files.append(f)
-        #f"{f['name']} is a {f.get('file_type')} file")
+        # f"{f['name']} is a {f.get('file_type')} file")
 
         # Copy the input EDAM and replace the files with the list
         # of unused files + the files that this tool creates
@@ -43,7 +43,7 @@ class Customtool(Edatool):
         )
 
         # Define a configuration file to be written
-        self.config_file = self.name + '.cfg'
+        self.config_file = self.name + ".cfg"
 
         # Define the command(s) to run the actual EDA tool
         # This example just uses wc to count the number of
@@ -64,5 +64,11 @@ class Customtool(Edatool):
         self.commands = commands
 
     def write_config_files(self):
-        with open(os.path.join(self.work_root, self.config_file,), "w") as cfg_file:
+        with open(
+            os.path.join(
+                self.work_root,
+                self.config_file,
+            ),
+            "w",
+        ) as cfg_file:
             cfg_file.write("This is a config file for custom tool\n")
