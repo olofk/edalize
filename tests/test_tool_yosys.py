@@ -50,3 +50,15 @@ def test_tool_yosys_tags(tool_fixture):
 
     tf.tool.configure()
     tf.compare_config_files(["edalize_yosys_template.tcl", "edalize_yosys_procs.tcl"])
+
+
+def test_tool_yosys_template(tool_fixture):
+    import os
+
+    tool_options = {"arch": "ice40", "yosys_template": "some_file.tcl"}
+
+    tf = tool_fixture("yosys", tool_options=tool_options, ref_subdir="template")
+
+    tf.tool.configure()
+    tf.compare_config_files(["edalize_yosys_procs.tcl"])
+    assert not os.path.exists(tf.tool.work_root / "edalize_yosys_template.tcl")
