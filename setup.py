@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name="edalize",
-    version="0.4.1",
+    version="0.5.0",
     packages=["edalize", "edalize.tools", "edalize.flows"],
     package_data={
         "edalize": [

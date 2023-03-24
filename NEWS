@@ -1,3 +1,16 @@
+0.5.0 2023-03-24 Olof Kindgren
+======================================================
+* New flows: generic, gate-level simulation
+* New backends: filelist, sandpipersaas, openroad
+* modelsim: Support mfcu mode
+* icarus: Support multiple toplevels
+* yosys : Support verilog output and simulation tag
+* vivado: Support netlist generation an simulation tag
+* Overhauled documentation
+* Improve internal flow API
+* Support external plugins
+* Avoid unnecessary rebuilds with flow API
+
 0.4.1 2022-12-26 Olof Kindgren
 ======================================================
 * New flows: f4pga
