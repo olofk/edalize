@@ -132,6 +132,10 @@ You can reproduce the example above with something like
         # configure time by _get_file_names)
         self.incdirs = None
 
+        # The list of include files in the fileset (populated at
+        # configure time)
+        self.includes = None
+
         # The name of the interpolated .sby file that we create in the work
         # root
         self.sby_name = "test.sby"
@@ -161,11 +165,34 @@ You can reproduce the example above with something like
                 ],
             }
 
+    def _get_include_files(self, force_slash=False):
+        class Include:
+            def __init__(self, name, rel_name):
+                self.name = name
+                self.rel_name = rel_name
+
+        includes = []
+        for f in self.files:
+            if f.get("is_include_file"):
+                # The fully-qualified name
+                _name = f["name"]
+                # The working set base directory
+                _incdir = f.get("include_path") or os.path.dirname(f["name"]) or "."
+                if force_slash:
+                    _incdir = _incdir.replace("\\", "/")
+                    _name   = _incdir.replace("\\", "/")
+                # The path to copy the include to in the working set
+                _rel_name = _name.removeprefix(_incdir)
+                _rel_name = _rel_name.removeprefix("/")
+                includes.append(Include(_name, _rel_name))
+        return includes
+
     def _get_file_names(self):
         """Read the fileset to get our file names"""
         assert self.rtl_paths is None
 
         src_files, self.incdirs = self._get_fileset_files()
+        self.includes = self._get_include_files()
         self.rtl_paths = []
         bn_to_path = {}
         sby_names = []
@@ -219,7 +246,6 @@ You can reproduce the example above with something like
                 "-D{}={}".format(key, self._param_value_str(value))
                 for key, value in self.vlogdefine.items()
             ]
-            + ["-I{}".format(inc) for inc in self.incdirs]
         )
 
     def _get_chparam(self):
@@ -289,7 +315,7 @@ You can reproduce the example above with something like
                     "as a Jinja2 template: {}.".format(src_path, err)
                 )
 
-        files = "\n".join(self.rtl_paths)
+        files = "\n".join(map(lambda x: f"{x.rel_name} {x.name}", self.includes)) + "\n" + "\n".join(self.rtl_paths)
 
         template_ctxt = {
             "chparam": self._get_chparam(),
