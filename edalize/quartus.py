@@ -94,23 +94,28 @@ class Quartus(Edatool):
             "edition": "Standard",
         }
         try:
-            qsh_text = subprocess.Popen(
-                ["quartus_sh", "--version"], stdout=subprocess.PIPE, env=os.environ
-            ).communicate()[0]
+            qsh_text = subprocess.run(
+                ["quartus_sh", "--version"],
+                stdout=subprocess.PIPE,
+                universal_newlines=True,
+            ).stdout
 
             # Attempt to pattern match the output. Examples include
             # Version 16.1.2 Build 203 01/18/2017 SJ Standard Edition
             # Version 17.1.2 Build 304 01/31/2018 SJ Pro Edition
             version_exp = (
                 r"Version (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+) "
-                + r"Build (?P<build>\d+) (?P<date>\d{2}/\d{2}/\d{4}) (?:\w+) "
+                + r"Build (?P<build>\d+) (?P<date>\d{2}/\d{2}/\d{4}) "
+                + r"(?:Patches \d+\.\d+\w* )?(?:\w+) "
                 + r"(?P<edition>(Lite|Standard|Pro)) Edition"
             )
 
-            match = re.search(version_exp, str(qsh_text))
+            match = re.search(version_exp, qsh_text)
             if match != None:
                 version = match.groupdict()
-        except:
+            else:
+                logger.warning("Unable to recognise Quartus version via quartus_sh")
+        except FileNotFoundError:
             # It is possible for this to have been run on a box without
             # Quartus being installed. Allow these errors to be ignored
             logger.warning("Unable to recognise Quartus version via quartus_sh")
