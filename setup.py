@@ -39,6 +39,9 @@ setup(
             "templates/ghdl/Makefile.j2",
             "templates/openlane/openlane-makefile.j2",
             "templates/openlane/openlane-script-tcl.j2",
+            "templates/xsim/config.mk.j2",
+            "templates/xsim/Makefile.j2",
+            "templates/xsim/xci.tcl.j2",
         ],
         "edalize.tools": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
