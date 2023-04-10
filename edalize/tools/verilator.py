@@ -72,6 +72,7 @@ class Verilator(Edatool):
                 if not self._add_include_dir(f, incdirs):
                     vlog_files.append(f["name"])
             elif file_type in ["cppSource", "systemCSource", "cSource"]:
+                depfile = False
                 if not self._add_include_dir(f, incdirs):
                     opt_c_files.append(f["name"])
             elif file_type == "vlt":
@@ -109,7 +110,7 @@ class Verilator(Edatool):
                 "-G{}={}".format(k, self._param_value_str(v, str_quote_style='\\"'))
             )
         for k, v in self.vlogdefine.items():
-            vc.append("-D{}={}\n".format(k, self._param_value_str(v)))
+            vc.append("-D{}={}".format(k, self._param_value_str(v)))
 
         self.vc = vc
 
@@ -128,7 +129,7 @@ class Verilator(Edatool):
             commands.add(
                 ["make", "-f", mk_file] + self.tool_options.get("make_options", []),
                 [exe_file],
-                [mk_file],
+                [mk_file] + opt_c_files,
             )
             commands.set_default_target(exe_file)
 
