@@ -105,38 +105,46 @@ class Xcelium(Edatool):
         tcl_build_rtl = open(os.path.join(self.work_root, "edalize_build_rtl.f"), "w")
 
         (src_files, incdirs) = self._get_fileset_files()
+
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
-        libs = []
+        src_files_dict = {
+            'verilogSource': {},
+            'systemVerilogSource': {},
+            'vhdlSource': {},
+            'vhdlSource-93': {},
+            'vhdlSource-2008': {}
+        }
+
+        args_tools = {
+            'verilogSource': [],
+            'systemVerilogSource': ['-sv'],
+            'vhdlSource': [],
+            'vhdlSource-93': ['-v93'],
+            'vhdlSource-2008': ['-v200x']
+        }
+
+        def put_in_dict(key: str, lib: str, fname: str):
+            if not lib in src_files_dict[key]:
+                src_files_dict[key][lib] = set()
+                src_files_dict[key][lib].add(fname.replace("\\", "/"))
+            else:
+                src_files_dict[key][lib].add(fname.replace("\\", "/"))
+
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = "worklib"
-            if f.file_type.startswith("verilogSource") or f.file_type.startswith(
-                "systemVerilogSource"
-            ):
-                cmd = "xmvlog"
-                args = []
-
-                args += self.tool_options.get("xmvlog_options", [])
-
-                # Sort dictionary items, to ensure stable output, which makes testing easier
-                for k, v in self.vlogdefine.items():
-                    args += ["+define+{}={}".format(k, self._param_value_str(v))]
-
-                if f.file_type.startswith("systemVerilogSource"):
-                    args += ["-sv"]
-                args += vlog_include_dirs
+            if f.file_type.startswith("verilogSource"):
+                put_in_dict("verilogSource", f.logical_name, f.name)
+            elif f.file_type.startswith("systemVerilogSource"):
+                put_in_dict("systemVerilogSource", f.logical_name, f.name)
             elif f.file_type.startswith("vhdlSource"):
-                cmd = "xmvhdl"
                 if f.file_type.endswith("-93"):
-                    args = ["-v93"]
+                    put_in_dict("vhdlSource-93", f.logical_name, f.name)
                 if f.file_type.endswith("-2008"):
-                    args = ["-v200x"]
+                    put_in_dict("vhdlSource-2008", f.logical_name, f.name)
                 else:
-                    args = []
-
-                args += self.tool_options.get("xmvhdl_options", [])
-
+                    put_in_dict("vhdlSource", f.logical_name, f.name)
             elif f.file_type == "tclSource":
                 cmd = None
                 tcl_main.write("-input {}\n".format(f.name))
@@ -146,10 +154,29 @@ class Xcelium(Edatool):
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(f.name, f.file_type))
                 cmd = None
-            if cmd:
-                args += [f.name.replace("\\", "/")]
-                line = "-makelib {} {} -endlib".format(f.logical_name, " ".join(args))
+
+
+        for key, value in src_files_dict.items():
+            if key.startswith("verilogSource") or key.startswith("systemVerilogSource"):
+                args_common = args_tools[key]
+
+                args_common += self.tool_options.get("xmvlog_options", [])
+
+                # Sort dictionary items, to ensure stable output, which makes testing easier
+                for k, v in self.vlogdefine.items():
+                    args_common += ["+define+{}={}".format(k, self._param_value_str(v))]
+
+                args_common += vlog_include_dirs
+
+            if key.startswith("vhdlSource"):
+                args_common = args_tools[key]
+
+                args_common += self.tool_options.get("xmvhdl_options", [])
+
+            for lib, args in value.items():
+                line = "-makelib {} {} -endlib".format(lib, " ".join(args_common+list(args)))
                 tcl_build_rtl.write(line + "\n")
+
 
     def _write_makefile(self):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), "w")
