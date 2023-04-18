@@ -3,7 +3,7 @@
 all: design
 
 design: sv_file.sv vlog_file.v vlog05_file.v vlog_incfile another_sv_file.sv design.scr
-	$(EDALIZE_LAUNCHER) iverilog -stop_module -c design.scr -o design
+	$(EDALIZE_LAUNCHER) iverilog -stop_module -c design.scr -o design a few iverilog options
 
 run: design
-	$(EDALIZE_LAUNCHER) vvp -n -M. design -fst $(EXTRA_OPTIONS)
+	$(EDALIZE_LAUNCHER) vvp -n -M. some vvp options design -fst $(EXTRA_OPTIONS)

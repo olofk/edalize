@@ -22,6 +22,10 @@ class Icarus(Edatool):
             "type": "str",
             "desc": "Additional options for iverilog",
         },
+        "vvp_options": {
+            "type": "str",
+            "desc": "Additional options for vvp",
+        },
     }
 
     def setup(self, edam):
@@ -100,7 +104,9 @@ class Icarus(Edatool):
         # How should the run target be handled?
         # Add VPI support
         commands.add(
-            ["vvp", "-n", "-M.", self.name, "-fst", "$(EXTRA_OPTIONS)"],
+            ["vvp", "-n", "-M."]
+            + self.tool_options.get("vvp_options", [])
+            + [self.name, "-fst", "$(EXTRA_OPTIONS)"],
             ["run"],
             [self.name],
         )

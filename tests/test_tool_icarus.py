@@ -4,7 +4,12 @@ from .edalize_tool_common import tool_fixture
 def test_tool_icarus(tool_fixture):
     tool_name = "icarus"
 
-    tf = tool_fixture(tool_name)
+    tool_options = {
+        "timescale": "1ns/1ps",
+        "iverilog_options": ["a", "few", "iverilog", "options"],
+        "vvp_options": ["some", "vvp", "options"],
+    }
+    tf = tool_fixture(tool_name, tool_options=tool_options)
 
     tf.tool.configure()
     tf.compare_config_files(["design.scr"])

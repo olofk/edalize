@@ -4,6 +4,7 @@
 +parameter+top_module.vlogparam_bool=1
 +parameter+top_module.vlogparam_int=42
 +parameter+top_module.vlogparam_str="hello"
+timescale.v
 +incdir+.
 sv_file.sv
 vlog_file.v
