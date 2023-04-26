@@ -16,35 +16,43 @@ endif
 
 XCELIUM_HOME = $(shell xmroot)
 
-CC ?= gcc
+CC = $(XCELIUM_HOME)/tools/cdsgcc/gcc/bin/gcc
 CFLAGS := -c -std=c99 -fPIC -fno-stack-protector -g
 
-LD ?= ld
+CPP = $(XCELIUM_HOME)/tools/cdsgcc/gcc/bin/g++
+CPPFLAGS := -std=c++11 -fPIC -g -shared -Bsymbolic
+
+LD = $(XCELIUM_HOME)/tools/cdsgcc/gcc/bin/ld
+LDCPPFLAGS := -fPIC -g -shared -Bsymbolic
 LDFLAGS := -shared -E
 
 #Only 32 bits is currently supported
-CFLAGS  += -m32
-LDFLAGS += -melf_i386
+# CFLAGS  += -m32
+# LDFLAGS += -melf_i386
 
 RM ?= rm
 INCS := -I$(XCELIUM_HOME)/tools/include
 
 XRUN ?= $(XCELIUM_HOME)/tools/bin/xrun
 
+export LIBPYTHON_LOC = $(shell cocotb-config --libpython)
+COCOTB        := $(shell cocotb-config --lib-name-path vpi xcelium)
+
 TOPLEVEL      := {toplevel}
 VPI_MODULES   := {modules}
+VPI_PATH      :=
 PARAMETERS    ?= {parameters}
 PLUSARGS      ?= {plusargs}
 XMSIM_OPTIONS ?= {xmsim_options}
 XRUN_OPTIONS  ?= {xrun_options}
 EXTRA_OPTIONS ?= $(XRUN_OPTIONS) $(if $(XMSIM_OPTIONS),-xmsimargs '$(XMSIM_OPTIONS)',) $(addprefix -defparam ,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
 
-XRUN_CALL = $(XRUN) -q -f edalize_main.f $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) -top $(TOPLEVEL)
+XRUN_CALL = $(XRUN) -q -f edalize_main.f -64 $(addprefix -loadvpi ,$(addsuffix :vlog_startup_routines_bootstrap,$(COCOTB))) $(addprefix -sv_lib ,$(VPI_PATH)) $(EXTRA_OPTIONS) -top $(TOPLEVEL)
 
 all: $(VPI_MODULES)
 
 run: $(VPI_MODULES)
-	$(XRUN_CALL)
+	$(XRUN_CALL) -access rwc
 
 run-gui: $(VPI_MODULES)
 	$(XRUN_CALL) -gui -access rwc
@@ -52,12 +60,12 @@ run-gui: $(VPI_MODULES)
 clean: {clean_targets}
 """
 
-VPI_MAKE_SECTION = """
+VPI_MAKE_C_SECTION = """
 {name}_OBJS := {objs}
 {name}_LIBS := {libs}
 {name}_INCS := $(INCS) {incs}
 
-$({name}_OBJS): %.o : %.c
+$({name}_OBJS): %.so : %.c
 	$(CC) $(CFLAGS) $({name}_INCS) -o $@ $<
 
 {name}: $({name}_OBJS)
@@ -67,6 +75,24 @@ clean_{name}:
 	$(RM) $({name}_OBJS) {name}
 """
 
+VPI_MAKE_CPP_SECTION = """
+{name}_OBJS := {objs}
+{name}_LIBS := {libs}
+{name}_INCS := $(INCS) {incs}
+
+$({name}_OBJS): %.so : %.cpp
+	$(CPP) $(CPPFLAGS) $({name}_INCS) -o $@ $<
+
+{name}: $({name}_OBJS)
+	$(LD) $(LDCPPFLAGS) -o $@ $? $({name}_LIBS)
+
+clean_{name}:
+	$(RM) $({name}_OBJS) {name}
+"""
+
+VPI_CONNECT = """
+VPI_PATH := $(foreach var,$(VPI_MODULES),$($(var)_OBJS))
+"""
 
 class Xcelium(Edatool):
 
@@ -145,7 +171,7 @@ class Xcelium(Edatool):
                     put_in_dict("vhdlSource-2008", f.logical_name, f.name)
                 else:
                     put_in_dict("vhdlSource", f.logical_name, f.name)
-            elif f.file_type == "tclSource":
+            elif f.file_type.startswith("tclSource"):
                 cmd = None
                 tcl_main.write("-input {}\n".format(f.name))
             elif f.file_type == "user":
@@ -154,7 +180,6 @@ class Xcelium(Edatool):
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(f.name, f.file_type))
                 cmd = None
-
 
         for key, value in src_files_dict.items():
             if key.startswith("verilogSource") or key.startswith("systemVerilogSource"):
@@ -176,7 +201,6 @@ class Xcelium(Edatool):
             for lib, args in value.items():
                 line = "-makelib {} {} -endlib".format(lib, " ".join(args_common+list(args)))
                 tcl_build_rtl.write(line + "\n")
-
 
     def _write_makefile(self):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), "w")
@@ -209,16 +233,32 @@ class Xcelium(Edatool):
 
         for vpi_module in self.vpi_modules:
             _name = vpi_module["name"]
-            _objs = [os.path.splitext(s)[0] + ".o" for s in vpi_module["src_files"]]
+            _objs_cpp = None
+            _objs_c   = None
+            for s in vpi_module["src_files"]:
+                if 'cpp' in os.path.splitext(s)[1]:
+                    _objs_cpp = [os.path.splitext(s)[0] + ".so"]
+                else:
+                    _objs_c = [os.path.splitext(s)[0] + ".so"]
             _libs = ["-l" + l for l in vpi_module["libs"]]
             _incs = ["-I" + d for d in vpi_module["include_dirs"]]
-            _s = VPI_MAKE_SECTION.format(
-                name=_name,
-                objs=" ".join(_objs),
-                libs=" ".join(_libs),
-                incs=" ".join(_incs),
-            )
+            if not _objs_cpp == None:
+                _s = VPI_MAKE_CPP_SECTION.format(
+                    name=_name,
+                    objs=" ".join(_objs_cpp),
+                    libs=" ".join(_libs),
+                    incs=" ".join(_incs),
+                )
+            if not _objs_c == None:
+                _s = VPI_MAKE_C_SECTION.format(
+                    name=_name,
+                    objs=" ".join(_objs_c),
+                    libs=" ".join(_libs),
+                    incs=" ".join(_incs),
+                )
             vpi_make.write(_s)
+
+        vpi_make.write(VPI_CONNECT)
 
         vpi_make.close()
 
