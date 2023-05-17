@@ -22,6 +22,10 @@ class Vivado(Edaflow):
             "desc": "Tools to run before yosys (e.g. sv2v)",
             "list": True,
         },
+        "pgm": {
+            "type": "bool",
+            "desc": "Program board after bitstream is complete",
+        },
         "pnr": {
             "type": "str",
             "desc": "Select Place & Route tool.",
@@ -63,3 +67,11 @@ class Vivado(Edaflow):
         name = self.edam["name"]
         self.commands.set_default_target(name + ".bit")
         return FlowGraph.fromdict(flow)
+
+    def run(self):
+        if self.flow_options.get("pgm"):
+
+            # Get run command from tool instance
+            vivado_inst = self.flow.get_node("vivado").inst
+            (cmd, args, cwd) = vivado_inst.run()
+            self._run_tool(cmd, args=args, cwd=cwd)
