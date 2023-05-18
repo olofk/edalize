@@ -67,7 +67,8 @@ class Vunit(Edatool):
         for f in src_files:
             lib = f.logical_name if f.logical_name else "vunit_test_runner_lib"
             libraries.setdefault(lib, []).append(f)
-            core_files.setdefault(f.core, []).append(f)
+            if f.core:
+                core_files.setdefault(f.core, []).append(f)
 
         escaped_name = self.name.replace(".", "_")
         add_libraries = self.tool_options.get("add_libraries", [])
@@ -78,7 +79,7 @@ class Vunit(Edatool):
                 "name": escaped_name,
                 "vunit_runner_path": self.get_vunit_runner_path(src_files),
                 "libraries": libraries,
-                "core_dependencies": self.edam["dependencies"],
+                "core_dependencies": self.edam.get("dependencies", {}),
                 "core_files": core_files,
                 "add_libraries": add_libraries,
                 "tool_options": self.tool_options,

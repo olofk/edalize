@@ -30,15 +30,17 @@ files = {}
 
 {% for library, src_files in libraries.items() %}
 lib = vu.add_library("{{ library }}")
-files.update({
+files.update(
+    {
 {% for src_file in src_files if src_file|src_file_filter %}
 {% if (src_file|src_file_vhdl_standard_filter) %}
-    "{{src_file|src_file_filter}}": lib.add_source_file("{{ src_file|src_file_filter }}", vhdl_standard="{{ src_file|src_file_vhdl_standard_filter }}"),
+        "{{src_file|src_file_filter}}": lib.add_source_file("{{ src_file|src_file_filter }}", vhdl_standard="{{ src_file|src_file_vhdl_standard_filter }}"),
 {% else %}
-    "{{src_file|src_file_filter}}": lib.add_source_file("{{ src_file|src_file_filter }}"),
+        "{{src_file|src_file_filter}}": lib.add_source_file("{{ src_file|src_file_filter }}"),
 {% endif %}
 {% endfor %}
-})
+    }
+)
 
 # Override this hook to customize the library, e.g. compile-flags etc.
 # This allows full access to vunit.ui.Library interface:
@@ -46,16 +48,22 @@ runner.handle_library("{{ library }}", lib)
 
 {% endfor %}
 
+# start of core file mapping
+{% if core_files %}
 core_files = {
 {% for core, files in core_files.items() %}
     "{{core}}": [
-{% for src_file in files %}
+{% for src_file in files if src_file|src_file_filter %}
         files["{{src_file|src_file_filter}}"],
 {% endfor %}
     ],
 {% endfor %}
 }
+{% endif %}
+# end of core file mapping
 
+# start of inter core dependencies
+{% if core_dependencies %}
 {% for core, dependencies in core_dependencies.items() %}
 for src_file in core_files["{{core}}"]:
 {% if dependencies %}
@@ -65,8 +73,9 @@ for src_file in core_files["{{core}}"]:
 {% else %}
     pass
 {% endif %}
-
 {% endfor %}
+{% endif %}
+# end of inter core dependencies
 
 # override this hook to perform final customization and parametrization of VUnit, custom invokation, etc.
 runner.main(vu)
