@@ -128,11 +128,11 @@ def test_edam_multiple_hooks(tmpdir):
     hooks = {
         "pre_build": [
             {
-                "cmd": ["/usr/bin/touch", "hook_1_executed.txt"],
+                "cmd": ["touch", "hook_1_executed.txt"],
                 "name": "hook_1",
             },
             {
-                "cmd": ["/usr/bin/touch", "hook_2_executed.txt"],
+                "cmd": ["touch", "hook_2_executed.txt"],
                 "name": "hook_2",
             },
         ]
