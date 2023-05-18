@@ -57,6 +57,11 @@ class Quartus(Edatool):
                         "type": "String",
                         "desc": "P&R tool. Allowed values are quartus (default), dse (to run Design Space Explorer) and none (to just run synthesis)",
                     },
+                    {
+                        "name": "pgm",
+                        "type": "String",
+                        "desc": "Programming tool. Default is 'none', set to 'quartus' to program the FPGA in the run stage."
+                    },
                 ],
                 "lists": [
                     {
@@ -275,13 +280,8 @@ class Quartus(Edatool):
         args += ["-o"]
         args += ["p;" + self.name.replace(".", "_") + ".sof"]
 
-        if "pnr" in self.tool_options:
-            if self.tool_options["pnr"] == "quartus":
-                pass
-            elif self.tool_options["pnr"] == "dse":
-                return
-            elif self.tool_options["pnr"] == "none":
-                return
+        if ("pgm" not in self.tool_options) or (self.tool_options["pgm"] != "quartus"):
+            return
 
         if "board_device_index" in self.tool_options:
             args[-1] += "@" + self.tool_options["board_device_index"]
