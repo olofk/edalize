@@ -25,16 +25,16 @@ import_files \
 
 {% endfor %}
 
-# Build design hierarchy and set the top module
-build_design_hierarchy
-puts "Setting top level module to: {{op}}{{toplevel}}::work{{cl}}"
-set_root -module {{op}}{{toplevel}}::work{{cl}}
-
 # Source user defined TCL scripts
 {% for src_file in src_files if src_file|tcl_file_filter%}
 puts "---------- Executing User TCL script: {{src_file|tcl_file_filter|replace("source", "")|trim}} ----------"
 {{src_file|tcl_file_filter}}
 {% endfor %}
+
+# Build design hierarchy and set the top module
+build_design_hierarchy
+puts "Setting top level module to: {{op}}{{toplevel}}::work{{cl}}"
+set_root -module {{op}}{{toplevel}}::work{{cl}}
 
 
 
