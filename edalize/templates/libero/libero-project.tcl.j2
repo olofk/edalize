@@ -65,16 +65,20 @@ organize_tool_files -tool {SYNTHESIZE} \
 {% endif %}
 
 # Configure Place and Route tool to use the project constraints
+{% set ns.CNST=false %}
 puts "----------------------- Place and Route Constraints ----------------------"
 {% for src_file in src_files if src_file|constraint_file_filter %}
+{% set ns.CNST=true %}
 puts "File: {{prj_root}}/{{src_file|constraint_file_filter}}"
 {% endfor %}
 
+{% if ns.CNST %}
 organize_tool_files -tool {PLACEROUTE} \
         {% for src_file in src_files if src_file|constraint_file_filter %}
         -file {{op}}{{prj_root}}/{{src_file|constraint_file_filter}}{{cl}} \
         {% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
+{% endif %}
 
 {% if ns.SDC %}
 # Configure Verify Timing tool to use the project constraints
