@@ -311,7 +311,7 @@ class Edaflow(object):
         # Write out execution file
         self.commands.write(os.path.join(self.work_root, "Makefile"))
 
-    def _run_tool(self, cmd, args=[], cwd=None, quiet=False):
+    def _run_tool(self, cmd, args=[], cwd=None, quiet=False, env={}):
         logger.debug("Running " + cmd)
         logger.debug("args  : " + " ".join(args))
 
@@ -325,6 +325,7 @@ class Edaflow(object):
                 stderr=self.stderr,
                 capture_output=capture_output,
                 check=True,
+                env={**os.environ, **env},
             )
         except FileNotFoundError:
             _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
