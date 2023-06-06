@@ -13,10 +13,9 @@ build_design_hierarchy
 {% endif %}
 
 # Import HDL sources and constraints
-import_files \
-        {% for src_file in src_files if src_file|src_file_filter%}
-        {{src_file|src_file_filter}}{{cl}} \
-        {% endfor %}
+{% for src_file in src_files if src_file|src_file_filter%}
+import_files {{src_file|src_file_filter}}{{cl}}
+{% endfor %}
 
 # Import HDL sources on libraries (logical_names)
 {% for library in library_files.items() %}
