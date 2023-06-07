@@ -6,17 +6,20 @@ puts "----------------- Creating project libero-test-all -----------------------
 # Create a new project with device parameters
 new_project -location {./prj} -name libero-test-all -project_description {} -hdl {VHDL} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -speed {-1} -die_voltage {1.0} -part_range {EXT} -adv_options {IO_DEFT_STD:LVCMOS 1.8V}
 
+# Set up the include directories
+set_global_include_path_order -paths " [file normalize .] "
+build_design_hierarchy
+
 # Import HDL sources and constraints
-import_files \
-        -sdc {sdc_file} \
-        -hdl_source {sv_file.sv} \
-        -hdl_source {vlog_file.v} \
-        -hdl_source {vlog05_file.v} \
-        -hdl_source {vhdl_file.vhd} \
-        -hdl_source {vhdl2008_file} \
-        -hdl_source {another_sv_file.sv} \
-        -io_pdc {pdc_constraint_file.pdc} \
-        -fp_pdc {pdc_floorplan_constraint_file.pdc} \
+import_files -sdc {sdc_file}
+import_files -hdl_source {sv_file.sv}
+import_files -hdl_source {vlog_file.v}
+import_files -hdl_source {vlog05_file.v}
+import_files -hdl_source {vhdl_file.vhd}
+import_files -hdl_source {vhdl2008_file}
+import_files -hdl_source {another_sv_file.sv}
+import_files -io_pdc {pdc_constraint_file.pdc}
+import_files -fp_pdc {pdc_floorplan_constraint_file.pdc}
 
 # Import HDL sources on libraries (logical_names)
 import_files \
@@ -24,14 +27,14 @@ import_files \
         -hdl_source {vhdl_lfile} \
 
 
+# Source user defined TCL scripts
+puts "---------- Executing User TCL script: tcl_file.tcl ----------"
+source tcl_file.tcl
+
 # Build design hierarchy and set the top module
 build_design_hierarchy
 puts "Setting top level module to: {top_module::work}"
 set_root -module {top_module::work}
-
-# Source user defined TCL scripts
-puts "---------- Executing User TCL script: tcl_file.tcl ----------"
-source tcl_file.tcl
 
 
 
