@@ -33,8 +33,8 @@ class Verilator(Edatool):
         # run_options?
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
 
         # Future improvement: Separate include directories of c and verilog files
         incdirs = []
@@ -62,7 +62,7 @@ class Verilator(Edatool):
         uhdm_files = []
 
         unused_files = []
-        depfiles = []
+        depfiles = [verilator_file]
         for f in self.files:
             file_type = f.get("file_type", "")
             depfile = True
@@ -72,6 +72,7 @@ class Verilator(Edatool):
                 if not self._add_include_dir(f, incdirs):
                     vlog_files.append(f["name"])
             elif file_type in ["cppSource", "systemCSource", "cSource"]:
+                depfile = False
                 if not self._add_include_dir(f, incdirs):
                     opt_c_files.append(f["name"])
             elif file_type == "vlt":
@@ -109,10 +110,9 @@ class Verilator(Edatool):
                 "-G{}={}".format(k, self._param_value_str(v, str_quote_style='\\"'))
             )
         for k, v in self.vlogdefine.items():
-            vc.append("-D{}={}\n".format(k, self._param_value_str(v)))
+            vc.append("-D{}={}".format(k, self._param_value_str(v)))
 
-        with open(os.path.join(self.work_root, verilator_file), "w") as ffile:
-            ffile.write("\n".join(vc) + "\n")
+        self.vc = vc
 
         mk_file = f"V{self.toplevel}.mk"
         exe_file = f"V{self.toplevel}"
@@ -124,18 +124,21 @@ class Verilator(Edatool):
         )
 
         if mode == "lint-only":
-            self.default_target = mk_file
+            commands.set_default_target(mk_file)
         else:
             commands.add(
                 ["make", "-f", mk_file] + self.tool_options.get("make_options", []),
                 [exe_file],
-                [mk_file],
+                [mk_file] + opt_c_files,
             )
-            self.default_target = exe_file
+            commands.set_default_target(exe_file)
 
-        self.commands = commands.commands
+        self.commands = commands
 
-    def run(self, args):
+    def write_config_files(self):
+        self.update_config_file(self.name + ".vc", "\n".join(self.vc) + "\n")
+
+    def run(self):
         self.args = []
         for key, value in self.plusarg.items():
             self.args += ["+{}={}".format(key, self._param_value_str(value))]

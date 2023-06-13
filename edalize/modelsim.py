@@ -44,7 +44,7 @@ EXTRA_OPTIONS ?= $(VSIM_OPTIONS) $(addprefix -g,$(PARAMETERS)) $(addprefix +,$(P
 all: work $(VPI_MODULES)
 
 run: work $(VPI_MODULES)
-	$(VSIM) -do "run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
+	$(VSIM) -c $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) -do "run -all; quit -code [expr [coverage attribute -name TESTSTATUS -concise] >= 2 ? [coverage attribute -name TESTSTATUS -concise] : 0]; exit" $(TOPLEVEL)
 
 run-gui: work $(VPI_MODULES)
 	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) $(TOPLEVEL)
@@ -79,6 +79,13 @@ class Modelsim(Edatool):
         if api_ver == 0:
             return {
                 "description": "ModelSim simulator from Mentor Graphics",
+                "members": [
+                    {
+                        "name": "compilation_mode",
+                        "type": "String",
+                        "desc": "Common or separate compilation, sep - for separate compilation, common - for common compilation",
+                    }
+                ],
                 "lists": [
                     {
                         "name": "vcom_options",
@@ -105,6 +112,10 @@ class Modelsim(Edatool):
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
         libs = []
+
+        vlog_files = []
+
+        common_compilation = self.tool_options.get("compilation_mode") == "common"
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = "work"
@@ -114,6 +125,7 @@ class Modelsim(Edatool):
             if f.file_type.startswith("verilogSource") or f.file_type.startswith(
                 "systemVerilogSource"
             ):
+                vlog_files.append(f)
                 cmd = "vlog"
                 args = []
 
@@ -147,11 +159,30 @@ class Modelsim(Edatool):
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(f.name, f.file_type))
                 cmd = None
-            if cmd:
+            if cmd and ((cmd != "vlog") or not common_compilation):
                 args += ["-quiet"]
                 args += ["-work", f.logical_name]
                 args += [f.name.replace("\\", "/")]
                 tcl_build_rtl.write("{} {}\n".format(cmd, " ".join(args)))
+        if common_compilation:
+            args = self.tool_options.get("vlog_options", [])
+            for k, v in self.vlogdefine.items():
+                args += ["+define+{}={}".format(k, self._param_value_str(v))]
+
+            _vlog_files = []
+            has_sv = False
+            for f in vlog_files:
+                _vlog_files.append(f.name.replace("\\", "/"))
+                if f.file_type.startswith("systemVerilogSource"):
+                    has_sv = True
+
+            if has_sv:
+                args += ["-sv"]
+            args += vlog_include_dirs
+            args += ["-quiet"]
+            args += ["-work", "work"]
+            args += ["-mfcu"]
+            tcl_build_rtl.write(f"vlog {' '.join(args)} {' '.join(_vlog_files)}")
 
     def _write_makefile(self):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), "w")

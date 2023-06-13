@@ -23,8 +23,8 @@ class Icetime(Edatool):
         }
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
         unused_files = []
 
         asc_file = ""
@@ -58,4 +58,5 @@ class Icetime(Edatool):
         commands = EdaCommands()
         commands.add(command, [targets], [depends])
         commands.add([], ["timing"], [targets])
-        self.commands = commands.commands
+        commands.set_default_target("timing")
+        self.commands = commands

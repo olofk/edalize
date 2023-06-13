@@ -2,6 +2,10 @@
 
 all: post_build
 
+synth: test_icestorm_0.json
+
+bitstream: test_icestorm_0.bin
+
 pre_build: 
 
 test_icestorm_0.json: edalize_yosys_template.tcl | pre_build
@@ -26,7 +30,7 @@ test_icestorm_0.stat: test_icestorm_0.asc
 
 stats: test_icestorm_0.stat
 
-post_build: test_icestorm_0.bin
+post_build: bitstream
 
 pre_run: 
 

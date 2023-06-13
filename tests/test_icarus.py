@@ -26,7 +26,7 @@ def test_icarus(make_edalize_test):
 def test_icarus_minimal(tmpdir):
     import os
 
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     from .edalize_common import compare_files, tests_dir
 

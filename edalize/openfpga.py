@@ -98,9 +98,9 @@ Download and source the project: https://github.com/lnis-uofu/SOFA"""
                 continue
             # find the absolute path
             if os.path.isfile(f.name):
-                fname = os.path.abspath(f.name)
+                fname = f.name
             elif os.path.isfile(f"{self.work_root}/{f.name}"):
-                fname = os.path.abspath(f"{self.work_root}/{f.name}")
+                fname = f.name
             else:
                 logger.error(f"Can't found file '{f.name}'")
                 continue

@@ -7,13 +7,13 @@ pre_build:
 test_vivado_yosys_0.edif: edalize_yosys_template.tcl | pre_build
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p 'tcl edalize_yosys_template.tcl'
 
-test_vivado_yosys_0.xpr: test_vivado_yosys_0.tcl test_vivado_yosys_0.edif
+test_vivado_yosys_0.xpr: test_vivado_yosys_0.tcl test_vivado_yosys_0.edif test_vivado_yosys_0.edif
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_yosys_0.tcl
 
 synth: test_vivado_yosys_0.edif
 
-test_vivado_yosys_0.bit: test_vivado_yosys_0_run.tcl test_vivado_yosys_0.xpr
-	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_yosys_0_run.tcl test_vivado_yosys_0.xpr
+test_vivado_yosys_0.bit: test_vivado_yosys_0_synth.tcl test_vivado_yosys_0_run.tcl | test_vivado_yosys_0.xpr
+	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_yosys_0_synth.tcl test_vivado_yosys_0_run.tcl test_vivado_yosys_0.xpr
 
 build-gui: test_vivado_yosys_0.xpr
 	$(EDALIZE_LAUNCHER) vivado test_vivado_yosys_0.xpr

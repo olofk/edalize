@@ -49,7 +49,15 @@ class Edatool(object):
         self.jinja_env.filters["param_value_str"] = jinja_filter_param_value_str
         self.jinja_env.filters["generic_value_str"] = jinja_filter_param_value_str
 
-    def configure(self, edam):
+    def _require_tool_option(self, option_name):
+        option = self.tool_options.get(option_name)
+        if not option:
+            raise RuntimeError(
+                f"{self.__class__.__name__.lower()} requires tool option '{option_name}'"
+            )
+        return option
+
+    def setup(self, edam):
         self.edam = edam
         try:
             self.name = edam["name"]
@@ -78,11 +86,27 @@ class Edatool(object):
             args[k] = v.get("default")
         self._apply_parameters(args)
 
-        self.write_config_files(edam)
+    def configure(self):
+        self.write_config_files()
 
     # Subclasses implement this. Called at the end of configure
-    def write_config_files(self, edam):
+    def write_config_files(self):
         pass
+
+    def update_config_file(self, file_name, contents):
+        """
+        Check contents against the file file_name in work_root.
+        If these differ or file_name doesn't exist,
+        write contents to file_name
+        """
+        f = os.path.join(self.work_root, file_name)
+        if os.path.exists(f):
+            old_file = open(f, "r").read()
+        else:
+            old_file = ""
+        if old_file != contents:
+            with open(f, "w") as _f:
+                _f.write(contents)
 
     def set_default_target(self, target):
         self.default_target = target
@@ -108,9 +132,7 @@ class Edatool(object):
         """
         template_dir = str(self.__class__.__name__).lower()
         template = self.jinja_env.get_template("/".join([template_dir, template_file]))
-        file_path = os.path.join(self.work_root, target_file)
-        with open(file_path, "w") as f:
-            f.write(template.render(template_vars))
+        self.update_config_file(target_file, template.render(template_vars))
 
     def _add_include_dir(self, f, incdirs, force_slash=False):
         if f.get("is_include_file"):

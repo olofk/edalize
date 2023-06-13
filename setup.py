@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="edalize",
-    version="0.4.0",
+    version="0.5.1",
     packages=["edalize", "edalize.tools", "edalize.flows"],
     package_data={
         "edalize": [
@@ -48,6 +48,7 @@ setup(
         "edalize.tools": [
             "templates/yosys/edalize_yosys_procs.tcl.j2",
             "templates/yosys/yosys-script-tcl.j2",
+            "templates/vivado/vivado-netlist.tcl.j2",
             "templates/vivado/vivado-program.tcl.j2",
             "templates/vivado/vivado-project.tcl.j2",
             "templates/vivado/vivado-run.tcl.j2",

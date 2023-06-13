@@ -14,8 +14,8 @@ class Sv2v(Edatool):
         },
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
 
         incdirs = []
         sv_files = []
@@ -50,4 +50,5 @@ class Sv2v(Edatool):
             sv_files,
         )
 
-        self.commands = commands.commands
+        commands.set_default_target(output_file)
+        self.commands = commands

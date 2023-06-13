@@ -22,7 +22,7 @@ class Yosys(Edatool):
         },
         "output_format": {
             "type": "str",
-            "desc": "Output file format. Legal values are *json*, *edif*, *blif*",
+            "desc": "Output file format. Legal values are *json*, *edif*, *blif*, *verilog*",
         },
         "yosys_template": {
             "type": "str",
@@ -39,8 +39,9 @@ class Yosys(Edatool):
         },
     }
 
-    def write_config_files(self, edam):
-        # write Yosys tcl script file
+    def setup(self, edam):
+        super().setup(edam)
+
         yosys_template = self.tool_options.get("yosys_template")
 
         incdirs = []
@@ -62,6 +63,9 @@ class Yosys(Edatool):
             elif file_type == "tclSource":
                 cmd = "source"
 
+            if "simulation" in f.get("tags", []):
+                cmd = ""
+
             if cmd:
                 depfiles.append(f["name"])
                 if not self._add_include_dir(f, incdirs):
@@ -73,13 +77,17 @@ class Yosys(Edatool):
         self.edam["files"] = unused_files
 
         output_format = self.tool_options.get("output_format", "blif")
-        default_target = f"{self.name}.{output_format}"
+        default_target = (
+            f"{self.name}.{'v' if output_format == 'verilog' else output_format}"
+        )
 
         self.edam["files"].append(
             {
                 "name": default_target,
                 "file_type": "jsonNetlist"
                 if output_format == "json"
+                else "verilogSource"
+                if output_format == "verilog"
                 else output_format,
             }
         )
@@ -97,10 +105,7 @@ class Yosys(Edatool):
                 _s.format(key, self._param_value_str(value), self.toplevel)
             )
 
-        arch = self.tool_options.get("arch")
-
-        if not arch:
-            logger.error("ERROR: arch is not defined.")
+        arch = self._require_tool_option("arch")
 
         plugins = []
         if has_uhdm:
@@ -117,23 +122,14 @@ class Yosys(Edatool):
             "synth_command": "synth_" + arch,
             "synth_options": " ".join(self.tool_options.get("yosys_synth_options", "")),
             "write_command": "write_" + output_format,
-            "output_format": output_format,
+            "output_format": "v" if output_format == "verilog" else output_format,
             "output_opts": "-pvector bra "
             if (arch == "xilinx" and output_format == "edif")
             else "",
             "yosys_template": template,
             "name": self.name,
         }
-
-        if not yosys_template:
-            self.render_template(
-                "edalize_yosys_procs.tcl.j2", "edalize_yosys_procs.tcl", template_vars
-            )
-
-        if not yosys_template:
-            self.render_template(
-                "yosys-script-tcl.j2", "edalize_yosys_template.tcl", template_vars
-            )
+        self.template_vars = template_vars
 
         commands = EdaCommands()
 
@@ -184,5 +180,18 @@ class Yosys(Edatool):
             command += depfiles
 
         commands.add(command, targets, depends, variables=variables)
+        commands.set_default_target(targets[0])
+        self.commands = commands
 
-        self.commands = commands.commands
+    def write_config_files(self):
+        yosys_template = self.tool_options.get("yosys_template")
+        self.render_template(
+            "edalize_yosys_procs.tcl.j2",
+            "edalize_yosys_procs.tcl",
+            self.template_vars,
+        )
+
+        if not yosys_template:
+            self.render_template(
+                "yosys-script-tcl.j2", "edalize_yosys_template.tcl", self.template_vars
+            )

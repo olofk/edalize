@@ -4,7 +4,7 @@
 
 import os.path
 
-from edalize.flows.edaflow import Edaflow
+from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
 class Vpr(Edaflow):
@@ -12,12 +12,15 @@ class Vpr(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    FLOW = [
-        ("yosys", ["vpr"], {"output_format": "blif"}),
-        ("vpr", [], {}),
-    ]
-
     FLOW_OPTIONS = {}
+
+    def configure_flow(self, flow_options):
+
+        flow = {
+            "yosys": {"ftdo": {"output_format": "blif"}},
+            "vpr": {"deps": ["yosys"]},
+        }
+        return FlowGraph.fromdict(flow)
 
     def build_tool_graph(self):
         return super().build_tool_graph()

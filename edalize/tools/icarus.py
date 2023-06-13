@@ -2,32 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from io import StringIO
 import os
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
-
-MAKEFILE_TEMPLATE = """
-all: $(VPI_MODULES) $(TARGET)
-
-run: $(VPI_MODULES) $(TARGET)
-	vvp -n -M. -l icarus.log $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) -fst $(EXTRA_OPTIONS)
-
-clean:
-	$(RM) $(VPI_MODULES) $(TARGET)
-"""
-
-VPI_MAKE_SECTION = """
-{name}_LIBS := {libs}
-{name}_INCS := {incs}
-{name}_SRCS := {srcs}
-
-{name}.vpi: $({name}_SRCS)
-	iverilog-vpi --name={name} $({name}_LIBS) $({name}_INCS) $?
-
-clean_{name}:
-	$(RM) {name}.vpi
-"""
 
 
 class Icarus(Edatool):
@@ -43,17 +22,22 @@ class Icarus(Edatool):
             "type": "str",
             "desc": "Additional options for iverilog",
         },
+        "vvp_options": {
+            "type": "str",
+            "desc": "Additional options for vvp",
+        },
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
 
+        scr_file = StringIO()
         incdirs = []
         vlog_files = []
         depfiles = []
         unused_files = []
 
-        with open(os.path.join(self.work_root, self.name + ".scr"), "w") as scr_file:
+        if True:
 
             for key, value in self.vlogdefine.items():
                 scr_file.write(
@@ -61,11 +45,13 @@ class Icarus(Edatool):
                 )
 
             for key, value in self.vlogparam.items():
-                scr_file.write(
-                    "+parameter+{}.{}={}\n".format(
-                        self.toplevel, key, self._param_value_str(value, '"')
+                # We currently have no way to express for which toplevel these parameters should be applied, so apply for all of them and accept the warnings.
+                for toplevel in self.toplevel.split(" "):
+                    scr_file.write(
+                        "+parameter+{}.{}={}\n".format(
+                            toplevel, key, self._param_value_str(value, '"')
+                        )
                     )
-                )
 
             for id in incdirs:
                 scr_file.write("+incdir+" + id + "\n")
@@ -102,9 +88,9 @@ class Icarus(Edatool):
 
         commands = EdaCommands()
         commands.add(
-            [
-                "iverilog",
-                f"-s{self.toplevel}",
+            ["iverilog"]
+            + [f"-s{t}" for t in self.toplevel.split(" ")]
+            + [
                 "-c",
                 f"{self.name}.scr",
                 "-o",
@@ -118,15 +104,22 @@ class Icarus(Edatool):
         # How should the run target be handled?
         # Add VPI support
         commands.add(
-            ["vvp", "-n", "-M.", self.name, "-fst", "$(EXTRA_OPTIONS)"],
+            ["vvp", "-n", "-M."]
+            + self.tool_options.get("vvp_options", [])
+            + [self.name, "-fst", "$(EXTRA_OPTIONS)"],
             ["run"],
             [self.name],
         )
 
-        self.default_target = self.name
-        self.commands = commands.commands
+        commands.set_default_target(self.name)
+        self.commands = commands
+        self.scr_file = scr_file
 
-    def run(self, args):
+    def write_config_files(self):
+        f = os.path.join(self.work_root, self.name + ".scr")
+        self.update_config_file(f, self.scr_file.getvalue())
+
+    def run(self):
         args = ["run"]
 
         # Set plusargs

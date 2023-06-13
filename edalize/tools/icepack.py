@@ -23,8 +23,8 @@ class Icepack(Edatool):
         }
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
 
         unused_files = []
 
@@ -61,4 +61,5 @@ class Icepack(Edatool):
 
         commands = EdaCommands()
         commands.add(command, [targets], [depends])
-        self.commands = commands.commands
+        commands.set_default_target(bin_file)
+        self.commands = commands

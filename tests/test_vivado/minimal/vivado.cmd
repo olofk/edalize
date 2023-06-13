@@ -1,2 +1,2 @@
 -notrace -mode batch -source test_vivado_minimal_0.tcl
--notrace -mode batch -source test_vivado_minimal_0_run.tcl test_vivado_minimal_0.xpr
+-notrace -mode batch -source test_vivado_minimal_0_synth.tcl test_vivado_minimal_0_run.tcl test_vivado_minimal_0.xpr

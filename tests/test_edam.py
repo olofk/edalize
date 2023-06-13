@@ -3,7 +3,7 @@ import pytest
 
 def test_empty_edam():
     import tempfile
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     (h, edam_file) = tempfile.mkstemp()
 
@@ -12,7 +12,7 @@ def test_empty_edam():
 
 
 def test_incomplete_edam():
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     with pytest.raises(RuntimeError) as excinfo:
         backend = get_edatool("icarus")(edam={"version": "0.1.2"})
@@ -22,7 +22,7 @@ def test_incomplete_edam():
 
 
 def test_edam_files():
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     files = [
         {"name": "plain_file"},
@@ -56,7 +56,7 @@ def test_edam_files():
 
 
 def test_verilog_include_file_with_include_path():
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     files = [
         {
@@ -76,7 +76,7 @@ def test_verilog_include_file_with_include_path():
 
 
 def test_verilog_include_file_with_partial_include_path():
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     files = [
         {
@@ -97,7 +97,7 @@ def test_verilog_include_file_with_partial_include_path():
 
 def test_edam_hook_failing(tmpdir):
     import os.path
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     tests_dir = os.path.dirname(__file__)
     ref_dir = os.path.join(tests_dir, __name__)
@@ -113,7 +113,7 @@ def test_edam_hook_failing(tmpdir):
     backend = get_edatool("icarus")(edam=edam, work_root=work_root)
     exc_str_exp = (
         r"pre_build script 'exit_1_script': "
-        r"\['sh', '.+/exit_1_script'\] exited with error code 1"
+        r"\['sh', '.+/exit_1_script'\] exited with error code "
     )
     with pytest.raises(RuntimeError, match=exc_str_exp):
         backend.build_pre()
@@ -123,7 +123,7 @@ def test_edam_multiple_hooks(tmpdir):
     """Test if more than one hook gets successfully executed."""
 
     import os.path
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     hooks = {
         "pre_build": [

@@ -18,8 +18,23 @@
 Welcome to Edalize's documentation!
 ===================================
 
-Edalize is a Python Library for interacting with EDA tools.
-It can create project files for supported tools and run them in batch or GUI mode (where supported).
+Edalize is an abstraction library that presents a common interface for different EDA tools. It supports many different EDA tools and combinations of tools working together, called flows. A flow could e.g. be an FPGA bitstream flow where one EDA tool is used for synthesis, another one for place & route and a third one to convert the P&R database into an image that can be loaded into the FPGA. Another example could be a simulation flow, where the simulator itself is just one tool, but where a code conversion tool is used to preprocess the input to the simulator, e.g. ghdl to convert VHDL to Verilog for tools that don't handle the former well enough.
+
+The :ref:`Edalize User Guide <ug>` will guide you through how to use the Edalize API to set up and configure EDA flows and use them in your project.
+
+The :ref:`Edalize Developer Guide <dg>` describes how to work with Edalize to fix bugs, improve the current tools and flows or extend with new ones.
+
+.. toctree::
+   :caption: User Guide
+   :hidden:
+
+   user/index
+
+.. toctree::
+   :caption: Developer Guide
+   :hidden:
+
+   dev/index
 
 .. toctree::
    :caption: Reference
@@ -27,17 +42,5 @@ It can create project files for supported tools and run them in batch or GUI mod
 
    edam/api
    Modules <edalize>
-
-.. toctree::
-   :caption: Developer's Guide
-   :hidden:
-
-   dev/setup
-   dev/tests
-
-.. toctree::
-   :caption: Indices and tables
-   :hidden:
-
    genindex
    Module Index <py-modindex>

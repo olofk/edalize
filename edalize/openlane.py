@@ -30,6 +30,8 @@ class Openlane(Edatool):
         for f in src_files:
             if f.file_type.startswith("verilogSource"):
                 files.append(f.name)
+            elif f.file_type.startswith("systemVerilogSource"):
+                files.append(f.name)
             elif f.file_type == "tclSource":
                 tcl.append(f.name)
 

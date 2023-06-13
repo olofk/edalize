@@ -18,7 +18,7 @@ def test_vunit_hooks(tmpdir):
     import sys
     import importlib.util
     from unittest import mock
-    from edalize import get_edatool
+    from edalize.edatool import get_edatool
 
     sys.path = [os.path.join(tests_dir, "test_vunit", "vunit_mock")] + sys.path
 

@@ -1,0 +1,19 @@
+--Mdir .
+--cc
++incdir+.
+-CFLAGS -I.
+sv_file.sv
+vlog_file.v
+vlog05_file.v
+another_sv_file.sv
+--top-module top_module
+
+--exe
+c_file.c
+cpp_file.cpp
+-Gvlogparam_bool=1
+-Gvlogparam_int=42
+-Gvlogparam_str=\"hello\"
+-Dvlogdefine_bool=1
+-Dvlogdefine_int=42
+-Dvlogdefine_str=hello

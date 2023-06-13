@@ -68,5 +68,5 @@ class EdaCommands(object):
 
                 if c.command:
                     f.write(
-                        f"\t$(EDALIZE_LAUNCHER) {env_prefix}{' '.join(c.command)}\n"
+                        f"\t$(EDALIZE_LAUNCHER) {env_prefix}{' '.join([str(x) for x in c.command])}\n"
                     )

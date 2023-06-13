@@ -16,8 +16,8 @@ class Surelog(Edatool):
         },
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
 
         incdirs = []
         file_table = []
@@ -72,4 +72,5 @@ class Surelog(Edatool):
             depfiles,
         )
 
-        self.commands = commands.commands
+        commands.set_default_target(output_file)
+        self.commands = commands

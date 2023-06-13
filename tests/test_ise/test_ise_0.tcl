@@ -12,7 +12,7 @@ proc xfile_add_exist_ok name {
 }
 
 project_new_exist_ok test_ise_0
-project set family spartan6
+project set family "spartan6"
 project set device xc6slx45
 project set package csg324
 project set speed -2

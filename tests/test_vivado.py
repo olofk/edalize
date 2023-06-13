@@ -1,5 +1,5 @@
 import pytest
-from .edalize_common import make_edalize_test
+from .edalize_common import get_flow, make_edalize_test
 
 
 def test_vivado(make_edalize_test):
@@ -45,7 +45,7 @@ def test_vivado_minimal(params, tmpdir, make_edalize_test):
         "name": name,
         "flow_options": {"synth": synth_tool, "part": "xc7a35tcsg324-1"},
     }
-    vivado_flow = edalize.get_flow("vivado")
+    vivado_flow = get_flow("vivado")
     vivado_backend = vivado_flow(edam=edam, work_root=work_root)
     vivado_backend.configure()
 

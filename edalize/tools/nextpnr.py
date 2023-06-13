@@ -21,8 +21,8 @@ class Nextpnr(Edatool):
         },
     }
 
-    def configure(self, edam):
-        super().configure(edam)
+    def setup(self, edam):
+        super().setup(edam)
         cst_file = ""
         lpf_file = ""
         pcf_file = ""
@@ -139,4 +139,5 @@ class Nextpnr(Edatool):
 
             # GUI target
             commands.add(command + ["--gui"], ["build-gui"], [depends])
-        self.commands = commands.commands
+        commands.set_default_target(targets[0])
+        self.commands = commands

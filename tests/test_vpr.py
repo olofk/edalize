@@ -6,8 +6,7 @@ from .edalize_common import make_edalize_test
 @pytest.mark.parametrize("params", [("minimal", "vpr")])
 def test_vpr(params, tmpdir):
     import os
-    import edalize
-    from .edalize_common import compare_files, tests_dir
+    from .edalize_common import compare_files, get_flow, tests_dir
 
     test_name = "vpr"
     os.environ["PATH"] = (
@@ -26,7 +25,7 @@ def test_vpr(params, tmpdir):
         },
     }
 
-    vpr_flow = edalize.get_flow("vpr")
+    vpr_flow = get_flow("vpr")
     vpr_backend = vpr_flow(edam=edam, work_root=work_root)
     vpr_backend.configure()
     config_file_list = [

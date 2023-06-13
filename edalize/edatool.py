@@ -41,7 +41,10 @@ def get_edatool(name):
 
 
 def walk_tool_packages():
-    for _, pkg_name, _ in walk_packages([os.path.dirname(__file__)], "edalize."):
+    parent_module = __name__.split(".")[0]
+    for _, pkg_name, _ in walk_packages(
+        sys.modules[parent_module].__path__, "edalize."
+    ):
         pkg_parts = pkg_name.split(".")
         if not pkg_parts[1] in NON_TOOL_PACKAGES:
             yield pkg_parts[1]
@@ -433,7 +436,6 @@ class Edatool(object):
                     script["cmd"],
                     cwd=self.work_root,
                     env=_env,
-                    capture_output=not self.verbose,
                     check=True,
                 )
             except FileNotFoundError as e:
