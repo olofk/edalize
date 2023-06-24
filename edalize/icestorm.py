@@ -61,5 +61,8 @@ class Icestorm(Edatool):
     def build_pre(self):
         pass
 
+    def build_main(self):
+        self.icestorm.build()
+
     def build_post(self):
         pass
