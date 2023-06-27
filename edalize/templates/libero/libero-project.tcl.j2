@@ -53,47 +53,47 @@ puts "Configured Synthesize tool to include dirs:"
 puts "- ../../{{dir}}"
 {% endfor -%}{% endif %}
 
-{% set ns = namespace(SDC=false) %}{# If SDC files are present #}
-{% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
-{% set ns.SDC=true %}
 puts "----------------------- Synthesize Constraints ---------------------------"
-puts "File: {{prj_root}}/{{src_file|constraint_file_filter}}"
+{% set ns = namespace(SYN=false) %}{# If synthesis constraints are present #}
+{% for src_file in src_files if src_file|syn_constraint_file_filter %}
+{% set ns.SYN=true %}
+puts "File: {{prj_root}}/{{src_file|syn_constraint_file_filter}}"
 {% endfor %}
 
-{%- if ns.SDC %}
+{%- if ns.SYN %}
 # Configure Synthesize tool to use the project constraints
 organize_tool_files -tool {SYNTHESIZE} \
-        {% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
-        -file {{op}}{{prj_root}}/{{src_file|constraint_file_filter}}{{cl}} \
+        {% for src_file in src_files if src_file|syn_constraint_file_filter %}
+        -file {{op}}{{prj_root}}/{{src_file|syn_constraint_file_filter}}{{cl}} \
         {% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}
 
 # Configure Place and Route tool to use the project constraints
-{% set ns.CNST=false %}
 puts "----------------------- Place and Route Constraints ----------------------"
-{% for src_file in src_files if src_file|constraint_file_filter %}
-{% set ns.CNST=true %}
-puts "File: {{prj_root}}/{{src_file|constraint_file_filter}}"
+{% set ns.PNR=false %}
+{% for src_file in src_files if src_file|pnr_constraint_file_filter %}
+{% set ns.PNR=true %}
+puts "File: {{prj_root}}/{{src_file|pnr_constraint_file_filter}}"
 {% endfor %}
 
-{% if ns.CNST %}
+{% if ns.PNR %}
 organize_tool_files -tool {PLACEROUTE} \
-        {% for src_file in src_files if src_file|constraint_file_filter %}
-        -file {{op}}{{prj_root}}/{{src_file|constraint_file_filter}}{{cl}} \
+        {% for src_file in src_files if src_file|pnr_constraint_file_filter %}
+        -file {{op}}{{prj_root}}/{{src_file|pnr_constraint_file_filter}}{{cl}} \
         {% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}
 
-{% if ns.SDC %}
 # Configure Verify Timing tool to use the project constraints
-{% endif %}
-{%- for src_file in src_files if src_file|constraint_file_filter("SDC") %}
 puts "----------------------- Verify Timings Constraints -----------------------"
+{% set ns.TIM=false %}
+{%- for src_file in src_files if src_file|constraint_file_filter("SDC") %}
+{% set ns.TIM=true %}
 puts "File: {{prj_root}}/{{src_file|constraint_file_filter}}"
 {% endfor %}
 
-{%- if ns.SDC %}
+{%- if ns.TIM %}
 organize_tool_files -tool {VERIFYTIMING} \
         {% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
         -file {{op}}{{prj_root}}/{{src_file|constraint_file_filter}}{{cl}} \
