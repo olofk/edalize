@@ -1,5 +1,5 @@
 --Mdir .
---lint-only
+--binary
 +incdir+.
 -CFLAGS -I.
 sv_file.sv

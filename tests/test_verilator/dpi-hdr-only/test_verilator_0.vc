@@ -1,5 +1,5 @@
 --Mdir .
---lint-only
+--dpi-hdr-only
 +incdir+.
 -CFLAGS -I.
 sv_file.sv

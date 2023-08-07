@@ -264,7 +264,7 @@ Field Name        Type                  Description
 cli_parser        String                If `cli_parser` is set to managed, Edalize will parse all command-line options.
                                         Otherwise, they are sent directly to the compiled simulation model.
 libs              List of String        Extra options to be passed as -LDFLAGS when linking the C++ testbench
-mode              String                *cc* runs Verilator in regular C++ mode. *sc* runs in SystemC mode. *lint-only* only performs linting on the Verilog code. *xml-only* only creates XML output
+mode              String                Selects compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *preprocess*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html
 verilator_options List of String        Extra options to be passed when verilating model
 ================= ===================== ===========
 
