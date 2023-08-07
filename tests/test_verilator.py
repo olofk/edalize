@@ -44,3 +44,13 @@ def test_verilator_lint_only(make_edalize_test):
 
     tf.compare_files(["Makefile"])
     tf.compare_files(["config.mk", tf.test_name + ".vc"], ref_subdir=mode)
+
+
+def test_verilator_xml_only(make_edalize_test):
+    mode = "xml-only"
+    tf = make_edalize_test("verilator", param_types=[], tool_options={"mode": mode})
+
+    tf.backend.configure()
+
+    tf.compare_files(["Makefile"])
+    tf.compare_files(["config.mk", tf.test_name + ".vc"], ref_subdir=mode)

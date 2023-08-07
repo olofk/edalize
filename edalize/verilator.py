@@ -50,7 +50,7 @@ class Verilator(Edatool):
                     {
                         "name": "mode",
                         "type": "String",
-                        "desc": "Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for SystemC testbenches or *lint-only* to only perform linting on the Verilog code",
+                        "desc": "Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for SystemC testbenches, *lint-only* to only perform linting on the Verilog code, or *xml-only* to only create XML output",
                     },
                     {
                         "name": "cli_parser",
@@ -117,7 +117,7 @@ class Verilator(Edatool):
 
         with open(os.path.join(self.work_root, self.verilator_file), "w") as f:
             f.write("--Mdir .\n")
-            modes = ["sc", "cc", "lint-only"]
+            modes = ["sc", "cc", "lint-only", "xml-only"]
 
             # Default to cc mode if not specified
             if not "mode" in self.tool_options:
@@ -206,7 +206,7 @@ class Verilator(Edatool):
         if not "mode" in self.tool_options:
             self.tool_options["mode"] = "cc"
         args = []
-        if self.tool_options["mode"] == "lint-only":
+        if self.tool_options["mode"] in ["lint-only", "xml-only"]:
             args.append("V" + self.toplevel + ".mk")
         self._run_tool("make", args, quiet=True)
 
@@ -223,7 +223,7 @@ class Verilator(Edatool):
         # Default to cc mode if not specified
         if not "mode" in self.tool_options:
             self.tool_options["mode"] = "cc"
-        if self.tool_options["mode"] == "lint-only":
+        if self.tool_options["mode"] in ["lint-only", "xml-only"]:
             return
         logger.info("Running simulation")
         self._run_tool("./V" + self.toplevel, self.args)
