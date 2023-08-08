@@ -66,8 +66,8 @@ def test_verilator_dpi_hdr_only(make_edalize_test):
     tf.compare_files(["config.mk", tf.test_name + ".vc"], ref_subdir=mode)
 
 
-def test_verilator_preprocess(make_edalize_test):
-    mode = "preprocess"
+def test_verilator_preprocess_only(make_edalize_test):
+    mode = "preprocess-only"
     tf = make_edalize_test("verilator", param_types=[], tool_options={"mode": mode})
 
     tf.backend.configure()

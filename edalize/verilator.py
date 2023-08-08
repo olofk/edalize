@@ -50,7 +50,7 @@ class Verilator(Edatool):
                     {
                         "name": "mode",
                         "type": "String",
-                        "desc": "Select compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *preprocess*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
+                        "desc": "Select compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
                     },
                     {
                         "name": "cli_parser",
@@ -117,14 +117,14 @@ class Verilator(Edatool):
 
         with open(os.path.join(self.work_root, self.verilator_file), "w") as f:
             f.write("--Mdir .\n")
-            modes = ["binary", "cc", "dpi-hdr-only", "lint-only", "preprocess", "sc", "xml-only"]
+            modes = ["binary", "cc", "dpi-hdr-only", "lint-only", "preprocess-only", "sc", "xml-only"]
 
             # Default to cc mode if not specified
             if not "mode" in self.tool_options:
                 self.tool_options["mode"] = "cc"
 
             if self.tool_options["mode"] in modes:
-                if self.tool_options["mode"] == "preprocess":
+                if self.tool_options["mode"] == "preprocess-only":
                     f.write("-E\n")
                 else:
                     f.write("--" + self.tool_options["mode"] + "\n")
@@ -159,7 +159,7 @@ class Verilator(Edatool):
             f.write("\n".join(vlog_files) + "\n")
             f.write("--top-module {}\n".format(self.toplevel))
             add_exe = (str(self.tool_options.get("exe")).lower() != "false") \
-                and (self.tool_options["mode"] not in ["binary", "dpi-hdr-only", "lint-only", "preprocess", "xml-only"])
+                and (self.tool_options["mode"] not in ["binary", "dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"])
             if add_exe:
                 f.write("--exe\n")
             f.write("\n".join(opt_c_files))
@@ -211,7 +211,7 @@ class Verilator(Edatool):
         if not "mode" in self.tool_options:
             self.tool_options["mode"] = "cc"
         args = []
-        if self.tool_options["mode"] in ["dpi-hdr-only", "lint-only", "preprocess", "xml-only"]:
+        if self.tool_options["mode"] in ["dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
             args.append("V" + self.toplevel + ".mk")
         self._run_tool("make", args, quiet=True)
 
@@ -228,7 +228,7 @@ class Verilator(Edatool):
         # Default to cc mode if not specified
         if not "mode" in self.tool_options:
             self.tool_options["mode"] = "cc"
-        if self.tool_options["mode"] in ["dpi-hdr-only", "lint-only", "preprocess", "xml-only"]:
+        if self.tool_options["mode"] in ["dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
             return
         logger.info("Running simulation")
         self._run_tool("./V" + self.toplevel, self.args)
