@@ -3,17 +3,6 @@
 ## General read script for Design Compiler Reference Methodology
 #################################################################################
 
-define_design_lib WORK -path ./WORK
-
-# The following variable helps verification when there are differences between DC and FM while inferring logical hierarchies
-set_app_var hdlin_enable_hier_map true
-
-# By default, the tool uses  simple  names  for  elements  inferred  from
-# unions in SystemVerilog. Setting this variable to true enables the tool
-# to use the name of the first union member as a reference for the  port,
-# net, and cell names associated with the union data type.
-set_app_var hdlin_sv_union_member_naming true
-
 {% if incdirs -%}
 set_app_var search_path "$search_path  {{ incdirs|join(' ') }}"
 {%- endif %}
@@ -21,12 +10,6 @@ set_app_var search_path "$search_path  {{ incdirs|join(' ') }}"
 {% for src_file in src_files if src_file|src_file_filter%}
 {{ src_file|src_file_filter }}
 {% endfor %}
-
-{% if toplevel -%}
-elaborate {{ toplevel }}
-{%- endif %}
-
-set_verification_top
 
 #######################
 ## end
