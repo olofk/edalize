@@ -79,7 +79,7 @@ This module generates the file list for dc_shell.
         }
 
         self.render_template(
-            "dc_shell.tcl.j2", self.name + ".tcl", template_vars
+            "dc_shell.tcl.j2", "dc.read_design.tcl", template_vars
         )
 
     def src_file_filter(self, f):
