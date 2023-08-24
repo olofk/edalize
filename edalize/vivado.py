@@ -64,7 +64,7 @@ class Vivado(Edatool):
                     {
                         "name": "pgm",
                         "type": "String",
-                        "desc": "Programming tool. Default is none, set to 'vivado' to program the FPGA in the run stage."
+                        "desc": "Programming tool. Default is none, set to 'vivado' to program the FPGA in the run stage.",
                     },
                     {
                         "name": "jobs",

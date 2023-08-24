@@ -97,7 +97,7 @@ quit
                     {
                         "name": "pgm",
                         "type": "String",
-                        "desc": "Programming tool. Default is 'none', set to 'ise' to program the FPGA in the run stage."
+                        "desc": "Programming tool. Default is 'none', set to 'ise' to program the FPGA in the run stage.",
                     },
                 ],
             }

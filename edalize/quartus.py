@@ -60,7 +60,7 @@ class Quartus(Edatool):
                     {
                         "name": "pgm",
                         "type": "String",
-                        "desc": "Programming tool. Default is 'none', set to 'quartus' to program the FPGA in the run stage."
+                        "desc": "Programming tool. Default is 'none', set to 'quartus' to program the FPGA in the run stage.",
                     },
                 ],
                 "lists": [
