@@ -244,11 +244,11 @@ class Verilator(Edatool):
         if self.tool_options["mode"] in ["binary", "dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
             args.append(self.tool_options["mode"])
 
-        # Build according to mode
+        # Build mode
         if self.tool_options["mode"] != "none":
             self._run_tool("make", args, quiet=True)
 
-        # Builds runs
+        # Additional builds
         if str(self.tool_options.get("gen-xml")).lower() == "true":
             self._run_tool("make", ["xml-only"], quiet=True)
         if str(self.tool_options.get("gen-dpi-hdr")).lower() == "true":
