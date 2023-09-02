@@ -52,6 +52,8 @@ class Verilator(Edatool):
 
     argtypes = ["cmdlinearg", "plusarg", "vlogdefine", "vlogparam"]
 
+    modes = ["binary", "cc", "dpi-hdr-only", "lint-only", "none", "preprocess-only", "sc", "xml-only"]
+
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
@@ -128,16 +130,15 @@ class Verilator(Edatool):
 
         with open(os.path.join(self.work_root, self.verilator_file), "w") as f:
             f.write("--Mdir .\n")
-            modes = ["binary", "cc", "dpi-hdr-only", "lint-only", "preprocess-only", "sc", "xml-only"]
 
             # Default to cc mode if not specified
-            if not "mode" in self.tool_options:
+            if "mode" not in self.tool_options:
                 self.tool_options["mode"] = "cc"
 
-            if self.tool_options["mode"] not in modes:
+            if self.tool_options["mode"] not in Verilator.modes:
                 _s = "Illegal verilator mode {}. Allowed values are {}"
                 raise RuntimeError(
-                    _s.format(self.tool_options["mode"], ", ".join(modes))
+                    _s.format(self.tool_options["mode"], ", ".join(Verilator.modes))
                 )
             if self.tool_options["mode"] in ["cc", "sc"]:
                 f.write("--" + self.tool_options["mode"] + "\n")
@@ -218,18 +219,18 @@ class Verilator(Edatool):
             self.tool_options["mode"] = "cc"
         args = []
 
-        modes = ["binary", "cc", "dpi-hdr-only", "lint-only", "preprocess-only", "sc", "xml-only"]
-        if self.tool_options["mode"] not in modes:
+        if self.tool_options["mode"] not in Verilator.modes:
             _s = "Illegal verilator mode {}. Allowed values are {}"
             raise RuntimeError(
-                _s.format(self.tool_options["mode"], ", ".join(modes))
+                _s.format(self.tool_options["mode"], ", ".join(Verilator.modes))
             )
 
         # PHONY Makefile targets
         if self.tool_options["mode"] in ["binary", "dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
             args.append(self.tool_options["mode"])
 
-        self._run_tool("make", args, quiet=True)
+        if self.tool_options["mode"] != "none":
+            self._run_tool("make", args, quiet=True)
 
     def run_main(self):
         self.check_managed_parser()

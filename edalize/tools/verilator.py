@@ -6,6 +6,7 @@ import os
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
+from edalize.verilator import Verilator as EdalizeVerilator
 
 
 class Verilator(Edatool):
@@ -23,7 +24,7 @@ class Verilator(Edatool):
         },
         "mode": {
             "type": "str",
-            "desc": "Select compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
+            "desc": "Select compilation mode. Use *none* for no compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *none*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
         },
         "verilator_options": {
             "type": "str",
@@ -44,14 +45,12 @@ class Verilator(Edatool):
         vc = []
         vc.append("--Mdir .")
 
-        modes = ["binary", "cc", "dpi-hdr-only", "lint-only", "preprocess-only", "sc", "xml-only"]
-
         # Default to cc mode if not specified
         mode = self.tool_options.get("mode", "cc")
 
-        if not mode in modes:
+        if mode not in EdalizeVerilator.modes:
             _s = "Illegal verilator mode {}. Allowed values are {}"
-            raise RuntimeError(_s.format(mode, ", ".join(modes)))
+            raise RuntimeError(_s.format(mode, ", ".join(EdalizeVerilator.modes)))
         vc.append("--" + mode)
 
         vc += self.tool_options.get("verilator_options", [])
@@ -148,7 +147,7 @@ class Verilator(Edatool):
         self.args += self.tool_options.get("run_options", [])
 
         # Default to cc mode if not specified
-        if not "mode" in self.tool_options:
+        if "mode" not in self.tool_options:
             self.tool_options["mode"] = "cc"
         if self.tool_options["mode"] in ["dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
             return
