@@ -26,6 +26,18 @@ class Verilator(Edatool):
             "type": "str",
             "desc": "Select compilation mode. Use *none* for no compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *none*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
         },
+        "gen-xml": {
+            "type": "bool",
+            "desc": "Generate XML output",
+        },
+        "gen-dpi-hdr": {
+            "type": "bool",
+            "desc": "Generate DPI header output",
+        },
+        "gen-preprocess": {
+            "type": "bool",
+            "desc": "Generate preprocessor output",
+        },
         "verilator_options": {
             "type": "str",
             "desc": "Additional options for verilator",

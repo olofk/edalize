@@ -75,6 +75,21 @@ class Verilator(Edatool):
                         "type": "String",
                         "desc": "Controls whether to create an executable. Set to 'false' when something else will do the final linking",
                     },
+                    {
+                        "name": "gen-xml",
+                        "type": "bool",
+                        "desc": "Generate XML output",
+                    },
+                    {
+                        "name": "gen-dpi-hdr",
+                        "type": "bool",
+                        "desc": "Generate DPI header output",
+                    },
+                    {
+                        "name": "gen-preprocess",
+                        "type": "bool",
+                        "desc": "Generate preprocessor output",
+                    },
                 ],
                 "lists": [
                     {
@@ -229,8 +244,18 @@ class Verilator(Edatool):
         if self.tool_options["mode"] in ["binary", "dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
             args.append(self.tool_options["mode"])
 
+        # Build according to mode
         if self.tool_options["mode"] != "none":
             self._run_tool("make", args, quiet=True)
+
+        # Builds runs
+        if str(self.tool_options.get("gen-xml")).lower() == "true":
+            self._run_tool("make", ["xml-only"], quiet=True)
+        if str(self.tool_options.get("gen-dpi-hdr")).lower() == "true":
+            self._run_tool("make", ["dpi-hdr-only"], quiet=True)
+        if str(self.tool_options.get("gen-preprocess")).lower() == "true":
+            self._run_tool("make", ["preprocess-only"], quiet=True)
+
 
     def run_main(self):
         self.check_managed_parser()
