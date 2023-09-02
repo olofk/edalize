@@ -123,8 +123,8 @@ class Verilator(Edatool):
             depfiles,
         )
 
-        if mode in ["dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
-            commands.set_default_target(mk_file)
+        if mode in ["binary", "dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
+            commands.set_default_target(mode)
         else:
             commands.add(
                 ["make", "-f", mk_file] + self.tool_options.get("make_options", []),

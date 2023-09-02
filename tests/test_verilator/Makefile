@@ -11,6 +11,17 @@ endif
 
 V$(TOP_MODULE): V$(TOP_MODULE).mk
 	$(MAKE) $(MAKE_OPTIONS) -f $<
-
 V$(TOP_MODULE).mk:
 	$(EDALIZE_LAUNCHER) $(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
+
+.PHONY: binary dpi-hdr-only lint-only preprocess-only xml-only
+binary:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --binary -f $(VC_FILE) $(VERILATOR_OPTIONS)
+dpi-hdr-only:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --dpi-hdr-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
+lint-only:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --lint-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
+preprocess-only V$(TOP_MODULE).i:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) -E -f $(VC_FILE) $(VERILATOR_OPTIONS) > V$(TOP_MODULE).i
+xml-only V$(TOP_MODULE).xml:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --xml-only -f $(VC_FILE) $(VERILATOR_OPTIONS)

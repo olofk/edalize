@@ -31,9 +31,20 @@ endif
 
 V$(TOP_MODULE): V$(TOP_MODULE).mk
 	$(MAKE) $(MAKE_OPTIONS) -f $<
-
 V$(TOP_MODULE).mk:
 	$(EDALIZE_LAUNCHER) $(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
+
+.PHONY: binary dpi-hdr-only lint-only preprocess-only xml-only
+binary:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --binary -f $(VC_FILE) $(VERILATOR_OPTIONS)
+dpi-hdr-only:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --dpi-hdr-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
+lint-only:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --lint-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
+preprocess-only V$(TOP_MODULE).i:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) -E -f $(VC_FILE) $(VERILATOR_OPTIONS) > V$(TOP_MODULE).i
+xml-only V$(TOP_MODULE).xml:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --xml-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
 """
 
 
@@ -123,16 +134,13 @@ class Verilator(Edatool):
             if not "mode" in self.tool_options:
                 self.tool_options["mode"] = "cc"
 
-            if self.tool_options["mode"] in modes:
-                if self.tool_options["mode"] == "preprocess-only":
-                    f.write("-E\n")
-                else:
-                    f.write("--" + self.tool_options["mode"] + "\n")
-            else:
+            if self.tool_options["mode"] not in modes:
                 _s = "Illegal verilator mode {}. Allowed values are {}"
                 raise RuntimeError(
                     _s.format(self.tool_options["mode"], ", ".join(modes))
                 )
+            if self.tool_options["mode"] in ["cc", "sc"]:
+                f.write("--" + self.tool_options["mode"] + "\n")
             if "libs" in self.tool_options:
                 for lib in self.tool_options["libs"]:
                     f.write("-LDFLAGS {}\n".format(lib))
@@ -158,9 +166,7 @@ class Verilator(Edatool):
                 f.write("\n".join(vlt_files) + "\n")
             f.write("\n".join(vlog_files) + "\n")
             f.write("--top-module {}\n".format(self.toplevel))
-            add_exe = (str(self.tool_options.get("exe")).lower() != "false") \
-                and (self.tool_options["mode"] not in ["binary", "dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"])
-            if add_exe:
+            if str(self.tool_options.get("exe")).lower() != "false":
                 f.write("--exe\n")
             f.write("\n".join(opt_c_files))
             f.write("\n")
@@ -208,11 +214,21 @@ class Verilator(Edatool):
 
     def build_main(self):
         logger.info("Building simulation model")
-        if not "mode" in self.tool_options:
+        if "mode" not in self.tool_options:
             self.tool_options["mode"] = "cc"
         args = []
-        if self.tool_options["mode"] in ["dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
-            args.append("V" + self.toplevel + ".mk")
+
+        modes = ["binary", "cc", "dpi-hdr-only", "lint-only", "preprocess-only", "sc", "xml-only"]
+        if self.tool_options["mode"] not in modes:
+            _s = "Illegal verilator mode {}. Allowed values are {}"
+            raise RuntimeError(
+                _s.format(self.tool_options["mode"], ", ".join(modes))
+            )
+
+        # PHONY Makefile targets
+        if self.tool_options["mode"] in ["binary", "dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
+            args.append(self.tool_options["mode"])
+
         self._run_tool("make", args, quiet=True)
 
     def run_main(self):
@@ -226,7 +242,7 @@ class Verilator(Edatool):
         self.args += self.tool_options.get("run_options", [])
 
         # Default to cc mode if not specified
-        if not "mode" in self.tool_options:
+        if "mode" not in self.tool_options:
             self.tool_options["mode"] = "cc"
         if self.tool_options["mode"] in ["dpi-hdr-only", "lint-only", "preprocess-only", "xml-only"]:
             return
