@@ -264,7 +264,7 @@ Field Name        Type                  Description
 cli_parser        String                If `cli_parser` is set to managed, Edalize will parse all command-line options.
                                         Otherwise, they are sent directly to the compiled simulation model.
 libs              List of String        Extra options to be passed as -LDFLAGS when linking the C++ testbench
-mode              String                Selects compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html
+mode              String                Selects compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *none*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html
 verilator_options List of String        Extra options to be passed when verilating model
 ================= ===================== ===========
 

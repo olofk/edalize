@@ -63,7 +63,7 @@ class Verilator(Edatool):
                     {
                         "name": "mode",
                         "type": "String",
-                        "desc": "Select compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
+                        "desc": "Select compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *none*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
                     },
                     {
                         "name": "cli_parser",
