@@ -88,6 +88,10 @@ prj_impl option top {}
                 f.write("prj_impl option HDL_PARAM {")
                 f.write(_s)
                 f.write("}\n")
+            if "thermal_default_clock_frequency" in self.tool_options:
+                _s = "prj_strgy set_value -strategy Strategy1 thermal_default_clock_frequency="
+                _s += f"{self.tool_options.get('thermal_default_clock_frequency')}"
+                f.write(_s + "\n")
             if self.vlogdefine:
                 _s = ";".join(
                     ["{}={}".format(k, v) for k, v in self.vlogdefine.items()]
