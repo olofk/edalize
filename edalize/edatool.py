@@ -161,6 +161,7 @@ class Edatool(object):
 
         self.hooks = edam.get("hooks", {})
         self.parameters = edam.get("parameters", {})
+        self.export_files = edam.get("export_files", True)
 
         self.work_root = work_root
         self.env = os.environ.copy()

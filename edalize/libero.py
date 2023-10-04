@@ -130,6 +130,7 @@ class Libero(Edatool):
             "op": "{",
             "cl": "}",
             "sp": " ",
+            "export_files": self.export_files,
         }
 
         # Set preferred HDL language based on file type amount if not user defined.
@@ -202,8 +203,11 @@ class Libero(Edatool):
         }
         _file_type = f.file_type.split("-")[0]
         if _file_type in file_types:
-            filename = f.name.split("/")[-1]
-            return file_types[_file_type] + filename
+            if self.export_files:
+                filename = f.name.split("/")[-1]
+                return file_types[_file_type] + filename
+            else:
+                return f.name
         return ""
 
     def pnr_constraint_file_filter(self, f):
@@ -214,8 +218,11 @@ class Libero(Edatool):
         }
         _file_type = f.file_type.split("-")[0]
         if _file_type in file_types:
-            filename = f.name.split("/")[-1]
-            return file_types[_file_type] + filename
+            if self.export_files:
+                filename = f.name.split("/")[-1]
+                return file_types[_file_type] + filename
+            else:
+                return f.name
         return ""
 
     def constraint_file_filter(self, f, type="ALL"):
@@ -228,11 +235,17 @@ class Libero(Edatool):
         }
         _file_type = f.file_type.split("-")[0]
         if _file_type in file_types:
-            filename = f.name.split("/")[-1]
-            if type == "ALL":
-                return file_types[_file_type] + filename
-            elif _file_type == type:
-                return file_types[_file_type] + filename
+            if self.export_files:
+                filename = f.name.split("/")[-1]
+                if type == "ALL":
+                    return file_types[_file_type] + filename
+                elif _file_type == type:
+                    return file_types[_file_type] + filename
+            else:
+                if type == "ALL":
+                    return f.name
+                elif _file_type == type:
+                    return f.name
         return ""
 
     def build_main(self):
