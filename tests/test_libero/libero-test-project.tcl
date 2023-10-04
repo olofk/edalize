@@ -7,10 +7,12 @@ puts "----------------- Creating project libero-test ---------------------------
 new_project -location {./prj} -name libero-test -project_description {} -hdl {VERILOG} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -part_range {IND} 
 
 # Set up the include directories
-set_global_include_path_order -paths " [file normalize .] "
+set_global_include_path_order -paths " . "
 build_design_hierarchy
 
 # Import HDL sources and constraints
+set libero_export_files 1
+
 import_files -sdc {sdc_file}
 import_files -hdl_source {sv_file.sv}
 import_files -hdl_source {vlog_file.v}
