@@ -99,7 +99,7 @@ def subprocess_run_3_9(
     return subprocess.CompletedProcess(process.args, retcode, stdout, stderr)
 
 
-if sys.version_info < (3, 7):
+if sys.version_info < (3, 8):
     run = subprocess_run_3_9
 else:
     run = subprocess.run
