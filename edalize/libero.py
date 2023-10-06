@@ -255,7 +255,7 @@ class Libero(Edatool):
             self._run_tool("libero", ["SCRIPT:" + escaped_name + "-run.tcl"])
         else:
             filePath = os.path.join(
-                Path(self.work_root).relative_to(os.getcwd()), escaped_name + "-run.tcl"
+                os.path.relpath(self.work_root), escaped_name + "-run.tcl"
             )
             logger.warn(
                 'Libero not found on path, execute manually the script "'
