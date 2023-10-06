@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<efx:project name="{{name}}" description="" last_change_date="" location="" sw_version="" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+    <efx:device_info>
+        {% if tool_options.family -%}
+        <efx:family name="{{tool_options.family}}"/>
+        {%- endif %}
+        {% if tool_options.part -%}
+        <efx:device name="{{tool_options.part}}"/>
+        {%- endif %}
+        {% if tool_options.timing -%}
+        <efx:timing_model name="{{tool_options.timing}}"/>
+        {%- endif %}
+    </efx:device_info>
+    <efx:design_info  def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008">
+        {% if tool_options.timing -%}
+    	<efx:top_module name="{{toplevel}}"/>
+        {%- endif %}
+        {%- for f in design_files %}
+        <efx:design_file name="{{f.name}}" version="{{f.version}}"/>
+        {% endfor -%}
+    	<efx:top_vhdl_arch name=""/>
+    </efx:design_info>
+    <efx:package_info>
+        <efx:package name=""/>
+    </efx:package_info>
+    <efx:constraint_info>
+        {% if constr_files -%}
+        {%- for f in constr_files %}
+        <efx:sdc_file name="{{f}}" />
+        {% endfor -%}
+        {%- endif %}
+    </efx:constraint_info>
+    <efx:sim_info/>
+    <efx:misc_info/>
+	<efx:ip_info/>
+    <efx:synthesis tool_name="efx_map">
+		<efx:param name="work_dir" value="work_syn" value_type="e_string"/>
+		<efx:param name="write_efx_verilog" value="on" value_type="e_bool"/>
+        <efx:param name="seq_opt" value="0" value_type="e_option"/>
+        {% if vlogparam -%}
+        {%- for k, v in vlogparam.items() %}
+        <efx:dynparam name="{{k}}" value="{{v}}"/>
+        {% endfor -%}
+        {%- endif %}
+        {% if generic -%}
+        {%- for k, v in generic.items() %}
+        <efx:dynparam name="{{k}}" value="{{v}}"/>
+        {% endfor -%}
+        {%- endif %}
+        {% if vlogdefine -%}
+        {%- for k, v in vlogdefine.items() %}
+        <efx:defmacro name="{{k}}" value="{{v}}"/>
+        {% endfor -%}
+        {%- endif %}
+    </efx:synthesis>
+    <efx:place_and_route tool_name="efx_pnr">
+		<efx:param name="work_dir" value="work_pnr" value_type="e_string" />
+		<efx:param name="verbose" value="off" value_type="e_bool" />
+		<efx:param name="load_delaym" value="on" value_type="e_bool"/>
+    </efx:place_and_route>
+    <efx:bitstream_generation tool_name="efx_pgm">
+		<efx:param name="mode" value="active" value_type="e_string"/>
+		<efx:param name="width" value="1" value_type="e_string"/>
+		<!-- on, off, smart -->
+		<efx:param name="enable_roms" value="smart" value_type="e_option"/>
+		<efx:param name="spi_low_power_mode" value="on" value_type="e_bool"/>
+		<efx:param name="io_weak_pullup" value="on" value_type="e_bool"/>
+      	<efx:param name="oscillator_clock_divider" value="DIV8" value_type="e_option"/>
+      	<!-- on, off -->
+		<efx:param name="bitstream_compression" value="on" value_type="e_bool"/>
+        <!-- on, off -->
+		<efx:param name="enable_external_master_clock" value="off" value_type="e_bool"/>
+        <!-- posedge, negedge -->
+        <efx:param name="active_capture_clk_edge" value="posedge" value_type="e_option"/>
+        <efx:param name="jtag_usercode" value="0xFFFFFFFF" value_type="e_string"/>
+        <!-- on, off -->
+		<efx:param name="release_tri_then_reset" value="on" value_type="e_bool"/>
+    </efx:bitstream_generation>
+	<efx:debugger>
+		<efx:param name="work_dir" value="work_dbg" value_type="e_string" />
+		<efx:param name="auto_instantiation" value="off" value_type="e_bool" />
+		<efx:param name="profile" value="NONE" value_type="e_string" />
+	</efx:debugger>
+    <efx:security>
+        <!-- on, off -->
+		<efx:param name="randomize_iv_value" value="on" value_type="e_bool"/>
+        <efx:param name="iv_value" value="" value_type="e_string"/>
+    </efx:security>
+</efx:project>

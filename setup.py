@@ -47,6 +47,8 @@ setup(
             "templates/genus/genus-read-sources.tcl.j2",
         ],
         "edalize.tools": [
+            "templates/efinity/isf_to_xml.py",
+            "templates/efinity/newproj_tmpl.xml.j2",
             "templates/yosys/edalize_yosys_procs.tcl.j2",
             "templates/yosys/yosys-script-tcl.j2",
             "templates/vivado/vivado-netlist.tcl.j2",
