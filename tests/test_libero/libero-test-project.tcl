@@ -4,27 +4,34 @@
 
 puts "----------------- Creating project libero-test ------------------------------"
 # Create a new project with device parameters
-new_project -location {./prj} -name libero-test -project_description {} -hdl {VERILOG} -family {PolarFire} -die {MPF300TS_ES} -package {FCG1152} -part_range {IND} 
+new_project \
+    -location {./prj} \
+    -name libero-test \
+    -project_description {} \
+    -hdl {VERILOG} \
+    -family {PolarFire} \
+    -die {MPF300TS_ES} \
+    -package {FCG1152} \
+    -part_range {IND}  \
 
 # Set up the include directories
 set_global_include_path_order -paths " . "
 build_design_hierarchy
 
-# Import HDL sources and constraints
-set libero_export_files 1
-
-import_files -sdc {sdc_file}
-import_files -hdl_source {sv_file.sv}
-import_files -hdl_source {vlog_file.v}
-import_files -hdl_source {vlog05_file.v}
-import_files -hdl_source {vhdl_file.vhd}
-import_files -hdl_source {vhdl2008_file}
-import_files -hdl_source {another_sv_file.sv}
-import_files -io_pdc {pdc_constraint_file.pdc}
-import_files -fp_pdc {pdc_floorplan_constraint_file.pdc}
+# Link HDL sources and constraints
+create_links \
+    -sdc {sdc_file} \
+    -hdl_source {sv_file.sv} \
+    -hdl_source {vlog_file.v} \
+    -hdl_source {vlog05_file.v} \
+    -hdl_source {vhdl_file.vhd} \
+    -hdl_source {vhdl2008_file} \
+    -hdl_source {another_sv_file.sv} \
+    -io_pdc {pdc_constraint_file.pdc} \
+    -fp_pdc {pdc_floorplan_constraint_file.pdc} \
 
 # Import HDL sources on libraries (logical_names)
-import_files \
+create_links \
         -library {libx} \
         -hdl_source {vhdl_lfile} \
 
@@ -49,29 +56,29 @@ puts "Configured Synthesize tool to include dirs:"
 puts "- ../../."
 
 puts "----------------------- Synthesize Constraints ---------------------------"
-puts "File: ./prj/constraint/sdc_file"
+puts "File: sdc_file"
 # Configure Synthesize tool to use the project constraints
 organize_tool_files -tool {SYNTHESIZE} \
-        -file {./prj/constraint/sdc_file} \
+        -file {sdc_file} \
         -module {top_module::work} -input_type {constraint}
 
 # Configure Place and Route tool to use the project constraints
 puts "----------------------- Place and Route Constraints ----------------------"
-puts "File: ./prj/constraint/sdc_file"
-puts "File: ./prj/constraint/io/pdc_constraint_file.pdc"
-puts "File: ./prj/constraint/fp/pdc_floorplan_constraint_file.pdc"
+puts "File: sdc_file"
+puts "File: pdc_constraint_file.pdc"
+puts "File: pdc_floorplan_constraint_file.pdc"
 
 organize_tool_files -tool {PLACEROUTE} \
-        -file {./prj/constraint/sdc_file} \
-        -file {./prj/constraint/io/pdc_constraint_file.pdc} \
-        -file {./prj/constraint/fp/pdc_floorplan_constraint_file.pdc} \
+        -file {sdc_file} \
+        -file {pdc_constraint_file.pdc} \
+        -file {pdc_floorplan_constraint_file.pdc} \
         -module {top_module::work} -input_type {constraint}
 
 # Configure Verify Timing tool to use the project constraints
 puts "----------------------- Verify Timings Constraints -----------------------"
-puts "File: ./prj/constraint/sdc_file"
+puts "File: sdc_file"
 organize_tool_files -tool {VERIFYTIMING} \
-        -file {./prj/constraint/sdc_file} \
+        -file {sdc_file} \
         -module {top_module::work} -input_type {constraint}
 
 save_project
