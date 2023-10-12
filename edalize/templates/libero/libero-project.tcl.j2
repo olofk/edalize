@@ -107,15 +107,15 @@ organize_tool_files -tool {PLACEROUTE} \
 # Configure Verify Timing tool to use the project constraints
 puts "----------------------- Verify Timings Constraints -----------------------"
 {% set ns.TIM=false %}
-{%- for src_file in src_files if src_file|constraint_file_filter("SDC") %}
+{%- for src_file in src_files if src_file|tim_constraint_file_filter %}
 {% set ns.TIM=true %}
-puts "File: {{src_file|constraint_file_filter}}"
+puts "File: {{src_file|tim_constraint_file_filter}}"
 {% endfor %}
 
 {%- if ns.TIM %}
 organize_tool_files -tool {VERIFYTIMING} \
-        {% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
-        -file {{op}}{{src_file|constraint_file_filter}}{{cl}} \
+        {% for src_file in src_files if src_file|tim_constraint_file_filter %}
+        -file {{op}}{{src_file|tim_constraint_file_filter}}{{cl}} \
         {% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}

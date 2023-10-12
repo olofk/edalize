@@ -101,7 +101,9 @@ class Libero(Edatool):
         self.jinja_env.filters[
             "pnr_constraint_file_filter"
         ] = self.pnr_constraint_file_filter
-        self.jinja_env.filters["constraint_file_filter"] = self.constraint_file_filter
+        self.jinja_env.filters[
+            "tim_constraint_file_filter"
+        ] = self.tim_constraint_file_filter
         self.jinja_env.filters["tcl_file_filter"] = self.tcl_file_filter
 
         escaped_name = self.name.replace(".", "_")
@@ -195,39 +197,16 @@ class Libero(Edatool):
         return ""
 
     def syn_constraint_file_filter(self, f):
-        file_types = {
-            "SDC": "constraint/",
-            "FDC": "constraint/",
-            "NDC": "constraint/",
-        }
-        _file_type = f.file_type.split("-")[0]
-        if _file_type in file_types:
+        if f.file_type in ["FDC", "NDC", "SDC"]:
             return f.name
-        return ""
 
     def pnr_constraint_file_filter(self, f):
-        file_types = {
-            "PDC": "constraint/io/",
-            "SDC": "constraint/",
-            "FPPDC": "constraint/fp/",
-        }
-        _file_type = f.file_type.split("-")[0]
-        if _file_type in file_types:
+        if f.file_type in ["FPPDC", "PDC", "SDC"]:
             return f.name
-        return ""
 
-    def constraint_file_filter(self, f, type="ALL"):
-        file_types = {
-            "PDC": "constraint/io/",
-            "SDC": "constraint/",
-            "FPPDC": "constraint/fp/",
-            "FDC": "constraint/",
-            "NDC": "constraint/",
-        }
-        _file_type = f.file_type.split("-")[0]
-        if _file_type in file_types and (type == "ALL" or type == _file_type):
+    def tim_constraint_file_filter(self, f):
+        if f.file_type == "SDC":
             return f.name
-        return ""
 
     def build_main(self):
         logger.info("Executing Libero TCL Scripts.")
