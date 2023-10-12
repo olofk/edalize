@@ -7,6 +7,7 @@ import os.path
 import sys
 
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +129,7 @@ prj_project close
             "tclSource": "source",
             "SDC": "prj_src add -format SDC",
         }
-        _file_type = f.file_type.split("-")[0]
+        _file_type = get_file_type(f)
         if _file_type in file_types:
             return file_types[_file_type] + " " + f.name
         elif _file_type in ["user", "LPF"]:

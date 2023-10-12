@@ -9,6 +9,7 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 from edalize.yosys import Yosys
 from importlib import import_module
 
@@ -142,7 +143,7 @@ class Design_compiler(Edatool):
             "SDC": "source",
         }
 
-        _file_type = f.file_type.split("-")[0]
+        _file_type = get_file_type(f)
         if _file_type in file_types:
             cmd = ""
             cmd += file_types[_file_type] + " "

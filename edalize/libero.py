@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 from collections import defaultdict
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
 
@@ -141,7 +142,7 @@ class Libero(Edatool):
             verilogFiles = 0
             VHDLFiles = 0
             for f in src_files:
-                t = f.file_type.split("-")[0]
+                t = get_file_type(f)
                 if t == "verilogSource" or t == "systemVerilogSource":
                     verilogFiles += 1
                 elif t == "vhdlSource":
@@ -179,7 +180,7 @@ class Libero(Edatool):
             "FDC": "-net_fdc {",
             "NDC": "-ndc {",
         }
-        _file_type = f.file_type.split("-")[0]
+        _file_type = get_file_type(f)
         if _file_type in file_types:
             # Do not return library files here
             if f.logical_name:
@@ -191,7 +192,7 @@ class Libero(Edatool):
         file_types = {
             "tclSource": "source ",
         }
-        _file_type = f.file_type.split("-")[0]
+        _file_type = get_file_type(f)
         if _file_type in file_types:
             return file_types[_file_type] + f.name
         return ""
