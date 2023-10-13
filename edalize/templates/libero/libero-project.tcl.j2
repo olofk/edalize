@@ -4,25 +4,44 @@
 
 puts "----------------- Creating project {{name}} ------------------------------"
 # Create a new project with device parameters
-new_project -location {{op}}{{prj_root}}{{cl}} -name {{name}} -project_description {} -hdl {{op}}{{tool_options.hdl}}{{cl}} -family {{op}}{{tool_options.family}}{{cl}} -die {{op}}{{tool_options.die}}{{cl}} -package {{op}}{{tool_options.package}}{{cl}} {% if tool_options.speed -%} -speed {{op}}{{tool_options.speed}}{{cl}}{{sp}}{%- endif %}{% if tool_options.dievoltage -%} -die_voltage {{op}}{{tool_options.dievoltage}}{{cl}}{{sp}}{%- endif %}{% if tool_options.range -%}-part_range {{op}}{{tool_options.range}}{{cl}}{{sp}}{%- endif %}{% if tool_options.defiostd -%} -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}}{% endif %}
-
+new_project \
+    -location {{op}}{{prj_root}}{{cl}} \
+    -name {{name}} \
+    -project_description {} \
+    -hdl {{op}}{{tool_options.hdl}}{{cl}} \
+    -family {{op}}{{tool_options.family}}{{cl}} \
+    -die {{op}}{{tool_options.die}}{{cl}} \
+    -package {{op}}{{tool_options.package}}{{cl}} \
+{% if tool_options.speed %}
+    -speed {{op}}{{tool_options.speed}}{{cl}}{{sp}} \
+{% endif %}
+{% if tool_options.dievoltage %}
+    -die_voltage {{op}}{{tool_options.dievoltage}}{{cl}}{{sp}} \
+{% endif %}
+{% if tool_options.range %}
+    -part_range {{op}}{{tool_options.range}}{{cl}}{{sp}} \
+{% endif %}
+{% if tool_options.defiostd %}
+    -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}} \
+{% endif %}
 
 {% if incdirs %}
 # Set up the include directories
-set_global_include_path_order -paths "{% for incdir in incdirs %} [file normalize {{incdir}}] {% endfor %}"
+set_global_include_path_order -paths "{% for incdir in incdirs %} {{incdir}} {% endfor %}"
 build_design_hierarchy
 {% endif %}
 
-# Import HDL sources and constraints
+# Link HDL sources and constraints
+create_links \
 {% for src_file in src_files if src_file|src_file_filter%}
-import_files {{src_file|src_file_filter}}{{cl}}
+    {{src_file|src_file_filter}}{{cl}} \
 {% endfor %}
 
 # Import HDL sources on libraries (logical_names)
 {% for library in library_files.items() %}
 {% set lib = library[0] %}
 {% set files = library[1] %}
-import_files \
+create_links \
         -library {{op}}{{lib}}{{cl}} \
         {% for f in files %}
         -hdl_source {{op}}{{f}}{{cl}} \
@@ -53,50 +72,50 @@ puts "Configured Synthesize tool to include dirs:"
 puts "- ../../{{dir}}"
 {% endfor -%}{% endif %}
 
-{% set ns = namespace(SDC=false) %}{# If SDC files are present #}
-{% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
-{% set ns.SDC=true %}
 puts "----------------------- Synthesize Constraints ---------------------------"
-puts "File: {{prj_root}}/{{src_file|constraint_file_filter}}"
+{% set ns = namespace(SYN=false) %}{# If synthesis constraints are present #}
+{% for src_file in src_files if src_file|syn_constraint_file_filter %}
+{% set ns.SYN=true %}
+puts "File: {{src_file|syn_constraint_file_filter}}"
 {% endfor %}
 
-{%- if ns.SDC %}
+{%- if ns.SYN %}
 # Configure Synthesize tool to use the project constraints
 organize_tool_files -tool {SYNTHESIZE} \
-        {% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
-        -file {{op}}{{prj_root}}/{{src_file|constraint_file_filter}}{{cl}} \
+        {% for src_file in src_files if src_file|syn_constraint_file_filter %}
+        -file {{op}}{{src_file|syn_constraint_file_filter}}{{cl}} \
         {% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}
 
 # Configure Place and Route tool to use the project constraints
-{% set ns.CNST=false %}
 puts "----------------------- Place and Route Constraints ----------------------"
-{% for src_file in src_files if src_file|constraint_file_filter %}
-{% set ns.CNST=true %}
-puts "File: {{prj_root}}/{{src_file|constraint_file_filter}}"
+{% set ns.PNR=false %}
+{% for src_file in src_files if src_file|pnr_constraint_file_filter %}
+{% set ns.PNR=true %}
+puts "File: {{src_file|pnr_constraint_file_filter}}"
 {% endfor %}
 
-{% if ns.CNST %}
+{% if ns.PNR %}
 organize_tool_files -tool {PLACEROUTE} \
-        {% for src_file in src_files if src_file|constraint_file_filter %}
-        -file {{op}}{{prj_root}}/{{src_file|constraint_file_filter}}{{cl}} \
+        {% for src_file in src_files if src_file|pnr_constraint_file_filter %}
+        -file {{op}}{{src_file|pnr_constraint_file_filter}}{{cl}} \
         {% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}
 
-{% if ns.SDC %}
 # Configure Verify Timing tool to use the project constraints
-{% endif %}
-{%- for src_file in src_files if src_file|constraint_file_filter("SDC") %}
 puts "----------------------- Verify Timings Constraints -----------------------"
-puts "File: {{prj_root}}/{{src_file|constraint_file_filter}}"
+{% set ns.TIM=false %}
+{%- for src_file in src_files if src_file|tim_constraint_file_filter %}
+{% set ns.TIM=true %}
+puts "File: {{src_file|tim_constraint_file_filter}}"
 {% endfor %}
 
-{%- if ns.SDC %}
+{%- if ns.TIM %}
 organize_tool_files -tool {VERIFYTIMING} \
-        {% for src_file in src_files if src_file|constraint_file_filter("SDC") %}
-        -file {{op}}{{prj_root}}/{{src_file|constraint_file_filter}}{{cl}} \
+        {% for src_file in src_files if src_file|tim_constraint_file_filter %}
+        -file {{op}}{{src_file|tim_constraint_file_filter}}{{cl}} \
         {% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}

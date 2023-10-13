@@ -95,7 +95,15 @@ class Libero(Edatool):
         self._check_mandatory_options()
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
-        self.jinja_env.filters["constraint_file_filter"] = self.constraint_file_filter
+        self.jinja_env.filters[
+            "syn_constraint_file_filter"
+        ] = self.syn_constraint_file_filter
+        self.jinja_env.filters[
+            "pnr_constraint_file_filter"
+        ] = self.pnr_constraint_file_filter
+        self.jinja_env.filters[
+            "tim_constraint_file_filter"
+        ] = self.tim_constraint_file_filter
         self.jinja_env.filters["tcl_file_filter"] = self.tcl_file_filter
 
         escaped_name = self.name.replace(".", "_")
@@ -168,6 +176,8 @@ class Libero(Edatool):
             "PDC": "-io_pdc {",
             "SDC": "-sdc {",
             "FPPDC": "-fp_pdc {",
+            "FDC": "-net_fdc {",
+            "NDC": "-ndc {",
         }
         _file_type = f.file_type.split("-")[0]
         if _file_type in file_types:
@@ -186,20 +196,17 @@ class Libero(Edatool):
             return file_types[_file_type] + f.name
         return ""
 
-    def constraint_file_filter(self, f, type="ALL"):
-        file_types = {
-            "PDC": "constraint/io/",
-            "SDC": "constraint/",
-            "FPPDC": "constraint/fp/",
-        }
-        _file_type = f.file_type.split("-")[0]
-        if _file_type in file_types:
-            filename = f.name.split("/")[-1]
-            if type == "ALL":
-                return file_types[_file_type] + filename
-            elif _file_type == type:
-                return file_types[_file_type] + filename
-        return ""
+    def syn_constraint_file_filter(self, f):
+        if f.file_type in ["FDC", "NDC", "SDC"]:
+            return f.name
+
+    def pnr_constraint_file_filter(self, f):
+        if f.file_type in ["FPPDC", "PDC", "SDC"]:
+            return f.name
+
+    def tim_constraint_file_filter(self, f):
+        if f.file_type == "SDC":
+            return f.name
 
     def build_main(self):
         logger.info("Executing Libero TCL Scripts.")
