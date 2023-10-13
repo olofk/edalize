@@ -33,6 +33,7 @@ NON_TOOL_PACKAGES = [
     "ise_reporting",
     "vivado_reporting",
     "quartus_reporting",
+    "version",
 ]
 
 
