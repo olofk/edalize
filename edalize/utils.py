@@ -75,4 +75,10 @@ class EdaCommands(object):
 # Helper function to strip potential version from the end of a file_type (for example, converting
 # vhdlSource-2008 -> vhdlSource)
 def get_file_type(file_obj):
-    return file_obj.file_type.split("-")[0]
+    file_type = file_obj.file_type
+
+    for i, c in enumerate(file_type):
+        if c == "-":
+            return file_type[0:i]
+
+    return file_type
