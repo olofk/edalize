@@ -110,6 +110,7 @@ prj_close
 
         file_types = {
             "verilogSource": "prj_add_source ",
+            "systemVerilogSource": "prj_add_source ",
             "vhdlSource": "prj_add_source ",
             "PDC": "prj_add_source ",
         }
