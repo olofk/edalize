@@ -15,3 +15,5 @@ python:
   install:
     - requirements: doc/requirements.txt
 
+build:
+  os: "ubuntu-22.04"
