@@ -67,7 +67,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -207,3 +207,9 @@ epub_exclude_files = ["search.html"]
 
 # Take class documentation from both __init__(), and the class docstring.
 autoclass_content = "both"
+
+from edalize.edatool import gen_tool_docs
+
+s = gen_tool_docs()
+with open(os.path.join(os.path.abspath("."), "edam/tools.rst"), "w") as f:
+    f.write(s)

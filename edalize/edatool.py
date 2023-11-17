@@ -524,3 +524,64 @@ class Edatool(object):
                     unused_files.append(src_file)
 
             return unused_files
+
+
+def _class_doc(items):
+    s = items["description"] + "\n\n"
+    lines = []
+    name_len = 10
+    type_len = 4
+    for item in items.get("members", []):
+        name_len = max(name_len, len(item["name"]))
+        type_len = max(type_len, len(item["type"]))
+        lines.append((item["name"], item["type"], item["desc"]))
+    for item in items.get("dicts", []):
+        name_len = max(name_len, len(item["name"]))
+        type_len = max(type_len, len(item["type"]) + 8)
+        lines.append((item["name"], "Dict of {}".format(item["type"]), item["desc"]))
+    for item in items.get("lists", {}):
+        name_len = max(name_len, len(item["name"]))
+        type_len = max(type_len, len(item["type"]) + 8)
+        lines.append((item["name"], "List of {}".format(item["type"]), item["desc"]))
+
+    s += "=" * name_len + " " + "=" * type_len + " " + "=" * 11 + "\n"
+    s += "Field Name".ljust(name_len + 1) + "Type".ljust(type_len + 1) + "Description\n"
+    s += "=" * name_len + " " + "=" * type_len + " " + "=" * 11 + "\n"
+    for line in lines:
+        s += line[0].ljust(name_len + 1)
+        s += line[1].ljust(type_len + 1)
+        s += line[2]
+        s += "\n"
+    s += "=" * name_len + " " + "=" * type_len + " " + "=" * 11 + "\n"
+    return s
+
+
+def gen_tool_docs():
+    table = []
+    s = ""
+    for backend in get_edatools():
+        name = backend.__name__
+
+        if name == "Edatool":
+            continue
+
+        table.append(
+            {
+                "name": name.lower(),
+                "type": "`" + name + "`_",
+                "desc": name + "-specific options",
+            }
+        )
+
+        s += "\n{}\n{}\n\n".format(name, "~" * len(name))
+        s += _class_doc(backend.get_doc(0))
+
+    return (
+        _class_doc(
+            {
+                "description": "Tool options are used to set tool-specific options. Each key corresponds to a specific EDA tool.\n\n**Note** This section is only used by the legacy Tool API",
+                "members": table,
+            }
+        )
+        + s
+    )
