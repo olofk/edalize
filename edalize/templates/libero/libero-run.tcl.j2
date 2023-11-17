@@ -4,8 +4,25 @@
 
 source {{op}}{{name}}-project.tcl{{cl}}
 
+{% for src_file in src_files if src_file|tcl_file_filter('tclSourcePreSynth')%}
+# Source user defined TCL scripts
+puts "---------- Executing User pre-synth TCL script: {{src_file|tcl_file_filter('tclSourcePreSynth')|replace("source", "")|trim}} ----------"
+{{src_file|tcl_file_filter('tclSourcePreSynth')}}
+{% endfor %}
 run_tool -name {SYNTHESIZE}
+
+{% for src_file in src_files if src_file|tcl_file_filter('tclSourcePrePnR')%}
+# Source user defined TCL scripts
+puts "---------- Executing User pre-pnr TCL script: {{src_file|tcl_file_filter('tclSourcePrePnR')|replace("source", "")|trim}} ----------"
+{{src_file|tcl_file_filter('tclSourcePrePnR')}}
+{% endfor %}
 run_tool -name {PLACEROUTE}
+
+{% for src_file in src_files if src_file|tcl_file_filter('tclSourcePreBitstream')%}
+# Source user defined TCL scripts
+puts "---------- Executing User pre-bitstream TCL script: {{src_file|tcl_file_filter('tclSourcePreBitstream')|replace("source", "")|trim}} ----------"
+{{src_file|tcl_file_filter('tclSourcePreBitstream')}}
+{% endfor %}
 run_tool -name {GENERATEPROGRAMMINGDATA}
 
 puts "To program the FPGA and SPI-Flash, run the 'Run PROGRAM Action' and 'Run PROGRAM_SPI_IMAGE Action' tools in the Design Flow menu."

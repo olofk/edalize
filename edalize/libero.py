@@ -187,12 +187,15 @@ class Libero(Edatool):
             return file_types[_file_type] + f.name
         return ""
 
-    def tcl_file_filter(self, f):
+    def tcl_file_filter(self, f, type="tclSource"):
         file_types = {
             "tclSource": "source ",
+            "tclSourcePreSynth": "source ",
+            "tclSourcePrePnR": "source ",
+            "tclSourcePreBitstream": "source ",
         }
         _file_type = f.file_type.split("-")[0]
-        if _file_type in file_types:
+        if _file_type in file_types and _file_type == type:
             return file_types[_file_type] + f.name
         return ""
 
