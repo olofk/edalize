@@ -9,6 +9,7 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 from edalize.yosys import Yosys
 from importlib import import_module
 
@@ -128,7 +129,7 @@ class Genus(Edatool):
             # Note: we do not add an SDC source here as the constraint files are
             # referenced inside the MMMC view file on a per corner base
         }
-        _file_type = f.file_type.split("-")[0]
+        _file_type = get_file_type(f)
 
         if _file_type in file_types:
             cmd = ""

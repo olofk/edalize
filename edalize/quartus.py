@@ -11,6 +11,7 @@ import re
 import xml.etree.ElementTree as ET
 from functools import partial
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
 
@@ -169,15 +170,11 @@ class Quartus(Edatool):
             "quartus-project.tcl.j2", escaped_name + ".tcl", template_vars
         )
 
-    # Helper to extract file type
-    def file_type(self, f):
-        return f.file_type.split("-")[0]
-
     # Filter for just QSYS files. This verifies that they are compatible
     # with the identified Quartus version
     def qsys_file_filter(self, f):
         name = ""
-        if self.file_type(f) == "QSYS":
+        if get_file_type(f) == "QSYS":
             # Compatibility checks
             try:
                 qsysTree = ET.parse(os.path.join(self.work_root, f.name))
@@ -242,7 +239,7 @@ class Quartus(Edatool):
             "tclSource": partial(_handle_tcl),
         }
 
-        _file_type = self.file_type(f)
+        _file_type = get_file_type(f)
         if _file_type in file_mapping:
             return file_mapping[_file_type](f)
         elif _file_type == "user":

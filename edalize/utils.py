@@ -70,3 +70,15 @@ class EdaCommands(object):
                     f.write(
                         f"\t$(EDALIZE_LAUNCHER) {env_prefix}{' '.join([str(x) for x in c.command])}\n"
                     )
+
+
+# Helper function to strip potential version from the end of a file_type (for example, converting
+# vhdlSource-2008 -> vhdlSource)
+def get_file_type(file_obj):
+    file_type = file_obj.file_type
+
+    for i, c in enumerate(file_type):
+        if c == "-":
+            return file_type[0:i]
+
+    return file_type
