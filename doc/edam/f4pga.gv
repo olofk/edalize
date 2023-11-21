@@ -1,0 +1,13 @@
+digraph G {
+yosysblif [label="yosys\noutput_format=blif"]
+nextpnr [label="nextpnr\narch=ice40"]
+"$project.bit" [shape=box,style=filled]
+
+frontends -> yosysjson[label="pnr==nextpnr         "];
+frontends -> yosyseblif[label="pnr==vpr         "];
+yosysjson -> nextpnr;
+yosyseblif -> vpr;
+vpr -> genfasm;
+genfasm -> xcfasm;
+xcfasm -> "$project.bit";
+}

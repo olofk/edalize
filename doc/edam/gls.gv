@@ -1,0 +1,6 @@
+digraph G {
+"model" [shape=box,style=filled,label="Simulation model"]
+frontends -> "$synth";
+"$synth" -> "$sim";
+"$sim" -> "model";
+}

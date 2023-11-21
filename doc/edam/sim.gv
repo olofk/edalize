@@ -1,0 +1,5 @@
+digraph G {
+"model" [shape=box,style=filled,label="Simulation model"]
+frontends -> "$tool";
+"$tool" -> "model";
+}

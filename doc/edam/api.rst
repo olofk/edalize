@@ -11,6 +11,7 @@ Field Name   Type                  Description
 dependencies Dict of `Dependency`_ Direct dependencies of each core that is contained in the EDAM.
 files         List of `File`_      Contains all the HDL source files, constraint files,
                                    vendor IP description files, memory initialization files etc. for the project.
+flow_options `Flow Options`_       A dictionary of tool- and flow-specific options. Used by the Flow API
 hooks         `Hook`_              A dictionary of extra commands to execute at various stages of the project build/run.
 name          String               **Required** Name of the project
 parameters    Dict of `Parameter`_ Specifies build- and run-time parameters, such as plusargs, VHDL generics, Verilog defines etc.
@@ -48,6 +49,7 @@ File
 A file has a name, which is the absolute path or the relative path to the working directory. It also has a type, which describes the intended usage of the file.
 Different EDA tools handle different subsets of files and are expected to ignore files that are not applicable to them, but might issue a warning. By specifying *user* as the file type, the backends will explicitly ignore the file. The valid file types are based on the IP-XACT 2014 standard, with some additional file types added. The file types not covered by IP-XACT are listed below
 
+
 - QIP : Intel Quartus IP file
 - UCF : Xilinx ISE constraint file
 - verilogSource-2005 : Verilog 200 source
@@ -65,6 +67,19 @@ is_include_file Bool                  Indicates if this file should be treated a
 include_path    String                When is_include_file is true, the directory containing the file will be added to the include path. include_path allows setting an explicit directory to use instead
 logical_name    String                Logical name (e.g. VHDL/SystemVerilog library) of the file
 =============== ===================== ===========
+
+Flow options
+------------
+
+The flow API consists of two layers. The *flow* defines how different *tools* are interconnected to perform a task. The topology of the flows can be very different. A simulation flow might consist of a single simulation tool. An FPGA flow might be built up from a synthesis tool followed by a place & route tool and finally some tool to convert into a device-specific FPGA image (bitstream). A gate-level simulation flow could be created with a synthesis tool feeding its output into a simulator.
+
+This also means that configuring the flow consists of two types of options. The flow options listed for each flow below defines the topology. Depending on which tools that get pulled into the flow graph, additional tool-specific flow options becomes available as well. In addition, some tool-specific options might be hardcoded by the flow. If e.g. yosys is used in the Vivado flow, the architecture will always be set to *xilinx* and the output format will always be *edf* since that's what Vivado expects for its post-synthesis activities. Below is listed the flow options for each flow as well as the tool options for each tool. In order to programatically see what options are available for a specific flow configuration, first run ``get_flow_options()`` to get the available flow options. Assign values to any flow options of interest and then run ``get_tool_options(assigned_flow_options)`` with a dict containing the flow options and their values to see what tool options are available for this particular flow configuration.
+
+The global flow options and options for each tool both goes into the ``flow_options`` section in the EDAM description.
+
+.. include:: flows.rst
+
+.. include:: tools.rst
 
 Hook
 ----
@@ -118,7 +133,7 @@ paramtype       String                **Required** Type of parameter. Valid valu
 Tool options
 ------------
 
-.. include:: tools.rst 
+.. include:: legacytools.rst 
 
 VPI
 ---

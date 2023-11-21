@@ -8,7 +8,7 @@ from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
 class Vivado(Edaflow):
-    """The Vivado backend executes Xilinx Vivado to build systems and program the FPGA"""
+    """The Vivado flow executes AMD Vivado to create a bitstream and optionally program a board. Yosys can be used for synthesis by setting the synth option accordingly"""
 
     argtypes = ["vlogdefine", "vlogparam"]
 
@@ -19,7 +19,7 @@ class Vivado(Edaflow):
     FLOW_OPTIONS = {
         "frontends": {
             "type": "str",
-            "desc": "Tools to run before yosys (e.g. sv2v)",
+            "desc": "Tools to run before Vivado (e.g. sv2v)",
             "list": True,
         },
         "pgm": {

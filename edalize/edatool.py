@@ -568,12 +568,12 @@ def gen_tool_docs():
         table.append(
             {
                 "name": name.lower(),
-                "type": "`" + name + "`_",
+                "type": "`" + name + " backend`_",
                 "desc": name + "-specific options",
             }
         )
 
-        s += "\n{}\n{}\n\n".format(name, "~" * len(name))
+        s += "\n{} backend\n{}\n\n".format(name, "~" * (len(name) + 8))
         s += _class_doc(backend.get_doc(0))
 
     return (

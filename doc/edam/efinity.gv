@@ -1,0 +1,5 @@
+digraph G {
+"$project.bit" [shape=box,style=filled]
+frontends -> efinity;
+efinity -> "$project.bit";
+}
