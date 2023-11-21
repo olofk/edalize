@@ -1,6 +1,6 @@
 digraph G {
-yosysblif [label="yosys\noutput_format=blif"]
-nextpnr [label="nextpnr\narch=ice40"]
+yosyseblif [label="yosys\noutput_format=eblif"]
+yosysjson [label="yosys\noutput_format=json"]
 "$project.bit" [shape=box,style=filled]
 
 frontends -> yosysjson[label="pnr==nextpnr         "];
