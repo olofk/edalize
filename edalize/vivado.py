@@ -62,6 +62,11 @@ class Vivado(Edatool):
                         "desc": "P&R tool. Allowed values are vivado (default) and none (to just run synthesis)",
                     },
                     {
+                        "name": "pgm",
+                        "type": "String",
+                        "desc": "Programming tool. Default is none, set to 'vivado' to program the FPGA in the run stage.",
+                    },
+                    {
                         "name": "jobs",
                         "type": "Integer",
                         "desc": "Number of jobs. Useful for parallelizing OOC (Out Of Context) syntheses.",
@@ -115,11 +120,8 @@ class Vivado(Edatool):
         correct FPGA board and then downloads the bitstream. The tcl script is then
         executed in Vivado's batch mode.
         """
-        if "pnr" in self.tool_options:
-            if self.tool_options["pnr"] == "vivado":
-                pass
-            elif self.tool_options["pnr"] == "none":
-                return
+        if ("pgm" not in self.tool_options) or (self.tool_options["pgm"] != "vivado"):
+            return
 
         self._run_tool("make", ["pgm"])
 
