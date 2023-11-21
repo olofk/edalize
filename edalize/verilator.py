@@ -31,15 +31,36 @@ endif
 
 V$(TOP_MODULE): V$(TOP_MODULE).mk
 	$(MAKE) $(MAKE_OPTIONS) -f $<
-
 V$(TOP_MODULE).mk:
 	$(EDALIZE_LAUNCHER) $(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
+
+.PHONY: binary dpi-hdr-only lint-only preprocess-only xml-only
+binary:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --binary -f $(VC_FILE) $(VERILATOR_OPTIONS)
+dpi-hdr-only:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --dpi-hdr-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
+lint-only:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --lint-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
+preprocess-only V$(TOP_MODULE).i:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) -E -f $(VC_FILE) $(VERILATOR_OPTIONS) > V$(TOP_MODULE).i
+xml-only V$(TOP_MODULE).xml:
+	$(EDALIZE_LAUNCHER) $(VERILATOR) --xml-only -f $(VC_FILE) $(VERILATOR_OPTIONS)
 """
 
 
 class Verilator(Edatool):
-
     argtypes = ["cmdlinearg", "plusarg", "vlogdefine", "vlogparam"]
+
+    modes = [
+        "binary",
+        "cc",
+        "dpi-hdr-only",
+        "lint-only",
+        "none",
+        "preprocess-only",
+        "sc",
+        "xml-only",
+    ]
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -50,7 +71,7 @@ class Verilator(Edatool):
                     {
                         "name": "mode",
                         "type": "String",
-                        "desc": "Select compilation mode. Legal values are *cc* for C++ testbenches, *sc* for SystemC testbenches or *lint-only* to only perform linting on the Verilog code",
+                        "desc": "Select compilation mode. Legal values are *binary*, *cc*, *dpi-hdr-only*, *lint-only*, *none*, *preprocess-only*, *sc*, *xml-only*. See Verilator documentation for function: https://veripool.org/guide/latest/exe_verilator.html",
                     },
                     {
                         "name": "cli_parser",
@@ -61,6 +82,21 @@ class Verilator(Edatool):
                         "name": "exe",
                         "type": "String",
                         "desc": "Controls whether to create an executable. Set to 'false' when something else will do the final linking",
+                    },
+                    {
+                        "name": "gen-xml",
+                        "type": "bool",
+                        "desc": "Generate XML output",
+                    },
+                    {
+                        "name": "gen-dpi-hdr",
+                        "type": "bool",
+                        "desc": "Generate DPI header output",
+                    },
+                    {
+                        "name": "gen-preprocess",
+                        "type": "bool",
+                        "desc": "Generate preprocessor output",
                     },
                 ],
                 "lists": [
@@ -117,19 +153,18 @@ class Verilator(Edatool):
 
         with open(os.path.join(self.work_root, self.verilator_file), "w") as f:
             f.write("--Mdir .\n")
-            modes = ["sc", "cc", "lint-only"]
 
             # Default to cc mode if not specified
-            if not "mode" in self.tool_options:
+            if "mode" not in self.tool_options:
                 self.tool_options["mode"] = "cc"
 
-            if self.tool_options["mode"] in modes:
-                f.write("--" + self.tool_options["mode"] + "\n")
-            else:
+            if self.tool_options["mode"] not in Verilator.modes:
                 _s = "Illegal verilator mode {}. Allowed values are {}"
                 raise RuntimeError(
-                    _s.format(self.tool_options["mode"], ", ".join(modes))
+                    _s.format(self.tool_options["mode"], ", ".join(Verilator.modes))
                 )
+            if self.tool_options["mode"] in ["cc", "sc"]:
+                f.write("--" + self.tool_options["mode"] + "\n")
             if "libs" in self.tool_options:
                 for lib in self.tool_options["libs"]:
                     f.write("-LDFLAGS {}\n".format(lib))
@@ -203,12 +238,37 @@ class Verilator(Edatool):
 
     def build_main(self):
         logger.info("Building simulation model")
-        if not "mode" in self.tool_options:
+        if "mode" not in self.tool_options:
             self.tool_options["mode"] = "cc"
         args = []
-        if self.tool_options["mode"] == "lint-only":
-            args.append("V" + self.toplevel + ".mk")
-        self._run_tool("make", args, quiet=True)
+
+        if self.tool_options["mode"] not in Verilator.modes:
+            _s = "Illegal verilator mode {}. Allowed values are {}"
+            raise RuntimeError(
+                _s.format(self.tool_options["mode"], ", ".join(Verilator.modes))
+            )
+
+        # PHONY Makefile targets
+        if self.tool_options["mode"] in [
+            "binary",
+            "dpi-hdr-only",
+            "lint-only",
+            "preprocess-only",
+            "xml-only",
+        ]:
+            args.append(self.tool_options["mode"])
+
+        # Build mode
+        if self.tool_options["mode"] != "none":
+            self._run_tool("make", args, quiet=True)
+
+        # Additional builds
+        if str(self.tool_options.get("gen-xml")).lower() == "true":
+            self._run_tool("make", ["xml-only"], quiet=True)
+        if str(self.tool_options.get("gen-dpi-hdr")).lower() == "true":
+            self._run_tool("make", ["dpi-hdr-only"], quiet=True)
+        if str(self.tool_options.get("gen-preprocess")).lower() == "true":
+            self._run_tool("make", ["preprocess-only"], quiet=True)
 
     def run_main(self):
         self.check_managed_parser()
@@ -221,9 +281,14 @@ class Verilator(Edatool):
         self.args += self.tool_options.get("run_options", [])
 
         # Default to cc mode if not specified
-        if not "mode" in self.tool_options:
+        if "mode" not in self.tool_options:
             self.tool_options["mode"] = "cc"
-        if self.tool_options["mode"] == "lint-only":
+        if self.tool_options["mode"] in [
+            "dpi-hdr-only",
+            "lint-only",
+            "preprocess-only",
+            "xml-only",
+        ]:
             return
         logger.info("Running simulation")
         self._run_tool("./V" + self.toplevel, self.args)
