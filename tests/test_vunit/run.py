@@ -23,23 +23,41 @@ runner = load_runner_hooks().VUnitRunner()
 vu = runner.create()
 
 
+files = {}
+
 lib = vu.add_library("vunit_test_runner_lib")
-lib.add_source_files("sv_file.sv")
-lib.add_source_files("vlog_file.v")
-lib.add_source_files("vlog05_file.v")
-lib.add_source_files("vhdl_file.vhd")
-lib.add_source_files("vhdl2008_file", vhdl_standard="2008")
-lib.add_source_files("another_sv_file.sv")
+files.update(
+    {
+        "sv_file.sv": lib.add_source_file("sv_file.sv"),
+        "vlog_file.v": lib.add_source_file("vlog_file.v"),
+        "vlog05_file.v": lib.add_source_file("vlog05_file.v"),
+        "vhdl_file.vhd": lib.add_source_file("vhdl_file.vhd"),
+        "vhdl2008_file": lib.add_source_file("vhdl2008_file", vhdl_standard="2008"),
+        "another_sv_file.sv": lib.add_source_file("another_sv_file.sv"),
+    }
+)
+
 # Override this hook to customize the library, e.g. compile-flags etc.
 # This allows full access to vunit.ui.Library interface:
 runner.handle_library("vunit_test_runner_lib", lib)
 
 lib = vu.add_library("libx")
-lib.add_source_files("vhdl_lfile")
+files.update(
+    {
+        "vhdl_lfile": lib.add_source_file("vhdl_lfile"),
+    }
+)
+
 # Override this hook to customize the library, e.g. compile-flags etc.
 # This allows full access to vunit.ui.Library interface:
 runner.handle_library("libx", lib)
 
+
+# start of core file mapping
+# end of core file mapping
+
+# start of inter core dependencies
+# end of inter core dependencies
 
 # override this hook to perform final customization and parametrization of VUnit, custom invokation, etc.
 runner.main(vu)
