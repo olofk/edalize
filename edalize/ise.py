@@ -94,6 +94,11 @@ quit
                         "type": "Integer",
                         "desc": "Specifies the FPGA's device number in the JTAG chain, starting at 1",
                     },
+                    {
+                        "name": "pgm",
+                        "type": "String",
+                        "desc": "Programming tool. Default is 'none', set to 'ise' to program the FPGA in the run stage.",
+                    },
                 ],
             }
 
@@ -188,6 +193,8 @@ quit
         tcl_file.close()
 
     def run_main(self):
+        if ("pgm" not in self.tool_options) or (self.tool_options["pgm"] != "ise"):
+            return
         pgm_file_name = os.path.join(self.work_root, self.name + ".pgm")
         self._write_pgm_file(pgm_file_name)
         self._run_tool("impact", ["-batch", pgm_file_name])
