@@ -12,7 +12,10 @@ def read(fname):
 
 setup(
     name="edalize",
-    version="0.5.1",
+    use_scm_version={
+        "relative_to": __file__,
+        "write_to": "edalize/version.py",
+    },
     packages=["edalize", "edalize.tools", "edalize.flows"],
     package_data={
         "edalize": [
@@ -47,6 +50,8 @@ setup(
             "templates/genus/genus-read-sources.tcl.j2",
         ],
         "edalize.tools": [
+            "templates/efinity/isf_to_xml.py",
+            "templates/efinity/newproj_tmpl.xml.j2",
             "templates/yosys/edalize_yosys_procs.tcl.j2",
             "templates/yosys/yosys-script-tcl.j2",
             "templates/vivado/vivado-netlist.tcl.j2",
@@ -81,6 +86,10 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
         "Topic :: Utilities",
+    ],
+    setup_requires=[
+        "setuptools_scm < 7.0; python_version<'3.7'",
+        "setuptools_scm; python_version>='3.7'",
     ],
     install_requires=[
         "Jinja2>=3",

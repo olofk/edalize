@@ -44,6 +44,7 @@ needs_sphinx = "3.0"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.graphviz",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
@@ -67,7 +68,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -207,3 +208,97 @@ epub_exclude_files = ["search.html"]
 
 # Take class documentation from both __init__(), and the class docstring.
 autoclass_content = "both"
+
+from edalize.edatool import gen_tool_docs
+
+s = gen_tool_docs()
+with open(os.path.join(os.path.abspath("."), "edam/legacytools.rst"), "w") as f:
+    f.write(s)
+
+from importlib import import_module
+from pkgutil import iter_modules
+
+import edalize.flows
+
+
+def make_rst_table(options):
+    s = ""
+    lines = []
+    name_len = 10
+    type_len = 4
+    for name, item in options.items():
+        _type = item["type"]
+        if item.get("list"):
+            _type = "List of " + _type
+        name_len = max(name_len, len(name))
+        type_len = max(type_len, len(_type))
+        lines.append((name, _type, item["desc"]))
+
+    s += "=" * name_len + " " + "=" * type_len + " " + "=" * 11 + "\n"
+    s += "Field Name".ljust(name_len + 1) + "Type".ljust(type_len + 1) + "Description\n"
+    s += "=" * name_len + " " + "=" * type_len + " " + "=" * 11 + "\n"
+    for line in lines:
+        s += line[0].ljust(name_len + 1)
+        s += line[1].ljust(type_len + 1)
+        s += line[2]
+        s += "\n"
+    s += "=" * name_len + " " + "=" * type_len + " " + "=" * 11 + "\n"
+    return s
+
+
+def iter_namespace(ns_pkg):
+    # Specifying the second argument (prefix) to iter_modules makes the
+    # returned name an absolute name instead of a relative one. This allows
+    # import_module to work without having to do additional modification to
+    # the name.
+    return iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
+
+
+discovered_plugins = {
+    name: import_module(name) for finder, name, ispkg in iter_namespace(edalize.flows)
+}
+
+s = ""
+table = {}
+for k, v in discovered_plugins.items():
+    name = k.split(".")[-1]
+    if name == "edaflow":
+        continue
+
+    table[name] = {
+        "type": f"`{name.capitalize()} flow`_",
+        "desc": name + "-specific options",
+    }
+    _class = getattr(v, name.capitalize())
+    s += "\n{} flow\n{}\n\n".format(name.capitalize(), "~" * (len(name) + 5))
+    s += _class.__doc__ + "\n\n"
+    s += f".. graphviz:: {name}.gv\n\n"
+    s += make_rst_table(_class.get_flow_options())
+
+with open(os.path.join(os.path.abspath("."), "edam/flows.rst"), "w") as f:
+    f.write(s)  # make_rst_table(table)+s)
+
+import edalize.tools
+
+discovered_plugins = {
+    name: import_module(name) for finder, name, ispkg in iter_namespace(edalize.tools)
+}
+
+s = ""
+table = {}
+for k, v in discovered_plugins.items():
+    name = k.split(".")[-1]
+    if name == "edatool":
+        continue
+
+    table[name] = {
+        "type": f"`{name.capitalize()} tool`_",
+        "desc": name + "-specific options",
+    }
+    _class = getattr(v, name.capitalize())
+    s += "\n{} tool\n{}\n\n".format(name.capitalize(), "~" * (len(name) + 5))
+    s += (_class.__doc__ or _class.description) + "\n\n"
+    s += make_rst_table(_class.get_tool_options())
+
+with open(os.path.join(os.path.abspath("."), "edam/tools.rst"), "w") as f:
+    f.write(s)  # make_rst_table(table)+s)

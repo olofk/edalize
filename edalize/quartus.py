@@ -11,6 +11,7 @@ import re
 import xml.etree.ElementTree as ET
 from functools import partial
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,11 @@ class Quartus(Edatool):
                         "name": "pnr",
                         "type": "String",
                         "desc": "P&R tool. Allowed values are quartus (default), dse (to run Design Space Explorer) and none (to just run synthesis)",
+                    },
+                    {
+                        "name": "pgm",
+                        "type": "String",
+                        "desc": "Programming tool. Default is 'none', set to 'quartus' to program the FPGA in the run stage.",
                     },
                 ],
                 "lists": [
@@ -169,15 +175,11 @@ class Quartus(Edatool):
             "quartus-project.tcl.j2", escaped_name + ".tcl", template_vars
         )
 
-    # Helper to extract file type
-    def file_type(self, f):
-        return f.file_type.split("-")[0]
-
     # Filter for just QSYS files. This verifies that they are compatible
     # with the identified Quartus version
     def qsys_file_filter(self, f):
         name = ""
-        if self.file_type(f) == "QSYS":
+        if get_file_type(f) == "QSYS":
             # Compatibility checks
             try:
                 qsysTree = ET.parse(os.path.join(self.work_root, f.name))
@@ -242,7 +244,7 @@ class Quartus(Edatool):
             "tclSource": partial(_handle_tcl),
         }
 
-        _file_type = self.file_type(f)
+        _file_type = get_file_type(f)
         if _file_type in file_mapping:
             return file_mapping[_file_type](f)
         elif _file_type == "user":
@@ -275,13 +277,8 @@ class Quartus(Edatool):
         args += ["-o"]
         args += ["p;" + self.name.replace(".", "_") + ".sof"]
 
-        if "pnr" in self.tool_options:
-            if self.tool_options["pnr"] == "quartus":
-                pass
-            elif self.tool_options["pnr"] == "dse":
-                return
-            elif self.tool_options["pnr"] == "none":
-                return
+        if ("pgm" not in self.tool_options) or (self.tool_options["pgm"] != "quartus"):
+            return
 
         if "board_device_index" in self.tool_options:
             args[-1] += "@" + self.tool_options["board_device_index"]

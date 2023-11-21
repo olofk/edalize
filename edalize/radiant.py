@@ -6,6 +6,7 @@ import logging
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
 
@@ -110,10 +111,11 @@ prj_close
 
         file_types = {
             "verilogSource": "prj_add_source ",
+            "systemVerilogSource": "prj_add_source ",
             "vhdlSource": "prj_add_source ",
             "PDC": "prj_add_source ",
         }
-        _file_type = f.file_type.split("-")[0]
+        _file_type = get_file_type(f)
         if _file_type in file_types:
             return file_types[_file_type] + f.name + _work_source(f)
         elif _file_type == "tclSource":

@@ -8,10 +8,13 @@ version: 2
 sphinx:
   configuration: doc/conf.py
 
-formats:
-  - pdf
-
 python:
   install:
     - requirements: doc/requirements.txt
 
+build:
+  os: "ubuntu-22.04"
+  tools:
+    python: "3.11"
+  apt_packages:
+    - graphviz

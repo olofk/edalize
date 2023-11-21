@@ -7,6 +7,7 @@ import sys
 import logging
 from collections import OrderedDict
 from edalize.edatool import Edatool
+from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
 
@@ -103,16 +104,13 @@ class Vunit(Edatool):
         return fragments[1]
 
     def src_file_filter(self, f):
-        def _get_file_type(f):
-            return f.file_type.split("-")[0]
-
         file_mapping = {
             "verilogSource": lambda f: f.name,
             "systemVerilogSource": lambda f: f.name,
             "vhdlSource": lambda f: f.name,
         }
 
-        _file_type = _get_file_type(f)
+        _file_type = get_file_type(f)
         if _file_type in file_mapping:
             return file_mapping[_file_type](f)
         elif _file_type == "user":
