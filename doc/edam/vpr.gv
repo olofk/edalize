@@ -1,0 +1,8 @@
+digraph G {
+yosysblif [label="yosys\noutput_format=blif"]
+"$project.analysis" [shape=box,style=filled]
+
+frontends -> yosysblif;
+yosysblif -> vpr;
+vpr -> "$project.analysis";
+}

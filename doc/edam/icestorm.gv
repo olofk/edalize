@@ -1,0 +1,14 @@
+digraph G {
+"$project.bit" [shape=box,style=filled]
+"$project.json" [shape=box,style=filled]
+yosys [label="yosys\narch=ice40\noutput_format=json"]
+nextpnr [label="nextpnr\narch=ice40"]
+
+frontends -> yosys;
+yosys -> nextpnr;
+yosys -> "$project.json" [label="pnr==none"];
+nextpnr -> icetime;
+nextpnr -> icebox_stat;
+nextpnr -> icepack;
+icepack -> "$project.bit";
+}

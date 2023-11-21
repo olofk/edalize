@@ -1,0 +1,12 @@
+digraph G {
+yosys [label="yosys\narch=xilinx\noutput_format=edif"]
+vpnr [label="vivado\nsynth=none"]
+"$project.bit" [shape=box,style=filled]
+"$project.v" [shape=box,style=filled]
+frontends -> yosys[label="synth==yosys         "];
+frontends -> "vivado"[label="synth!=yosys"];
+yosys -> "vpnr";
+vivado -> "$project.v"[label="pnr==none"];
+vivado -> "$project.bit"[label="pnr!=none"];
+"vpnr" -> "$project.bit";
+}
