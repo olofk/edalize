@@ -140,7 +140,7 @@ class Verilator(Edatool):
             "preprocess-only",
             "xml-only",
         ]:
-            commands.set_default_target(mode)
+            commands.set_default_target(mk_file)
         else:
             commands.add(
                 ["make", "-f", mk_file] + self.tool_options.get("make_options", []),
