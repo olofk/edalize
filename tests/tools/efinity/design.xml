@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<efx:project name="design" description="" last_change_date="" location="" sw_version="" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+    <efx:device_info>
+<efx:family name="Trion"/><efx:device name="T8F81"/><efx:timing_model name="C2"/>    </efx:device_info>
+    <efx:design_info  def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008">
+<efx:top_module name="top_module"/>        <efx:design_file name="sv_file.sv" version="sv_09"/>
+        <efx:design_file name="vlog_file.v" version=""/>
+        <efx:design_file name="vlog05_file.v" version=""/>
+        <efx:design_file name="vlog_incfile" version=""/>
+        <efx:design_file name="vhdl_file.vhd" version=""/>
+        <efx:design_file name="vhdl_lfile" version=""/>
+        <efx:design_file name="vhdl2008_file" version=""/>
+        <efx:design_file name="another_sv_file.sv" version="sv_09"/>
+<efx:top_vhdl_arch name=""/>
+    </efx:design_info>
+    <efx:package_info>
+        <efx:package name=""/>
+    </efx:package_info>
+    <efx:constraint_info>
+        <efx:sdc_file name="sdc_file" />
+    </efx:constraint_info>
+    <efx:sim_info/>
+    <efx:misc_info/>
+	<efx:ip_info/>
+    <efx:synthesis tool_name="efx_map">
+		<efx:param name="work_dir" value="work_syn" value_type="e_string"/>
+		<efx:param name="write_efx_verilog" value="on" value_type="e_bool"/>
+        <efx:param name="seq_opt" value="0" value_type="e_option"/>
+        <efx:dynparam name="vlogparam_bool" value="True"/>
+        <efx:dynparam name="vlogparam_int" value="42"/>
+        <efx:dynparam name="vlogparam_str" value="hello"/>
+        <efx:defmacro name="vlogdefine_bool" value="True"/>
+        <efx:defmacro name="vlogdefine_int" value="42"/>
+        <efx:defmacro name="vlogdefine_str" value="hello"/>
+    </efx:synthesis>
+    <efx:place_and_route tool_name="efx_pnr">
+		<efx:param name="work_dir" value="work_pnr" value_type="e_string" />
+		<efx:param name="verbose" value="off" value_type="e_bool" />
+		<efx:param name="load_delaym" value="on" value_type="e_bool"/>
+    </efx:place_and_route>
+    <efx:bitstream_generation tool_name="efx_pgm">
+		<efx:param name="mode" value="active" value_type="e_string"/>
+		<efx:param name="width" value="1" value_type="e_string"/>
+		<!-- on, off, smart -->
+		<efx:param name="enable_roms" value="smart" value_type="e_option"/>
+		<efx:param name="spi_low_power_mode" value="on" value_type="e_bool"/>
+		<efx:param name="io_weak_pullup" value="on" value_type="e_bool"/>
+      	<efx:param name="oscillator_clock_divider" value="DIV8" value_type="e_option"/>
+      	<!-- on, off -->
+		<efx:param name="bitstream_compression" value="on" value_type="e_bool"/>
+        <!-- on, off -->
+		<efx:param name="enable_external_master_clock" value="off" value_type="e_bool"/>
+        <!-- posedge, negedge -->
+        <efx:param name="active_capture_clk_edge" value="posedge" value_type="e_option"/>
+        <efx:param name="jtag_usercode" value="0xFFFFFFFF" value_type="e_string"/>
+        <!-- on, off -->
+		<efx:param name="release_tri_then_reset" value="on" value_type="e_bool"/>
+    </efx:bitstream_generation>
+	<efx:debugger>
+		<efx:param name="work_dir" value="work_dbg" value_type="e_string" />
+		<efx:param name="auto_instantiation" value="off" value_type="e_bool" />
+		<efx:param name="profile" value="NONE" value_type="e_string" />
+	</efx:debugger>
+    <efx:security>
+        <!-- on, off -->
+		<efx:param name="randomize_iv_value" value="on" value_type="e_bool"/>
+        <efx:param name="iv_value" value="" value_type="e_string"/>
+    </efx:security>
+</efx:project>

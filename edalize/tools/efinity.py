@@ -130,8 +130,6 @@ class Efinity(Edatool):
                 os.path.join(self.efinity_home, "scripts", "efx_run.py"),
                 "--prj",
                 self.name + ".xml",
-                "--work_dir",
-                self.work_root,
                 "--flow",
                 "compile",
             ],
