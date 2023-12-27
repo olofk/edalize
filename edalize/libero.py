@@ -159,7 +159,7 @@ class Libero(Edatool):
 
         # Render the TCL run file
         self.render_template(
-            "libero-run.tcl.j2", escaped_name + "-run.tcl", template_vars
+            "libero-build.tcl.j2", escaped_name + "-build.tcl", template_vars
         )
 
         # Render the Synthesize TCL file
@@ -213,10 +213,10 @@ class Libero(Edatool):
         logger.info("Executing Libero TCL Scripts.")
         escaped_name = self.name.replace(".", "_")
         if shutil.which("libero"):
-            self._run_tool("libero", ["SCRIPT:" + escaped_name + "-run.tcl"])
+            self._run_tool("libero", ["SCRIPT:" + escaped_name + "-build.tcl"])
         else:
             filePath = os.path.join(
-                Path(self.work_root).relative_to(os.getcwd()), escaped_name + "-run.tcl"
+                Path(self.work_root).relative_to(os.getcwd()), escaped_name + "-build.tcl"
             )
             logger.warn(
                 'Libero not found on path, execute manually the script "'
