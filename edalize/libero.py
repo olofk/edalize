@@ -75,6 +75,20 @@ class Libero(Edatool):
                 )
                 self.tool_options[key] = default_value
 
+    def _run_libero(self, script):
+        if shutil.which("libero"):
+            logger.info(f"Executing Libero TCL Scripts: {script}")
+            return self._run_tool("libero", ["SCRIPT:" + script])
+        else:
+            filePath = os.path.join(
+                Path(self.work_root).relative_to(os.getcwd()), script,
+            )
+            logger.warn(
+                'Libero not found on path, execute manually the script "'
+                + filePath
+                + '"'
+            )
+
     def _check_mandatory_options(self):
         shouldExit = 0
         for key in self.mandatory_options:
@@ -210,19 +224,8 @@ class Libero(Edatool):
             return f.name
 
     def build_main(self):
-        logger.info("Executing Libero TCL Scripts.")
         escaped_name = self.name.replace(".", "_")
-        if shutil.which("libero"):
-            self._run_tool("libero", ["SCRIPT:" + escaped_name + "-build.tcl"])
-        else:
-            filePath = os.path.join(
-                Path(self.work_root).relative_to(os.getcwd()), escaped_name + "-build.tcl"
-            )
-            logger.warn(
-                'Libero not found on path, execute manually the script "'
-                + filePath
-                + '"'
-            )
+        self._run_libero(script=escaped_name + "-build.tcl")
 
     def run_main(self):
         pass
