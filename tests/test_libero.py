@@ -12,7 +12,7 @@ def test_libero(make_edalize_test):
     tf.compare_files(
         [
             name + "-project.tcl",
-            name + "-run.tcl",
+            name + "-build.tcl",
             name + "-syn-user.tcl",
         ]
     )
@@ -38,7 +38,7 @@ def test_libero_with_params(make_edalize_test):
     tf.compare_files(
         [
             name + "-project.tcl",
-            name + "-run.tcl",
+            name + "-build.tcl",
             name + "-syn-user.tcl",
         ]
     )
