@@ -38,6 +38,7 @@ setup(
             "templates/ascentlint/run-ascentlint.tcl.j2",
             "templates/libero/libero-project.tcl.j2",
             "templates/libero/libero-build.tcl.j2",
+            "templates/libero/libero-run.tcl.j2",
             "templates/libero/libero-syn-user.tcl.j2",
             "templates/ghdl/Makefile.j2",
             "templates/openlane/openlane-makefile.j2",
