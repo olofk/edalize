@@ -56,6 +56,16 @@ class Libero(Edatool):
                         "type": "String",
                         "desc": 'Default HDL (e.g. "VERILOG")',
                     },
+                    {
+                        "name": "programmer",
+                        "type": "String",
+                        "desc": 'Programmer ID (e.g. "E2008ETVQU")',
+                    },
+                    {
+                        "name": "flashpro5_freq",
+                        "type": "Integer",
+                        "desc": "The frequency for jtag communication in Hz",
+                    },
                 ],
             }
 
@@ -176,6 +186,10 @@ class Libero(Edatool):
             "libero-build.tcl.j2", escaped_name + "-build.tcl", template_vars
         )
 
+        self.render_template(
+            "libero-run.tcl.j2", escaped_name + "-run.tcl", template_vars
+        )
+
         # Render the Synthesize TCL file
         self.render_template(
             "libero-syn-user.tcl.j2", escaped_name + "-syn-user.tcl", template_vars
@@ -228,4 +242,5 @@ class Libero(Edatool):
         self._run_libero(script=escaped_name + "-build.tcl")
 
     def run_main(self):
-        pass
+        escaped_name = self.name.replace(".", "_")
+        self._run_libero(script=escaped_name + "-run.tcl")
