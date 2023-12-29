@@ -3,14 +3,14 @@
 # Libero
 
 {% if vlogparam -%}{%- for k,v in vlogparam.items() %}
-set_option -hdl_param -set {{k}}={{ v|generic_value_str(bool_is_str=True) }}
+set_option -hdl_param -set {{k}}={{ v|generic_value_str(str_quote_style="\"", bool_is_str=True) }}
 {% endfor -%}{%- endif %}
 {% if vlogdefine -%}{%- for k,v in vlogdefine.items() %}
-set_option -hdl_define -set {{k}}={{ v|generic_value_str(bool_is_str=True) }}
+set_option -hdl_define -set {{k}}={{ v|generic_value_str(str_quote_style="\"", bool_is_str=True) }}
 {% endfor -%}{%- endif %}
 {% if generic -%}
 set_option -hdl_param -set {
-  {%- for k, v in generic.items() %}{{ k }}={{ v|generic_value_str(bool_is_str=True) }} {% endfor -%}
+  {%- for k, v in generic.items() %}{{ k }}={{ v|generic_value_str(str_quote_style="\"", bool_is_str=True) }} {% endfor -%}
   }
 {%- endif %}
 
