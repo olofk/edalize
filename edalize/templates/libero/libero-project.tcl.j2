@@ -62,7 +62,7 @@ set_root -module {{op}}{{toplevel}}::work{{cl}}
 
 
 
-# Configure Synthesize tool to use the generated Synplify TCL script 
+# Configure Synthesize tool to use the generated Synplify TCL script
 configure_tool -name {SYNTHESIZE} \
         -params [join "SYNPLIFY_TCL_FILE:" [file join [file dirname [info script]] /{{name}}-syn-user.tcl]]
 
