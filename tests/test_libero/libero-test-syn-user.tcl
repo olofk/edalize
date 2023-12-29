@@ -2,10 +2,10 @@
 # Synplify Tcl Script
 # Libero
 
-set_option -hdl_param -set vlogparam_bool=True
+set_option -hdl_param -set vlogparam_bool=true
 set_option -hdl_param -set vlogparam_int=42
 set_option -hdl_param -set vlogparam_str=hello
-set_option -hdl_define -set vlogdefine_bool=True
+set_option -hdl_define -set vlogdefine_bool=true
 set_option -hdl_define -set vlogdefine_int=42
 set_option -hdl_define -set vlogdefine_str=hello
 
