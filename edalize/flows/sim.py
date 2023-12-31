@@ -37,6 +37,14 @@ class Sim(Generic):
                     "vsim_options",
                     ["-pli", "`cocotb-config --lib-name-path vpi questa`"],
                 ),
+                "verilator": (
+                    "verilator_options",
+                    [
+                        "--vpi",
+                        "--public-flat-rw --prefix Vtop",
+                        '-LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils"',
+                    ],
+                ),
             }
             (opt, val) = cocotb_options[tool]
             self.edam["tool_options"][tool][opt] = (
