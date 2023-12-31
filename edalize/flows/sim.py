@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 from edalize.flows.generic import Generic
+import os
 
 
 class Sim(Generic):
@@ -23,6 +24,8 @@ class Sim(Generic):
     def configure_tools(self, flow):
         if self.flow_options.get("cocotb_module"):
             tool = self.flow_options.get("tool")
+            share_dir = os.popen("cocotb-config --share").read().rstrip() \
+            + "/lib/verilator/verilator.cpp"
             cocotb_options = {
                 "icarus": (
                     "vvp_options",
@@ -36,6 +39,16 @@ class Sim(Generic):
                 "modelsim": (
                     "vsim_options",
                     ["-pli", "`cocotb-config --lib-name-path vpi questa`"],
+                ),
+                "verilator": (
+                    "verilator_options",
+                    ["--vpi",
+                     "--top top",
+                     "--public-flat-rw",
+                     "-LDFLAGS \"-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` \
+                     -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils\"",
+                    f"{share_dir}"
+                    ],
                 ),
             }
             (opt, val) = cocotb_options[tool]
