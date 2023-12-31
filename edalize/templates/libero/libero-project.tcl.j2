@@ -27,7 +27,7 @@ new_project \
 
 {% if incdirs %}
 # Set up the include directories
-set_global_include_path_order -paths "{% for incdir in incdirs %} {{incdir}} {% endfor %}"
+set_global_include_path_order -paths "{% for incdir in incdirs %} ../{{incdir}} {% endfor %}"
 build_design_hierarchy
 {% endif %}
 
