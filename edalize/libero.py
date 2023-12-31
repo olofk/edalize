@@ -197,6 +197,9 @@ class Libero(Edatool):
 
         logger.info("Cores and Libero TCL Scripts generated.")
 
+        escaped_name = self.name.replace(".", "_")
+        self._run_libero(script=escaped_name + "-project.tcl")
+
     def src_file_filter(self, f):
         file_types = {
             "verilogSource": "-hdl_source {",
