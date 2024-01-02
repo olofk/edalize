@@ -200,6 +200,10 @@ class Libero(Edatool):
         escaped_name = self.name.replace(".", "_")
         self._run_libero(script=escaped_name + "-project.tcl")
 
+        # FIXME: fusesoc relies on the Makefile timestamp
+        makefile = os.path.join(self.work_root, 'Makefile')
+        open(makefile, 'a').close()
+
     def src_file_filter(self, f):
         file_types = {
             "verilogSource": "-hdl_source {",
