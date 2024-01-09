@@ -123,7 +123,8 @@ class Verilator(Edatool):
             vc.append("-D{}={}".format(k, self._param_value_str(v)))
 
         self.vc = vc
-
+        if self.edam["flow_options"].get("cocotb_module"):
+        	self.toplevel = "top"
         mk_file = f"V{self.toplevel}.mk"
         exe_file = f"V{self.toplevel}"
         commands = EdaCommands()

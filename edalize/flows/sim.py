@@ -43,8 +43,7 @@ class Sim(Generic):
                 "verilator": (
                     "verilator_options",
                     ["--vpi",
-                     "--top top",
-                     "--public-flat-rw",
+                     "--public-flat-rw --prefix Vtop",
                      "-LDFLAGS \"-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` \
                      -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils\"",
                     f"{share_dir}"
