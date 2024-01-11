@@ -42,7 +42,7 @@ class Sim(Generic):
                     ["--vpi",
                      "--public-flat-rw --prefix Vtop",
                      "-LDFLAGS \"-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils\""
-                    ],
+                     ],
                 ),
             }
             (opt, val) = cocotb_options[tool]

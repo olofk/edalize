@@ -61,7 +61,8 @@ class Verilator(Edatool):
 
         if mode not in EdalizeVerilator.modes:
             _s = "Illegal verilator mode {}. Allowed values are {}"
-            raise RuntimeError(_s.format(mode, ", ".join(EdalizeVerilator.modes)))
+            raise RuntimeError(
+                _s.format(mode, ", ".join(EdalizeVerilator.modes)))
         vc.append("--" + mode)
 
         vc += self.tool_options.get("verilator_options", [])
@@ -117,15 +118,16 @@ class Verilator(Edatool):
 
         for k, v in self.vlogparam.items():
             vc.append(
-                "-G{}={}".format(k, self._param_value_str(v, str_quote_style='\\"'))
+                "-G{}={}".format(k, self._param_value_str(v,
+                                 str_quote_style='\\"'))
             )
         for k, v in self.vlogdefine.items():
             vc.append("-D{}={}".format(k, self._param_value_str(v)))
 
         self.vc = vc
         if self.edam["flow_options"].get("cocotb_module"):
-        	self.toplevel = "top"
-        	verilator_file += " `cocotb-config --share`/lib/verilator/verilator.cpp"
+            self.toplevel = "top"
+            verilator_file += " `cocotb-config --share`/lib/verilator/verilator.cpp"
         mk_file = f"V{self.toplevel}.mk"
         exe_file = f"V{self.toplevel}"
         commands = EdaCommands()
@@ -145,7 +147,8 @@ class Verilator(Edatool):
             commands.set_default_target(mk_file)
         else:
             commands.add(
-                ["make", "-f", mk_file] + self.tool_options.get("make_options", []),
+                ["make", "-f", mk_file] +
+                self.tool_options.get("make_options", []),
                 [exe_file],
                 [mk_file] + opt_c_files,
             )
