@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 from edalize.flows.generic import Generic
-import os
 
 
 class Sim(Generic):
