@@ -111,9 +111,9 @@ class Ghdl(Edatool):
                 # Files without a specified library will by added to
                 # libraries[None] which is perhaps poor form but avoids
                 # conflicts with user generated names
-                libraries[f["logical_name"]] = libraries.get(f["logical_name"], []) + [
-                    f["name"]
-                ]
+                libraries[f.get("logical_name", None)] = libraries.get(
+                    f.get("logical_name", None), []
+                ) + [f["name"]]
                 vhdl_sources += " {file}".format(file=f["name"])
                 depfiles.append(f)
             else:
