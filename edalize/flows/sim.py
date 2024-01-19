@@ -26,6 +26,10 @@ class Sim(Generic):
         if self.flow_options.get("cocotb_module"):
             tool = self.flow_options.get("tool")
             cocotb_options = {
+                "ghdl": (
+                    "sim_options",
+                    ["--vpi=`cocotb-config --lib-name-path vpi ghdl`"],
+                ),
                 "icarus": (
                     "vvp_options",
                     [
