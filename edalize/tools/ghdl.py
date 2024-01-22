@@ -78,6 +78,7 @@ class Ghdl(Edatool):
             standard = rx.match(stdarg[0]).group(1)
 
         run_options = self.tool_options.get("run_options", [])
+        sim_options = self.tool_options.get("sim_options", [])
 
         analyze_options = " ".join(analyze_options)
 
@@ -105,6 +106,7 @@ class Ghdl(Edatool):
 
         top_unit = top[-1]
 
+        depfiles = []
         unused_files = []
         for f in self.files:
             if f.get("file_type") in _vhdltypes:
@@ -136,18 +138,40 @@ class Ghdl(Edatool):
             )
 
         commands = EdaCommands()
+        commands.add(
+            ["ghdl", "-i"] + stdarg + [vhdl_sources],
+            ["import"],
+            [],
+        )
+        commands.add(
+            ["ghdl", "-m"] + stdarg + [analyze_options] + [top_libraries, top_unit],
+            ["analyze"],
+            ["import"],
+        )
         if self.tool_options.get("mode") == "verilog":
             commands.add(
-                ["ghdl", "-a"] + stdarg + analyze_options + [top_libraries, top_unit],
-                # FIXME: Get names of object files here
-                [f"work-obj{stdarg[0]}.cf"],
-                depfiles,
+                ["ghdl", "--synth", "--out=verilog"]
+                + stdarg
+                + [top_libraries, top_unit],
+                ["run"],
+                ["analyze", f"work-obj{standard}.cf"],
             )
-            commands.set_default_target(f"work-obj{stdarg[0]}.cf")
+        else:
+            commands.add(
+                ["ghdl", "-r"]
+                + stdarg
+                + run_options
+                + [top_libraries, top_unit]
+                + sim_options,
+                # FIXME: Get names of object files here
+                ["run"],
+                ["analyze", f"work-obj{standard}.cf"],
+            )
+
+        commands.set_default_target("import")
         self.commands = commands
 
-    def run_main(self):
-        cmd = "make"
+    def run(self):
         args = ["run"]
 
         # GHDL doesn't support Verilog, but the backend used vlogparam since
@@ -169,4 +193,4 @@ class Ghdl(Edatool):
                         k, self._param_value_str(v, '"', bool_is_str=True)
                     )
             args.append(extra_options)
-        self._run_tool(cmd, args)
+        return ("make", args, self.work_root)
