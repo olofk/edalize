@@ -37,6 +37,10 @@ class Sim(Generic):
                     "vsim_options",
                     ["-pli", "`cocotb-config --lib-name-path vpi questa`"],
                 ),
+                "ghdl": (
+                    "sim_options",
+                    ["--vpi=`cocotb-config --lib-name-path vpi ghdl`"],
+                ),
             }
             (opt, val) = cocotb_options[tool]
             self.edam["tool_options"][tool][opt] = (
