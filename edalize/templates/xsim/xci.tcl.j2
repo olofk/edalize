@@ -1,0 +1,13 @@
+create_project -part {{xci_part}} myProject -force
+{% for n in xci_list %}
+read_ip {{ n }}
+{% endfor %}
+generate_target simulation [ get_files *.xci ]
+#export_simulation -force -simulator xsim -of_objects [get_files *.xci ]
+#get_files -all -of_objects [get_files *.xci]
+set f [get_files -compile_order sources -used_in simulation -of [get_files *.xci] -quiet]
+set fd [ open "xci.prj" "w" ]
+foreach d $f {
+    puts $fd "verilog work $d"
+}
+close $fd
