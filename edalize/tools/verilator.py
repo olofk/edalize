@@ -124,6 +124,9 @@ class Verilator(Edatool):
 
         self.vc = vc
 
+        if self.edam.get("flow_options", {}).get("cocotb_module"):
+            self.toplevel = "top"
+            verilator_file += " `cocotb-config --share`/lib/verilator/verilator.cpp"
         mk_file = f"V{self.toplevel}.mk"
         exe_file = f"V{self.toplevel}"
         commands = EdaCommands()
