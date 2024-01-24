@@ -93,7 +93,7 @@ class Vivado(Edatool):
                     },
                     {
                         "name": "power_opt",
-                        "type": "bool",
+                        "type": "int",
                         "desc": "When defined, it enables the Power Optimization stage during implementation.",
                     },
                 ],

@@ -64,6 +64,10 @@ class Vivado(Edatool):
             "type": "str",
             "desc": "A pattern matching a board identifier. Refer to the Vivado documentation for ``get_hw_targets`` for details. Example: ``*/xilinx_tcf/Digilent/123456789123A``",
         },
+        "power_opt": {
+            "type": "int",
+            "desc": "When set to 1, it enables the Power Optimization stage during implementation.",
+        },
     }
 
     def get_version(self):
@@ -182,9 +186,11 @@ class Vivado(Edatool):
             "bd_files": bd_files,
         }
         jobs = self.tool_options.get("jobs", None)
+        power_opt = self.tool_options.get("power_opt", None)
 
         self.run_template_vars = {
-            "jobs": " -jobs " + str(jobs) if jobs is not None else ""
+            "jobs": " -jobs " + str(jobs) if jobs is not None else "",
+            "power_opt": power_opt if power_opt is not None else 0,
         }
 
         self.synth_template_vars = {
