@@ -1,5 +1,9 @@
 # Create a bin file which can be used to program the flash on the FPGA
 set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
+{% if tool_options.power_opt == 1 -%}
+# Enable power optimizations during implementation
+set_property strategy Power_DefaultOpt [get_runs impl_1]
+{%- endif %}
 
 # Vivado will raise an error if impl_1 is launched when it is already done. So
 # check the progress first and only launch if its not complete.
