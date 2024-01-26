@@ -117,8 +117,10 @@ class Ghdl(Edatool):
         self.edam = edam.copy()
         self.edam["files"] = unused_files
 
-        ghdl_import = []
+        commands = EdaCommands()
+
         make_lib_dirs = []
+        libs = []
         for lib, files in libraries.items():
             lib_opts = ""
             if lib:
@@ -127,23 +129,20 @@ class Ghdl(Edatool):
                 analyze_options += " -P./{}".format(lib)
                 make_lib_dirs.append(format(lib))
                 lib_opts = library_options.format(lib=lib)
-            ghdl_import.extend(
-                ["ghdl", "-i"]
-                + stdarg
-                + [analyze_options]
-                + [lib_opts, " ".join(files)]
-            )
+                libs.append(format(lib))
+                commands.add(
+                    ["ghdl", "-i"]
+                    + stdarg
+                    + [" -P./{}".format(lib)]
+                    + [lib_opts, " ".join(files)],
+                    [format(lib)],
+                    ["make_lib_dirs"],
+                )
 
-        commands = EdaCommands()
         commands.add(
             make_lib_dirs,
             ["make_lib_dirs"],
             [],
-        )
-        commands.add(
-            ghdl_import,
-            ["import"],
-            ["make_lib_dirs"],
         )
         commands.add(
             ["ghdl", "-m"]
@@ -152,7 +151,7 @@ class Ghdl(Edatool):
             + [lib_opts]
             + [top_libraries, top_unit],
             ["analyze"],
-            ["import"],
+            libs,
         )
         if self.tool_options.get("mode") == "verilog":
             commands.add(
@@ -174,7 +173,7 @@ class Ghdl(Edatool):
                 ["analyze", f"work-obj{standard}.cf"],
             )
 
-        commands.set_default_target("import")
+        commands.set_default_target("make_lib_dirs")
         self.commands = commands
 
     def run(self):
