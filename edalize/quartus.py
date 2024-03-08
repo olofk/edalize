@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class Quartus(Edatool):
-
     argtypes = ["vlogdefine", "vlogparam", "generic"]
 
     # Define Standard edition to be our default version
@@ -187,7 +186,9 @@ class Quartus(Edatool):
                     try:
                         tool = qsysTree.find("component").attrib["tool"]
                     except AttributeError:
-                        tool = qsysTree.find(".//{http://www.altera.com/XMLSchema/IPXact2014/extensions}tool").text
+                        tool = qsysTree.find(
+                            ".//{http://www.altera.com/XMLSchema/IPXact2014/extensions}tool"
+                        ).text
                     if tool == "QsysPro":
                         if self.isPro:
                             name = f.name
