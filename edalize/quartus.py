@@ -188,12 +188,16 @@ class Quartus(Edatool):
                         tool = qsysTree.find("component").attrib["tool"]
                     except AttributeError:
                         tool = qsysTree.find(".//{http://www.altera.com/XMLSchema/IPXact2014/extensions}tool").text
-                    if tool == "QsysPro" and self.isPro:
+                    if tool == "QsysPro":
+                        if self.isPro:
+                            name = f.name
+                    elif not self.isPro:
                         name = f.name
                 except (AttributeError, KeyError):
                     # Either a component wasn't found in the QSYS file, or it
                     # had no associated tool information. Make the assumption
-                    # it was a Standard edition file
+                    # it is a Standard edition file, as the old formats just
+                    # don't specify.
                     if not self.isPro:
                         name = f.name
             except (ET.ParseError, IOError):
