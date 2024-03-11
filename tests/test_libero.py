@@ -12,6 +12,7 @@ def test_libero(make_edalize_test):
     tf.compare_files(
         [
             name + "-project.tcl",
+            name + "-build.tcl",
             name + "-run.tcl",
             name + "-syn-user.tcl",
         ]
@@ -30,6 +31,8 @@ def test_libero_with_params(make_edalize_test):
         "range": "EXT",
         "defiostd": "LVCMOS 1.8V",
         "hdl": "VHDL",
+        "programmer": "E2008ETVQU",
+        "flashpro5_freq": "15000000",
     }
 
     tf = make_edalize_test("libero", test_name=name, tool_options=tool_options)
@@ -38,6 +41,7 @@ def test_libero_with_params(make_edalize_test):
     tf.compare_files(
         [
             name + "-project.tcl",
+            name + "-build.tcl",
             name + "-run.tcl",
             name + "-syn-user.tcl",
         ]
