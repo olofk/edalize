@@ -25,6 +25,10 @@ Example snippet in CAPI2 format:
        # A list of task names to pass to sby. Defaults to empty (in which case
        # sby will run each task in the .sby file)
        - my_proof
+     extra_options:
+       # A list of extra command line arguments to sby. Defaults to empty.
+       - -d
+       - build
 
 The SymbiYosys tool expects a configuration file telling it what to do. This
 file includes a list of all the source files, together with various flags which
@@ -108,8 +112,10 @@ You can reproduce the example above with something like
         "lists": {
             # A list of tasks to run from the .sby file. Passed on the sby
             # command line.
-            "tasknames": "String"
-        }
+            "tasknames": "String",
+            # A list of extra arguments to the sby command.
+            "extra_options": "String",
+        },
     }
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
@@ -125,6 +131,10 @@ You can reproduce the example above with something like
         # The list of include directories in the fileset (populated at
         # configure time by _get_file_names)
         self.incdirs = None
+
+        # The list of include files in the fileset (populated at
+        # configure time)
+        self.includes = None
 
         # The name of the interpolated .sby file that we create in the work
         # root
@@ -143,15 +153,46 @@ You can reproduce the example above with something like
                             "A list of the .sby file's tasks to run. "
                             "Passed on the sby command line."
                         ),
-                    }
+                    },
+                    {
+                        "name": "extra_options",
+                        "type": "String",
+                        "desc": (
+                            "A list of extra arguments. "
+                            "Passed on the sby command line."
+                        ),
+                    },
                 ],
             }
+
+    def _get_include_files(self, force_slash=False):
+        class Include:
+            def __init__(self, name, rel_name):
+                self.name = name
+                self.rel_name = rel_name
+
+        includes = []
+        for f in self.files:
+            if f.get("is_include_file"):
+                # The fully-qualified name
+                _name = f["name"]
+                # The working set base directory
+                _incdir = f.get("include_path") or os.path.dirname(f["name"]) or "."
+                if force_slash:
+                    _incdir = _incdir.replace("\\", "/")
+                    _name   = _incdir.replace("\\", "/")
+                # The path to copy the include to in the working set
+                _rel_name = _name.removeprefix(_incdir)
+                _rel_name = _rel_name.removeprefix("/")
+                includes.append(Include(_name, _rel_name))
+        return includes
 
     def _get_file_names(self):
         """Read the fileset to get our file names"""
         assert self.rtl_paths is None
 
         src_files, self.incdirs = self._get_fileset_files()
+        self.includes = self._get_include_files()
         self.rtl_paths = []
         bn_to_path = {}
         sby_names = []
@@ -205,7 +246,6 @@ You can reproduce the example above with something like
                 "-D{}={}".format(key, self._param_value_str(value))
                 for key, value in self.vlogdefine.items()
             ]
-            + ["-I{}".format(inc) for inc in self.incdirs]
         )
 
     def _get_chparam(self):
@@ -275,7 +315,7 @@ You can reproduce the example above with something like
                     "as a Jinja2 template: {}.".format(src_path, err)
                 )
 
-        files = "\n".join(self.rtl_paths)
+        files = "\n".join(map(lambda x: f"{x.rel_name} {x.name}", self.includes)) + "\n" + "\n".join(self.rtl_paths)
 
         template_ctxt = {
             "chparam": self._get_chparam(),
@@ -317,5 +357,11 @@ You can reproduce the example above with something like
                 '"tasknames" tool option should be '
                 "a list of strings. Got {!r}.".format(tasknames)
             )
+        extra_options = self.tool_options.get("extra_options", [])
+        if not isinstance(extra_options, list):
+            raise RuntimeError(
+                '"extra_options" tool option should be '
+                "a list of strings. Got {!r}.".format(extra_options)
+            )
 
-        self._run_tool("sby", ["-d", "build", self.sby_name] + tasknames)
+        self._run_tool("sby", extra_options + [self.sby_name] + tasknames)
