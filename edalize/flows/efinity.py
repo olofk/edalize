@@ -17,7 +17,6 @@ class Efinity(Generic):
     @classmethod
     def get_tool_options(cls, flow_options):
         flow = flow_options.get("frontends", []).copy() + ["efinity"]
-
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
 
     def configure_flow(self, flow_options):
