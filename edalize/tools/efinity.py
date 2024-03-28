@@ -31,6 +31,11 @@ class Efinity(Edatool):
             "type": "str",
             "desc": "Speed grade (e.g. C4)",
         },
+        "ip_gen": {
+            "type": "dict",
+            "desc": "IP generator",
+            "list": True,
+        },
     }
 
     def setup(self, edam):
@@ -124,6 +129,25 @@ class Efinity(Edatool):
             )
             dep_files.append(self.name + ".peri.xml")
 
+        # Add command to generate IP
+        if "ip_gen" in self.tool_options:
+            for ip_config in self.tool_options.get("ip_gen"):
+                module_name = ip_config.get("module_name")
+                commands.add(
+                    [
+                        self.efinity_python,
+                        "gen_ip_" + module_name + ".py",
+                        self.name,
+                        self.tool_options.get("part"),
+                    ],
+                    [self.name + "_" + module_name],
+                    [],
+                    variables={
+                        "EFXIPM_HOME": self.efinity_home + "/ipm",
+                    },
+                )
+                dep_files.append(self.name + "_" + module_name)
+
         commands.add(
             [
                 self.efinity_python,
@@ -140,6 +164,7 @@ class Efinity(Edatool):
                 "EFXPGM_HOME": self.efinity_home + "/pgm",
             },
         )
+
         commands.set_default_target(bit_file)
         self.commands = commands
 
@@ -152,3 +177,10 @@ class Efinity(Edatool):
         if self.isf_file:
             # Create XML file with IO and hard blocks definitions
             self.render_template("isf_to_xml.py", "isf_to_xml.py")
+            if "ip_gen" in self.tool_options:
+                for ip_config in self.tool_options.get("ip_gen"):
+                    self.render_template(
+                        "gen_ip.py.j2",
+                        "gen_ip_" + ip_config.get("module_name") + ".py",
+                        ip_config,
+                    )
