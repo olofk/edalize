@@ -71,7 +71,7 @@ class Gatemate(Edatool):
                 else:
                     ccf_file = f.name
 
-        # Pass trellis tool options to yosys
+        # Pass GateMate tool options to yosys
         self.edam["tool_options"] = {
             "yosys": {
                 "arch": "gatemate",
@@ -84,16 +84,27 @@ class Gatemate(Edatool):
         }
 
         yosys = Yosys(self.edam, self.work_root)
-        yosys.configure()
+
+        # Always define CCGM
+        yosys.vlogdefine["CCGM"] = 1
+
+        for k, v in self.tool_options.get("vlogdefine", []):
+            yosys.vlogdefine[k] = v
+
+        for k, v in self.tool_options.get("vlogparam", []):
+            yosys.vlogparam[k] = v
+
+        yosys.configure_main()
 
         # Write Makefile
         commands = EdaCommands()
         commands.commands = yosys.commands
 
         # PnR & image generation
+        commands.add_var("P_R := $(shell which p_r)")
         targets = self.name + "_00.cfg.bit"
         command = [
-            "p_r",
+            "$(P_R)",
             "-A",
             device_number,
             "-i",
