@@ -71,6 +71,9 @@ class Gatemate(Edatool):
                 else:
                     ccf_file = f.name
 
+        # p_r_log_file = None
+        p_r_log_file = 'p_r.log'
+
         # Pass GateMate tool options to yosys
         self.edam["tool_options"] = {
             "yosys": {
@@ -117,6 +120,10 @@ class Gatemate(Edatool):
         ]
         if ccf_file is not None:
             command += ["-ccf", ccf_file]
+
+        if p_r_log_file is not None:
+            command += [">", p_r_log_file]
+
         commands.add(command, [targets], [synth_out])
 
         commands.set_default_target(targets)
