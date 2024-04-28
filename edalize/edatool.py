@@ -337,7 +337,7 @@ class Edatool(object):
                     )
                 param_type_map[name.replace("-", "_")] = _paramtype
             else:
-                logging.warn(
+                logging.warning(
                     "Parameter '{}' has unsupported type '{}' for requested backend".format(
                         name, _paramtype
                     )
