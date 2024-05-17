@@ -7,7 +7,7 @@ read_verilog -sv {another_sv_file.sv}
 }
 
 proc set_defines {} {
-set defines {{vlogdefine_bool True} {vlogdefine_int 42} {vlogdefine_str hello}}
+set defines {{vlogdefine_bool True} {vlogdefine_int 42} {vlogdefine_str hello} {CCGM 1}}
 
 foreach d ${defines} {
   set key [lindex $d 0]

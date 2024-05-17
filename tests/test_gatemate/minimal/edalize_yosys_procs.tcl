@@ -3,7 +3,7 @@ proc read_files {} {
 }
 
 proc set_defines {} {
-set defines {}
+set defines {{CCGM 1}}
 
 foreach d ${defines} {
   set key [lindex $d 0]
