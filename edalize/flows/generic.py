@@ -37,7 +37,7 @@ class Generic(Edaflow):
 
     def configure_flow(self, flow_options):
         # Check for mandatory flow option "tool"
-        tool = self.flow_options.get("tool", "")
+        tool = self._require_flow_option(flow_options, "tool")
 
         # Apply flow-defined tool options if any
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(tool, {})
