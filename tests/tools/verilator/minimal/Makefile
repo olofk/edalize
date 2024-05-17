@@ -6,4 +6,4 @@ Vtop_module.mk: design.vc sv_file.sv vlog_file.v vlog05_file.v vlog_incfile anot
 	$(EDALIZE_LAUNCHER) verilator -f design.vc
 
 Vtop_module: Vtop_module.mk c_file.c cpp_file.cpp
-	$(EDALIZE_LAUNCHER) make -f Vtop_module.mk a few make options
+	$(EDALIZE_LAUNCHER) make -f Vtop_module.mk

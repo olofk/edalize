@@ -1,8 +1,5 @@
 --Mdir .
 --cc
-some
-verilator
-options
 +incdir+.
 -CFLAGS -I.
 sv_file.sv

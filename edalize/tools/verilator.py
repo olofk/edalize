@@ -20,6 +20,7 @@ class Verilator(Edatool):
         "make_options": {
             "type": "str",
             "desc": "Additional arguments passed to make when compiling the simulation. This is commonly used to set OPT/OPT_FAST/OPT_SLOW.",
+            "list": True,
         },
         "mode": {
             "type": "str",
