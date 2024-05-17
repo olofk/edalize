@@ -20,3 +20,16 @@ def test_sim(flow_fixture):
             "Makefile",
         ]
     )
+
+
+def test_sim_cocotb(flow_fixture):
+    flow_options = {"tool": "verilator", "cocotb_module": "some_cocotb_module"}
+    ff = flow_fixture("sim", flow_options=flow_options, ref_subdir="with_cocotb")
+
+    ff.flow.configure()
+    ff.compare_config_files(
+        [
+            "design.vc",
+            "Makefile",
+        ]
+    )
