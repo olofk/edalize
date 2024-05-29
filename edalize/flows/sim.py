@@ -45,6 +45,10 @@ class Sim(Generic):
                         '-LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils  -Wl,--unresolved-symbols=ignore-in-shared-libs"',
                     ],
                 ),
+                "ghdl": (
+                    "sim_options",
+                    ["--vpi=`cocotb-config --lib-name-path vpi ghdl`"],
+                ),
             }
             (opt, val) = cocotb_options[tool]
             self.edam["tool_options"][tool][opt] = (
