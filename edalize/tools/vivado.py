@@ -105,6 +105,7 @@ class Vivado(Edatool):
         has_xci = False
         unused_files = []
         bd_files = []
+        netlist_flow = False
 
         dep_files = []
         for f in self.files:
@@ -119,6 +120,8 @@ class Vivado(Edatool):
             elif file_type == "edif":
                 cmd = "read_edif"
                 edif_files.append(f["name"])
+                if not "no_link_design" in f.get("tags", []):
+                    netlist_flow = True
             elif file_type.startswith("vhdlSource"):
                 cmd = "read_vhdl"
                 if file_type == "vhdlSource-2008":
@@ -176,7 +179,7 @@ class Vivado(Edatool):
             "vlogparam": self.vlogparam,
             "vlogdefine": self.vlogdefine,
             "generic": self.generic,
-            "netlist_flow": bool(edif_files),
+            "netlist_flow": netlist_flow,
             "has_vhdl2008": has_vhdl2008,
             "has_xci": has_xci,
             "bd_files": bd_files,

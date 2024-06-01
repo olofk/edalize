@@ -98,3 +98,51 @@ def test_vivado_board_file(make_edalize_test):
 
     tf.backend.build()
     tf.compare_files(["vivado.cmd"])
+
+
+def test_vivado_edif_netlist(make_edalize_test):
+    tf = make_edalize_test(
+        "vivado",
+        ref_dir="edif_netlist",
+        files=[{"name": "netlist.edif", "file_type": "edif"}],
+        param_types=["generic", "vlogdefine", "vlogparam"],
+        tool_options={"part": "xc7a35tcsg324-1"},
+    )
+    tf.backend.configure()
+    tf.compare_files(
+        [
+            "Makefile",
+            tf.test_name + ".tcl",
+            tf.test_name + "_synth.tcl",
+            tf.test_name + "_run.tcl",
+            tf.test_name + "_pgm.tcl",
+        ]
+    )
+
+    tf.backend.build()
+    tf.compare_files(["vivado.cmd"])
+
+
+def test_vivado_edif_netlist_no_link_design(make_edalize_test):
+    tf = make_edalize_test(
+        "vivado",
+        ref_dir="edif_netlist_no_link_design",
+        files=[
+            {"name": "netlist.edif", "file_type": "edif", "tags": ["no_link_design"]}
+        ],
+        param_types=["generic", "vlogdefine", "vlogparam"],
+        tool_options={"part": "xc7a35tcsg324-1"},
+    )
+    tf.backend.configure()
+    tf.compare_files(
+        [
+            "Makefile",
+            tf.test_name + ".tcl",
+            tf.test_name + "_synth.tcl",
+            tf.test_name + "_run.tcl",
+            tf.test_name + "_pgm.tcl",
+        ]
+    )
+
+    tf.backend.build()
+    tf.compare_files(["vivado.cmd"])
