@@ -57,7 +57,10 @@ set_property source_mgmt_mode {{ tool_options.source_mgmt_mode if tool_options.s
 {% if bd_files -%}
 {%- for bd in bd_files %}
 report_ip_status
-upgrade_ip [get_ips -of_objects [get_bd_designs {{ bd }}]]
+set bd [ open_bd_design {{ bd }} ]
+current_bd_design $bd
+upgrade_bd_cells [get_bd_cells -hier *]
+close_bd_design $bd
 set_property synth_checkpoint_mode None [get_files {{ bd }}]
 generate_target all [get_files {{ bd }}]
 {% endfor -%}
