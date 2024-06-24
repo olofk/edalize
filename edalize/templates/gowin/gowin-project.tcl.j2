@@ -1,0 +1,11 @@
+set_device {{ tool_options.device }} {{ "--device_version " + tool_options.device_version if tool_options.device_version else "" }}
+
+
+{% for src_file in src_files if src_file|src_file_filter %}
+{{ src_file|src_file_filter }}
+{% endfor %}
+
+{{ "set_option -vhdl_std vhd2008" if tool_options.has_vhdl2008 else "" }}
+set_option -multi_boot 1
+
+run all
