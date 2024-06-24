@@ -145,7 +145,6 @@ class Nextpnr(Edatool):
         command = ["nextpnr-" + arch, "-l", "next.log"]
         command += arch_options + self.tool_options.get("nextpnr_options", [])
         command += constraints + ["--json", depends] + output
-        print(command)
 
         # CLI target
         commands.add(command, [targets], [depends])
