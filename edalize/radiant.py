@@ -114,6 +114,7 @@ prj_close
             "systemVerilogSource": "prj_add_source ",
             "vhdlSource": "prj_add_source ",
             "PDC": "prj_add_source ",
+            "SDC": "prj_add_source ",
         }
         _file_type = get_file_type(f)
         if _file_type in file_types:
