@@ -5,7 +5,7 @@
 import os.path
 
 from edalize.tools.edatool import Edatool
-from edalize.utils import EdaCommands, get_file_type
+from edalize.utils import EdaCommands
 from functools import partial
 
 
@@ -41,17 +41,19 @@ class Gowin(Edatool):
         def _append_library(f):
             s = ""
             if f.get("logical_name"):
-                s += "\nset_file_prop -lib " + f["logical_name"]  + " \"" + f["name"] + "\""
+                s += (
+                    "\nset_file_prop -lib " + f["logical_name"] + ' "' + f["name"] + '"'
+                )
             return s
 
         def _handle_src(t, f):
             s = "add_file -type " + t
-            s += " \"" + f["name"] + "\""
+            s += ' "' + f["name"] + '"'
             s += _append_library(f)
             return s
 
         def _handle_tcl(f):
-            return "source " + f["name"] 
+            return "source " + f["name"]
 
         file_mapping = {
             "verilogSource": partial(_handle_src, "verilog"),
@@ -78,7 +80,9 @@ class Gowin(Edatool):
         depfiles = []
 
         has_vhdl2008 = "vhdlSource-2008" in [x["file_type"] for x in self.files]
-        has_systemVerilog = "systemVerilogSource" in [x["file_type"] for x in self.files]
+        has_systemVerilog = "systemVerilogSource" in [
+            x["file_type"] for x in self.files
+        ]
 
         escaped_name = self.name.replace(".", "_")
 
@@ -90,14 +94,13 @@ class Gowin(Edatool):
 
         if self.generic:
             raise RuntimeError("Gowin does not support top level generics")
-        
+
         if self.vlogparam:
             raise RuntimeError("Gowin does not support top level verilog parameters")
-        
+
         if self.vlogparam:
             raise RuntimeError("Gowin does not support top level verilog defines")
-     
-        # Write Makefile
+
         commands = EdaCommands()
 
         for f in self.files:
@@ -109,7 +112,6 @@ class Gowin(Edatool):
             else:
                 unused_files.append(f)
 
-    
         self.edam = edam.copy()
         self.edam["files"] = unused_files
 
@@ -130,12 +132,8 @@ class Gowin(Edatool):
             "has_systemVerilog": has_systemVerilog,
         }
 
-                
         commands.add(
-            [
-                "gw_sh",
-                "edalize_gowin_template.tcl"
-            ],
+            ["gw_sh", "edalize_gowin_template.tcl"],
             [fs_file],
             depfiles,
         )
@@ -147,5 +145,3 @@ class Gowin(Edatool):
         self.render_template(
             "gowin-project.tcl.j2", "edalize_gowin_template.tcl", self.template_vars
         )
-
-
