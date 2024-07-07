@@ -92,6 +92,9 @@ class Gowin(Edatool):
         if not self.tool_options.get("pnr"):
             self.tool_options["pnr"] = "gowin"
 
+        if not self.tool_options.get("part"):
+            raise RuntimeError("FPGA part number must be specified")
+
         if self.generic:
             raise RuntimeError("Gowin does not support top level generics")
 
