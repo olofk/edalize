@@ -98,7 +98,7 @@ class Gowin(Edatool):
         if self.vlogparam:
             raise RuntimeError("Gowin does not support top level verilog parameters")
 
-        if self.vlogparam:
+        if self.vlogdefine:
             raise RuntimeError("Gowin does not support top level verilog defines")
 
         commands = EdaCommands()
