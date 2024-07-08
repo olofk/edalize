@@ -60,4 +60,4 @@ jobs:
         pip install tox
 
     - name: 🚧 Build package and run tests with tox
-      run: tox -e py
+      run: tox -e py -- -vv
