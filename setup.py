@@ -91,9 +91,7 @@ setup(
         "setuptools_scm < 7.0; python_version<'3.7'",
         "setuptools_scm; python_version>='3.7'",
     ],
-    install_requires=[
-        "Jinja2>=3",
-    ],
+    install_requires=["Jinja2>=3", "deepmerge>=0.0.5"],
     tests_require=["pytest>=3.3.0", "vunit_hdl>=4.0.8"],
     # The reporting modules have dependencies that shouldn't be required for
     # all Edalize users.

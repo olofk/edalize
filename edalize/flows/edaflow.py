@@ -61,17 +61,6 @@ else:
     run = subprocess.run
 
 
-def merge_dict(d1, d2):
-    for key, value in d2.items():
-        if isinstance(value, dict):
-            d1[key] = merge_dict(d1.get(key, {}), value)
-        elif isinstance(value, list):
-            d1[key] = d1.get(key, []) + value
-        else:
-            d1[key] = value
-    return d1
-
-
 class Node(object):
     def __init__(self, name, deps=[], fdto={}, tool=None):
         self.deps = deps
@@ -187,6 +176,8 @@ class Edaflow(object):
 
     # Filter out tool options for each tool from self.flow_options
     def extract_tool_options(self):
+        from deepmerge import always_merger as dict_merger
+
         tool_options = {}
         edam_flow_opts = self.edam.get("flow_options", {})
         for name, node in self.flow.get_nodes().items():
@@ -195,14 +186,14 @@ class Edaflow(object):
                 import_module(f"edalize.tools.{node.tool}"), node.tool.capitalize()
             )
             # Inject the flow-defined tool options to the EDAM
-            tool_options[node.tool] = merge_dict(
+            tool_options[node.tool] = dict_merger.merge(
                 node.fdto, tool_options.get(node.tool, {})
             )
 
             # Assign the EDAM-defined tool options to the right tool
             for opt_name in list(edam_flow_opts.keys()):
                 if opt_name in ToolClass.get_tool_options():
-                    tool_options[node.tool] = merge_dict(
+                    tool_options[node.tool] = dict_merger.merge(
                         tool_options[node.tool],
                         {opt_name: edam_flow_opts.get(opt_name)},
                     )
@@ -210,9 +201,7 @@ class Edaflow(object):
             self.edam["tool_options"] = tool_options
 
     def configure_tools(self, graph):
-        def merge_edam(a, b):
-            # Yeah, I know. It's just a temporary hack
-            return b
+        from deepmerge import merge_or_raise as edam_merger
 
         # Instantiate each node and add to list of unconfigured nodes
         unconfigured_nodes = list(graph.get_nodes().values())
@@ -226,7 +215,7 @@ class Edaflow(object):
             all_deps_configured = True
             for n in node.deps:
                 if n.inst.edam:
-                    input_edam = merge_edam(input_edam, n.inst.edam)
+                    input_edam = edam_merger.merge(n.inst.edam, input_edam)
                 else:
                     all_deps_configured = False
 
