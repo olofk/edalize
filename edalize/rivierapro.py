@@ -17,7 +17,7 @@ exit
 
 class Rivierapro(Edatool):
 
-    argtypes = ["plusarg", "vlogdefine", "vlogparam"]
+    argtypes = ["plusarg", "vlogdefine", "vlogparam", "generic"]
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -36,6 +36,11 @@ class Rivierapro(Edatool):
                         "name": "vlog_options",
                         "type": "String",
                         "desc": "Additional options for compilation with vlog",
+                    },
+                    {
+                        "name": "vcom_options",
+                        "type": "String",
+                        "desc": "Additional options for compilation with vcom",
                     },
                     {
                         "name": "vsim_options",
@@ -90,6 +95,7 @@ class Rivierapro(Edatool):
                     args = ["-2008"]
                 else:
                     args = []
+                args += self.tool_options.get("vcom_options", [])
             elif f.file_type == "tclSource":
                 cmd = None
                 tcl_main.write("do {}\n".format(f.name))
@@ -122,6 +128,7 @@ class Rivierapro(Edatool):
                 elif cmd == "vcom":
                     if not common_compilation_vhdl:
                         common_compilation_vhdl += ["vcom"]
+                        common_compilation_vhdl += self.tool_options.get("vcom_options", [])
                         common_compilation_vhdl += [f.name, "\\\n"]
                     else:
                         common_compilation_vhdl += [f.name, "\\\n"]
@@ -163,6 +170,8 @@ class Rivierapro(Edatool):
             args += ["+{}={}".format(key, self._param_value_str(value))]
         # Top-level parameters
         for key, value in self.vlogparam.items():
+            args += ["-g{}={}".format(key, self._param_value_str(value))]
+        for key, value in self.generic.items():
             args += ["-g{}={}".format(key, self._param_value_str(value))]
         tcl_launch.write(" ".join(args) + "\n")
         tcl_launch.close()

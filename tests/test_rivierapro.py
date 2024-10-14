@@ -6,6 +6,7 @@ from .edalize_common import make_edalize_test, tests_dir
 def test_rivierapro(make_edalize_test):
     tool_options = {
         "vlog_options": ["some", "vlog_options"],
+        "vcom_options": ["have", "number", "of", "vcom_options"],
         "vsim_options": ["a", "few", "vsim_options"],
     }
 
