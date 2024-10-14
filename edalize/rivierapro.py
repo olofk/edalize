@@ -225,5 +225,5 @@ class Rivierapro(Edatool):
                 "Environment variable ALDEC_PATH was not found. It should be set to Riviera Pro install path. Please source <Riviera Pro install path>/etc/setenv to set it"
             )
 
-        args = ["-c", "-quiet", "-do", "edalize_run.tcl"]
+        args = ["-c", "-do", "edalize_run.tcl"]
         self._run_tool("vsim", args)
