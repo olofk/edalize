@@ -38,6 +38,11 @@ class Rivierapro(Edatool):
                         "desc": "Additional options for compilation with vlog",
                     },
                     {
+                        "name": "vcom_options",
+                        "type": "String",
+                        "desc": "Additional options for compilation with vcom",
+                    },
+                    {
                         "name": "vsim_options",
                         "type": "String",
                         "desc": "Additional run options for vsim",
@@ -90,6 +95,7 @@ class Rivierapro(Edatool):
                     args = ["-2008"]
                 else:
                     args = []
+                args += self.tool_options.get("vcom_options", [])
             elif f.file_type == "tclSource":
                 cmd = None
                 tcl_main.write("do {}\n".format(f.name))
@@ -122,6 +128,9 @@ class Rivierapro(Edatool):
                 elif cmd == "vcom":
                     if not common_compilation_vhdl:
                         common_compilation_vhdl += ["vcom"]
+                        common_compilation_vhdl += self.tool_options.get(
+                            "vcom_options", []
+                        )
                         common_compilation_vhdl += [f.name, "\\\n"]
                     else:
                         common_compilation_vhdl += [f.name, "\\\n"]
