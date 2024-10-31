@@ -9,24 +9,26 @@ open_project -file {{op}}{{prj_root}}/{{name}}.prjx{{cl}}
 select_programmer -programmer_id {{op}}{{tool_options.programmer}}{{cl}}
 {% endif %}
 
-configure_tool \
-         -name {PROGRAMMER_INFO} \
-         -params {flashpro3_clk_mode:free_running_clk} \
-         -params {flashpro3_force_freq:OFF} \
-         -params {flashpro3_freq:4000000} \
-         -params {flashpro3_vpump:OFF} \
-         -params {flashpro4_clk_mode:free_running_clk} \
-         -params {flashpro4_force_freq:OFF} \
-         -params {flashpro4_freq:4000000} \
-         -params {flashpro4_vpump:OFF} \
-         -params {flashpro5_force_freq:{{ 'ON' if tool_options.flashpro5_freq else 'OFF' }}} \
-         -params {flashpro5_freq:{{ tool_options.flashpro5_freq if tool_options.flashpro5_freq else 4000000 }}} \
-         -params {flashpro5_vpump:OFF} \
-         -params {flashpro6_force_sck_freq:OFF} \
-         -params {flashpro6_force_tck_freq:OFF} \
-         -params {flashpro6_sck_freq:20000000} \
-         -params {flashpro6_tck_freq:4000000} \
-         -params {flashpro6_vpump:OFF}
+# Read
+set params [dict create]
+foreach {key value} [get_tool_options -name {PROGRAMMER_INFO}] {
+	dict set params $key $value
+}
+
+# Modify
+{% if tool_options.flashpro5.frequency %}
+dict set params flashpro5_force_freq ON
+dict set params flashpro5_freq {{ tool_options.flashpro5.frequency }}
+{%- endif %}
+
+# Write
+set args " -name {PROGRAMMER_INFO}"
+foreach {key value} $params {
+	append args " -params {${key}:${value}}"
+}
+
+puts "configure_tool ${args}"
+eval "configure_tool ${args}"
 
 puts "----------------- Programming device ------------------------------------"
 run_tool -name {PROGRAMDEVICE}
