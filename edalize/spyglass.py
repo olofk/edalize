@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Spyglass(Edatool):
 
-    _description = """ Synopsys (formerly Atrenta) Spyglass Backend
+    _description = """ Synopsys Spyglass Backend (v2023.12)
 
 Spyglass performs static source code analysis on HDL code and checks for common
 coding errors or coding style violations.
@@ -27,19 +27,22 @@ Example snippet of a CAPI2 description file
      methodology: "GuideWare/latest/block/rtl_handoff"
      goals:
        - lint/lint_rtl
+     goal_options: 
+       - addrules      { W164c W240 IfWithoutElse-ML } # New fiels
      spyglass_options:
-       # prevent error SYNTH_5273 on generic RAM descriptions
        - handlememory yes
      rule_parameters:
-       # Allow localparam to be used in case labels (e.g. in state machines)
-       - handle_static_caselabels yes
+       - allow_combo_logic yes
 
 """
 
     tool_options = {
-        "members": {"methodology": "String"},
+        "members": {
+            "methodology": "String",
+        },
         "lists": {
             "goals": "String",
+            "goal_options": "String",  # New field
             "spyglass_options": "String",
             "rule_parameters": "String",
         },
@@ -50,6 +53,7 @@ Example snippet of a CAPI2 description file
     tool_options_defaults = {
         "methodology": "GuideWare/latest/block/rtl_handoff",
         "goals": ["lint/lint_rtl"],
+        "goal_options": [],  # New field
         "spyglass_options": [],
         "rule_parameters": [],
     }
@@ -58,7 +62,7 @@ Example snippet of a CAPI2 description file
         for key, default_value in self.tool_options_defaults.items():
             if not key in self.tool_options:
                 logger.info(
-                    "Set Spyglass tool option %s to default value %s"
+                    "Set Spyglass tool option %s to default value %"
                     % (key, str(default_value))
                 )
                 self.tool_options[key] = default_value
@@ -136,6 +140,7 @@ Example snippet of a CAPI2 description file
             "tclSource": "source",
             "waiver": "read_file -type waiver",
             "awl": "read_file -type awl",
+            "sgdc": "read_file -type sgdc",  # Added support for SpyGlass Design Constraint file
         }
         _file_type = get_file_type(f)
         if _file_type in file_types:
