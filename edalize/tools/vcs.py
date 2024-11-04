@@ -78,7 +78,11 @@ class Vcs(Edatool):
 
                 _args = []
                 for k, v in vlog_defines.items():
-                    _args.append("+define+{}={}".format(k, self._param_value_str(v)))
+                    _args.append(
+                        "+define+{}={}".format(
+                            k, self._param_value_str(v, str_quote_style='\\"')
+                        )
+                    )
                 defines = " ".join(_args)
                 cmd = "vlogan"
             elif file_type.startswith("vhdlSource"):
@@ -118,7 +122,7 @@ class Vcs(Edatool):
                 depfiles.append(fname)
                 if cmd == "vlogan":
                     has_vlog = True
-            commands = []
+            commands = [["mkdir", lib]]
             for (cmd, defines), fnames in cmds.items():
                 if cmd == "vlogan":
                     options = vlogan_options.copy()
@@ -152,6 +156,14 @@ class Vcs(Edatool):
             [self.name],
         )
         self.commands.set_default_target(self.name)
+        self.libs = libs.keys()
+
+    def write_config_files(self):
+        s = "WORK > DEFAULT\nDEFAULT : ./work\n"
+        for lib in self.libs:
+            if lib != "work":
+                s += f"{lib} : ./{lib}\n"
+        self.update_config_file("synopsys_sim.setup", s)
 
     def run(self):
         args = ["run"]
