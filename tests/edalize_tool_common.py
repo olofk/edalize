@@ -50,18 +50,25 @@ def tool_fixture(tmp_path):
         toplevel="top_module",
         ref_subdir="",
         config_files=[],
+        paramtypes=["plusarg", "vlogdefine", "vlogparam"],
+        has_makefile=True,
     ):
 
         tf = ToolFixture(tool_name, ref_subdir)
 
         edam = get_edam(
-            tool_name, tool_options=tool_options, files=files, toplevel=toplevel
+            tool_name,
+            tool_options=tool_options,
+            files=files,
+            toplevel=toplevel,
+            paramtypes=paramtypes,
         )
 
         tf.tool.work_root = tmp_path
         tf.tool.setup(edam)
         tf.tool.commands.write(tmp_path / "Makefile")
-        tf.compare_makefile()
+        if has_makefile:
+            tf.compare_makefile()
 
         return tf
 
