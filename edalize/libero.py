@@ -56,6 +56,16 @@ class Libero(Edatool):
                         "type": "String",
                         "desc": 'Default HDL (e.g. "VERILOG")',
                     },
+                    {
+                        "name": "programmer",
+                        "type": "String",
+                        "desc": 'Programmer ID (e.g. "E2008ETVQU")',
+                    },
+                    {
+                        "name": "flashpro5_freq",
+                        "type": "Integer",
+                        "desc": "The frequency for jtag communication in Hz",
+                    },
                 ],
             }
 
@@ -74,6 +84,20 @@ class Libero(Edatool):
                     % (key, str(default_value))
                 )
                 self.tool_options[key] = default_value
+
+    def _run_libero(self, script):
+        if shutil.which("libero"):
+            logger.info(f"Executing Libero TCL Scripts: {script}")
+            return self._run_tool("libero", ["SCRIPT:" + script])
+        else:
+            filePath = os.path.join(
+                Path(self.work_root).relative_to(os.getcwd()), script,
+            )
+            logger.warn(
+                'Libero not found on path, execute manually the script "'
+                + filePath
+                + '"'
+            )
 
     def _check_mandatory_options(self):
         shouldExit = 0
@@ -159,6 +183,10 @@ class Libero(Edatool):
 
         # Render the TCL run file
         self.render_template(
+            "libero-build.tcl.j2", escaped_name + "-build.tcl", template_vars
+        )
+
+        self.render_template(
             "libero-run.tcl.j2", escaped_name + "-run.tcl", template_vars
         )
 
@@ -168,6 +196,13 @@ class Libero(Edatool):
         )
 
         logger.info("Cores and Libero TCL Scripts generated.")
+
+        escaped_name = self.name.replace(".", "_")
+        self._run_libero(script=escaped_name + "-project.tcl")
+
+        # FIXME: fusesoc relies on the Makefile timestamp
+        makefile = os.path.join(self.work_root, 'Makefile')
+        open(makefile, 'a').close()
 
     def src_file_filter(self, f):
         file_types = {
@@ -210,19 +245,9 @@ class Libero(Edatool):
             return f.name
 
     def build_main(self):
-        logger.info("Executing Libero TCL Scripts.")
         escaped_name = self.name.replace(".", "_")
-        if shutil.which("libero"):
-            self._run_tool("libero", ["SCRIPT:" + escaped_name + "-run.tcl"])
-        else:
-            filePath = os.path.join(
-                Path(self.work_root).relative_to(os.getcwd()), escaped_name + "-run.tcl"
-            )
-            logger.warn(
-                'Libero not found on path, execute manually the script "'
-                + filePath
-                + '"'
-            )
+        self._run_libero(script=escaped_name + "-build.tcl")
 
     def run_main(self):
-        pass
+        escaped_name = self.name.replace(".", "_")
+        self._run_libero(script=escaped_name + "-run.tcl")
