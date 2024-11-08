@@ -1,5 +1,7 @@
 # Create a bin file which can be used to program the flash on the FPGA
-set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
+if { [llength [list_property [get_runs impl_1] STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE]] } {
+  set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
+}
 
 # Vivado will raise an error if impl_1 is launched when it is already done. So
 # check the progress first and only launch if its not complete.
@@ -30,5 +32,6 @@ if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
 # The Vivado default name is beneficial when using the GUI, as it is set as
 # default bitstream in the "Program Device" dialog; non-standard names need to
 # be selected from a file picker first.
-set vivadoDefaultBitstreamFile [ get_property DIRECTORY [current_run] ]/[ get_property top [current_fileset] ].bit
-file copy -force $vivadoDefaultBitstreamFile [pwd]/[current_project].bit
+foreach vivadoBitstreamFile [glob -path [file rootname [get_property DIRECTORY [current_run]]/[get_property top [current_fileset]]] .{bit,bif}] {
+  file copy -force $vivadoBitstreamFile [pwd]/[current_project][file extension $vivadoBitstreamFile]
+}
