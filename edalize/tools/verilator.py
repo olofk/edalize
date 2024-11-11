@@ -43,7 +43,11 @@ class Verilator(Edatool):
             "desc": "Additional options for verilator",
             "list": True,
         },
-        # run_options?
+        "run_options": {
+            "type": "str",
+            "desc": "Additional arguments passed when running the compiled model.",
+            "list": True,
+        },
     }
 
     def setup(self, edam):
