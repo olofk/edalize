@@ -1,3 +1,14 @@
+0.6.0 2024-11-13 Olof Kindgren
+======================================================
+* New flows: gowin
+* New tools: gowin
+* gatemate: Support params and defines
+* quartus: Support qsys from version 23+
+* radiant: Support SDC
+* verilator: Add cocotb support + run_options, fix make_options
+* vivado: Fix BD IP generation, support EDIF subcomponents, support Versal
+* Migrate to pyproject.toml
+
 0.5.4 2023-12-11 Olof Kindgren
 ======================================================
 * Fix lint-only mode in Verilator
