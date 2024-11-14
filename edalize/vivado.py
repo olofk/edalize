@@ -95,6 +95,9 @@ class Vivado(Edatool):
             }
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+        logger.warning(
+            "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
+        )
         super().__init__(edam, work_root, eda_api, verbose)
         edam["flow_options"] = edam["tool_options"]["vivado"]
         self.vivado = Vivado_underlying(edam, work_root, verbose)

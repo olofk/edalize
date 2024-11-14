@@ -62,6 +62,9 @@ class Icarus(Edatool):
             }
 
     def configure_main(self):
+        logger.warning(
+            "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
+        )
         f = open(os.path.join(self.work_root, self.name + ".scr"), "w")
 
         (src_files, incdirs) = self._get_fileset_files()

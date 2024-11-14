@@ -34,6 +34,9 @@ class Ghdl(Edatool):
             }
 
     def configure_main(self):
+        logger.warning(
+            "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
+        )
         (src_files, incdirs) = self._get_fileset_files()
         analyze_options = self.tool_options.get("analyze_options", "")
 

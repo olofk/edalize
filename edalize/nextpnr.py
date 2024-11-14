@@ -2,6 +2,10 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os.path
 
 from edalize.edatool import Edatool
@@ -25,6 +29,9 @@ class Nextpnr(Edatool):
             }
 
     def configure_main(self):
+        logger.warning(
+            "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
+        )
         cst_file = ""
         lpf_file = ""
         pcf_file = ""
