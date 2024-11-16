@@ -9,6 +9,13 @@ run_tool -name {SYNTHESIZE}
 run_tool -name {PLACEROUTE}
 run_tool -name {GENERATEPROGRAMMINGDATA}
 
+puts "----------------- Exporting Programming Job File -----------------------------"
+export_prog_job \
+    -job_file_name {{name}} \
+    -export_dir {{prj_root}} \
+    -bitstream_file_type {TRUSTED_FACILITY} \
+    -bitstream_file_components {}
+
 puts "----------------- Finished building project -----------------------------"
 
 close_project -save 1
