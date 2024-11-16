@@ -99,6 +99,20 @@ class Libero(Edatool):
                 + '"'
             )
 
+    def _run_fpexpress(self, script):
+        if shutil.which("FPExpress"):
+            logger.info(f"Executing FlashPro Express TCL Scripts: {script}")
+            return self._run_tool("FPExpress", ["SCRIPT:" + script])
+        else:
+            filePath = os.path.join(
+                Path(self.work_root).relative_to(os.getcwd()), script,
+            )
+            logger.warn(
+                'FPExpress not found on path, execute manually the script "'
+                + filePath
+                + '"'
+            )
+
     def _check_mandatory_options(self):
         shouldExit = 0
         for key in self.mandatory_options:
@@ -250,4 +264,4 @@ class Libero(Edatool):
 
     def run_main(self):
         escaped_name = self.name.replace(".", "_")
-        self._run_libero(script=escaped_name + "-run.tcl")
+        self._run_fpexpress(script=escaped_name + "-run.tcl")
