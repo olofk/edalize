@@ -16,10 +16,12 @@ foreach {key value} [get_tool_options -name {PROGRAMMER_INFO}] {
 }
 
 # Modify
-{% if tool_options.flashpro5.frequency %}
+{% if 'flashpro5' in tool_options %}
+{%- if tool_options.flashpro5.frequency %}
 dict set params flashpro5_force_freq ON
 dict set params flashpro5_freq {{ tool_options.flashpro5.frequency }}
 {%- endif %}
+{% endif %}
 
 # Write
 set args " -name {PROGRAMMER_INFO}"
