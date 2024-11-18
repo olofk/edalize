@@ -1,4 +1,5 @@
 verilog work vlog_file.v
+verilog work vlog_with_define.v
 verilog work vlog05_file.v
 vhdl work vhdl_file.vhd
 vhdl libx vhdl_lfile

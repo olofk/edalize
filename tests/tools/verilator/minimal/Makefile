@@ -2,7 +2,7 @@
 
 all: Vtop_module
 
-Vtop_module.mk: design.vc sv_file.sv vlog_file.v vlog05_file.v vlog_incfile another_sv_file.sv
+Vtop_module.mk: design.vc sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile another_sv_file.sv
 	$(EDALIZE_LAUNCHER) verilator -f design.vc
 
 Vtop_module: Vtop_module.mk c_file.c cpp_file.cpp

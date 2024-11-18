@@ -9,6 +9,7 @@ prj_add_source sdc_file -work work
 prj_add_source sv_file.sv -work work
 source tcl_file.tcl
 prj_add_source vlog_file.v -work work
+prj_add_source vlog_with_define.v -work work
 prj_add_source vlog05_file.v -work work
 prj_add_source vhdl_file.vhd -work work
 prj_add_source vhdl_lfile -work libx

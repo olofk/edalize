@@ -5,6 +5,7 @@ add_file -type sdc "sdc_file"
 add_file -type verilog "sv_file.sv"
 source tcl_file.tcl
 add_file -type verilog "vlog_file.v"
+add_file -type verilog "vlog_with_define.v"
 add_file -type verilog "vlog_incfile"
 add_file -type VHDL_FILE "vhdl_file.vhd"
 add_file -type VHDL_FILE "vhdl_lfile"

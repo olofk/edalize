@@ -4,7 +4,7 @@ all: post_build
 
 pre_build: 
 
-design: sv_file.sv vlog_file.v vlog05_file.v vlog_incfile another_sv_file.sv design.scr | pre_build
+design: sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile another_sv_file.sv design.scr | pre_build
 	$(EDALIZE_LAUNCHER) iverilog -stop_module -c design.scr -o design
 
 run: design

@@ -2,7 +2,7 @@
 
 all: design
 
-design: sv_file.sv vlog_file.v vlog05_file.v vlog_incfile another_sv_file.sv design.scr
+design: sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile another_sv_file.sv design.scr
 	$(EDALIZE_LAUNCHER) iverilog -stop1 -stop2 -c design.scr -o design
 
 run: design

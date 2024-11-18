@@ -5,6 +5,7 @@
     <efx:design_info  def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008">
 <efx:top_module name="top_module"/>        <efx:design_file name="sv_file.sv" version="sv_09"/>
         <efx:design_file name="vlog_file.v" version=""/>
+        <efx:design_file name="vlog_with_define.v" version=""/>
         <efx:design_file name="vlog05_file.v" version=""/>
         <efx:design_file name="vlog_incfile" version=""/>
         <efx:design_file name="vhdl_file.vhd" version=""/>

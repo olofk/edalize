@@ -14,6 +14,7 @@ read_xdc -unmanaged {sdc_file}
 read_verilog -sv {sv_file.sv}
 source {tcl_file.tcl}
 read_verilog {vlog_file.v}
+read_verilog {vlog_with_define.v}
 read_verilog {vlog05_file.v}
 read_vhdl {vhdl_file.vhd}
 read_vhdl -library libx {vhdl_lfile}

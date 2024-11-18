@@ -4,7 +4,7 @@ all: post_build
 
 pre_build: 
 
-design.v: edalize_yosys_template.tcl sv_file.sv tcl_file.tcl vlog_file.v vlog05_file.v vlog_incfile another_sv_file.sv | pre_build
+design.v: edalize_yosys_template.tcl sv_file.sv tcl_file.tcl vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile another_sv_file.sv | pre_build
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p 'tcl edalize_yosys_template.tcl'
 
 design: design.v design.scr
