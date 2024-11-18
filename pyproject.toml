@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edalize"
+description = "Library for interfacing EDA tools such as simulators, linters or synthesis tools, using a common interface"
+readme = "README.rst"
+authors = [
+  {name = "Olof Kindgren", email = "olof@award-winning.me"}
+]
+maintainers = [
+  {name = "Olof Kindgren", email = "olof@award-winning.me"}
+]
+keywords = ["VHDL", "verilog", "EDA", "hdl", "rtl", "synthesis", "FPGA", "simulation", "Xilinx", "Altera"]
+
+classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "License :: OSI Approved :: BSD License",
+        "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+        "Topic :: Utilities",
+]
+
+dynamic = ["version"]
+dependencies = ["Jinja2>=3"]
+requires-python = ">=3.6, <4"
+
+[project.urls]
+Homepage = "https://github.com/olofk/edalize"
+Documentation = "https://edalize.readthedocs.io"
+Repository = "https://github.com/olofk/edalize"
+Issues = "https://github.com/olofk/edalize/issues"
+Changelog = "https://github.com/olofk/edalize/blob/main/NEWS"
+
+[tool.setuptools]
+script-files = ["scripts/el_docker"]
+
+[tool.setuptools_scm]
+version_file = "edalize/version.py"
+
+[tool.setuptools.packages.find]
+include = ["edalize", "edalize.tools", "edalize.flows"]

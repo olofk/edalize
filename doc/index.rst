@@ -41,6 +41,7 @@ The :ref:`Edalize Developer Guide <dg>` describes how to work with Edalize to fi
    :hidden:
 
    edam/api
+   ref/migrations
    Modules <edalize>
    genindex
    Module Index <py-modindex>

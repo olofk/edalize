@@ -2,6 +2,10 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import os.path
 
 from edalize.edatool import Edatool
@@ -48,6 +52,9 @@ class Icestorm(Edatool):
             }
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+        logger.warning(
+            "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
+        )
         super().__init__(edam, work_root, eda_api, verbose)
         _tool_opts = edam["tool_options"]["icestorm"]
 

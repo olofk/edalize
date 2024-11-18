@@ -2,7 +2,7 @@
 --cc
 --vpi
 --public-flat-rw --prefix Vtop
--LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils  -Wl,--unresolved-symbols=ignore-in-shared-libs"
+-LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` -lcocotbvpi_verilator"
 +incdir+.
 -CFLAGS -I.
 sv_file.sv

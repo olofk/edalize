@@ -1,0 +1,18 @@
+set_device {{ tool_options.part }} {{ "--device_version " + tool_options.part_version if tool_options.part_version else "" }}
+
+
+{% for src_file in file_table %}
+{{ src_file }}
+{% endfor %}
+
+set_option -top_module {{ toplevel }}
+{{ "set_option -vhdl_std vhd2008" if has_vhdl2008 else "" }}
+{{ "set_option -verilog_std sysv2017" if has_systemVerilog else "" }}
+
+{% for option in tool_options.gowin_options %}
+set_option {{ option }}
+{% endfor %}
+
+
+{{ "run syn" if tool_options.synth == "gowin" else "" }}
+{{ "run pnr" if tool_options.pnr == "gowin" else "" }}
