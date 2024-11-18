@@ -26,6 +26,7 @@ create_links \
     -sdc {sdc_file} \
     -hdl_source {sv_file.sv} \
     -hdl_source {vlog_file.v} \
+    -hdl_source {vlog_with_define.v} \
     -hdl_source {vlog05_file.v} \
     -hdl_source {vhdl_file.vhd} \
     -hdl_source {vhdl2008_file} \

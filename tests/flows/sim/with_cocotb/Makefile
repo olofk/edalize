@@ -4,7 +4,7 @@ all: post_build
 
 pre_build: 
 
-Vtop.mk: design.vc sv_file.sv vlog_file.v vlog05_file.v vlog_incfile another_sv_file.sv | pre_build
+Vtop.mk: design.vc sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile another_sv_file.sv | pre_build
 	$(EDALIZE_LAUNCHER) verilator -f design.vc `cocotb-config --share`/lib/verilator/verilator.cpp
 
 Vtop: Vtop.mk c_file.c cpp_file.cpp

@@ -19,6 +19,7 @@ read_file -type verilog sv_file.sv
 source tcl_file.tcl
 read_file -type waiver waiver_file.waiver
 read_file -type verilog vlog_file.v
+read_file -type verilog vlog_with_define.v
 read_file -type verilog vlog05_file.v
 read_file -type vhdl vhdl_file.vhd
 read_file -type vhdl -library libx vhdl_lfile

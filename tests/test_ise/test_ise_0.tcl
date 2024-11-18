@@ -24,6 +24,7 @@ xfile add bmm_file
 xfile_add_exist_ok ucf_file.ucf
 source tcl_file.tcl
 xfile add vlog_file.v
+xfile add vlog_with_define.v
 xfile add vlog05_file.v
 xfile add vhdl_file.vhd
 lib_vhdl new libx

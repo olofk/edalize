@@ -2,5 +2,5 @@
 
 all: design.blif
 
-design.blif: some_file.tcl sv_file.sv tcl_file.tcl vlog_file.v vlog05_file.v vlog_incfile another_sv_file.sv
+design.blif: some_file.tcl sv_file.sv tcl_file.tcl vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile another_sv_file.sv
 	$(EDALIZE_LAUNCHER) yosys -l yosys.log -p 'tcl some_file.tcl'

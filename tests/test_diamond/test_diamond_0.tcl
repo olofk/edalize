@@ -10,6 +10,7 @@ prj_src add -format SDC sdc_file
 prj_src add -format Verilog sv_file.sv
 source tcl_file.tcl
 prj_src add -format Verilog vlog_file.v
+prj_src add -format Verilog vlog_with_define.v
 prj_src add -format Verilog vlog05_file.v
 prj_src add -format VHDL vhdl_file.vhd
 prj_src add -format VHDL -work libx vhdl_lfile
