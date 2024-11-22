@@ -2,6 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import os
+
 from edalize.flows.generic import Generic
 
 
@@ -37,6 +39,17 @@ class Sim(Generic):
                     "vsim_options",
                     ["-pli", "`cocotb-config --lib-name-path vpi questa`"],
                 ),
+                "vcs": (
+                    "vcs_options",
+                    [
+                        "-debug",
+                        "+vpi",
+                        "-P",
+                        "pli.tab",
+                        "-load",
+                        "$(cocotb-config --lib-name-path vpi vcs)",
+                    ],
+                ),
                 "verilator": (
                     "verilator_options",
                     [
@@ -52,6 +65,12 @@ class Sim(Generic):
             )
 
         super().configure_tools(flow)
+
+    def configure(self):
+        if self.flow_options.get("tool") == "vcs":
+            with open(os.path.join(self.work_root, "pli.tab"), "w") as f:
+                f.write("acc+=rw,wn:*\n")
+        super().configure()
 
     def run(self, args=None):
         tool = self.flow_options.get("tool")
