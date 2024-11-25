@@ -60,5 +60,9 @@ class Sim(Generic):
         # Get run command from simulator
         (cmd, args, cwd) = run_tool.run()
         cocotb_module = self.flow_options.get("cocotb_module")
-        env = {"MODULE": cocotb_module} if cocotb_module else {}
+        env = (
+            {"MODULE": cocotb_module, "COCOTB_TEST_MODULES": cocotb_module}
+            if cocotb_module
+            else {}
+        )
         self._run_tool(cmd, args=args, cwd=cwd, env=env)
