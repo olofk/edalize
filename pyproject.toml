@@ -25,6 +25,12 @@ dynamic = ["version"]
 dependencies = ["Jinja2>=3"]
 requires-python = ">=3.6, <4"
 
+[project.optional-dependencies]
+reporting = [
+    "pyparsing<3.1.0",
+    "pandas"
+]
+
 [project.urls]
 Homepage = "https://github.com/olofk/edalize"
 Documentation = "https://edalize.readthedocs.io"
