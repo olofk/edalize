@@ -19,11 +19,11 @@ def test_tool_vcs(tool_fixture):
     tf.compare_config_files(
         [
             "synopsys_sim.setup",
-            "libx.1.f",
+            "libx.f",
             "vcs.f",
-            "work.1.f",
-            "work.2.f",
-            "work.3.f",
+            "work.f",
+            "work_1.f",
+            "work_2.f",
             "parameters.txt",
         ]
     )
@@ -38,11 +38,11 @@ def test_tool_vcs_minimal(tool_fixture):
     tf.compare_config_files(
         [
             "synopsys_sim.setup",
-            "libx.1.f",
+            "libx.f",
             "vcs.f",
-            "work.1.f",
-            "work.2.f",
-            "work.3.f",
+            "work.f",
+            "work_1.f",
+            "work_2.f",
             "parameters.txt",
         ]
     )

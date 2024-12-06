@@ -1,3 +1,5 @@
 WORK > DEFAULT
 DEFAULT : ./work
+work_1 : ./work_1
+work_2 : ./work_2
 libx : ./libx

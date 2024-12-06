@@ -107,22 +107,23 @@ class Vcs(Edatool):
         full64 = [] if self.tool_options.get("32bit") else ["-full64"]
         self.commands = EdaCommands()
         self.f_files = {}
+        self.workdirs = []
+        target_files = []
         for lib, files in libs.items():
             cmds = {}
-            depfiles = []
             has_vlog = False
             # Group into individual commands
             for (cmd, fname, defines) in files:
                 if not (cmd, defines) in cmds:
                     cmds[(cmd, defines)] = []
                 cmds[(cmd, defines)].append(fname)
-                depfiles.append(fname)
                 if cmd == "vlogan":
                     has_vlog = True
             commands = [["mkdir", "-p", lib]]
-            i = 1
+            i = 0
             f_files = {}
             for (cmd, defines), fnames in cmds.items():
+                depfiles = fnames.copy()
                 options = []
                 if cmd == "vlogan":
                     if has_sv:
@@ -130,17 +131,24 @@ class Vcs(Edatool):
                     options += self.tool_options.get("vlogan_options", [])
                     options += [defines]
                     options += ["+incdir+" + d for d in incdirs]
+                    target_file = "AN.DB/make.vlogan"
                 elif cmd == "vhdlan":
                     options += self.tool_options.get("vhdlan_options", [])
-                f_file = f"{lib}.{i}.f"
+                    target_file = "64/vhmra.sdb"
+                suffix = f"_{i}" if i else ""
+                f_file = f"{lib}{suffix}.f"
                 f_files[f_file] = options
+                workdir = lib + suffix
+                self.workdirs.append(workdir)
                 i += 1
-                commands.append([cmd] + full64 + ["-f", f_file, "-work", lib] + fnames)
-            if has_vlog:
-                depfiles += include_files
-            self.commands.add(
-                commands, [lib + "/AN.DB"], depfiles + list(f_files.keys())
-            )
+                if has_vlog:
+                    depfiles += include_files
+                self.commands.add(
+                    [cmd] + full64 + ["-f", f_file, "-work", workdir] + fnames,
+                    [workdir + "/" + target_file],
+                    depfiles + [f_file],
+                )
+                target_files.append(workdir + "/" + target_file)
             self.f_files.update(f_files)
 
         self.edam = edam.copy()
@@ -154,9 +162,7 @@ class Vcs(Edatool):
             + full64
             + ["-o", self.name, "-file", "vcs.f", "-parameters", "parameters.txt"],
             [self.name],
-            [x + "/AN.DB" for x in libs.keys()]
-            + user_files
-            + ["vcs.f", "parameters.txt"],
+            target_files + user_files + ["vcs.f", "parameters.txt"],
         )
 
         self.commands.add(
@@ -166,11 +172,10 @@ class Vcs(Edatool):
             [self.name],
         )
         self.commands.set_default_target(self.name)
-        self.libs = libs.keys()
 
     def write_config_files(self):
         s = "WORK > DEFAULT\nDEFAULT : ./work\n"
-        for lib in self.libs:
+        for lib in self.workdirs:
             if lib != "work":
                 s += f"{lib} : ./{lib}\n"
         self.update_config_file("synopsys_sim.setup", s)
