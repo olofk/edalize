@@ -103,7 +103,7 @@ class Edatool(object):
         if os.path.exists(f):
             old_file = open(f, "r").read()
         else:
-            old_file = ""
+            old_file = None
         if old_file != contents:
             with open(f, "w") as _f:
                 _f.write(contents)
