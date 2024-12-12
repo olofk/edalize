@@ -172,7 +172,7 @@ class Vcs(Edatool):
             ["run"],
             [binary_name],
         )
-        self.commands.set_default_target(self.name)
+        self.commands.set_default_target(binary_name)
 
     def write_config_files(self):
         s = "WORK > DEFAULT\nDEFAULT : ./work\n"
