@@ -157,19 +157,20 @@ class Vcs(Edatool):
         self.f_files["vcs.f"] = ["-top", self.toplevel] + self.tool_options.get(
             "vcs_options", []
         )
+        binary_name = self.name + ".vsim"
         self.commands.add(
             ["vcs"]
             + full64
-            + ["-o", self.name, "-file", "vcs.f", "-parameters", "parameters.txt"],
-            [self.name],
+            + ["-o", binary_name, "-file", "vcs.f", "-parameters", "parameters.txt"],
+            [binary_name],
             target_files + user_files + ["vcs.f", "parameters.txt"],
         )
 
         self.commands.add(
-            ["./" + self.name, "$(EXTRA_OPTIONS)"]
+            ["./" + binary_name, "$(EXTRA_OPTIONS)"]
             + self.tool_options.get("run_options", []),
             ["run"],
-            [self.name],
+            [binary_name],
         )
         self.commands.set_default_target(self.name)
 

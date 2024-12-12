@@ -14,8 +14,8 @@ work_2/64/vhmra.sdb: vhdl_file.vhd vhdl2008_file vlog_incfile work_2.f
 libx/64/vhmra.sdb: vhdl_lfile libx.f
 	$(EDALIZE_LAUNCHER) vhdlan -full64 -f libx.f -work libx vhdl_lfile
 
-design: work/AN.DB/make.vlogan work_1/AN.DB/make.vlogan work_2/64/vhmra.sdb libx/64/vhmra.sdb user_file vcs.f parameters.txt
-	$(EDALIZE_LAUNCHER) vcs -full64 -o design -file vcs.f -parameters parameters.txt
+design.vsim: work/AN.DB/make.vlogan work_1/AN.DB/make.vlogan work_2/64/vhmra.sdb libx/64/vhmra.sdb user_file vcs.f parameters.txt
+	$(EDALIZE_LAUNCHER) vcs -full64 -o design.vsim -file vcs.f -parameters parameters.txt
 
-run: design
-	$(EDALIZE_LAUNCHER) ./design $(EXTRA_OPTIONS) and some run options
+run: design.vsim
+	$(EDALIZE_LAUNCHER) ./design.vsim $(EXTRA_OPTIONS) and some run options
