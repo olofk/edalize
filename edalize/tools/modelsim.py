@@ -13,10 +13,6 @@ class Modelsim(Edatool):
     description = "ModelSim/QuestaSim simulator from Siemens EDA"
 
     TOOL_OPTIONS = {
-        "compilation_mode": {
-            "type": "str",
-            "desc": "Common or separate compilation, sep - for separate compilation, common - for common compilation",
-        },
         "vcom_options": {
             "type": "str",
             "desc": "Additional options for compilation with vcom",
@@ -38,104 +34,121 @@ class Modelsim(Edatool):
         super().setup(edam)
 
         incdirs = []
-        vlog_files = []
-        depfiles = []
-        unused_files = []
-        libs = []
+        include_files = []
+        unused_files = self.files.copy()
 
-        vlog_defines = []
-        for k, v in self.vlogdefine.items():
-            vlog_defines.append("+define+{}={}".format(k, self._param_value_str(v)))
-
-        common_compilation = self.tool_options.get("compilation_mode") == "common"
         vlog_options = self.tool_options.get("vlog_options", [])
         vcom_options = self.tool_options.get("vcom_options", [])
         vsim_options = self.tool_options.get("vsim_options", [])
 
-        # Get all include dirs first
+        # Get all include dirs. Move include files to a separate list
         for f in self.files:
+            if not "simulation" in f.get("tags", ["simulation"]):
+                continue
             file_type = f.get("file_type", "")
             if file_type.startswith("verilogSource") or file_type.startswith(
                 "systemVerilogSource"
             ):
-                self._add_include_dir(f, incdirs, force_slash=True)
+                if self._add_include_dir(f, incdirs, force_slash=True):
+                    include_files.append(f["name"])
+                    unused_files.remove(f)
 
-        vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
+        user_files = []
+        vlog_include_dirs = ["+incdir+" + d for d in incdirs]
 
         self.tcl_files = []
         self.tcl_main = []
         self.tcl_build_rtl = []
-        for f in self.files:
-            if not f.get("logical_name"):
-                f["logical_name"] = "work"
-            if not f["logical_name"] in libs:
-                self.tcl_build_rtl.append(f"vlib {f['logical_name']}")
-                libs.append(f["logical_name"])
+        commands = {}
+        libs = {}
+        # FIXME: vlib, -sv, langver, mfcu
+        for f in unused_files.copy():
+            lib = f.get("logical_name", "work")
+
+            langver = ""
+
             file_type = f.get("file_type", "")
             if file_type.startswith("verilogSource") or file_type.startswith(
                 "systemVerilogSource"
             ):
-                depfiles.append(f["name"])
-                if self._add_include_dir(f, incdirs, force_slash=True):
-                    cmd = None
-                else:
-                    vlog_files.append(f)
-                    cmd = "vlog"
-                args = []
 
-                args += vlog_include_dirs
-                args += vlog_options
-                args += vlog_defines
+                vlog_defines = self.vlogdefine.copy()
+                vlog_defines.update(f.get("define", {}))
 
-                if file_type.startswith("systemVerilogSource"):
-                    args += ["-sv"]
-
+                _args = []
+                for k, v in vlog_defines.items():
+                    _args.append(
+                        "+define+{}={}".format(
+                            k, self._param_value_str(v, str_quote_style='\\"')
+                        )
+                    )
+                defines = " ".join(_args)
+                cmd = "vlog"
             elif file_type.startswith("vhdlSource"):
-                depfiles.append(f["name"])
-                cmd = "vcom"
                 if file_type.endswith("-87"):
-                    args = ["-87"]
+                    langver = "-87"
                 if file_type.endswith("-93"):
-                    args = ["-93"]
+                    langver = "-93"
                 if file_type.endswith("-2008"):
-                    args = ["-2008"]
-                else:
-                    args = []
-
-                args += vcom_options
-
+                    langver = "-2008"
+                cmd = "vcom"
             elif file_type == "tclSource":
-                depfiles.append(f["name"])
-                cmd = None
                 self.tcl_files.append(f["name"])
+                cmd = None
             elif file_type == "user":
-                depfiles.append(f["name"])
+                user_files.append(f["name"])
                 cmd = None
             else:
-                unused_files.append(f)
                 cmd = None
-            if cmd and ((cmd != "vlog") or not common_compilation):
-                args += ["-quiet"]
-                args += ["-work", f["logical_name"]]
-                args += [f["name"].replace("\\", "/")]
-                self.tcl_build_rtl.append(f"{cmd} {' '.join(args)}")
 
-        if common_compilation:
-            args = vlog_include_dirs + vlog_options + vlog_defines
-            _vlog_files = []
-            has_sv = False
-            for f in vlog_files:
-                _vlog_files.append(f["name"].replace("\\", "/"))
-                if f.get("file_type", "").startswith("systemVerilogSource"):
-                    has_sv = True
+            if not "simulation" in f.get("tags", ["simulation"]):
+                cmd = None
 
-            if has_sv:
-                args += ["-sv"]
-            args += vlog_include_dirs
-            args += ["-quiet"]
-            args += ["-work", "work"]
-            args += ["-mfcu"]
-            self.tcl_build_rtl.append(f"vlog {' '.join(args)} {' '.join(_vlog_files)}")
+            if cmd:
+                if not lib in libs:
+                    libs[lib] = []
+                libs[lib].append((cmd, f["name"], defines, langver))
+                if not commands.get((cmd, lib, defines, langver)):
+                    commands[(cmd, lib, defines, langver)] = []
+                commands[(cmd, lib, defines, langver)].append(f["name"])
+                unused_files.remove(f)
+
+        self.commands = EdaCommands()
+        for lib, files in libs.items():
+            cmds = {}
+            depfiles = []
+            has_vlog = False
+            # Group into individual commands
+            for (cmd, fname, defines, langver) in files:
+                if not (cmd, defines, langver) in cmds:
+                    cmds[(cmd, defines, langver)] = []
+                cmds[(cmd, defines, langver)].append(fname)
+                depfiles.append(fname)
+                if cmd == "vlog":
+                    has_vlog = True
+            commands = [["vlib", lib]]
+            i = 1
+            f_files = {}
+            for (cmd, defines, langver), fnames in cmds.items():
+                options = []
+                if cmd == "vlog":
+                    if has_sv:
+                        options.append("-sverilog")
+                    options += self.tool_options.get("vlog_options", [])
+                    options += [defines]
+                    options += ["+incdir+" + d for d in incdirs]
+                elif cmd == "vcom":
+                    options += self.tool_options.get("vcom_options", [])
+                    if langver:
+                        options.append(langver)
+                f_file = f"{lib}.{i}.f"
+                f_files[f_file] = options
+                i += 1
+                commands.append([cmd, "-f", f_file, "-work", lib] + fnames)
+            if has_vlog:
+                depfiles += include_files
+            self.commands.add(commands, [lib], depfiles + list(f_files.keys()))
+            self.f_files.update(f_files)
 
         self.edam = edam.copy()
         self.edam["files"] = unused_files
