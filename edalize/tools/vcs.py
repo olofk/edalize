@@ -109,11 +109,12 @@ class Vcs(Edatool):
         self.f_files = {}
         self.workdirs = []
         target_files = []
+        libdeps = self.edam.get("library_dependencies", {})
         for lib, files in libs.items():
             cmds = {}
             has_vlog = False
             # Group into individual commands
-            for (cmd, fname, defines) in files:
+            for cmd, fname, defines in files:
                 if not (cmd, defines) in cmds:
                     cmds[(cmd, defines)] = []
                 cmds[(cmd, defines)].append(fname)
@@ -143,10 +144,14 @@ class Vcs(Edatool):
                 i += 1
                 if has_vlog:
                     depfiles += include_files
+                libdepfiles = []
+                for l in libdeps.get(lib, []):
+                    if l in libs:
+                        libdepfiles.append(l + "/AN.DB/make.vlogan")
                 self.commands.add(
                     [cmd] + full64 + ["-f", f_file, "-work", workdir] + fnames,
                     [workdir + "/" + target_file],
-                    depfiles + [f_file],
+                    depfiles + [f_file] + libdepfiles,
                 )
                 target_files.append(workdir + "/" + target_file)
             self.f_files.update(f_files)
