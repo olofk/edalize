@@ -146,7 +146,7 @@ class Vcs(Edatool):
                     depfiles += include_files
                 libdepfiles = []
                 for l in libdeps.get(lib, []):
-                    if files:
+                    if fnames:
                         libdepfiles.append(l+"/AN.DB/make.vlogan")
                     else:
                         print("No files. Skipping")
