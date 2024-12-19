@@ -144,7 +144,12 @@ class Vcs(Edatool):
                 i += 1
                 if has_vlog:
                     depfiles += include_files
-                libdepfiles = [x+"/AN.DB/make.vlogan" for x in libdeps.get(lib, [])]
+                libdepfiles = []
+                for l in libdeps.get(lib, []):
+                    if files:
+                        libdepfiles.append(l+"/AN.DB/make.vlogan")
+                    else:
+                        print("No files. Skipping")
                 self.commands.add(
                     [cmd] + full64 + ["-f", f_file, "-work", workdir] + fnames,
                     [workdir + "/" + target_file],
