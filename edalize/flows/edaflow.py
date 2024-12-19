@@ -346,7 +346,8 @@ class Edaflow(object):
 
     def build(self):
         # FIXME: Get run command (e.g. make, ninja, cloud thingie..) from self.commands
-        self._run_tool("make", cwd=self.work_root)
+        make_options = self.flow_options.get("flow_make_options", [])
+        self._run_tool("make", args=make_options, cwd=self.work_root)
 
     # Most flows won't have a run phase
     def run(self, args=None):

@@ -25,6 +25,11 @@ class Generic(Edaflow):
             "type": "str",
             "desc": "Select tool",
         },
+        "flow_make_options": {
+            "type": "str",
+            "desc": "Additional options to pass to make when executing the flow graph",
+            "list": True,
+        },
     }
 
     @classmethod
