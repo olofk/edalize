@@ -2,6 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import os
+
 from edalize.flows.generic import Generic
 
 
@@ -37,6 +39,17 @@ class Sim(Generic):
                     "vsim_options",
                     ["-pli", "`cocotb-config --lib-name-path vpi questa`"],
                 ),
+                "vcs": (
+                    "vcs_options",
+                    [
+                        "-debug",
+                        "+vpi",
+                        "-P",
+                        "pli.tab",
+                        "-load",
+                        "$(cocotb-config --lib-name-path vpi vcs)",
+                    ],
+                ),
                 "verilator": (
                     "verilator_options",
                     [
@@ -53,6 +66,12 @@ class Sim(Generic):
 
         super().configure_tools(flow)
 
+    def configure(self):
+        if self.flow_options.get("tool") == "vcs":
+            with open(os.path.join(self.work_root, "pli.tab"), "w") as f:
+                f.write("acc+=rw,wn:*\n")
+        super().configure()
+
     def run(self, args=None):
         tool = self.flow_options.get("tool")
         run_tool = self.flow.get_node(tool).inst
@@ -60,5 +79,9 @@ class Sim(Generic):
         # Get run command from simulator
         (cmd, args, cwd) = run_tool.run()
         cocotb_module = self.flow_options.get("cocotb_module")
-        env = {"MODULE": cocotb_module} if cocotb_module else {}
+        env = (
+            {"MODULE": cocotb_module, "COCOTB_TEST_MODULES": cocotb_module}
+            if cocotb_module
+            else {}
+        )
         self._run_tool(cmd, args=args, cwd=cwd, env=env)

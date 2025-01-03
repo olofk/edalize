@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64"]
+requires = ["setuptools>=64", "setuptools_scm>=7.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -36,7 +36,7 @@ Changelog = "https://github.com/olofk/edalize/blob/main/NEWS"
 script-files = ["scripts/el_docker"]
 
 [tool.setuptools_scm]
-version_file = "edalize/version.py"
+write_to = "edalize/version.py"
 
 [tool.setuptools.packages.find]
 include = ["edalize", "edalize.tools", "edalize.flows"]

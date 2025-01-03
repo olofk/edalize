@@ -1,4 +1,5 @@
 --lint_fatal --parse_fatal --rules_config=config.vbl --waiver_files=verible_waiver.vbw,verible_waiver2.vbw sv_file.sv
 --lint_fatal --parse_fatal --rules_config=config.vbl --waiver_files=verible_waiver.vbw,verible_waiver2.vbw vlog_file.v
+--lint_fatal --parse_fatal --rules_config=config.vbl --waiver_files=verible_waiver.vbw,verible_waiver2.vbw vlog_with_define.v
 --lint_fatal --parse_fatal --rules_config=config.vbl --waiver_files=verible_waiver.vbw,verible_waiver2.vbw vlog05_file.v
 --lint_fatal --parse_fatal --rules_config=config.vbl --waiver_files=verible_waiver.vbw,verible_waiver2.vbw another_sv_file.sv

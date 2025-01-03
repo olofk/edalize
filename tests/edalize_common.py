@@ -218,6 +218,11 @@ FILES = [
     {"name": "tcl_file.tcl", "file_type": "tclSource"},
     {"name": "waiver_file.waiver", "file_type": "waiver"},
     {"name": "vlog_file.v", "file_type": "verilogSource"},
+    {
+        "name": "vlog_with_define.v",
+        "file_type": "verilogSource",
+        "define": {"FD_KEY": "FD_VAL"},
+    },
     {"name": "vlog05_file.v", "file_type": "verilogSource-2005"},
     {"name": "vlog_incfile", "file_type": "verilogSource", "is_include_file": True},
     {"name": "vhdl_file.vhd", "file_type": "vhdlSource"},
