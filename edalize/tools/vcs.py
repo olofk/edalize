@@ -175,7 +175,7 @@ class Vcs(Edatool):
             ["./" + binary_name, "$(EXTRA_OPTIONS)"]
             + self.tool_options.get("run_options", []),
             ["run"],
-            [binary_name],
+            [],
         )
         self.commands.set_default_target(binary_name)
 

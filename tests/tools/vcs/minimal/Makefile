@@ -17,5 +17,5 @@ libx/64/vhmra.sdb: vhdl_lfile libx.f
 design.simv: work/AN.DB/make.vlogan work_1/AN.DB/make.vlogan work_2/64/vhmra.sdb libx/64/vhmra.sdb user_file vcs.f parameters.txt
 	$(EDALIZE_LAUNCHER) vcs -full64 -o design.simv -file vcs.f -parameters parameters.txt
 
-run: design.simv
+run:
 	$(EDALIZE_LAUNCHER) ./design.simv $(EXTRA_OPTIONS)
