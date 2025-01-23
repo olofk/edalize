@@ -241,11 +241,13 @@ class Edaflow(object):
 
                 # This is an input node. Inject dependency on pre_build scripts
                 if not node.deps:
-                    # Inject pre-build scripts before the first command
-                    # that the node executes. Note that this isn't
-                    # technically correct since the first command in
-                    # the list might not be the first command executed
-                    node.inst.commands.commands[0].order_only_deps = ["pre_build"]
+                    # Inject pre-build scripts as an order-only dependency
+                    # before every command that the node executes during build. This is
+                    # probably safe, but might cause pre-build scripts to
+                    # be executed several times
+                    for c in node.inst.commands.commands:
+                        if not "run" in c.targets:
+                            c.order_only_deps.insert(0, "pre_build")
                 self.commands.commands += node.inst.commands.commands
 
     def add_scripts(self, depends, hook_name):

@@ -6,7 +6,7 @@ class EdaCommands(object):
             self.commands = commands
             self.targets = targets
             self.depends = depends
-            self.order_only_deps = order_only_deps
+            self.order_only_deps = order_only_deps[:]
             self.variables = variables
 
     def __init__(self):
