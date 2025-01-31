@@ -21,14 +21,17 @@ class Icestorm(Edaflow):
     }
 
     FLOW_OPTIONS = {
-        "frontends": {
-            "type": "str",
-            "desc": "Tools to run before yosys (e.g. sv2v)",
-            "list": True,
-        },
-        "pnr": {
-            "type": "str",
-            "desc": "Select Place & Route tool. Legal values are *next* for nextpnr or *none* to only perform synthesis. Default is next",
+        **Edaflow.FLOW_OPTIONS,
+        **{
+            "frontends": {
+                "type": "str",
+                "desc": "Tools to run before yosys (e.g. sv2v)",
+                "list": True,
+            },
+            "pnr": {
+                "type": "str",
+                "desc": "Select Place & Route tool. Legal values are *next* for nextpnr or *none* to only perform synthesis. Default is next",
+            },
         },
     }
 

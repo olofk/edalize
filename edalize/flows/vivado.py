@@ -17,22 +17,25 @@ class Vivado(Edaflow):
     }
 
     FLOW_OPTIONS = {
-        "frontends": {
-            "type": "str",
-            "desc": "Tools to run before Vivado (e.g. sv2v)",
-            "list": True,
-        },
-        "pgm": {
-            "type": "bool",
-            "desc": "Program board after bitstream is complete",
-        },
-        "pnr": {
-            "type": "str",
-            "desc": "Select Place & Route tool.",
-        },
-        "synth": {
-            "type": "str",
-            "desc": "Synthesis tool. Allowed values are vivado (default) and yosys.",
+        **Edaflow.FLOW_OPTIONS,
+        **{
+            "frontends": {
+                "type": "str",
+                "desc": "Tools to run before Vivado (e.g. sv2v)",
+                "list": True,
+            },
+            "pgm": {
+                "type": "bool",
+                "desc": "Program board after bitstream is complete",
+            },
+            "pnr": {
+                "type": "str",
+                "desc": "Select Place & Route tool.",
+            },
+            "synth": {
+                "type": "str",
+                "desc": "Synthesis tool. Allowed values are vivado (default) and yosys.",
+            },
         },
     }
 

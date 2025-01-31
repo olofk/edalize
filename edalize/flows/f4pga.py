@@ -17,26 +17,29 @@ class F4pga(Edaflow):
 
     # Inputs to the F4PGA flow
     FLOW_OPTIONS = {
-        # Required (used by Yosys)
-        "device": {"type": "str", "desc": "Example: 'artix7'"},
-        # Required (used by Yosys)
-        "part": {"type": "str", "desc": "Example: 'xc7a35tcpg236-1'"},
-        # Required (used by VPR)
-        "chip": {"type": "str", "desc": "Example: 'xc7a50t_test'"},
-        # Optional, defaults to xilinx
-        "arch": {
-            "type": "str",
-            "desc": "Targeting architecture for Yosys. Currently supported is 'xilinx' and that is the default if none specified.",
-        },
-        # Optional, defaults to VPR
-        "pnr": {
-            "type": "str",
-            "desc": "Place and route tool. Valid options are 'vpr'/'vtr' and 'nextpnr'. Defaults to VPR.",
-        },
-        # Optional, if empty uses default F4PGA VPR options
-        "vpr_options": {
-            "type": "list",
-            "desc": "Options to VPR, if the standard F4PGA values are not sufficient",
+        **Edaflow.FLOW_OPTIONS,
+        **{
+            # Required (used by Yosys)
+            "device": {"type": "str", "desc": "Example: 'artix7'"},
+            # Required (used by Yosys)
+            "part": {"type": "str", "desc": "Example: 'xc7a35tcpg236-1'"},
+            # Required (used by VPR)
+            "chip": {"type": "str", "desc": "Example: 'xc7a50t_test'"},
+            # Optional, defaults to xilinx
+            "arch": {
+                "type": "str",
+                "desc": "Targeting architecture for Yosys. Currently supported is 'xilinx' and that is the default if none specified.",
+            },
+            # Optional, defaults to VPR
+            "pnr": {
+                "type": "str",
+                "desc": "Place and route tool. Valid options are 'vpr'/'vtr' and 'nextpnr'. Defaults to VPR.",
+            },
+            # Optional, if empty uses default F4PGA VPR options
+            "vpr_options": {
+                "type": "list",
+                "desc": "Options to VPR, if the standard F4PGA values are not sufficient",
+            },
         },
     }
 

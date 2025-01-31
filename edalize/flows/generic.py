@@ -16,19 +16,22 @@ class Generic(Edaflow):
     FLOW_DEFINED_TOOL_OPTIONS = {}
 
     FLOW_OPTIONS = {
-        "frontends": {
-            "type": "str",
-            "desc": "Tools to run before main flow",
-            "list": True,
-        },
-        "tool": {
-            "type": "str",
-            "desc": "Select tool",
-        },
-        "flow_make_options": {
-            "type": "str",
-            "desc": "Additional options to pass to make when executing the flow graph",
-            "list": True,
+        **Edaflow.FLOW_OPTIONS,
+        **{
+            "frontends": {
+                "type": "str",
+                "desc": "Tools to run before main flow",
+                "list": True,
+            },
+            "tool": {
+                "type": "str",
+                "desc": "Select tool",
+            },
+            "flow_make_options": {
+                "type": "str",
+                "desc": "Additional options to pass to make when executing the flow graph",
+                "list": True,
+            },
         },
     }
 
