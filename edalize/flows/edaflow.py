@@ -128,7 +128,13 @@ class FlowGraph(object):
 
 class Edaflow(object):
 
-    FLOW_OPTIONS = {}
+    FLOW_OPTIONS = {
+        "frontends": {
+            "type": "str",
+            "desc": "Tools to run before main flow",
+            "list": True,
+        },
+    }
 
     @classmethod
     def get_flow_options(cls):
