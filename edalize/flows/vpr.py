@@ -12,8 +12,6 @@ class Vpr(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    FLOW_OPTIONS = {}
-
     def configure_flow(self, flow_options):
 
         flow = {

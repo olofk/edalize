@@ -11,22 +11,25 @@ class Gls(Edaflow):
     argtypes = ["plusarg", "vlogdefine", "vlogparam"]
 
     FLOW_OPTIONS = {
-        "frontends": {
-            "type": "str",
-            "desc": "Tools to run before main flow",
-            "list": True,
-        },
-        "synth": {
-            "type": "str",
-            "desc": "Synthesis tool",
-        },
-        "synth_top": {
-            "type": "str",
-            "desc": "Top module of synthesised part of the design",
-        },
-        "sim": {
-            "type": "str",
-            "desc": "Simulator",
+        **Edaflow.FLOW_OPTIONS,
+        **{
+            "frontends": {
+                "type": "str",
+                "desc": "Tools to run before main flow",
+                "list": True,
+            },
+            "synth": {
+                "type": "str",
+                "desc": "Synthesis tool",
+            },
+            "synth_top": {
+                "type": "str",
+                "desc": "Top module of synthesised part of the design",
+            },
+            "sim": {
+                "type": "str",
+                "desc": "Simulator",
+            },
         },
     }
 
