@@ -11,3 +11,5 @@ The Edalize flow is divided into three stages called `configure`, `build` and `r
 .. include:: configure.rst
 .. include:: build.rst
 .. include:: run.rst
+
+.. include:: build_runners.rst
