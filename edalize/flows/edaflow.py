@@ -129,6 +129,10 @@ class FlowGraph(object):
 class Edaflow(object):
 
     FLOW_OPTIONS = {
+        "build_runner": {
+            "type": "str",
+            "desc": "Tool to execute the build graph (Defaults to make)",
+        },
         "frontends": {
             "type": "str",
             "desc": "Tools to run before main flow",
@@ -307,6 +311,15 @@ class Edaflow(object):
         self.set_run_command()
         self.add_scripts("run", "post_run")
 
+        # Initialize build runner
+        _br = self.flow_options.get("build_runner", "make")
+        try:
+            self.build_runner = getattr(
+                import_module(f"edalize.build_runners.{_br}"), _br.capitalize()
+            )(self.flow_options)
+        except ModuleNotFoundError:
+            raise RuntimeError(f"Could not find build runner '{_br}'")
+
     def set_run_command(self):
         self.commands.add([], ["run"], ["pre_run"])
 
@@ -317,7 +330,7 @@ class Edaflow(object):
             node.inst.configure()
 
         # Write out execution file
-        self.commands.write(os.path.join(self.work_root, "Makefile"))
+        self.build_runner.write(self.commands, self.work_root)
 
     def _run_tool(self, cmd, args=[], cwd=None, quiet=False, env={}):
         logger.debug("Running " + cmd)
@@ -353,9 +366,8 @@ class Edaflow(object):
         return cp.returncode, cp.stdout, cp.stderr
 
     def build(self):
-        # FIXME: Get run command (e.g. make, ninja, cloud thingie..) from self.commands
-        make_options = self.flow_options.get("flow_make_options", [])
-        self._run_tool("make", args=make_options, cwd=self.work_root)
+        (cmd, args) = self.build_runner.get_build_command()
+        self._run_tool(cmd, args=args, cwd=self.work_root)
 
     # Most flows won't have a run phase
     def run(self, args=None):

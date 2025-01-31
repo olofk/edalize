@@ -39,4 +39,4 @@ script-files = ["scripts/el_docker"]
 write_to = "edalize/version.py"
 
 [tool.setuptools.packages.find]
-include = ["edalize", "edalize.tools", "edalize.flows"]
+include = ["edalize", "edalize.tools", "edalize.flows", "edalize.build_runners"]
