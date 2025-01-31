@@ -18,11 +18,6 @@ class Generic(Edaflow):
     FLOW_OPTIONS = {
         **Edaflow.FLOW_OPTIONS,
         **{
-            "frontends": {
-                "type": "str",
-                "desc": "Tools to run before main flow",
-                "list": True,
-            },
             "tool": {
                 "type": "str",
                 "desc": "Select tool",

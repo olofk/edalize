@@ -19,11 +19,6 @@ class Vivado(Edaflow):
     FLOW_OPTIONS = {
         **Edaflow.FLOW_OPTIONS,
         **{
-            "frontends": {
-                "type": "str",
-                "desc": "Tools to run before Vivado (e.g. sv2v)",
-                "list": True,
-            },
             "pgm": {
                 "type": "bool",
                 "desc": "Program board after bitstream is complete",

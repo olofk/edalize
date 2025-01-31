@@ -13,11 +13,6 @@ class Gls(Edaflow):
     FLOW_OPTIONS = {
         **Edaflow.FLOW_OPTIONS,
         **{
-            "frontends": {
-                "type": "str",
-                "desc": "Tools to run before main flow",
-                "list": True,
-            },
             "synth": {
                 "type": "str",
                 "desc": "Synthesis tool",
