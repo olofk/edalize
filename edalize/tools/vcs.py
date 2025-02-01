@@ -40,6 +40,13 @@ class Vcs(Edatool):
     }
 
     def setup(self, edam):
+        def absorb_node(nodes, node_to_absorb):
+            for node, deps in nodes.items():
+                if node_to_absorb in deps:
+                    deps.remove(node_to_absorb)
+                    deps += nodes[node_to_absorb]
+            del nodes[node_to_absorb]
+
         super().setup(edam)
 
         incdirs = []
@@ -58,7 +65,6 @@ class Vcs(Edatool):
                     unused_files.remove(f)
 
         user_files = []
-        commands = {}
         libs = {}
         has_sv = False
         for f in unused_files.copy():
@@ -99,9 +105,6 @@ class Vcs(Edatool):
                 if not lib in libs:
                     libs[lib] = []
                 libs[lib].append((cmd, f["name"], defines))
-                if not commands.get((cmd, lib, defines)):
-                    commands[(cmd, lib, defines)] = []
-                commands[(cmd, lib, defines)].append(f["name"])
                 unused_files.remove(f)
 
         full64 = [] if self.tool_options.get("32bit") else ["-full64"]
@@ -110,6 +113,10 @@ class Vcs(Edatool):
         self.workdirs = []
         target_files = []
         libdeps = self.edam.get("library_dependencies", {})
+        for lib in libdeps.copy():
+            if not lib in libs:
+                absorb_node(libdeps, lib)
+
         for lib, files in libs.items():
             cmds = {}
             has_vlog = False
@@ -120,7 +127,6 @@ class Vcs(Edatool):
                 cmds[(cmd, defines)].append(fname)
                 if cmd == "vlogan":
                     has_vlog = True
-            commands = [["mkdir", "-p", lib]]
             i = 0
             f_files = {}
             for (cmd, defines), fnames in cmds.items():
