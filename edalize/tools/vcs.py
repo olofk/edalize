@@ -113,8 +113,8 @@ class Vcs(Edatool):
         self.workdirs = []
         target_files = []
         libdeps = self.edam.get("library_dependencies", {})
-        for lib, files in libdeps.copy().items():
-            if not files:
+        for lib in libdeps.copy():
+            if not lib in libs:
                 absorb_node(libdeps, lib)
 
         for lib, files in libs.items():
