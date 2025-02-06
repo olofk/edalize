@@ -7,11 +7,9 @@ from pathlib import Path
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
-
 class Vcs(Edatool):
-
-    description = "VCS simulator from Synopsys"
-
+    description = "Synopsys VCS Backend integrated into the Sim flow."
+    
     TOOL_OPTIONS = {
         "32bit": {
             "type": "bool",
@@ -37,18 +35,26 @@ class Vcs(Edatool):
             "desc": "Additional run-time options for the simulation",
             "list": True,
         },
+        "version": {
+            "type": "str",
+            "desc": "Version of VCS",
+        },
     }
 
     def setup(self, edam):
+
         super().setup(edam)
+        if not self.tool_options["version"]:
+            raise RuntimeError("Tool 'VCS' requires tool option 'version' to be set, e.g. 2023_12")
 
         incdirs = []
         include_files = []
         unused_files = self.files.copy()
+
         # Get all include dirs. Move include files to a separate list
         for f in self.files:
-            if not "simulation" in f.get("tags", ["simulation"]):
-                continue
+            # if not "sim" in f.get("tags", ["sim"]):
+            #     continue
             file_type = f.get("file_type", "")
             if file_type.startswith("verilogSource") or file_type.startswith(
                 "systemVerilogSource"
@@ -92,8 +98,8 @@ class Vcs(Edatool):
             else:
                 cmd = None
 
-            if not "simulation" in f.get("tags", ["simulation"]):
-                cmd = None
+            # if not "simulation" in f.get("tags", ["simulation"]):
+            #     cmd = None
 
             if cmd:
                 if not lib in libs:
@@ -107,22 +113,24 @@ class Vcs(Edatool):
         full64 = [] if self.tool_options.get("32bit") else ["-full64"]
         self.commands = EdaCommands()
         self.f_files = {}
+        self.workdirs = []
+        target_files = []
+        libdeps = self.edam.get("library_dependencies", {})
         for lib, files in libs.items():
             cmds = {}
-            depfiles = []
             has_vlog = False
             # Group into individual commands
-            for (cmd, fname, defines) in files:
+            for cmd, fname, defines in list(reversed(files)):
                 if not (cmd, defines) in cmds:
                     cmds[(cmd, defines)] = []
                 cmds[(cmd, defines)].append(fname)
-                depfiles.append(fname)
                 if cmd == "vlogan":
                     has_vlog = True
             commands = [["mkdir", "-p", lib]]
-            i = 1
+            i = 0
             f_files = {}
             for (cmd, defines), fnames in cmds.items():
+                depfiles = fnames.copy()
                 options = []
                 if cmd == "vlogan":
                     if has_sv:
@@ -130,17 +138,28 @@ class Vcs(Edatool):
                     options += self.tool_options.get("vlogan_options", [])
                     options += [defines]
                     options += ["+incdir+" + d for d in incdirs]
+                    target_file = "AN.DB/make.vlogan"
                 elif cmd == "vhdlan":
                     options += self.tool_options.get("vhdlan_options", [])
-                f_file = f"{lib}.{i}.f"
+                    target_file = "64/vhmra.sdb"
+                suffix = f"_{i}" if i else ""
+                f_file = f"{lib}{suffix}.f"
                 f_files[f_file] = options
+                workdir = lib + suffix
+                self.workdirs.append(workdir)
                 i += 1
-                commands.append([cmd] + full64 + ["-f", f_file, "-work", lib] + fnames)
-            if has_vlog:
-                depfiles += include_files
-            self.commands.add(
-                commands, [lib + "/AN.DB"], depfiles + list(f_files.keys())
-            )
+                if has_vlog:
+                    depfiles += include_files
+                libdepfiles = []
+                for l in libdeps.get(lib, []):
+                    if l in libs:
+                        libdepfiles.append(l + "/AN.DB/make.vlogan")
+                self.commands.add(
+                    [cmd] + full64 + ["-file", f_file, "-work", workdir] + fnames,
+                    [workdir + "/" + target_file],
+                    depfiles + [f_file] + libdepfiles,
+                )
+                target_files.append(workdir + "/" + target_file)
             self.f_files.update(f_files)
 
         self.edam = edam.copy()
@@ -149,28 +168,26 @@ class Vcs(Edatool):
         self.f_files["vcs.f"] = ["-top", self.toplevel] + self.tool_options.get(
             "vcs_options", []
         )
+        binary_name = self.name + ".simv"
+
         self.commands.add(
             ["vcs"]
             + full64
-            + ["-o", self.name, "-file", "vcs.f", "-parameters", "parameters.txt"],
-            [self.name],
-            [x + "/AN.DB" for x in libs.keys()]
-            + user_files
-            + ["vcs.f", "parameters.txt"],
+            + ["-o", binary_name, "-file", "vcs.f", "-parameters", "parameters.txt"],
+            [binary_name],
+            target_files + user_files + ["vcs.f", "parameters.txt"],
         )
-
         self.commands.add(
-            ["./" + self.name, "$(EXTRA_OPTIONS)"]
+            ["./" + binary_name,"$(EXTRA_OPTIONS)"]
             + self.tool_options.get("run_options", []),
             ["run"],
-            [self.name],
+            [],
         )
-        self.commands.set_default_target(self.name)
-        self.libs = libs.keys()
+        self.commands.set_default_target(binary_name)
 
     def write_config_files(self):
         s = "WORK > DEFAULT\nDEFAULT : ./work\n"
-        for lib in self.libs:
+        for lib in self.workdirs:
             if lib != "work":
                 s += f"{lib} : ./{lib}\n"
         self.update_config_file("synopsys_sim.setup", s)
@@ -178,6 +195,7 @@ class Vcs(Edatool):
             self.update_config_file(k, " ".join(v) + "\n")
 
         _parameters = {**self.vlogparam, **self.generic}
+
         s = ""
         for key, value in _parameters.items():
             _value = self._param_value_str(value, '"')
