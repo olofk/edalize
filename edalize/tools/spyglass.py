@@ -51,92 +51,63 @@ class Spyglass(Edatool):
             raise RuntimeError("Tool 'SPYGLASS' requires tool option 'version' to be set, e.g. 2023_12")
         
         # ----------------- Prepare .prj ------------------------------------------#
-        # Spyglass options
-        self.sg_opts = "set_option projectwdir . \nset_option active_methodology $SPYGLASS_HOME/{}".format(
-            self.tool_options["methodology"]
-        ) + "\n"
-        self.sg_opts += "set_option enable_pass_exit_codes yes \n"
+    # Spyglass options
+    sg_opts = [
+        "set_option projectwdir .",
+        f"set_option active_methodology $SPYGLASS_HOME/{self.tool_options['methodology']}",
+        "set_option enable_pass_exit_codes yes"
+    ]
 
-        has_sv = False # Enable SV
-        for f in self.files:
-            if f.get("file_type") ==("systemVerilogSource"):
-                has_sv = True
-                break
-        if has_sv:
-            self.sg_opts += "set_option enableSV yes \n"
+    # Enable SystemVerilog if needed
+    if any(f.get("file_type") == "systemVerilogSource" for f in self.files):
+        sg_opts.append("set_option enableSV yes")
 
-        for opt in self.tool_options["spyglass_options"]:
-            self.sg_opts += "set_option {}".format(opt) + "\n"
-        self.sg_opts += "\n"
+    sg_opts.extend([f"set_option {opt}" for opt in self.tool_options["spyglass_options"]])
+    self.sg_opts = "\n".join(sg_opts) + "\n\n"
 
+    # Set toplevel
+    self.top = f"set_option top {self.toplevel}\n\n"
+
+    # Rule parameters
+    self.rule_params = "\n".join(f"set_parameter {r_param}" for r_param in self.tool_options["rule_parameters"]) + "\n\n"
+
+    # Goal options
+    self.goal_opts = "\n".join(f"set_goal_option {g_opt}" for g_opt in self.tool_options["goal_options"]) + "\n\n"
+
+    # Source files and include directories
+    src_files, incdirs = [], []
     
-        self.top = "" # Set toplevel
-        self.top += "set_option top {}".format(self.toplevel) + "\n"
-        self.top += "\n"
+    for f in self.files:
+        if not self._add_include_dir(f, incdirs):
+            src_files.append(self.src_file_filter(f))
 
-        # Rule parameters
-        self.rule_params = ""
-        for r_param in self.tool_options["rule_parameters"]:
-            self.rule_params += "set_parameter {}".format(r_param) + "\n"
-        self.rule_params += "\n"
+    self.src_files = "\n".join(src_files) + "\n\n"
+    self.incdirs = "\n".join(f"set_option incdir {inc}" for inc in incdirs) + "\n\n" if incdirs else ""
 
-        # Goal options
-        self.goal_opts = ""
-        for g_opt in self.tool_options["goal_options"]:
-            self.goal_opts += "set_goal_option {}".format(g_opt) + "\n"
-        self.goal_opts += "\n"
+    # Extract and format vlogparam
+    if self.vlogparam:
+        vlogparams = ["set_option param {"]
+        vlogparams.extend(f"  {self.toplevel}.{k}={jinja_filter_param_value_str(v)}" for k, v in self.vlogparam.items())
+        vlogparams.append("}\n")
+        self.vlogparams = "\n".join(vlogparams)
+    else:
+        self.vlogparams = ""
 
-        # Source files and include directories
-        src_files = []
-        incdirs = []
-        unused_files = []
+    # Extract and format vlogdefine
+    if self.vlogdefine:
+        vlogdefines = ["set_option define {"]
+        vlogdefines.extend(f"  {k}={jinja_filter_param_value_str(v)}" for k, v in self.vlogdefine.items())
+        vlogdefines.append("}\n")
+        self.vlogdefines = "\n".join(vlogdefines)
+    else:
+        self.vlogdefines = ""
 
-        for f in self.files:
-            if not self._add_include_dir(f,incdirs):
-                src_files.append(f)
-            elif self._add_include_dir(f, incdirs):
-                incdirs.append(f)
-            else:
-                unused_files.append(f)
-
-        filtered_src_files = [] # Filtering and formatting
-        for src in src_files:
-            filtered_src_files.append(self.src_file_filter(src))
-        
-        self.src_files = ""
-        for src in filtered_src_files:
-            self.src_files += src + "\n"
-        self.src_files += "\n"
-
-        filtered_incdirs = ""
-        if incdirs:
-            for inc in incdirs:
-                filtered_incdirs += "set_option incdir {}".format(inc) + "\n"
-            filtered_incdirs += "\n"
-            self.incdirs = ""
-            self.incdirs = filtered_incdirs
-        
-
-        # ..... mangler vlogparam
-        vlogparams = ""
-        vlogdefnes = ""
-
-        vlogparam = {**self.vlogparam}
-        vlogdefine = {**self.vlogdefine}
-
-        # if vlogparams:
-        #     for k, v in vlogparam.items():
-
-        #     # format vlogparams
-        # if vlogdefines:
-        #     # format vlogdefines
-
-        # Spyglass expects all parameters in the form module.parameter
-        # Always prepend the toplevel module name to be consistent with all other
-        # backends, which do not require this syntax.
-        vlogparam_spyglass = OrderedDict(
-            (self.toplevel + "." + p, v) for (p, v) in self.vlogparam.items()
-        )
+    # Store full project file content
+    self.project_file_content = "\n".join([
+        self.sg_opts, self.top, self.rule_params,
+        self.goal_opts, self.src_files,
+        self.incdirs, self.vlogparams, self.vlogdefines
+    ])
 
 
         # Template variables for project and scripts
@@ -195,9 +166,8 @@ class Spyglass(Edatool):
 # ----------------------#
 
     def write_config_files(self):
-        s = self.sg_opts + self.top + self.rule_params +  self.goal_opts + self.src_files #add params
-
-        self.update_config_file("project_file.prj", s)
+        s = self.sg_opts + self.top + self.rule_params +  self.goal_opts + self.src_files + self.vlogparams + vlogdefines
+        self.update_config_file("spyglass.prj", s)
 #.-----------------#
 
     def src_file_filter(self, f):
