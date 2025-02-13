@@ -1,3 +1,0 @@
-assign 1 vlogparam_bool
-assign 42 vlogparam_int
-assign "hello" vlogparam_str

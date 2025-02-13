@@ -30,7 +30,7 @@ def test_tool_vcs(tool_fixture):
 
 
 def test_tool_vcs_minimal(tool_fixture):
-    tf = tool_fixture("vcs", ref_subdir="minimal")
+    tf = tool_fixture("vcs", paramtypes=[], ref_subdir="minimal")
 
     name = "design"
 
