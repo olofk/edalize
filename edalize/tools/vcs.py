@@ -155,7 +155,10 @@ class Vcs(Edatool):
                     if l in libs:
                         libdepfiles.append(l + "/AN.DB/make.vlogan")
                 self.commands.add(
-                    [cmd] + full64 + ["-file", f_file, "-work", workdir] + fnames,
+                    [cmd]
+                    + full64
+                    + ["-file", f_file, "-work", workdir, "-l", workdir + ".log"]
+                    + fnames,
                     [workdir + "/" + target_file],
                     depfiles + [f_file] + libdepfiles,
                 )

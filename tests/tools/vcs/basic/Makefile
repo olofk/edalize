@@ -3,16 +3,16 @@
 all: design.simv
 
 work/AN.DB/make.vlogan: sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv vlog_incfile work.f
-	$(EDALIZE_LAUNCHER) vlogan -full64 -file work.f -work work sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv
+	$(EDALIZE_LAUNCHER) vlogan -full64 -file work.f -work work -l work.log sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv
 
 work_1/AN.DB/make.vlogan: vlog_with_define.v vlog_incfile work_1.f
-	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_1.f -work work_1 vlog_with_define.v
+	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_1.f -work work_1 -l work_1.log vlog_with_define.v
 
 work_2/64/vhmra.sdb: vhdl_file.vhd vhdl2008_file vlog_incfile work_2.f
-	$(EDALIZE_LAUNCHER) vhdlan -full64 -file work_2.f -work work_2 vhdl_file.vhd vhdl2008_file
+	$(EDALIZE_LAUNCHER) vhdlan -full64 -file work_2.f -work work_2 -l work_2.log vhdl_file.vhd vhdl2008_file
 
 libx/64/vhmra.sdb: vhdl_lfile libx.f
-	$(EDALIZE_LAUNCHER) vhdlan -full64 -file libx.f -work libx vhdl_lfile
+	$(EDALIZE_LAUNCHER) vhdlan -full64 -file libx.f -work libx -l libx.log vhdl_lfile
 
 design.simv: work/AN.DB/make.vlogan work_1/AN.DB/make.vlogan work_2/64/vhmra.sdb libx/64/vhmra.sdb user_file vcs.f parameters.txt
 	$(EDALIZE_LAUNCHER) vcs -full64 -o design.simv -file vcs.f -parameters parameters.txt
