@@ -144,6 +144,7 @@ class Libero(Edatool):
             "tim_constraint_file_filter"
         ] = self.tim_constraint_file_filter
         self.jinja_env.filters["tcl_file_filter"] = self.tcl_file_filter
+        self.jinja_env.filters["io_state_file"] = self.io_state_file
 
         escaped_name = self.name.replace(".", "_")
 
@@ -257,6 +258,12 @@ class Libero(Edatool):
     def tim_constraint_file_filter(self, f):
         if f.file_type == "SDC":
             return f.name
+
+    def io_state_file(self, files):
+        for f in files:
+            if f.file_type == "IOS":
+                return f.name
+        return None
 
     def build_main(self):
         escaped_name = self.name.replace(".", "_")
