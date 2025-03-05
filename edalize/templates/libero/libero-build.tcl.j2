@@ -9,6 +9,13 @@ run_tool -name {SYNTHESIZE}
 run_tool -name {PLACEROUTE}
 run_tool -name {GENERATEPROGRAMMINGDATA}
 
+{% if src_files | io_state_file is not none %}
+puts "----------------- Configuring reprog IO States -----------------------------"
+configure_tool \
+	-name {IO_PROGRAMMING_STATE} \
+	-params {{op}}ios_file:{{src_files | io_state_file}}{{cl}}
+{%- endif %}
+
 puts "----------------- Exporting Programming Job File -----------------------------"
 export_prog_job \
     -job_file_name {{name}} \
