@@ -2,10 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import logging
 from pathlib import Path
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
+
+logger = logging.getLogger(__name__)
 
 
 class Vcs(Edatool):
@@ -16,6 +19,10 @@ class Vcs(Edatool):
         "32bit": {
             "type": "bool",
             "desc": "Disable 64-bit mode",
+        },
+        "2_stage_flow": {
+            "type": "bool",
+            "desc": "Run VCS in 2-stage (elaborate+compile => simulate) instead of 3-stage mode (elaborate => compile => simulate)",
         },
         "vlogan_options": {
             "type": "str",
@@ -64,7 +71,10 @@ class Vcs(Edatool):
                     unused_files.remove(f)
 
         full64 = [] if self.tool_options.get("32bit") else ["-full64"]
-        self._threestage_setup(edam, incdirs, include_files, unused_files, full64)
+        if self.tool_options.get("2_stage_flow"):
+            self._twostage_setup(edam, incdirs, include_files, unused_files, full64)
+        else:
+            self._threestage_setup(edam, incdirs, include_files, unused_files, full64)
 
         self.edam = edam.copy()
         self.edam["files"] = unused_files
@@ -86,6 +96,61 @@ class Vcs(Edatool):
             [],
         )
         self.commands.set_default_target(binary_name)
+
+    def _twostage_setup(self, edam, incdirs, include_files, unused_files, full64):
+
+        user_files = []
+
+        vlog_files = []
+        has_sv = False
+        for f in unused_files.copy():
+            if not "simulation" in f.get("tags", ["simulation"]):
+                continue
+
+            fname = f.get("name")
+
+            file_type = f.get("file_type", "")
+            if file_type.startswith("verilogSource") or file_type.startswith(
+                "systemVerilogSource"
+            ):
+
+                if file_type.startswith("systemVerilogSource"):
+                    has_sv = True
+
+                vlog_files.append(fname)
+                unused_files.remove(f)
+            elif file_type.startswith("vhdlSource"):
+                logger.warning(
+                    f"Only (system)Verilog supported in two-stage mode. Ignoring VHDL file {fname}"
+                )
+            elif file_type == "user":
+                user_files.append(f["name"])
+
+            if f.get("define"):
+                logger.warning(
+                    f"File-specific defines not supported in two-stage mode. Ignoring {fname}"
+                )
+
+        _args = []
+        for k, v in self.vlogdefine.items():
+            _args.append(
+                "+define+{}={}".format(
+                    k, self._param_value_str(v, str_quote_style='""')
+                )
+            )
+        defines = " ".join(_args)
+
+        options = ["-top", self.toplevel]
+        if has_sv:
+            options.append("-sverilog")
+        options += self.tool_options.get("vcs_options", [])
+        options += [defines]
+        options += ["+incdir+" + d for d in incdirs]
+
+        self.f_files["vcs.f"] = options
+
+        self.target_files = include_files + vlog_files
+        self.vcs_files = vlog_files
 
     def _threestage_setup(self, edam, incdirs, include_files, unused_files, full64):
         def absorb_node(nodes, node_to_absorb):
