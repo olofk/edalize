@@ -40,14 +40,13 @@ class Vcs(Edatool):
     }
 
     def setup(self, edam):
-        def absorb_node(nodes, node_to_absorb):
-            for node, deps in nodes.items():
-                if node_to_absorb in deps:
-                    deps.remove(node_to_absorb)
-                    deps += nodes[node_to_absorb]
-            del nodes[node_to_absorb]
-
         super().setup(edam)
+
+        self.commands = EdaCommands()
+        self.f_files = {}
+        self.workdirs = []
+        self.target_files = []
+        self.user_files = []
 
         incdirs = []
         include_files = []
@@ -64,7 +63,38 @@ class Vcs(Edatool):
                     include_files.append(f["name"])
                     unused_files.remove(f)
 
-        user_files = []
+        full64 = [] if self.tool_options.get("32bit") else ["-full64"]
+        self._threestage_setup(edam, incdirs, include_files, unused_files, full64)
+
+        self.edam = edam.copy()
+        self.edam["files"] = unused_files
+
+        binary_name = self.name + ".simv"
+        self.commands.add(
+            ["vcs"]
+            + full64
+            + ["-o", binary_name, "-file", "vcs.f", "-parameters", "parameters.txt"]
+            + self.vcs_files,
+            [binary_name],
+            self.target_files + self.user_files + ["vcs.f", "parameters.txt"],
+        )
+
+        self.commands.add(
+            ["./" + binary_name, "$(EXTRA_OPTIONS)"]
+            + self.tool_options.get("run_options", []),
+            ["run"],
+            [],
+        )
+        self.commands.set_default_target(binary_name)
+
+    def _threestage_setup(self, edam, incdirs, include_files, unused_files, full64):
+        def absorb_node(nodes, node_to_absorb):
+            for node, deps in nodes.items():
+                if node_to_absorb in deps:
+                    deps.remove(node_to_absorb)
+                    deps += nodes[node_to_absorb]
+            del nodes[node_to_absorb]
+
         libs = {}
         has_sv = False
         for f in unused_files.copy():
@@ -93,7 +123,7 @@ class Vcs(Edatool):
             elif file_type.startswith("vhdlSource"):
                 cmd = "vhdlan"
             elif file_type == "user":
-                user_files.append(f["name"])
+                self.user_files.append(f["name"])
                 cmd = None
             else:
                 cmd = None
@@ -107,11 +137,6 @@ class Vcs(Edatool):
                 libs[lib].append((cmd, f["name"], defines))
                 unused_files.remove(f)
 
-        full64 = [] if self.tool_options.get("32bit") else ["-full64"]
-        self.commands = EdaCommands()
-        self.f_files = {}
-        self.workdirs = []
-        target_files = []
         libdeps = self.edam.get("library_dependencies", {})
         for lib in libdeps.copy():
             if not lib in libs:
@@ -162,31 +187,13 @@ class Vcs(Edatool):
                     [workdir + "/" + target_file],
                     depfiles + [f_file] + libdepfiles,
                 )
-                target_files.append(workdir + "/" + target_file)
+                self.target_files.append(workdir + "/" + target_file)
             self.f_files.update(f_files)
-
-        self.edam = edam.copy()
-        self.edam["files"] = unused_files
 
         self.f_files["vcs.f"] = ["-top", self.toplevel] + self.tool_options.get(
             "vcs_options", []
         )
-        binary_name = self.name + ".simv"
-        self.commands.add(
-            ["vcs"]
-            + full64
-            + ["-o", binary_name, "-file", "vcs.f", "-parameters", "parameters.txt"],
-            [binary_name],
-            target_files + user_files + ["vcs.f", "parameters.txt"],
-        )
-
-        self.commands.add(
-            ["./" + binary_name, "$(EXTRA_OPTIONS)"]
-            + self.tool_options.get("run_options", []),
-            ["run"],
-            [],
-        )
-        self.commands.set_default_target(binary_name)
+        self.vcs_files = []
 
     def write_config_files(self):
         s = "WORK > DEFAULT\nDEFAULT : ./work\n"
