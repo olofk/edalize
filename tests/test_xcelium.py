@@ -10,7 +10,6 @@ def test_xcelium(make_edalize_test):
         "xrun_options": ["plenty", "of", "xrun_options"],
     }
 
-    # FIXME: Add VPI tests
     tf = make_edalize_test("xcelium", tool_options=tool_options)
 
     tf.backend.configure()

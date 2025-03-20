@@ -21,21 +21,19 @@ INCS := -I$(XCELIUM_HOME)/tools/include
 XRUN ?= $(XCELIUM_HOME)/tools/bin/xrun
 
 TOPLEVEL      := top_module
-VPI_MODULES   := 
 PARAMETERS    ?= vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello
 PLUSARGS      ?= plusarg_bool=1 plusarg_int=42 plusarg_str=hello
 XMSIM_OPTIONS ?= a few xmsim_options
 XRUN_OPTIONS  ?= plenty of xrun_options
 EXTRA_OPTIONS ?= $(XRUN_OPTIONS) $(if $(XMSIM_OPTIONS),-xmsimargs '$(XMSIM_OPTIONS)',) $(addprefix -defparam ,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
 
-XRUN_CALL = $(XRUN) -q -f edalize_main.f $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) -top $(TOPLEVEL)
+XRUN_CALL = $(XRUN) -q -f edalize_main.f $(EXTRA_OPTIONS) -top $(TOPLEVEL)
 
-all: $(VPI_MODULES)
+all:
 
-run: $(VPI_MODULES)
+run:
 	$(XRUN_CALL)
 
-run-gui: $(VPI_MODULES)
+run-gui:
 	$(XRUN_CALL) -gui -access rwc
-
-clean: 
+clean:

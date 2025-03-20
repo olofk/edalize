@@ -32,39 +32,22 @@ INCS := -I$(XCELIUM_HOME)/tools/include
 XRUN ?= $(XCELIUM_HOME)/tools/bin/xrun
 
 TOPLEVEL      := {toplevel}
-VPI_MODULES   := {modules}
 PARAMETERS    ?= {parameters}
 PLUSARGS      ?= {plusargs}
 XMSIM_OPTIONS ?= {xmsim_options}
 XRUN_OPTIONS  ?= {xrun_options}
 EXTRA_OPTIONS ?= $(XRUN_OPTIONS) $(if $(XMSIM_OPTIONS),-xmsimargs '$(XMSIM_OPTIONS)',) $(addprefix -defparam ,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
 
-XRUN_CALL = $(XRUN) -q -f edalize_main.f $(addprefix -pli ,$(VPI_MODULES)) $(EXTRA_OPTIONS) -top $(TOPLEVEL)
+XRUN_CALL = $(XRUN) -q -f edalize_main.f $(EXTRA_OPTIONS) -top $(TOPLEVEL)
 
-all: $(VPI_MODULES)
+all:
 
-run: $(VPI_MODULES)
+run:
 	$(XRUN_CALL)
 
-run-gui: $(VPI_MODULES)
+run-gui:
 	$(XRUN_CALL) -gui -access rwc
-
-clean: {clean_targets}
-"""
-
-VPI_MAKE_SECTION = """
-{name}_OBJS := {objs}
-{name}_LIBS := {libs}
-{name}_INCS := $(INCS) {incs}
-
-$({name}_OBJS): %.o : %.c
-	$(CC) $(CFLAGS) $({name}_INCS) -o $@ $<
-
-{name}: $({name}_OBJS)
-	$(LD) $(LDFLAGS) -o $@ $? $({name}_LIBS)
-
-clean_{name}:
-	$(RM) $({name}_OBJS) {name}
+clean:
 """
 
 
@@ -167,31 +150,14 @@ class Xcelium(Edatool):
         _xmsim_options = self.tool_options.get("xmsim_options", [])
         _xrun_options = self.tool_options.get("xrun_options", [])
 
-        _modules = [m["name"] for m in self.vpi_modules]
-        _clean_targets = " ".join(["clean_" + m for m in _modules])
         _s = MAKE_HEADER.format(
             toplevel=self.toplevel,
             parameters=" ".join(_parameters),
             plusargs=" ".join(_plusargs),
             xmsim_options=" ".join(_xmsim_options),
             xrun_options=" ".join(_xrun_options),
-            modules=" ".join(_modules),
-            clean_targets=_clean_targets,
         )
         vpi_make.write(_s)
-
-        for vpi_module in self.vpi_modules:
-            _name = vpi_module["name"]
-            _objs = [os.path.splitext(s)[0] + ".o" for s in vpi_module["src_files"]]
-            _libs = ["-l" + l for l in vpi_module["libs"]]
-            _incs = ["-I" + d for d in vpi_module["include_dirs"]]
-            _s = VPI_MAKE_SECTION.format(
-                name=_name,
-                objs=" ".join(_objs),
-                libs=" ".join(_libs),
-                incs=" ".join(_incs),
-            )
-            vpi_make.write(_s)
 
         vpi_make.close()
 
