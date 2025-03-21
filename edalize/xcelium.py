@@ -32,11 +32,12 @@ INCS := -I$(XCELIUM_HOME)/tools/include
 XRUN ?= $(XCELIUM_HOME)/tools/bin/xrun
 
 TOPLEVEL      := {toplevel}
+DPI_LIBRARIES :={dpi_libraries}
 PARAMETERS    ?= {parameters}
 PLUSARGS      ?= {plusargs}
 XMSIM_OPTIONS ?= {xmsim_options}
 XRUN_OPTIONS  ?= {xrun_options}
-EXTRA_OPTIONS ?= $(XRUN_OPTIONS) $(if $(XMSIM_OPTIONS),-xmsimargs '$(XMSIM_OPTIONS)',) $(addprefix -defparam ,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
+EXTRA_OPTIONS ?= $(XRUN_OPTIONS) $(DPI_LIBRARIES) $(if $(XMSIM_OPTIONS),-xmsimargs '$(XMSIM_OPTIONS)',) $(addprefix -defparam ,$(PARAMETERS)) $(addprefix +,$(PLUSARGS))
 
 XRUN_CALL = $(XRUN) -q -f edalize_main.f $(EXTRA_OPTIONS) -top $(TOPLEVEL)
 
@@ -91,6 +92,7 @@ class Xcelium(Edatool):
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
         libs = []
+        self.dpi_libraries = ""
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = "worklib"
@@ -123,6 +125,9 @@ class Xcelium(Edatool):
             elif f.file_type == "tclSource":
                 cmd = None
                 tcl_main.write("-input {}\n".format(f.name))
+            elif f.file_type == "dpiLibrary":
+                cmd = None
+                self.dpi_libraries += f" -sv_lib {f.name}"
             elif f.file_type == "user":
                 cmd = None
             else:
@@ -156,6 +161,7 @@ class Xcelium(Edatool):
             plusargs=" ".join(_plusargs),
             xmsim_options=" ".join(_xmsim_options),
             xrun_options=" ".join(_xrun_options),
+            dpi_libraries=self.dpi_libraries,
         )
         vpi_make.write(_s)
 

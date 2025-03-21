@@ -3,6 +3,8 @@ from .edalize_common import make_edalize_test, tests_dir
 
 
 def test_xcelium(make_edalize_test):
+    from .edalize_common import FILES
+
     tool_options = {
         "xmvhdl_options": ["various", "xmvhdl_options"],
         "xmvlog_options": ["some", "xmvlog_options"],
@@ -10,7 +12,11 @@ def test_xcelium(make_edalize_test):
         "xrun_options": ["plenty", "of", "xrun_options"],
     }
 
-    tf = make_edalize_test("xcelium", tool_options=tool_options)
+    files = FILES[:]
+    files.append({"name": "libdpi1.so", "file_type": "dpiLibrary"})
+    files.append({"name": "libdpi2.so", "file_type": "dpiLibrary"})
+
+    tf = make_edalize_test("xcelium", tool_options=tool_options, files=files)
 
     tf.backend.configure()
     tf.compare_files(["Makefile", "edalize_build_rtl.f", "edalize_main.f"])
