@@ -14,11 +14,24 @@ class Ghdl(Edatool):
 
     description = "GHDL is an open source VHDL simulator, which fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and partially the 1076-2008 version of VHDL"
 
+    default_library = "default_library"
+
     TOOL_OPTIONS = {
         "mode": {
             "type": "str",
             "desc": "Select operation mode. verilog to create verilog, sim to run simulation. Default sim",
-        }
+        },
+        "sim_options": {"type": "str", "desc": "GHDL Simulation options", "list": True},
+        "analyze_options": {
+            "type": "str",
+            "desc": "GHDL Analysis options",
+            "list": True,
+        },
+        "run_options": {"type": "str", "desc": "GHDL Run options", "list": True},
+        "default_library": {
+            "type": "str",
+            "desc": "GHDL Run options",
+        },
     }  # Analyze options, elab options, run_options
 
     def setup(self, edam):
@@ -26,6 +39,9 @@ class Ghdl(Edatool):
         analyze_options = self.tool_options.get("analyze_options", [])
         run_options = self.tool_options.get("run_options", [])
         sim_options = self.tool_options.get("sim_options", [])
+        self.default_library = self.tool_options.get(
+            "default_library", self.default_library
+        )
 
         # Check of std=xx analyze option, this overyides the dynamic determination of vhdl standard
         import re
@@ -100,6 +116,8 @@ class Ghdl(Edatool):
         if len(top) > 1:
             libraries[top[0]] = []
             top_libraries = library_options.format(lib=top[0])
+        else:
+            top_libraries = library_options.format(lib=self.default_library)
 
         top_unit = top[-1]
 
@@ -107,9 +125,8 @@ class Ghdl(Edatool):
         for f in self.files:
             if f.get("file_type") in _vhdltypes:
                 # Files without a specified library will by added to
-                # libraries[None] which is perhaps poor form but avoids
-                # conflicts with user generated names
-                logical_name = f.get("logical_name", None)
+                # libraries[self.default_library]
+                logical_name = f.get("logical_name", self.default_library)
                 libraries[logical_name] = libraries.get(logical_name, []) + [f["name"]]
             else:
                 unused_files.append(f)
@@ -126,13 +143,15 @@ class Ghdl(Edatool):
             if lib:
                 if make_lib_dirs == []:
                     make_lib_dirs = ["mkdir -p "]
-                analyze_options += " -P./{}".format(lib)
+                    analyze_options += " -P./{}".format(lib)
+                    run_options.append(" -P./{}".format(lib))
                 make_lib_dirs.append(format(lib))
                 lib_opts = library_options.format(lib=lib)
                 libs.append(format(lib))
                 commands.add(
                     ["ghdl", "-i"]
                     + stdarg
+                    + [analyze_options]
                     + [" -P./{}".format(lib)]
                     + [lib_opts, " ".join(files)],
                     [format(lib)],
@@ -170,7 +189,10 @@ class Ghdl(Edatool):
                 + sim_options,
                 # FIXME: Get names of object files here
                 ["run"],
-                ["analyze", f"work-obj{standard}.cf"],
+                [
+                    "analyze",
+                    f"{self.default_library}/{self.default_library.lower()}-obj{standard}.cf",
+                ],
             )
 
         commands.set_default_target("make_lib_dirs")
