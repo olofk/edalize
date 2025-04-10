@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import os.path
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -14,7 +13,7 @@ class Ghdl(Edatool):
 
     description = "GHDL is an open source VHDL simulator, which fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and partially the 1076-2008 version of VHDL"
 
-    default_library = "default_library"
+    DEFAULT_LIBRARY = "default_library"
 
     TOOL_OPTIONS = {
         "mode": {
@@ -28,20 +27,13 @@ class Ghdl(Edatool):
             "list": True,
         },
         "run_options": {"type": "str", "desc": "GHDL Run options", "list": True},
-        "default_library": {
-            "type": "str",
-            "desc": "GHDL Run options",
-        },
-    }  # Analyze options, elab options, run_options
+    }
 
     def setup(self, edam):
         super().setup(edam)
         analyze_options = self.tool_options.get("analyze_options", [])
         run_options = self.tool_options.get("run_options", [])
         sim_options = self.tool_options.get("sim_options", [])
-        self.default_library = self.tool_options.get(
-            "default_library", self.default_library
-        )
 
         # Check of std=xx analyze option, this overyides the dynamic determination of vhdl standard
         import re
@@ -111,13 +103,13 @@ class Ghdl(Edatool):
         if len(top) > 2:
             logger.error("Invalid dot notation in toplevel: {}".format(self.toplevel))
 
-        top_libraries = ""
-
         if len(top) > 1:
             libraries[top[0]] = []
             top_libraries = library_options.format(lib=top[0])
+            top_lib = top[0]
         else:
-            top_libraries = library_options.format(lib=self.default_library)
+            top_lib = self.DEFAULT_LIBRARY
+            top_libraries = library_options.format(lib=self.DEFAULT_LIBRARY)
 
         top_unit = top[-1]
 
@@ -126,7 +118,7 @@ class Ghdl(Edatool):
             if f.get("file_type") in _vhdltypes:
                 # Files without a specified library will by added to
                 # libraries[self.default_library]
-                logical_name = f.get("logical_name", self.default_library)
+                logical_name = f.get("logical_name", self.DEFAULT_LIBRARY)
                 libraries[logical_name] = libraries.get(logical_name, []) + [f["name"]]
             else:
                 unused_files.append(f)
@@ -143,8 +135,6 @@ class Ghdl(Edatool):
             if lib:
                 if make_lib_dirs == []:
                     make_lib_dirs = ["mkdir -p "]
-                    analyze_options += " -P./{}".format(lib)
-                    run_options.append(" -P./{}".format(lib))
                 make_lib_dirs.append(format(lib))
                 lib_opts = library_options.format(lib=lib)
                 libs.append(format(lib))
@@ -157,6 +147,7 @@ class Ghdl(Edatool):
                     [format(lib)],
                     ["make_lib_dirs"],
                 )
+        lib_include_dirs = ["-P./{}".format(lib) for lib in libs]
 
         commands.add(
             make_lib_dirs,
@@ -167,7 +158,7 @@ class Ghdl(Edatool):
             ["ghdl", "-m"]
             + stdarg
             + [analyze_options]
-            + [lib_opts]
+            + lib_include_dirs
             + [top_libraries, top_unit],
             ["analyze"],
             libs,
@@ -185,13 +176,13 @@ class Ghdl(Edatool):
                 ["ghdl", "-r"]
                 + stdarg
                 + run_options
+                + lib_include_dirs
                 + [top_libraries, top_unit]
                 + sim_options,
-                # FIXME: Get names of object files here
                 ["run"],
                 [
                     "analyze",
-                    f"{self.default_library}/{self.default_library.lower()}-obj{standard}.cf",
+                    f"{top_lib}/{top_lib.lower()}-obj{standard}.cf",
                 ],
             )
 
