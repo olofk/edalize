@@ -31,6 +31,26 @@ class Efinity(Edatool):
             "type": "str",
             "desc": "Speed grade (e.g. C4)",
         },
+        "ip_gen": {
+            "type": "dict",
+            "desc": "IP generator",
+            "list": True,
+        },
+        "bitstream_gen": {
+            "type": "dict",
+            "desc": "Bitstream generator options",
+            "list": True,
+        }
+    }
+    
+    BITSTREAM_MODES = ["active", "passive"]
+    BITSTREAM_FORMATS = ["bit", "bitbin", "hex", "hexbin"]
+    CLOCK_DIVS = ['DIV1', 'DIV4', 'DIV8']
+
+    BITSTREAM_GEN_DEFAULTS = {
+        "mode": "active",
+        "formats": ["bit", "hex"],
+        "clk_div": 'DIV8',
     }
 
     def setup(self, edam):
@@ -53,6 +73,21 @@ class Efinity(Edatool):
         for i in ["family", "part", "timing"]:
             if not i in self.tool_options:
                 raise RuntimeError("Missing required option '{}'".format(i))
+            
+        for default in self.BITSTREAM_GEN_DEFAULTS:
+            if not default in self.tool_options['bitstream_gen']:
+                self.tool_options['bitstream_gen'][default] = self.BITSTREAM_GEN_DEFAULTS[default]
+        
+        if not self.tool_options['bitstream_gen']['mode'] in self.BITSTREAM_MODES:
+            raise RuntimeError("Invalid bitstream_gen mode: {}".format(self.tool_options['bitstream_gen']['mode']))
+        
+        for format in self.tool_options['bitstream_gen']['formats']:
+            if not format in self.BITSTREAM_FORMATS:
+                raise RuntimeError("Invalid bitstream_gen format: {}".format(format))
+            
+        if not self.tool_options['bitstream_gen']['clk_div'] in self.CLOCK_DIVS:
+            raise RuntimeError("Invalid bitstream_gen clk_div: {}".format(self.tool_options['bitstream_gen']['clk_div']))
+        
 
         design_files = []
         constr_files = []
@@ -124,6 +159,25 @@ class Efinity(Edatool):
             )
             dep_files.append(self.name + ".peri.xml")
 
+        # Add command to generate IP
+        if "ip_gen" in self.tool_options:
+            for ip_config in self.tool_options.get("ip_gen"):
+                module_name = ip_config.get("module_name")
+                commands.add(
+                    [
+                        self.efinity_python,
+                        "gen_ip_" + module_name + ".py",
+                        self.name,
+                        self.tool_options.get("part"),
+                    ],
+                    [self.name + "_" + module_name],
+                    [],
+                    variables={
+                        "EFXIPM_HOME": self.efinity_home + "/ipm",
+                    },
+                )
+                dep_files.append(self.name + "_" + module_name)
+
         commands.add(
             [
                 self.efinity_python,
@@ -140,6 +194,7 @@ class Efinity(Edatool):
                 "EFXPGM_HOME": self.efinity_home + "/pgm",
             },
         )
+
         commands.set_default_target(bit_file)
         self.commands = commands
 
@@ -152,3 +207,10 @@ class Efinity(Edatool):
         if self.isf_file:
             # Create XML file with IO and hard blocks definitions
             self.render_template("isf_to_xml.py", "isf_to_xml.py")
+            if "ip_gen" in self.tool_options:
+                for ip_config in self.tool_options.get("ip_gen"):
+                    self.render_template(
+                        "gen_ip.py.j2",
+                        "gen_ip_" + ip_config.get("module_name") + ".py",
+                        ip_config,
+                    )
