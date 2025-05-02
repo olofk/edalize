@@ -79,7 +79,7 @@ class Vcs(Edatool):
         self.edam = edam.copy()
         self.edam["files"] = unused_files
 
-        binary_name = self.name + ".simv"
+        binary_name = self.name
         self.commands.add(
             ["vcs"]
             + full64
@@ -234,25 +234,26 @@ class Vcs(Edatool):
                     target_file = "64/vhmra.sdb"
                 suffix = f"_{i}" if i else ""
                 f_file = f"{lib}{suffix}.f"
+                logfile = f"{lib}{suffix}.log"
+                target_file = f"{lib}{suffix}.workdir/{target_file}"
                 f_files[f_file] = options
-                workdir = lib + suffix
-                self.workdirs.append(workdir)
+                self.workdirs.append(f"{lib}{suffix}")
                 i += 1
                 if has_vlog:
                     depfiles += include_files
                 libdepfiles = []
                 for l in libdeps.get(lib, []):
                     if l in libs:
-                        libdepfiles.append(l + "/AN.DB/make.vlogan")
+                        libdepfiles.append(l + ".workdir/AN.DB/make.vlogan")
                 self.commands.add(
                     [cmd]
                     + full64
-                    + ["-file", f_file, "-work", workdir, "-l", workdir + ".log"]
+                    + ["-file", f_file, "-work", lib + suffix, "-l", logfile]
                     + fnames,
-                    [workdir + "/" + target_file],
+                    [target_file],
                     depfiles + [f_file] + libdepfiles,
                 )
-                self.target_files.append(workdir + "/" + target_file)
+                self.target_files.append(target_file)
             self.f_files.update(f_files)
 
         self.f_files["vcs.f"] = ["-top", self.toplevel] + self.tool_options.get(
@@ -264,7 +265,7 @@ class Vcs(Edatool):
         s = "WORK > DEFAULT\nDEFAULT : ./work\n"
         for lib in self.workdirs:
             if lib != "work":
-                s += f"{lib} : ./{lib}\n"
+                s += f"{lib} : ./{lib}.workdir\n"
         self.update_config_file("synopsys_sim.setup", s)
         for k, v in self.f_files.items():
             self.update_config_file(k, " ".join(v) + "\n")
