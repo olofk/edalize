@@ -18,15 +18,15 @@ jobs:
     steps:
 
     - name: 🧰 Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: 🐍 Setup Python ${{ matrix.pyver }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.10'
 
     - name: 🚦 Run pre-commit Action
-      uses: pre-commit/action@v2.0.0
+      uses: pre-commit/action@v3.0.1
 
   Build:
     strategy:
