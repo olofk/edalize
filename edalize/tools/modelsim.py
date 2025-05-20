@@ -16,15 +16,15 @@ class Modelsim(Edatool):
     TOOL_OPTIONS = {
         "vsim_options": {
             "type": "str",
-            "desc": "Additional options for iverilog",
+            "desc": "Additional options for vsim",
         },
         "vlog_options": {
             "type": "str",
-            "desc": "Additional options for vvp",
+            "desc": "Additional options for vlog",
         },
         "vcom_options": {
             "type": "str",
-            "desc": "Additional options for vvp",
+            "desc": "Additional options for vcom",
         },
     }
 
