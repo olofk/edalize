@@ -4,9 +4,11 @@
 
 import argparse
 from collections import OrderedDict
+from dataclasses import dataclass
 from importlib import import_module
 import os
-from pkgutil import walk_packages
+import pkgutil
+
 
 import subprocess
 import logging
@@ -24,6 +26,12 @@ try:
 except ImportError:
     _mswindows = False
 
+if sys.version_info < (3, 10):
+    from importlib_metadata import entry_points, EntryPoint
+else:
+    from importlib.metadata import entry_points, EntryPoint
+
+
 NON_TOOL_PACKAGES = [
     "flows",
     "tools",
@@ -37,22 +45,104 @@ NON_TOOL_PACKAGES = [
 ]
 
 
-def get_edatool(name):
-    return getattr(import_module(f"edalize.{name}"), name.capitalize())
+class ToolResolutionError(RuntimeError):
+    pass
 
 
-def walk_tool_packages():
-    parent_module = __name__.split(".")[0]
-    for _, pkg_name, _ in walk_packages(
-        sys.modules[parent_module].__path__, "edalize."
+@dataclass
+class Tool:
+    name: str
+    tool_class: type
+
+    @property
+    def module_path(self) -> str:
+        return self.tool_class.__module__
+
+    @property
+    def class_name(self) -> str:
+        return self.tool_class.__name__
+
+
+def get_edatool(name: str) -> type:
+    if name not in get_edatool_map():
+        raise ToolResolutionError(f"Tool {name} not found in edatools.")
+
+    tool_class = get_edatool_map()[name].tool_class
+
+    return tool_class
+
+
+def get_entrypoint_tool_extensions():
+    extension_tools = entry_points(group="edalize.tool")
+
+    for tool in extension_tools:
+        try:
+            tool_class = tool.load()
+        except ImportError as e:
+            raise ToolResolutionError(
+                f"Failed to load tool '{tool.name}' from the following registered entrypoint {tool.value}"
+            ) from e
+
+        yield Tool(tool.name, tool_class)
+
+
+def get_namespace_tool_extensions():
+    import edalize as namespace_package_to_search
+
+    for mod in pkgutil.iter_modules(
+        namespace_package_to_search.__path__, namespace_package_to_search.__name__ + "."
     ):
-        pkg_parts = pkg_name.split(".")
-        if not pkg_parts[1] in NON_TOOL_PACKAGES:
-            yield pkg_parts[1]
+        tool_name = mod.name.split(".")[1]
+
+        if tool_name not in NON_TOOL_PACKAGES:
+            class_name = tool_name.capitalize()
+            
+            
+            try:
+                tool_module = import_module(mod.name)
+            except ImportError as e:
+                logger.warning(
+                    f"Failed to import namespace extension module {mod.name}, tool {tool_name} is ignored."
+                )
+                continue
+
+            if not hasattr(tool_module, class_name):
+                logger.warning(
+                    f"Module {mod.name} found in edalize namespace, but the module does not contain a tool named {tool_name.capitalize()}, tool is ignored."
+                )
+                continue
+            tool_class = getattr(import_module(mod.name), tool_name.capitalize())
+            tool = Tool(tool_name, tool_class)
+            yield tool
+
+
+def get_edatool_map():
+    tool_map = {tool.name: tool for tool in get_namespace_tool_extensions()}
+
+    entrypoint_tools = {}
+    for tool in get_entrypoint_tool_extensions():
+        if tool.name in entrypoint_tools:
+            # Arguably this should be fatal, but we will just log a warning
+            logger.warning(
+                f"Tool {tool.name} is defined by multiple entrypoints. Implementation from {tool_map[tool.name].module_path} will be used."
+            )
+            continue
+
+        if tool.name in tool_map:
+            logger.warning(
+                f"Tool {tool.name} is defined both in the edalize namespace and as an entrypoint. The entrypoint will take precedence."
+            )
+        # Track seen entrypoint tools separately to emit duplicate entry diagnostic
+        entrypoint_tools[tool.name] = tool
+
+    tool_map.update(entrypoint_tools)
+
+    return tool_map
 
 
 def get_edatools():
-    return [get_edatool(pkg) for pkg in walk_tool_packages()]
+    # Tools from entrypoint will get precedence.
+    return [tool.tool_class for tool in get_edatool_map().values()]
 
 
 def subprocess_run_3_9(
@@ -66,7 +156,7 @@ def subprocess_run_3_9(
     if capture_output:
         if kwargs.get("stdout") is not None or kwargs.get("stderr") is not None:
             raise ValueError(
-                "stdout and stderr arguments may not be used " "with capture_output."
+                "stdout and stderr arguments may not be used with capture_output."
             )
         kwargs["stdout"] = subprocess.PIPE
         kwargs["stderr"] = subprocess.PIPE
@@ -104,6 +194,7 @@ if sys.version_info < (3, 8):
     run = subprocess_run_3_9
 else:
     run = subprocess.run
+
 
 # Jinja2 tests and filters, available in all templates
 def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
