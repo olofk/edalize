@@ -5,6 +5,7 @@ def test_tool_vcs_2_stage(tool_fixture):
 
     tool_options = {
         "2_stage_flow": True,
+        "analysis_options": ["several", "analysis", "options"],
         "vcs_options": ["some", "vcs", "options"],
         "run_options": ["and", "some", "run", "options"],
     }
@@ -47,6 +48,7 @@ def test_tool_vcs_3_stage(tool_fixture):
 
     tool_options = {
         "2_stage_flow": False,
+        "analysis_options": ["several", "analysis", "options"],
         "vlogan_options": ["a", "few", "vlogan", "options"],
         "vhdlan_options": ["also", "vhdlan", "options"],
         "vcs_options": ["some", "vcs", "options"],
