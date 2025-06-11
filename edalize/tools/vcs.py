@@ -24,6 +24,11 @@ class Vcs(Edatool):
             "type": "bool",
             "desc": "Run VCS in 2-stage (elaborate+compile => simulate) instead of 3-stage mode (elaborate => compile => simulate)",
         },
+        "analysis_options": {
+            "type": "str",
+            "desc": "Options that are passed to vcs in 2-stage mode or vhdlan/vlogan in 3-stage mode",
+            "list": True,
+        },
         "vlogan_options": {
             "type": "str",
             "desc": "Additional options for analysis with vlogan",
@@ -143,6 +148,7 @@ class Vcs(Edatool):
         options = ["-top", self.toplevel]
         if has_sv:
             options.append("-sverilog")
+        options += self.tool_options.get("analysis_options", [])
         options += self.tool_options.get("vcs_options", [])
         options += [defines]
         options += ["+incdir+" + d for d in incdirs]
@@ -225,11 +231,13 @@ class Vcs(Edatool):
                 if cmd == "vlogan":
                     if has_sv:
                         options.append("-sverilog")
+                    options += self.tool_options.get("analysis_options", [])
                     options += self.tool_options.get("vlogan_options", [])
                     options += [defines]
                     options += ["+incdir+" + d for d in incdirs]
                     target_file = "AN.DB/make.vlogan"
                 elif cmd == "vhdlan":
+                    options += self.tool_options.get("analysis_options", [])
                     options += self.tool_options.get("vhdlan_options", [])
                     target_file = "64/vhmra.sdb"
                 suffix = f"_{i}" if i else ""
