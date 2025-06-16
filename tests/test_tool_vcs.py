@@ -68,6 +68,10 @@ def test_tool_vcs_3_stage(tool_fixture):
             "work.f",
             "work_1.f",
             "work_2.f",
+            "work_3.f",
+            "work_4.f",
+            "work_5.f",
+            "work_6.f",
             "parameters.txt",
         ]
     )
@@ -87,6 +91,10 @@ def test_tool_vcs_3_stage_minimal(tool_fixture):
             "work.f",
             "work_1.f",
             "work_2.f",
+            "work_3.f",
+            "work_4.f",
+            "work_5.f",
+            "work_6.f",
             "parameters.txt",
         ]
     )

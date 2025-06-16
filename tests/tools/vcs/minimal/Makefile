@@ -2,19 +2,17 @@
 
 all: design
 
-work.workdir/AN.DB/make.vlogan: sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv vlog_incfile work.f
-	$(EDALIZE_LAUNCHER) vlogan -full64 -file work.f -work work -l work.log sv_file.sv vlog_file.v vlog05_file.v another_sv_file.sv
-
-work_1.workdir/AN.DB/make.vlogan: vlog_with_define.v vlog_incfile work_1.f
-	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_1.f -work work_1 -l work_1.log vlog_with_define.v
-
-work_2.workdir/64/vhmra.sdb: vhdl_file.vhd vhdl2008_file vlog_incfile work_2.f
-	$(EDALIZE_LAUNCHER) vhdlan -full64 -file work_2.f -work work_2 -l work_2.log vhdl_file.vhd vhdl2008_file
-
-libx.workdir/64/vhmra.sdb: vhdl_lfile libx.f
+work.workdir/AN.DB/make.vlogan work.workdir/64/vhmra.sdb libx.workdir/64/vhmra.sdb: sv_file.sv vlog_incfile vlog_file.v vlog_incfile vlog_with_define.v vlog_incfile vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file another_sv_file.sv vlog_incfile work.f work_1.f work_2.f work_3.f work_4.f libx.f work_5.f work_6.f
+	$(EDALIZE_LAUNCHER) vlogan -full64 -file work.f -work work -l work.log sv_file.sv
+	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_1.f -work work -l work_1.log vlog_file.v
+	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_2.f -work work -l work_2.log vlog_with_define.v
+	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_3.f -work work -l work_3.log vlog05_file.v
+	$(EDALIZE_LAUNCHER) vhdlan -full64 -file work_4.f -work work -l work_4.log vhdl_file.vhd
 	$(EDALIZE_LAUNCHER) vhdlan -full64 -file libx.f -work libx -l libx.log vhdl_lfile
+	$(EDALIZE_LAUNCHER) vhdlan -full64 -file work_5.f -work work -l work_5.log vhdl2008_file
+	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_6.f -work work -l work_6.log another_sv_file.sv
 
-design: work.workdir/AN.DB/make.vlogan work_1.workdir/AN.DB/make.vlogan work_2.workdir/64/vhmra.sdb libx.workdir/64/vhmra.sdb user_file vcs.f parameters.txt
+design: work.workdir/AN.DB/make.vlogan work.workdir/64/vhmra.sdb libx.workdir/64/vhmra.sdb user_file vcs.f parameters.txt
 	$(EDALIZE_LAUNCHER) vcs -full64 -o design -file vcs.f -parameters parameters.txt
 
 run:

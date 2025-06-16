@@ -1,0 +1,1 @@
+-sverilog  +incdir+.

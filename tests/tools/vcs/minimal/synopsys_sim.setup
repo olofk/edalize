@@ -1,5 +1,3 @@
 WORK > DEFAULT
 DEFAULT : ./work
-work_1 : ./work_1.workdir
-work_2 : ./work_2.workdir
 libx : ./libx.workdir
