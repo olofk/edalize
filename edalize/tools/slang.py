@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+from os import path
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -37,18 +38,29 @@ class Slang(Edatool):
         if slang_tool != "slang_tidy":
             raise RuntimeError("Currently the only supported tool is slang_tidy.")
 
-        system_verilog_files = [
-            f_name
-            for (f_name, f_type) in (
-                (file["name"], file.get("file_type", "")) for file in self.files
-            )
-            if f_type.startswith("systemVerilogSource")
-            or f_type.startswith("verilogSource")
+        sv_files = [
+            file
+            for file in self.files
+            if file.get("file_type", "").startswith("systemVerilogSource")
+            or file.get("file_type", "").startswith("verilogSource")
         ]
+
+        sv_include_directories: set[str] = {
+            file.get("include_path") or path.dirname(file["name"]) or "."
+            for file in sv_files
+            if file.get("is_include_file", False)
+        }
+
+        sv_noninclude_filenames = [
+            file["name"] for file in sv_files if not file.get("is_include_file", False)
+        ]
+
+        sv_filenames = [file["name"] for file in sv_files]
 
         self.slang_tidy_args = (
             [f"--top {self.toplevel}"]
-            + system_verilog_files
+            + [f"-I {dir}" for dir in sv_include_directories]
+            + sv_noninclude_filenames
             + self.tool_options.get("slang_tidy_options", [])
         )
 
@@ -57,7 +69,7 @@ class Slang(Edatool):
         self.commands.add(
             ["slang-tidy", "-f", self.slang_tidy_arg_file],
             [default_target],
-            system_verilog_files + [self.slang_tidy_arg_file],
+            sv_filenames + [self.slang_tidy_arg_file],
         )
 
     def write_config_files(self):
