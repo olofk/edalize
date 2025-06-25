@@ -12,5 +12,6 @@ class Lint(Generic):
 
     FLOW_DEFINED_TOOL_OPTIONS = {
         "verilator": {"mode": "lint-only", "exe": "false", "make_options": []},
-        # verible, spyglass, ascentlint, slang...
+        "slang": { "slang_tool": "slang_tidy" },
+        # verible, spyglass, ascentlint...
     }
