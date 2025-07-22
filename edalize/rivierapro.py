@@ -88,6 +88,8 @@ class Rivierapro(Edatool):
                     args = ["-93"]
                 if f.file_type.endswith("-2008"):
                     args = ["-2008"]
+                if f.file_type.endswith("-2019"):
+                    args = ["-2019"]
                 else:
                     args = []
             elif f.file_type == "tclSource":
