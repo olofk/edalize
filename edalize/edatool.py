@@ -73,7 +73,7 @@ def get_edatool(name: str) -> type:
 
 
 def get_entrypoint_tool_extensions():
-    extension_tools = entry_points(group="edalize.tool")
+    extension_tools = entry_points(group="edalize.legacy_tool")
 
     for tool in extension_tools:
         try:
@@ -96,8 +96,7 @@ def get_namespace_tool_extensions():
 
         if tool_name not in NON_TOOL_PACKAGES:
             class_name = tool_name.capitalize()
-            
-            
+
             try:
                 tool_module = import_module(mod.name)
             except ImportError as e:
