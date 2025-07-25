@@ -269,8 +269,17 @@ class Edatool(object):
             args[k] = v.get("default")
         self._apply_parameters(args)
 
+        # jinja2's PackageLoader needs to know which package to load templates
+        # from. This module (edatool.py) belongs to the edalize package but
+        # subclass tools using this function might come from other packages
+        # through the entrypoint mechanism. We therefore need to look at which
+        # module that the class comes form and then load that to see which
+        # package it belongs to in order to get the right path for jinja.
+
+        _package = import_module(self.__class__.__module__).__spec__.parent
+
         self.jinja_env = Environment(
-            loader=PackageLoader(__package__, "templates"),
+            loader=PackageLoader(_package, "templates"),
             trim_blocks=True,
             lstrip_blocks=True,
             keep_trailing_newline=True,
