@@ -102,6 +102,7 @@ class Vivado(Edatool):
         incdirs = []
         edif_files = []
         has_vhdl2008 = False
+        has_vhdl2019 = False
         has_xci = False
         unused_files = []
         bd_files = []
@@ -127,6 +128,9 @@ class Vivado(Edatool):
                 if file_type == "vhdlSource-2008":
                     has_vhdl2008 = True
                     cmd += " -vhdl2008"
+                if file_type == "vhdlSource-2019":
+                    has_vhdl2019 = True
+                    cmd += " -vhdl2019"
                 if f.get("logical_name"):
                     cmd += " -library " + f["logical_name"]
             elif file_type == "xci":
@@ -170,6 +174,10 @@ class Vivado(Edatool):
             }
         )
 
+        if has_vhdl2019:
+           template_update = {'has_vhdl2019': has_vhdl2019}
+        else:
+           template_update = {'has_vhdl2008': has_vhdl2008}
         self.template_vars = {
             "name": self.name,
             "src_files": "\n".join(src_files + sim_files),
@@ -180,10 +188,10 @@ class Vivado(Edatool):
             "vlogdefine": self.vlogdefine,
             "generic": self.generic,
             "netlist_flow": netlist_flow,
-            "has_vhdl2008": has_vhdl2008,
             "has_xci": has_xci,
             "bd_files": bd_files,
         }
+        self.template_vars.update(template_update)
         jobs = self.tool_options.get("jobs", None)
 
         self.run_template_vars = {
