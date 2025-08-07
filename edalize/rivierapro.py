@@ -84,11 +84,11 @@ class Rivierapro(Edatool):
                 cmd = "vcom"
                 if f.file_type.endswith("-87"):
                     args = ["-87"]
-                if f.file_type.endswith("-93"):
+                elif f.file_type.endswith("-93"):
                     args = ["-93"]
-                if f.file_type.endswith("-2008"):
+                elif f.file_type.endswith("-2008"):
                     args = ["-2008"]
-                if f.file_type.endswith("-2019"):
+                elif f.file_type.endswith("-2019"):
                     args = ["-2019"]
                 else:
                     args = []
