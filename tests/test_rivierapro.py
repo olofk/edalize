@@ -11,7 +11,11 @@ def test_rivierapro(make_edalize_test):
     }
 
     # FIXME: Add VPI tests
-    tf = make_edalize_test("rivierapro", tool_options=tool_options)
+    tf = make_edalize_test(
+        "rivierapro",
+        tool_options=tool_options,
+        param_types=["plusarg", "vlogdefine", "vlogparam", "generic"],
+    )
     tf.backend.configure()
 
     tf.compare_files(

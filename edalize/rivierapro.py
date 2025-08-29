@@ -17,7 +17,7 @@ exit
 
 class Rivierapro(Edatool):
 
-    argtypes = ["plusarg", "vlogdefine", "vlogparam"]
+    argtypes = ["plusarg", "vlogdefine", "vlogparam", "generic"]
 
     @classmethod
     def get_doc(cls, api_ver):
@@ -172,6 +172,8 @@ class Rivierapro(Edatool):
             args += ["+{}={}".format(key, self._param_value_str(value))]
         # Top-level parameters
         for key, value in self.vlogparam.items():
+            args += ["-g{}={}".format(key, self._param_value_str(value))]
+        for key, value in self.generic.items():
             args += ["-g{}={}".format(key, self._param_value_str(value))]
         tcl_launch.write(" ".join(args) + "\n")
         tcl_launch.close()
