@@ -1,3 +1,9 @@
+0.6.2 2025-08-29 Olof Kindgren
+======================================================
+* Support Tool API plugins through Python Entrypoints
+* vcs: Add analysis_options, fix 3-stage flow
+* rivierapro: Add vcom_options, support generics, remove -quiet flag
+======================================================
 0.6.1 2025-03-31 Olof Kindgren
 ======================================================
 * Remove broken f4pga and vpr legacy backends
