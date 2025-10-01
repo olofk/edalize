@@ -25,6 +25,10 @@ Example snippet in CAPI2 format:
        # A list of task names to pass to sby. Defaults to empty (in which case
        # sby will run each task in the .sby file)
        - my_proof
+     extra_options:
+       # A list of extra command line arguments to sby. Defaults to empty.
+       - -d
+       - build
 
 The SymbiYosys tool expects a configuration file telling it what to do. This
 file includes a list of all the source files, together with various flags which
@@ -108,8 +112,10 @@ You can reproduce the example above with something like
         "lists": {
             # A list of tasks to run from the .sby file. Passed on the sby
             # command line.
-            "tasknames": "String"
-        }
+            "tasknames": "String",
+            # A list of extra arguments to the sby command.
+            "extra_options": "String",
+        },
     }
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
@@ -143,7 +149,15 @@ You can reproduce the example above with something like
                             "A list of the .sby file's tasks to run. "
                             "Passed on the sby command line."
                         ),
-                    }
+                    },
+                    {
+                        "name": "extra_options",
+                        "type": "String",
+                        "desc": (
+                            "A list of extra arguments. "
+                            "Passed on the sby command line."
+                        ),
+                    },
                 ],
             }
 
@@ -317,5 +331,11 @@ You can reproduce the example above with something like
                 '"tasknames" tool option should be '
                 "a list of strings. Got {!r}.".format(tasknames)
             )
+        extra_options = self.tool_options.get("extra_options", [])
+        if not isinstance(extra_options, list):
+            raise RuntimeError(
+                '"extra_options" tool option should be '
+                "a list of strings. Got {!r}.".format(extra_options)
+            )
 
-        self._run_tool("sby", ["-d", "build", self.sby_name] + tasknames)
+        self._run_tool("sby", extra_options + [self.sby_name] + tasknames)
