@@ -87,7 +87,11 @@ class Nextpnr(Edatool):
         # Write Makefile
         commands = EdaCommands()
 
-        arch = self.tool_options["arch"]
+        arch = self._require_tool_option("arch")
+        arches = ["xilinx", "ecp5", "gowin", "ice40"]
+        if not arch in arches:
+            raise RuntimeError("Invalid arch. Allowed options are " + ", ".join(arches))
+
         arch_options = []
 
         # Specific commands for nextpnr-xilinx
