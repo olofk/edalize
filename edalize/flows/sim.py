@@ -58,6 +58,18 @@ class Sim(Generic):
                         '-LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` -lcocotbvpi_verilator"',
                     ],
                 ),
+                "xcelium": (
+                    # Note: xrun may throw a 'No such file or directory' error
+                    # about libpython3.x.so while loading the VPI library if
+                    # the user using a virtualenv or conda environment.
+                    # User can fix this by adding the python library path to
+                    # LD_LIBRARY_PATH environment variable before launching xrun.
+                    "xrun_options",
+                    [
+                        "-access +rwc",
+                        "-loadvpi $$(cocotb-config --lib-name-path vpi xcelium):vlog_startup_routines_bootstrap"
+                    ]
+                )
             }
             (opt, val) = cocotb_options[tool]
             self.edam["tool_options"][tool][opt] = (
