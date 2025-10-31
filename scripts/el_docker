@@ -21,6 +21,8 @@ containers = [
     {'tool': 'nextpnr-ecp5',              'image': 'hdlc/nextpnr',                                    'init': '', 'vendor': '', 'part': ''},
     {'tool': 'nextpnr-nexus',             'image': 'hdlc/nextpnr',                                    'init': '', 'vendor': '', 'part': ''},
     {'tool': 'icepack',                   'image': 'hdlc/icestorm',                                   'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'iverilog',                  'image': 'hdlc/iverilog',                                   'init': '', 'vendor': '', 'part': ''},
+    {'tool': 'vvp',                       'image': 'hdlc/iverilog',                                   'init': '', 'vendor': '', 'part': ''},
     {'tool': 'ecppack',                   'image': 'hdlc/prjtrellis',                                 'init': '', 'vendor': '', 'part': ''},
     {'tool': 'icetime',                   'image': 'hdlc/icestorm',                                   'init': '', 'vendor': '', 'part': ''},
     {'tool': 'icebox_stat',               'image': 'hdlc/icestorm',                                   'init': '', 'vendor': '', 'part': ''},
