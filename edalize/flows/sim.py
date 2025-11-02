@@ -67,9 +67,9 @@ class Sim(Generic):
                     "xrun_options",
                     [
                         "-access +rwc",
-                        "-loadvpi $$(cocotb-config --lib-name-path vpi xcelium):vlog_startup_routines_bootstrap"
-                    ]
-                )
+                        "-loadvpi $$(cocotb-config --lib-name-path vpi xcelium):vlog_startup_routines_bootstrap",
+                    ],
+                ),
             }
             (opt, val) = cocotb_options[tool]
             self.edam["tool_options"][tool][opt] = (
