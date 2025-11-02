@@ -9,6 +9,7 @@ from edalize.utils import EdaCommands
 
 logger = logging.getLogger(__name__)
 
+
 class Xcelium(Edatool):
     description = "Xcelium (xrun) simulator from Cadence"
 
@@ -17,19 +18,13 @@ class Xcelium(Edatool):
             "type": "bool",
             "desc": "Disable 64-bit mode",
         },
-        "timescale": {
-            "type": "str",
-            "desc": "Default timescale for simulation"
-        },
-        "xrun_options": {
-            "type": "str",
-            "desc": "Additional run options for xrun"
-        },
+        "timescale": {"type": "str", "desc": "Default timescale for simulation"},
+        "xrun_options": {"type": "str", "desc": "Additional run options for xrun"},
     }
 
     V_SRC_FILE_TYPES = ["verilogSource", "systemVerilogSource"]
     TCL_SCRIPT_TYPES = ["tclSource"]
-    DPIC_LIB_TYPES   = ["dpiLibrary"]
+    DPIC_LIB_TYPES = ["dpiLibrary"]
 
     def setup(self, edam):
         super().setup(edam)
@@ -84,7 +79,11 @@ class Xcelium(Edatool):
         sv_cmd = ["-sv"] if has_system_verilog else []
 
         # Append timescale option
-        timescale_cmd = ["-timescale", self.tool_options.get("timescale")] if self.tool_options.get("timescale") else []
+        timescale_cmd = (
+            ["-timescale", self.tool_options.get("timescale")]
+            if self.tool_options.get("timescale")
+            else []
+        )
 
         # Append TCL scripts
         tcl_cmd = []
@@ -101,7 +100,8 @@ class Xcelium(Edatool):
         for k, v in self.vlogdefine.items():
             macro_def_cmd.append(
                 "+define+{}={}".format(
-                    k, self._param_value_str(v, str_quote_style='""'))
+                    k, self._param_value_str(v, str_quote_style='""')
+                )
             )
 
         # Append include directories
@@ -123,7 +123,8 @@ class Xcelium(Edatool):
             + top_cmd
             + ["-f", "xrun.f"]
             + self.tool_options.get("xrun_options", []),
-            ["run"], include_files + tcl_files + dpi_libraries + ["xrun.f"]
+            ["run"],
+            include_files + tcl_files + dpi_libraries + ["xrun.f"],
         )
 
         self.commands.set_default_target("run")
