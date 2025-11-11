@@ -138,6 +138,11 @@ class Edaflow(object):
             "desc": "Tools to run before main flow",
             "list": True,
         },
+        "flow_make_options": {
+            "type": "str",
+            "desc": "Additional options to pass to make when executing the flow graph",
+            "list": True,
+        },
     }
 
     @classmethod
