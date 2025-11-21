@@ -134,7 +134,7 @@ Example snippet of a CAPI2 description file for Slang:
         self._get_slang_options()
         self._get_run_mode_flags()
         self._get_top_flags()
-        self._run_tool("slang", self.flags, quiet=True)
+        self._run_tool("slang", self.flags)
         return
 
     def configure_main(self):
