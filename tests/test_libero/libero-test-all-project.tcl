@@ -18,7 +18,7 @@ new_project \
     -adv_options {IO_DEFT_STD:LVCMOS 1.8V} \
 
 # Set up the include directories
-set_global_include_path_order -paths " . "
+set_global_include_path_order -paths " ../. "
 build_design_hierarchy
 
 # Link HDL sources and constraints
@@ -53,7 +53,7 @@ set_root -module {top_module::work}
 
 # Configure Synthesize tool to use the generated Synplify TCL script
 configure_tool -name {SYNTHESIZE} \
-        -params [join [list "SYNPLIFY_TCL_FILE" [file join [file dirname [info script]] ../libero-test-all-syn-user.tcl]] ":"]
+        -params [join [list "SYNPLIFY_TCL_FILE" [file join [file dirname [info script]] ./libero-test-all-syn-user.tcl]] ":"]
 
 puts "Configured Synthesize tool to use script: libero-test-all-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"
@@ -87,5 +87,5 @@ organize_tool_files -tool {VERIFYTIMING} \
 
 save_project
 
-puts "If desired, execute the libero-test-all-run.tcl script to run the generation flow."
+puts "If desired, execute the libero-test-all-build.tcl script to run the generation flow."
 puts "----------------- Finished Importing project -----------------------------"

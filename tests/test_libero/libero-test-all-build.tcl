@@ -2,12 +2,21 @@
 # Microsemi Tcl Script
 # Libero
 
-source {libero-test-all-project.tcl}
+puts "----------------- Opening project libero-test-all ------------------------------"
+open_project -file {./prj/libero-test-all.prjx}
 
 run_tool -name {SYNTHESIZE}
 run_tool -name {PLACEROUTE}
 run_tool -name {GENERATEPROGRAMMINGDATA}
 
-puts "To program the FPGA and SPI-Flash, run the 'Run PROGRAM Action' and 'Run PROGRAM_SPI_IMAGE Action' tools in the Design Flow menu."
-puts "If required, adjust the memory allocation and initialization before generating the bitstream and programming."
+
+puts "----------------- Exporting Programming Job File -----------------------------"
+export_prog_job \
+    -job_file_name libero-test-all \
+    -export_dir ./prj \
+    -bitstream_file_type {TRUSTED_FACILITY} \
+    -bitstream_file_components {}
+
 puts "----------------- Finished building project -----------------------------"
+
+close_project -save 1

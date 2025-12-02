@@ -15,7 +15,7 @@ new_project \
     -part_range {IND}  \
 
 # Set up the include directories
-set_global_include_path_order -paths " . "
+set_global_include_path_order -paths " ../. "
 build_design_hierarchy
 
 # Link HDL sources and constraints
@@ -50,7 +50,7 @@ set_root -module {top_module::work}
 
 # Configure Synthesize tool to use the generated Synplify TCL script
 configure_tool -name {SYNTHESIZE} \
-        -params [join [list "SYNPLIFY_TCL_FILE" [file join [file dirname [info script]] ../libero-test-syn-user.tcl]] ":"]
+        -params [join [list "SYNPLIFY_TCL_FILE" [file join [file dirname [info script]] ./libero-test-syn-user.tcl]] ":"]
 
 puts "Configured Synthesize tool to use script: libero-test-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"
@@ -84,5 +84,5 @@ organize_tool_files -tool {VERIFYTIMING} \
 
 save_project
 
-puts "If desired, execute the libero-test-run.tcl script to run the generation flow."
+puts "If desired, execute the libero-test-build.tcl script to run the generation flow."
 puts "----------------- Finished Importing project -----------------------------"
