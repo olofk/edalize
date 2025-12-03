@@ -207,3 +207,9 @@ class Libero(Edatool):
         self.render_template(
             "libero-pgm.tcl.j2", self.escaped_name + "-pgm.tcl", self.template_vars,
         )
+
+    def run(self):
+        """
+        Program the FPGA.
+        """
+        return ("make", ["pgm"], self.work_root)
