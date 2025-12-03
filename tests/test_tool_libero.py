@@ -32,6 +32,7 @@ def test_tool_libero(tool_fixture):
             name + "-project.tcl",
             name + "-syn-user.tcl",
             name + "-build.tcl",
+            name + "-pgm.tcl",
         ]
     )
 
@@ -58,5 +59,6 @@ def test_tool_libero_with_params(tool_fixture):
             name + "-project.tcl",
             name + "-syn-user.tcl",
             name + "-build.tcl",
+            name + "-pgm.tcl",
         ]
     )
