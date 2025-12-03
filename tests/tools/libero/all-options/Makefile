@@ -7,3 +7,6 @@ design.prjx: design-project.tcl
 
 design.job: design-build.tcl design.prjx
 	$(EDALIZE_LAUNCHER) libero SCRIPT:design-build.tcl
+
+pgm: design-pgm.tcl design.job
+	$(EDALIZE_LAUNCHER) FPExpress SCRIPT:design-pgm.tcl

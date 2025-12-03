@@ -169,6 +169,7 @@ class Libero(Edatool):
 
         script_build = self.escaped_name + "-build.tcl"
         job_file = self.escaped_name + ".job"
+        script_pgm = self.escaped_name + "-pgm.tcl"
 
         commands.add(
             command=["libero", f"SCRIPT:{script_project}"],
@@ -179,6 +180,12 @@ class Libero(Edatool):
             command=["libero", f"SCRIPT:{script_build}"],
             targets=[job_file],
             depends=[prjx_file],
+        )
+
+        commands.add(
+            command=["FPExpress", f"SCRIPT:{script_pgm}"],
+            targets=["pgm"],
+            depends=[script_pgm, job_file],
         )
 
         commands.set_default_target(job_file)
@@ -195,4 +202,8 @@ class Libero(Edatool):
 
         self.render_template(
             "libero-build.tcl.j2", self.escaped_name + "-build.tcl", self.template_vars,
+        )
+
+        self.render_template(
+            "libero-pgm.tcl.j2", self.escaped_name + "-pgm.tcl", self.template_vars,
         )
