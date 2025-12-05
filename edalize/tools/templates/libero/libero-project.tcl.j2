@@ -24,6 +24,12 @@ new_project \
 {% if tool_options.defiostd %}
     -adv_options {IO_DEFT_STD:{{tool_options.defiostd}}{{cl}} \
 {% endif %}
+{% if tool_options.adv_options %}
+{%- for optname, optvalue in tool_options.adv_options.items() %}
+    -adv_options {{op}}{{optname}}:{{optvalue}}{{cl}}{% if not loop.last %} \{% endif %}
+{% endfor %}
+
+{% endif %}
 
 {% if incdirs %}
 # Set up the include directories

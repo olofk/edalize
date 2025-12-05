@@ -49,6 +49,12 @@ class Libero(Edatool):
             "type": "str",
             "desc": 'Default HDL (e.g. "VERILOG")',
         },
+        # https://coredocs.s3.amazonaws.com/Libero/12_1_0/Tool/libero_soc_tcl_cmd_ref_ug.pdf p56
+        "adv_options": {
+            "type": "str",
+            "desc": "Set advanced project options",
+            "list": True,
+        },
     }
 
     argtypes = ["vlogdefine", "vlogparam", "generic"]
