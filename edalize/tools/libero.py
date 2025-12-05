@@ -41,10 +41,6 @@ class Libero(Edatool):
             "type": "str",
             "desc": "FPGA temperature range (e.g. IND)",
         },
-        "defiostd": {
-            "type": "str",
-            "desc": 'FPGA default IO std (e.g. "LVCMOS 1.8V")',
-        },
         "hdl": {
             "type": "str",
             "desc": 'Default HDL (e.g. "VERILOG")',
@@ -79,6 +75,10 @@ class Libero(Edatool):
         tool_options = self.tool_options
         if "range" not in tool_options:
             tool_options["range"] = "IND"
+
+        # Check deprecated options
+        if "defiostd" in tool_options:
+            raise RuntimeError(f'Libero option "defiostd" has been replaced by adv_options["IO_DEFT_STD"]')
 
         # Check mandatory options
         for key in self.mandatory_options:
