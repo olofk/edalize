@@ -293,6 +293,7 @@ class Edaflow(object):
 
         self.work_root = work_root
 
+        self.verbose = verbose
         self.stdout = None
         self.stderr = None
 
