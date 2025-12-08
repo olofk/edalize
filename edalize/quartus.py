@@ -106,9 +106,10 @@ class Quartus(Edatool):
             # Attempt to pattern match the output. Examples include
             # Version 16.1.2 Build 203 01/18/2017 SJ Standard Edition
             # Version 17.1.2 Build 304 01/31/2018 SJ Pro Edition
+            # Version 25.1.1 Build 125 07/31/2025 Patches 1.31 SC Pro Edition
             version_exp = (
                 r"Version (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+) "
-                + r"Build (?P<build>\d+) (?P<date>\d{2}/\d{2}/\d{4}) (?:\w+) "
+                + r"Build (?P<build>\d+) (?P<date>\d{2}/\d{2}/\d{4}) (?:Patches [0-9.]+ )?(?:\w+) "
                 + r"(?P<edition>(Lite|Standard|Pro)) Edition"
             )
 
