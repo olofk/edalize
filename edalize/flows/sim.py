@@ -78,9 +78,22 @@ class Sim(Generic):
 
         # Get run command from simulator
         (cmd, args, cwd) = run_tool.run()
+
+        # Get required cocotb env data
+        prev_verbose = self.verbose
+        self.verbose = False
+        _, libpy, _ = self._run_tool("cocotb-config", ["--libpython"], quiet=True)
+        _, pybin, _ = self._run_tool("cocotb-config", ["--python-bin"], quiet=True)
+        self.verbose = prev_verbose
+
         cocotb_module = self.flow_options.get("cocotb_module")
         env = (
-            {"MODULE": cocotb_module, "COCOTB_TEST_MODULES": cocotb_module}
+            {
+                "COCOTB_TEST_MODULES": cocotb_module,
+                "MODULE": cocotb_module,  # Keep for compatibility with cocotb < v2.0
+                "LIBPYTHON_LOC": libpy.decode("utf-8").strip(),
+                "PYGPI_PYTHON_BIN": pybin.decode("utf-8").strip(),
+            }
             if cocotb_module
             else {}
         )
