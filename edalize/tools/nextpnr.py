@@ -128,6 +128,7 @@ class Nextpnr(Edatool):
                 targets = self.name + ".config"
                 constraints = ["--lpf", lpf_file] if lpf_file else []
                 output = ["--textcfg", targets]
+                output_files += [{"name": targets, "file_type": "nextpnrTrellisConfig"}]
             elif arch == "gowin":
                 device = self.tool_options.get("device")
                 if not device:
