@@ -23,22 +23,22 @@ class Ecppack(Edatool):
 
         unused_files = []
 
-        routed_json_file = ""
+        config_file = ""
         bit_file = ""
 
         for f in self.files:
-            if f.get("file_type") == "nextpnrRoutedJson":
-                if routed_json_file:
+            if f.get("file_type") == "nextpnrTrellisConfig":
+                if config_file:
                     raise RuntimeError(
                         "ecppack only supports one input file. Found {} and {}".format(
-                            routed_json_file, f["name"]
+                            config_file, f["name"]
                         )
                     )
-                routed_json_file = f["name"]
+                config_file = f["name"]
             else:
                 unused_files.append(f)
 
-        if not routed_json_file:
+        if not config_file:
             raise RuntimeError("No input file specified for ecppack")
 
         bit_file = self.edam["name"] + ".bit"
@@ -47,7 +47,7 @@ class Ecppack(Edatool):
         self.edam["files"].append({"name": bit_file, "file_type": "bitstream"})
 
         # Image generation
-        depends = routed_json_file
+        depends = config_file
         targets = bit_file
         command = (
             ["ecppack"]

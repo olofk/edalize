@@ -2,5 +2,5 @@
 
 all: design.bit
 
-design.bit: routed.json
-	$(EDALIZE_LAUNCHER) ecppack routed.json design.bit
+design.bit: design.config
+	$(EDALIZE_LAUNCHER) ecppack design.config design.bit

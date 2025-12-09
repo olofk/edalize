@@ -6,7 +6,7 @@ def test_tool_ecppack(tool_fixture):
     from .edalize_tool_common import FILES
 
     files = FILES.copy()
-    files.append({"name": "routed.json", "file_type": "nextpnrRoutedJson"})
+    files.append({"name": "design.config", "file_type": "nextpnrTrellisConfig"})
 
     tf = tool_fixture("ecppack", files=files)
 
@@ -23,12 +23,11 @@ def test_tool_ecppack_multiple_inputs(tool_fixture):
     from .edalize_tool_common import FILES
 
     files = FILES.copy()
-    files.append({"name": "routed.json", "file_type": "nextpnrRoutedJson"})
-    files.append({"name": "another_routed.json", "file_type": "nextpnrRoutedJson"})
+    files.append({"name": "a.config", "file_type": "nextpnrTrellisConfig"})
+    files.append({"name": "b.config", "file_type": "nextpnrTrellisConfig"})
 
     with pytest.raises(RuntimeError) as e:
         tf = tool_fixture("ecppack", files=files)
-    assert (
-        "ecppack only supports one input file. Found routed.json and another_routed.json"
-        in str(e.value)
+    assert "ecppack only supports one input file. Found a.config and b.config" in str(
+        e.value
     )
