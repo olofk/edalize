@@ -21,10 +21,12 @@ class Icarus(Edatool):
         "iverilog_options": {
             "type": "str",
             "desc": "Additional options for iverilog",
+            "list": True,
         },
         "vvp_options": {
             "type": "str",
             "desc": "Additional options for vvp",
+            "list": True,
         },
     }
 
