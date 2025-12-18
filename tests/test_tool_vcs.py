@@ -48,6 +48,7 @@ def test_tool_vcs_3_stage(tool_fixture):
 
     tool_options = {
         "2_stage_flow": False,
+        "binary_name": "custom_binary_name",
         "analysis_options": ["several", "analysis", "options"],
         "vlogan_options": ["a", "few", "vlogan", "options"],
         "vhdlan_options": ["also", "vhdlan", "options"],

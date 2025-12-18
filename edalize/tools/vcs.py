@@ -49,6 +49,10 @@ class Vcs(Edatool):
             "desc": "Additional run-time options for the simulation",
             "list": True,
         },
+        "binary_name": {
+            "type": "str",
+            "desc": "Set name of the simulation binary (defaults to system name)",
+        },
     }
 
     def setup(self, edam):
@@ -84,7 +88,7 @@ class Vcs(Edatool):
         self.edam = edam.copy()
         self.edam["files"] = unused_files
 
-        binary_name = self.name
+        binary_name = self.tool_options.get("binary_name", self.name)
         self.commands.add(
             ["vcs"]
             + full64
