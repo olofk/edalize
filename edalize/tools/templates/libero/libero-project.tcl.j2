@@ -33,8 +33,8 @@ build_design_hierarchy
 
 # Link HDL sources and constraints
 create_links \
-{% for src_file in src_files if src_file|src_file_filter%}
-    {{src_file|src_file_filter}}{{cl}} \
+{% for src_file in src_files %}
+    {{src_file}} \
 {% endfor %}
 
 # Import HDL sources on libraries (logical_names)
@@ -50,9 +50,9 @@ create_links \
 {% endfor %}
 
 # Source user defined TCL scripts
-{% for src_file in src_files if src_file|tcl_file_filter%}
-puts "---------- Executing User TCL script: {{src_file|tcl_file_filter|replace("source", "")|trim}} ----------"
-{{src_file|tcl_file_filter}}
+{% for user_tcl in user_tcl_files %}
+puts "---------- Executing User TCL script: {{user_tcl}} ----------"
+source {{user_tcl}}
 {% endfor %}
 
 # Build design hierarchy and set the top module
@@ -74,49 +74,49 @@ puts "- ../../{{dir}}"
 
 puts "----------------------- Synthesize Constraints ---------------------------"
 {% set ns = namespace(SYN=false) %}{# If synthesis constraints are present #}
-{% for src_file in src_files if src_file|syn_constraint_file_filter %}
+{% for syn_file in syn_files %}
 {% set ns.SYN=true %}
-puts "File: {{src_file|syn_constraint_file_filter}}"
+puts "File: {{syn_file}}"
 {% endfor %}
 
 {%- if ns.SYN %}
 # Configure Synthesize tool to use the project constraints
 organize_tool_files -tool {SYNTHESIZE} \
-        {% for src_file in src_files if src_file|syn_constraint_file_filter %}
-        -file {{op}}{{src_file|syn_constraint_file_filter}}{{cl}} \
-        {% endfor %}
+{% for syn_file in syn_files %}
+        {{syn_file}} \
+{% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}
 
 # Configure Place and Route tool to use the project constraints
 puts "----------------------- Place and Route Constraints ----------------------"
 {% set ns.PNR=false %}
-{% for src_file in src_files if src_file|pnr_constraint_file_filter %}
+{% for pnr_file in pnr_files %}
 {% set ns.PNR=true %}
-puts "File: {{src_file|pnr_constraint_file_filter}}"
+puts "File: {{pnr_file}}"
 {% endfor %}
 
 {% if ns.PNR %}
 organize_tool_files -tool {PLACEROUTE} \
-        {% for src_file in src_files if src_file|pnr_constraint_file_filter %}
-        -file {{op}}{{src_file|pnr_constraint_file_filter}}{{cl}} \
-        {% endfor %}
+{% for pnr_file in pnr_files %}
+        {{pnr_file}} \
+{% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}
 
 # Configure Verify Timing tool to use the project constraints
 puts "----------------------- Verify Timings Constraints -----------------------"
 {% set ns.TIM=false %}
-{%- for src_file in src_files if src_file|tim_constraint_file_filter %}
+{%- for tim_file in tim_files %}
 {% set ns.TIM=true %}
-puts "File: {{src_file|tim_constraint_file_filter}}"
+puts "File: {{tim_file}}"
 {% endfor %}
 
 {%- if ns.TIM %}
 organize_tool_files -tool {VERIFYTIMING} \
-        {% for src_file in src_files if src_file|tim_constraint_file_filter %}
-        -file {{op}}{{src_file|tim_constraint_file_filter}}{{cl}} \
-        {% endfor %}
+{% for tim_file in tim_files %}
+        {{tim_file}} \
+{% endfor %}
         -module {{op}}{{toplevel}}::work{{cl}} -input_type {constraint}
 {% endif %}
 

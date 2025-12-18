@@ -1,4 +1,5 @@
-from .edalize_common import make_edalize_test
+from .edalize_tool_common import tool_fixture
+
 
 libero_files=[
     {"name": "sdc_file.sdc", "file_type": "SDC"},
@@ -18,27 +19,27 @@ libero_files=[
     {"name": "pdc_floorplan_constraint_file.pdc", "file_type": "FPPDC"},
 ]
 
-def test_libero(make_edalize_test):
-    """Test passing tool options to the Libero backend"""
-    name = "libero-test"
+def test_tool_libero(tool_fixture):
+    """Test passing tool options to the Libero tool backend"""
+    name = "design"
     tool_options = {"family": "PolarFire", "die": "MPF300TS_ES", "package": "FCG1152"}
 
-    tf = make_edalize_test("libero", test_name=name, tool_options=tool_options, files=libero_files)
+    tf = tool_fixture("libero", tool_options=tool_options, files=libero_files, ref_subdir="base")
 
-    tf.backend.configure()
-    tf.compare_files(
+    tf.tool.configure()
+    tf.compare_config_files(
         [
             name + "-project.tcl",
-            name + "-build.tcl",
-            name + "-run.tcl",
             name + "-syn-user.tcl",
+            name + "-build.tcl",
+            name + "-pgm.tcl",
         ]
     )
 
+def test_tool_libero_with_params(tool_fixture):
+    """Test passing tool options to the Libero tool backend."""
 
-def test_libero_with_params(make_edalize_test):
-    """Test passing tool options to the Libero backend"""
-    name = "libero-test-all"
+    name = "design"
     tool_options = {
         "family": "PolarFire",
         "die": "MPF300TS_ES",
@@ -48,18 +49,16 @@ def test_libero_with_params(make_edalize_test):
         "range": "EXT",
         "defiostd": "LVCMOS 1.8V",
         "hdl": "VHDL",
-        "programmer": "E2008ETVQU",
-        "flashpro5_freq": "15000000",
     }
 
-    tf = make_edalize_test("libero", test_name=name, tool_options=tool_options, files=libero_files)
+    tf = tool_fixture("libero", tool_options=tool_options, files=libero_files, ref_subdir="all-options")
 
-    tf.backend.configure()
-    tf.compare_files(
+    tf.tool.configure()
+    tf.compare_config_files(
         [
             name + "-project.tcl",
-            name + "-build.tcl",
-            name + "-run.tcl",
             name + "-syn-user.tcl",
+            name + "-build.tcl",
+            name + "-pgm.tcl",
         ]
     )
