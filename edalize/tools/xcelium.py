@@ -57,7 +57,7 @@ class Xcelium(Edatool):
                         has_system_verilog = True
 
                     # This file is a normal source file
-                    src_files.append(f["name"])
+                    src_files.append(f)
                 unused_files.remove(f)
 
             if file_type in self.TCL_SCRIPT_TYPES:
@@ -70,9 +70,6 @@ class Xcelium(Edatool):
 
         self.edam = edam.copy()
         self.edam["files"] = unused_files
-
-        all_files = src_files + include_files + tcl_files + dpi_libraries
-        self.src_files = src_files
 
         # Append option flags
         en_64bit_cmd = [] if self.tool_options.get("32bit") else ["-64bit"]
@@ -88,7 +85,7 @@ class Xcelium(Edatool):
         # Append TCL scripts
         tcl_cmd = []
         for tcl in tcl_files:
-            tcl_cmd.append(["-input", tcl])
+            tcl_cmd += ["-input", tcl]
 
         # Append DPI libraries
         dpi_lib_cmd = []
@@ -104,43 +101,94 @@ class Xcelium(Edatool):
                 )
             )
 
+        # Append Verilog parameters
+        vlogparam_cmd = []
+        for k, v in self.vlogparam.items():
+            val = self._param_value_str(v, str_quote_style='"')
+            vlogparam_cmd.append(f"-defparam {self.toplevel}.{k}={val}")
+
         # Append include directories
         incdir_cmd = ["+incdir+" + d for d in incdirs]
 
         # Append top level module
         top_cmd = ["-top", self.toplevel]
 
+        prev_fileopts = ("", "", {})
+        filegroups = []
+        # Iterate over all relevant source files. If a file has
+        # different file_type, logical_name or defines compared
+        # to the previous file, we put it in a new file group
+        for f in src_files:
+            lib = f.get("logical_name", "")
+            defines = f.get("define", {})
+            file_type = f.get("file_type")
+            fileopts = (file_type, lib, defines)
+            if fileopts != prev_fileopts:
+                filegroups.append((fileopts, []))
+            filegroups[-1][1].append(f["name"])
+            prev_fileopts = fileopts
+
+        files_cmd = []
+        for fg in filegroups:
+            # Ignore empty file groups
+            if fg[1]:
+                (_, lib, defines) = fg[0]
+                if lib:
+                    files_cmd += ["-makelib", lib]
+                for k, v in defines.items():
+                    files_cmd += ["-define", f"{k}={v}"]
+                files_cmd += fg[1]
+                if lib:
+                    files_cmd += ["-endlib"]
+
+        # This file seems to only be created after a successful build
+        target = "xcelium.d/run.d/hdl.var"
+
         # Prepare the simulation command
+        # -enable_cmdline_define_redefinition is required to support file-specific defines
         self.commands.add(
-            ["xrun"]
-            + en_64bit_cmd
+            [
+                "xrun",
+                "-elaborate",
+                "-f",
+                "xrun.f",
+                "-enable_cmdline_define_redefinition",
+            ]
+            + files_cmd,
+            [target],
+            [f["name"] for f in src_files]
+            + include_files
+            + tcl_files
+            + dpi_libraries
+            + ["xrun.f"],
+        )
+
+        self.xrun_f = (
+            en_64bit_cmd
             + sv_cmd
-            + timescale_cmd
             + tcl_cmd
             + dpi_lib_cmd
             + macro_def_cmd
+            + vlogparam_cmd
             + incdir_cmd
             + top_cmd
-            + ["-f", "xrun.f"]
-            + self.tool_options.get("xrun_options", []),
-            ["run"],
-            include_files + tcl_files + dpi_libraries + ["xrun.f"],
+            + self.tool_options.get("xrun_options", [])
         )
-
-        self.commands.set_default_target("run")
+        self.commands.set_default_target(target)
 
     def write_config_files(self):
-        # Update f files to include all sources
-        self.update_config_file("xrun.f", "\n".join(self.src_files) + "\n")
+        print(self.xrun_f)
+        # Keep all command-line options in xrun.f to detect build config changes
+        self.update_config_file("xrun.f", "\n".join(self.xrun_f) + "\n")
 
     def run(self):
-        args = ["run"]
+        args = ["-R"]
 
         # Set plusargs
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
                 plusargs += ["+{}={}".format(key, self._param_value_str(value))]
-            args.append("EXTRA_OPTIONS=" + " ".join(plusargs))
+            args += plusargs
 
-        return ("make", args, self.work_root)
+        return ("xrun", args, self.work_root)
