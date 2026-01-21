@@ -82,32 +82,34 @@ def test_quartus(make_edalize_test):
 
     # Test each edition of Quartus
     for edition in ["Standard", "Pro"]:
-        for pnr in ["Quartus", "DSE"]:
-            for qsys_format in [qsys_file, qsys23_file]:
-                # Each edition and P&R tool has its own set of representative files
-                if pnr == "DSE":
-                    _tool_options = {**tool_options, "pnr": "dse"}
-                else:
-                    _tool_options = {**tool_options}
+        for patch in ["", "Patches 1.23.4 "]:
+            for pnr in ["Quartus", "DSE"]:
+                for qsys_format in [qsys_file, qsys23_file]:
+                    # Each edition and P&R tool has its own set of representative files
+                    if pnr == "DSE":
+                        _tool_options = {**tool_options, "pnr": "dse"}
+                    else:
+                        _tool_options = {**tool_options}
 
-                # Ensure we test the edition we intend to, even if quartus_sh is
-                # not present
-                os.environ["FUSESOC_QUARTUS_EDITION"] = edition
+                    # Ensure we test the edition we intend to, even if quartus_sh is
+                    # not present
+                    os.environ["FUSESOC_QUARTUS_EDITION"] = edition
+                    os.environ["FUSESOC_QUARTUS_PATCH"] = patch
 
-                tf = make_edalize_test(
-                    "quartus",
-                    param_types=["vlogdefine", "vlogparam"],
-                    tool_options=_tool_options,
-                    ref_dir=edition,
-                )
+                    tf = make_edalize_test(
+                        "quartus",
+                        param_types=["vlogdefine", "vlogparam"],
+                        tool_options=_tool_options,
+                        ref_dir=edition,
+                    )
 
-                # Each edition performs checks on the QSYS files present, so
-                # provide a minimal example
-                with open(os.path.join(tf.work_root, "qsys_file"), "w") as f:
-                    f.write(qsys_format.format(qsys_fill[edition]))
+                    # Each edition performs checks on the QSYS files present, so
+                    # provide a minimal example
+                    with open(os.path.join(tf.work_root, "qsys_file"), "w") as f:
+                        f.write(qsys_format.format(qsys_fill[edition]))
 
-                tf.backend.configure()
-                tf.compare_files(["Makefile", tf.test_name + ".tcl"])
+                    tf.backend.configure()
+                    tf.compare_files(["Makefile", tf.test_name + ".tcl"])
 
-                tf.backend.build()
-                tf.compare_files(test_sets[edition][pnr])
+                    tf.backend.build()
+                    tf.compare_files(test_sets[edition][pnr])
