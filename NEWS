@@ -1,3 +1,14 @@
+0.6.4 2026-01-22 Olof Kindgren
+======================================================
+* New flows: apicula, trellis
+* New tools: gowinpack, openfpgaloader, ecppack, xcelium
+* icarus: Mark iverilog/vvp_options as lists
+* vcs: Add option to set custom binary name
+* sim: Add cocotb 2.0 support
+* slang legacy backend: Remove -quiet flag
+* quartus legacy backend: Properly detect patched Quartus versions
+* Support flow_make options in all flows
+
 0.6.3 2025-10-31 Olof Kindgren
 ======================================================
 * Add Icarus Verilog to el_docker script
