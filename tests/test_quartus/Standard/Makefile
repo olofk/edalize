@@ -18,6 +18,9 @@ syn: qsys
 fit: syn
 	$(EDALIZE_LAUNCHER) quartus_fit $(OPTIONS) $(NAME)
 
+drc: syn
+	$(EDALIZE_LAUNCHER) quartus_drc $(OPTIONS) $(NAME)
+
 asm: fit
 	$(EDALIZE_LAUNCHER) quartus_asm $(OPTIONS) $(NAME)
 
