@@ -55,7 +55,7 @@ class Quartus(Edatool):
                     {
                         "name": "pnr",
                         "type": "String",
-                        "desc": "P&R tool. Allowed values are quartus (default), dse (to run Design Space Explorer) and none (to just run synthesis)",
+                        "desc": "P&R tool. Allowed values are quartus (default), dse (to run Design Space Explorer), drc (to run Design Rule Check) and none (to just run synthesis)",
                     },
                     {
                         "name": "pgm",
@@ -272,6 +272,8 @@ class Quartus(Edatool):
                 pass
             elif self.tool_options["pnr"] == "dse":
                 args.append("dse")
+            elif self.tool_options["pnr"] == "drc":
+                args.append("drc")
             elif self.tool_options["pnr"] == "none":
                 args.append("syn")
         self._run_tool("make", args, quiet=True)
