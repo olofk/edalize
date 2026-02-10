@@ -1,2 +1,2 @@
 WORK > DEFAULT
-DEFAULT : ./work
+DEFAULT : ./work.workdir

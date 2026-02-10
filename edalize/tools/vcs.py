@@ -261,7 +261,7 @@ class Vcs(Edatool):
         self.vcs_files = []
 
     def write_config_files(self):
-        s = "WORK > DEFAULT\nDEFAULT : ./work\n"
+        s = "WORK > DEFAULT\nDEFAULT : ./work.workdir\n"
         for lib in self.workdirs:
             if lib != "work":
                 s += f"{lib} : ./{lib}.workdir\n"
