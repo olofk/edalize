@@ -118,6 +118,9 @@ class Libero(Edatool):
                 cmd = "-net_fdc"
             elif file_type == "NDC":
                 cmd = "-ndc"
+            elif file_type == "IOS":
+                iofile = f["name"]
+                continue
             else:
                 unused_files.append(f)
                 continue
@@ -135,9 +138,6 @@ class Libero(Edatool):
             if file_type in ["SDC"]:
                 tim_files.append("-file {" + f["name"] + "}")
 
-            # io
-            if file_type in ["IOS"]:
-                iofile = f["name"]
 
         # Set preferred HDL language based on file type amount if not user defined.
         # According to docs, projects can be mixed but one language must be
