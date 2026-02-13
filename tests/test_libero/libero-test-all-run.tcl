@@ -2,12 +2,31 @@
 # Microsemi Tcl Script
 # Libero
 
-source {libero-test-all-project.tcl}
+puts "----------------- Opening project libero-test-all ------------------------------"
+open_project -file {./prj/libero-test-all.prjx}
 
-run_tool -name {SYNTHESIZE}
-run_tool -name {PLACEROUTE}
-run_tool -name {GENERATEPROGRAMMINGDATA}
+select_programmer -programmer_id {E2008ETVQU}
 
-puts "To program the FPGA and SPI-Flash, run the 'Run PROGRAM Action' and 'Run PROGRAM_SPI_IMAGE Action' tools in the Design Flow menu."
-puts "If required, adjust the memory allocation and initialization before generating the bitstream and programming."
-puts "----------------- Finished building project -----------------------------"
+configure_tool \
+         -name {PROGRAMMER_INFO} \
+         -params {flashpro3_clk_mode:free_running_clk} \
+         -params {flashpro3_force_freq:OFF} \
+         -params {flashpro3_freq:4000000} \
+         -params {flashpro3_vpump:OFF} \
+         -params {flashpro4_clk_mode:free_running_clk} \
+         -params {flashpro4_force_freq:OFF} \
+         -params {flashpro4_freq:4000000} \
+         -params {flashpro4_vpump:OFF} \
+         -params {flashpro5_force_freq:ON} \
+         -params {flashpro5_freq:15000000} \
+         -params {flashpro5_vpump:OFF} \
+         -params {flashpro6_force_sck_freq:OFF} \
+         -params {flashpro6_force_tck_freq:OFF} \
+         -params {flashpro6_sck_freq:20000000} \
+         -params {flashpro6_tck_freq:4000000} \
+         -params {flashpro6_vpump:OFF}
+
+puts "----------------- Programming device ------------------------------------"
+run_tool -name {PROGRAMDEVICE}
+
+close_project
