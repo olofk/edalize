@@ -96,16 +96,16 @@ class Edatool(object):
     def update_config_file(self, file_name, contents):
         """
         Check contents against the file file_name in work_root.
-        If these differ or file_name doesn't exist,
-        write contents to file_name
+        If file name does not contain contents, or the file does not exist, then
+        append contents to file_name. Otherwise do nothing.
         """
         f = os.path.join(self.work_root, file_name)
         if os.path.exists(f):
             old_file = open(f, "r").read()
         else:
             old_file = None
-        if old_file != contents:
-            with open(f, "w") as _f:
+        if old_file is None or old_file.find(contents) == -1:
+            with open(f, "a") as _f:
                 _f.write(contents)
 
     def set_default_target(self, target):
