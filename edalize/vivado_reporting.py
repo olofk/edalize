@@ -200,7 +200,6 @@ class VivadoReporting(Reporting):
             # rows don't leave holes in the index making indexing more
             # difficult
             df = df.drop(dash_row_idx).reset_index(drop=True)
-            logger.info("Parsed data frame {}".format(df.to_json()))
 
             # Convert numeric values that read_fwf doesn't seem to be
             # handling, perhaps due to the dashes.
@@ -213,8 +212,6 @@ class VivadoReporting(Reporting):
                     return v
 
             df = df.apply(try_to_numbers)
-
-            logger.info("Fixed data frame {}".format(df.to_json()))
 
             df_dict[k] = df
 
