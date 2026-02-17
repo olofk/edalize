@@ -22,7 +22,12 @@ classifiers = [
 ]
 
 dynamic = ["version"]
-dependencies = ["Jinja2>=3", "importlib_metadata>=1.4; python_version < '3.10'"]
+dependencies = [
+    "Jinja2>=3",
+    "importlib_metadata>=1.4; python_version < '3.10'",
+    "pandas>=2.3.3",
+    "pyparsing>=3.3.2",
+]
 requires-python = ">=3.9, <4"
 
 [project.urls]
@@ -37,6 +42,11 @@ script-files = ["scripts/el_docker"]
 
 [tool.setuptools_scm]
 write_to = "edalize/version.py"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
 
 [tool.setuptools.packages.find]
 include = ["edalize", "edalize.tools", "edalize.flows", "edalize.build_runners"]
