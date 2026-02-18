@@ -32,6 +32,6 @@ if { [get_property PROGRESS [get_runs impl_1]] != "100%"} {
 # The Vivado default name is beneficial when using the GUI, as it is set as
 # default bitstream in the "Program Device" dialog; non-standard names need to
 # be selected from a file picker first.
-foreach vivadoBitstreamFile [glob -path [file rootname [get_property DIRECTORY [current_run]]/[get_property top [current_fileset]]] .{bit,bif}] {
+foreach vivadoBitstreamFile [glob -path [file rootname [get_property DIRECTORY [current_run]]/[get_property top [current_fileset]]] *.{bit,pdi}] {
   file copy -force $vivadoBitstreamFile [pwd]/[current_project][file extension $vivadoBitstreamFile]
 }
