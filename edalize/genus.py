@@ -86,6 +86,10 @@ class Genus(Edatool):
         jobs = self.tool_options.get("jobs", None)
         jobs = "$nproc" if "all" in jobs else jobs
 
+        # Build up parameters in the format that the `elaborate` command expects
+        parameters = [f"{{ {name} {value} }}" for name, value in self.vlogparam.items()]
+        elaborate_parameters = "{ " + " ".join(parameters) + " }"
+
         template_vars = {
             "name": self.name,
             "src_files": src_files,
@@ -95,6 +99,7 @@ class Genus(Edatool):
             "genus_script": make_list(self.tool_options.get("genus_script")),
             "report_dir": make_list(self.tool_options.get("report_dir")),
             "common_config": make_list(self.tool_options.get("common_config")),
+            "parameters": elaborate_parameters,
             "jobs": make_list(jobs),
             "toplevel": self.toplevel,
         }
