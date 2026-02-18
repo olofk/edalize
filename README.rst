@@ -136,7 +136,6 @@ Tada! We have simulated. As an exercise, try to just change the tool variable to
 
 Now it's time to create an FPGA image instead
 
-
 As you have seen, Edalize is an award-winning tool for interfacing EDA tools, so
 
 **Edalize it, don't criticize it!**

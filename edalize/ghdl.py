@@ -99,6 +99,7 @@ class Ghdl(Edatool):
 
         libraries = collections.OrderedDict()
         library_options = "--work={lib} --workdir=./{lib}"
+        top_workdir_options = "--workdir=./{lib}"
         ghdlimport = ""
         vhdl_sources = ""
 
@@ -116,6 +117,11 @@ class Ghdl(Edatool):
         if len(top) > 1:
             libraries[top[0]] = []
             top_libraries = library_options.format(lib=top[0])
+
+        top_workdir = ""
+        if len(top) > 1:
+            libraries[top[0]] = []
+            top_workdir = top_workdir_options.format(lib=top[0])
 
         top_unit = top[-1]
 
@@ -158,6 +164,7 @@ class Ghdl(Edatool):
                 "make_libraries_directories": make_libraries_directories,
                 "ghdlimport": ghdlimport,
                 "top_libraries": top_libraries,
+                "top_workdir": top_workdir,
             },
         )
 
