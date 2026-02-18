@@ -66,6 +66,13 @@ class Vivado(Edaflow):
         self.commands.set_default_target(name + ".bit")
         return FlowGraph.fromdict(flow)
 
+    def build(self):
+        (cmd, args) = self.build_runner.get_build_command()
+        pnr_opt = self.flow_options.get("pnr", "")
+        if pnr_opt == "none":
+            args.append("synth")
+        self._run_tool(cmd, args=args, cwd=self.work_root)
+
     def run(self):
         if self.flow_options.get("pgm"):
 
