@@ -1,0 +1,16 @@
+#################################################################################
+## RTL Read
+## General read script for Design Compiler Reference Methodology
+#################################################################################
+
+{% if incdirs -%}
+set_app_var search_path "$search_path  {{ incdirs|join(' ') }}"
+{%- endif %}
+
+{% for src_file in src_files if src_file|src_file_filter%}
+{{ src_file|src_file_filter }}
+{% endfor %}
+
+#######################
+## end
+#######################
