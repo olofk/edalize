@@ -70,16 +70,16 @@ class VivadoReporting(Reporting):
         # Tables may just be a header with no data rows, or a full header and
         # data rows, so there will be one or two more horizontal lines.
 
-        data = pp.SkipTo(table_hline, failOn=pp.lineEnd() * 2, include=True)
+        data = pp.SkipTo(table_hline, fail_on=pp.lineEnd() * 2, include=True)
 
         table = pp.Combine(table_hline + data * (1, 2))
 
         section = sec_head + table("table")
 
         # Make line endings significant
-        section.setWhitespaceChars(" \t")
+        section.set_whitespace_chars(" \t")
 
-        table_dict = {x["title"]: x["table"] for x in section.searchString(util_str)}
+        table_dict = {x["title"]: x["table"] for x in section.search_string(util_str)}
 
         return table_dict
 
@@ -95,7 +95,7 @@ class VivadoReporting(Reporting):
 
         # Make newlines widely significant but be careful not to effect others
         saved_whitespace = pp.ParserElement.DEFAULT_WHITE_CHARS
-        pp.ParserElement.setDefaultWhitespaceChars(" \t")
+        pp.ParserElement.set_default_whitespace_chars(" \t")
 
         # Extract table title ("Clock Summary") from a section heading like:
         #
@@ -123,14 +123,14 @@ class VivadoReporting(Reporting):
         # Match two or more groups of dashes to avoid matching long single
         # horizontal lines used elsewhere. Normally the spaces between the
         # groups of dashes would be consumed, so get them back with
-        # originalTextFor(). It would be safer to anchor this to the start of
+        # original_text_for(). It would be safer to anchor this to the start of
         # the line, but "Design Timing Summary" and perhaps others indent the
         # table for some reason
 
-        table_hline = pp.originalTextFor(pp.Word("-") * (2,) + pp.lineEnd())
+        table_hline = pp.original_text_for(pp.Word("-") * (2,) + pp.lineEnd())
 
         # Get any header rows above the horizontal lines
-        table_head = pp.SkipTo(table_hline, failOn=blank_line)
+        table_head = pp.SkipTo(table_hline, fail_on=blank_line)
 
         # Get everything from the horizontal lines to an empty line
         table_body = pp.SkipTo(blank_line)
@@ -146,9 +146,9 @@ class VivadoReporting(Reporting):
         section = section_head + pp.lineEnd().suppress() + table
 
         # Restore whitespace characters
-        pp.ParserElement.setDefaultWhitespaceChars(saved_whitespace)
+        pp.ParserElement.set_default_whitespace_chars(saved_whitespace)
 
-        table_dict = {x["title"]: x["table"] for x in section.searchString(time_rpt)}
+        table_dict = {x["title"]: x["table"] for x in section.search_string(time_rpt)}
 
         return table_dict
 
@@ -203,7 +203,15 @@ class VivadoReporting(Reporting):
 
             # Convert numeric values that read_fwf doesn't seem to be
             # handling, perhaps due to the dashes.
-            df = df.apply(pd.to_numeric, errors="ignore", raw=True)
+
+            def try_to_numbers(s: pd.Series) -> pd.Series:
+                v = pd.to_numeric(s, errors="coerce")
+                if v.isnull().all():
+                    return s
+                else:
+                    return v
+
+            df = df.apply(try_to_numbers)
 
             df_dict[k] = df
 

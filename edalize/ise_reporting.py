@@ -97,8 +97,8 @@ class IseReporting(Reporting):
             + pp.Word(pp.printables)("timespec")
             + pp.Suppress("= PERIOD TIMEGRP")
             + pp.Word(pp.printables)("timegroup")
-            + pp.SkipTo(hl)("constraint").setParseAction(
-                pp.tokenMap(remove_ws_and_newlines)
+            + pp.SkipTo(hl)("constraint").set_parse_action(
+                pp.token_map(remove_ws_and_newlines)
             )
             + pp.Suppress(hl + num + jitter + ";")
         )
@@ -137,7 +137,7 @@ class IseReporting(Reporting):
 
         constraint = timespec + pp.Suppress(pp.SkipTo(stats)) + stats + min_period
 
-        result = constraint.searchString(timing_str)
+        result = constraint.search_string(timing_str)
 
         return result
 
@@ -164,7 +164,7 @@ class IseReporting(Reporting):
 
         stat = header + period + freq
 
-        return stat.parseString(report_str)
+        return stat.parse_string(report_str)
 
     @staticmethod
     def _parse_map_tables(report_str: str) -> Dict[str, str]:
@@ -184,7 +184,7 @@ class IseReporting(Reporting):
             + "Section"
             + ppc.integer
             + "-"
-            + pp.SkipTo(pp.lineEnd())("title").setParseAction(pp.tokenMap(str.strip))
+            + pp.SkipTo(pp.lineEnd())("title").set_parse_action(pp.token_map(str.strip))
             + pp.lineEnd()
         )
 
@@ -213,9 +213,9 @@ class IseReporting(Reporting):
         table_section = title + sec_hline + table
 
         # Make line endings significant
-        table_section.setWhitespaceChars(" \t")
+        table_section.set_whitespace_chars(" \t")
 
-        result = {t.title: t.body for t in table_section.searchString(report_str)}
+        result = {t.title: t.body for t in table_section.search_string(report_str)}
 
         return result
 

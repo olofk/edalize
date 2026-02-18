@@ -18,7 +18,6 @@ import logging
 import pathlib
 from typing import Dict, Union, Callable, Optional
 
-
 logger = logging.getLogger(__name__)
 
 # Reporting is an optional Edalize feature and its required packages may not

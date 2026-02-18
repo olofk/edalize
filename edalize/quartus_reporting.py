@@ -50,7 +50,7 @@ class QuartusReporting(Reporting):
         title = (
             pp.lineStart()
             + ";"
-            + pp.SkipTo(";")("title").setParseAction(pp.tokenMap(str.strip))
+            + pp.SkipTo(";")("title").set_parse_action(pp.token_map(str.strip))
             + ";"
             + pp.lineEnd()
         )
@@ -59,14 +59,14 @@ class QuartusReporting(Reporting):
         # column headings will have a horizontal line after the headings and
         # at the end of the table. Odd tables without section headings will
         # only have a single horizontal line.
-        data = pp.SkipTo(hline, failOn=pp.lineEnd() * 2, include=True)
+        data = pp.SkipTo(hline, fail_on=pp.lineEnd() * 2, include=True)
 
         table = hline + title + pp.Combine(hline + data * (1, 2))("body")
 
         # Make line endings significant
-        table.setWhitespaceChars(" \t")
+        table.set_whitespace_chars(" \t")
 
-        result = {t.title: t.body for t in table.searchString(report_str)}
+        result = {t.title: t.body for t in table.search_string(report_str)}
 
         return result
 
