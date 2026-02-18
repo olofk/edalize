@@ -7,6 +7,7 @@ def test_symbiyosys(make_edalize_test):
         param_types=["vlogdefine", "vlogparam"],
         tool_options={
             "tasknames": ["task0", "task1"],
+            "extra_options": ["-d", "build"],
         },
     )
 
