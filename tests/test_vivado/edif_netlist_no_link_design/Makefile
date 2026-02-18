@@ -7,12 +7,12 @@ pre_build:
 test_vivado_0.xpr: test_vivado_0.tcl netlist.edif netlist.edif | pre_build
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_0.tcl
 
-test_vivado_0.v test_vivado_0.edn: test_vivado_0_synth.tcl test_vivado_0_netlist.tcl | pre_build test_vivado_0.xpr
+test_vivado_0.v test_vivado_0.edn: test_vivado_0_synth.tcl test_vivado_0_netlist.tcl test_vivado_0.xpr | pre_build
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_0_synth.tcl test_vivado_0_netlist.tcl test_vivado_0.xpr
 
 synth: test_vivado_0.v test_vivado_0.edn | pre_build
 
-test_vivado_0.bit: test_vivado_0_synth.tcl test_vivado_0_run.tcl | pre_build test_vivado_0.xpr
+test_vivado_0.bit: test_vivado_0_synth.tcl test_vivado_0_run.tcl test_vivado_0.xpr | pre_build
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source test_vivado_0_synth.tcl test_vivado_0_run.tcl test_vivado_0.xpr
 
 build-gui: test_vivado_0.xpr | pre_build
