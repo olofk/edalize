@@ -24,6 +24,8 @@ class Ghdl(Edatool):
     def setup(self, edam):
         super().setup(edam)
         analyze_options = self.tool_options.get("analyze_options", [])
+        run_options = self.tool_options.get("run_options", [])
+        sim_options = self.tool_options.get("sim_options", [])
 
         # Check of std=xx analyze option, this overyides the dynamic determination of vhdl standard
         import re
@@ -77,16 +79,12 @@ class Ghdl(Edatool):
 
             standard = rx.match(stdarg[0]).group(1)
 
-        run_options = self.tool_options.get("run_options", [])
-
         analyze_options = " ".join(analyze_options)
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
 
         libraries = {}
         library_options = "--work={lib} --workdir=./{lib}"
-        ghdlimport = ""
-        vhdl_sources = ""
 
         # GHDL versions older than 849a25e0 don't support the dot notation (e.g.
         # my_lib.top_design) for the top level.
@@ -111,43 +109,74 @@ class Ghdl(Edatool):
                 # Files without a specified library will by added to
                 # libraries[None] which is perhaps poor form but avoids
                 # conflicts with user generated names
-                libraries[f["logical_name"]] = libraries.get(f["logical_name"], []) + [
-                    f["name"]
-                ]
-                vhdl_sources += " {file}".format(file=f["name"])
-                depfiles.append(f)
+                logical_name = f.get("logical_name", None)
+                libraries[logical_name] = libraries.get(logical_name, []) + [f["name"]]
             else:
                 unused_files.append(f)
 
         self.edam = edam.copy()
         self.edam["files"] = unused_files
 
-        ghdlimport = ""
-        make_libraries_directories = ""
+        commands = EdaCommands()
 
+        make_lib_dirs = []
+        libs = []
         for lib, files in libraries.items():
             lib_opts = ""
             if lib:
+                if make_lib_dirs == []:
+                    make_lib_dirs = ["mkdir -p "]
                 analyze_options += " -P./{}".format(lib)
-                make_libraries_directories += "\tmkdir -p {}\n".format(lib)
+                make_lib_dirs.append(format(lib))
                 lib_opts = library_options.format(lib=lib)
-            ghdlimport += "\tghdl -i $(STD) $(ANALYZE_OPTIONS) {} {}\n".format(
-                lib_opts, " ".join(files)
-            )
+                libs.append(format(lib))
+                commands.add(
+                    ["ghdl", "-i"]
+                    + stdarg
+                    + [" -P./{}".format(lib)]
+                    + [lib_opts, " ".join(files)],
+                    [format(lib)],
+                    ["make_lib_dirs"],
+                )
 
-        commands = EdaCommands()
+        commands.add(
+            make_lib_dirs,
+            ["make_lib_dirs"],
+            [],
+        )
+        commands.add(
+            ["ghdl", "-m"]
+            + stdarg
+            + [analyze_options]
+            + [lib_opts]
+            + [top_libraries, top_unit],
+            ["analyze"],
+            libs,
+        )
         if self.tool_options.get("mode") == "verilog":
             commands.add(
-                ["ghdl", "-a"] + stdarg + analyze_options + [top_libraries, top_unit],
-                # FIXME: Get names of object files here
-                [f"work-obj{stdarg[0]}.cf"],
-                depfiles,
+                ["ghdl", "--synth", "--out=verilog"]
+                + stdarg
+                + [top_libraries, top_unit],
+                ["run"],
+                ["analyze", f"work-obj{standard}.cf"],
             )
-            commands.set_default_target(f"work-obj{stdarg[0]}.cf")
+        else:
+            commands.add(
+                ["ghdl", "-r"]
+                + stdarg
+                + run_options
+                + [top_libraries, top_unit]
+                + sim_options,
+                # FIXME: Get names of object files here
+                ["run"],
+                ["analyze", f"work-obj{standard}.cf"],
+            )
+
+        commands.set_default_target("make_lib_dirs")
         self.commands = commands
 
-    def run_main(self):
-        cmd = "make"
+    def run(self):
         args = ["run"]
 
         # GHDL doesn't support Verilog, but the backend used vlogparam since
@@ -169,4 +198,4 @@ class Ghdl(Edatool):
                         k, self._param_value_str(v, '"', bool_is_str=True)
                     )
             args.append(extra_options)
-        self._run_tool(cmd, args)
+        return ("make", args, self.work_root)

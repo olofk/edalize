@@ -70,6 +70,10 @@ class Sim(Generic):
                         "-loadvpi $$(cocotb-config --lib-name-path vpi xcelium):vlog_startup_routines_bootstrap",
                     ],
                 ),
+                "ghdl": (
+                    "sim_options",
+                    ["--vpi=`cocotb-config --lib-name-path vpi ghdl`"],
+                ),
             }
             (opt, val) = cocotb_options[tool]
             self.edam["tool_options"][tool][opt] = (
