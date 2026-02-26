@@ -2,8 +2,8 @@
 
 all: design
 
-design: vlog_incfile sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v another_sv_file.sv c_file.c c_header.h vcs.f parameters.txt
-	$(EDALIZE_LAUNCHER) vcs -full64 -o design -file vcs.f -parameters parameters.txt sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v another_sv_file.sv c_file.c c_header.h
+design: vlog_incfile sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v another_sv_file.sv c_file.c cpp_file.cpp c_header.h c_header.h vcs.f parameters.txt
+	$(EDALIZE_LAUNCHER) vcs -full64 -o design -file vcs.f -parameters parameters.txt sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v another_sv_file.sv c_file.c cpp_file.cpp c_header.h c_header.h
 
 run:
 	$(EDALIZE_LAUNCHER) ./design $(EXTRA_OPTIONS) and some run options

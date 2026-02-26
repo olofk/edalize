@@ -1,1 +1,1 @@
--top top_module c_file.c c_header.h
+-top top_module c_file.c cpp_file.cpp c_header.h c_header.h
