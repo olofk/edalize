@@ -1,1 +1,1 @@
--top top_module some vcs options
+-top top_module some vcs options c_file.c c_header.h
