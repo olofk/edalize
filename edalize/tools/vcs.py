@@ -137,7 +137,7 @@ class Vcs(Edatool):
                 )
             elif file_type == "user":
                 user_files.append(f["name"])
-            elif file_type == "cSource":
+            elif file_type == "cSource" or file_type == "cppSource":
                 c_files.append(fname)
                 unused_files.remove(f)
 
@@ -197,7 +197,7 @@ class Vcs(Edatool):
             elif file_type == "user":
                 self.user_files.append(f["name"])
                 cmd = None
-            elif file_type == "cSource":
+            elif file_type == "cSource" or file_type == "cppSource":
                 c_files.append(f["name"])
                 cmd = None
             else:
