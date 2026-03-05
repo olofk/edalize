@@ -73,7 +73,7 @@ class Vcs(Edatool):
                 continue
             file_type = f.get("file_type", "")
             if file_type.startswith("verilogSource") or file_type.startswith(
-                "systemVerilogSource"
+                "systemVerilogSource" or file_type.startswith("cSource")
             ):
                 if self._add_include_dir(f, incdirs, force_slash=True):
                     include_files.append(f["name"])
@@ -111,6 +111,9 @@ class Vcs(Edatool):
         user_files = []
 
         vlog_files = []
+
+        c_files = []
+
         has_sv = False
         for f in unused_files.copy():
             if not "simulation" in f.get("tags", ["simulation"]):
@@ -134,6 +137,9 @@ class Vcs(Edatool):
                 )
             elif file_type == "user":
                 user_files.append(f["name"])
+            elif file_type == "cSource" or file_type == "cppSource":
+                c_files.append(fname)
+                unused_files.remove(f)
 
             if f.get("define"):
                 logger.warning(
@@ -159,11 +165,12 @@ class Vcs(Edatool):
 
         self.f_files["vcs.f"] = options
 
-        self.target_files = include_files + vlog_files
-        self.vcs_files = vlog_files
+        self.target_files = include_files + vlog_files + c_files
+        self.vcs_files = vlog_files + c_files
 
     def _threestage_setup(self, edam, incdirs, include_files, unused_files, full64):
         filegroups = []
+        c_files = []
         prev_fileopts = ("", "", "")  # file_type, logical_name, defines
         for f in unused_files.copy():
             lib = f.get("logical_name", "work")
@@ -190,6 +197,9 @@ class Vcs(Edatool):
             elif file_type == "user":
                 self.user_files.append(f["name"])
                 cmd = None
+            elif file_type == "cSource" or file_type == "cppSource":
+                c_files.append(f["name"])
+                cmd = None
             else:
                 cmd = None
 
@@ -212,7 +222,7 @@ class Vcs(Edatool):
         for fg in filegroups:
             # Ignore empty file groups
             if fg[1]:
-                (cmd, file_type, lib, defines) = fg[0]
+                cmd, file_type, lib, defines = fg[0]
                 depfiles += fg[1]
                 options = self.tool_options.get("analysis_options", []).copy()
                 if cmd == "vlogan":
@@ -255,8 +265,8 @@ class Vcs(Edatool):
 
         self.commands.add(cmds, self.target_files, depfiles + list(self.f_files.keys()))
 
-        self.f_files["vcs.f"] = ["-top", self.toplevel] + self.tool_options.get(
-            "vcs_options", []
+        self.f_files["vcs.f"] = (
+            ["-top", self.toplevel] + self.tool_options.get("vcs_options", []) + c_files
         )
         self.vcs_files = []
 
