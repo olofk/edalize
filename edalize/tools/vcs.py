@@ -222,7 +222,7 @@ class Vcs(Edatool):
         for fg in filegroups:
             # Ignore empty file groups
             if fg[1]:
-                (cmd, file_type, lib, defines) = fg[0]
+                cmd, file_type, lib, defines = fg[0]
                 depfiles += fg[1]
                 options = self.tool_options.get("analysis_options", []).copy()
                 if cmd == "vlogan":
