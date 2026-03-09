@@ -72,8 +72,11 @@ class Vcs(Edatool):
             if not "simulation" in f.get("tags", ["simulation"]):
                 continue
             file_type = f.get("file_type", "")
-            if file_type.startswith("verilogSource") or file_type.startswith(
-                "systemVerilogSource" or file_type.startswith("cSource")
+            if (
+                file_type.startswith("verilogSource")
+                or file_type.startswith("systemVerilogSource")
+                or file_type.startswith("cSource")
+                or file_type.startswith("cppSource")
             ):
                 if self._add_include_dir(f, incdirs, force_slash=True):
                     include_files.append(f["name"])
