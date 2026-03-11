@@ -111,9 +111,12 @@ class Vivado(Edatool):
         if "pnr" in self.tool_options:
             if self.tool_options["pnr"] == "vivado":
                 pass
-            elif self.tool_options["pnr"] == "none" and self.tool_options["synth"] != "none":
+            elif (
+                self.tool_options["pnr"] == "none"
+                and self.tool_options["synth"] != "none"
+            ):
                 args.append("synth")
-            else: 
+            else:
                 args.append("post_build")
 
         self._run_tool("make", args)
