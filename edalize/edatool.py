@@ -42,6 +42,7 @@ NON_TOOL_PACKAGES = [
     "vivado_reporting",
     "quartus_reporting",
     "version",
+    "edatool",
 ]
 
 
