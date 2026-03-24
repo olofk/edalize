@@ -273,7 +273,7 @@ class Vcs(Edatool):
         s = ""
         for key, value in _parameters.items():
             _value = self._param_value_str(value, '"')
-            s += f"assign {_value} {key}\n"
+            s += f"assign {_value} {self.toplevel}.{key}\n"
         self.update_config_file("parameters.txt", s)
 
     def run(self):
