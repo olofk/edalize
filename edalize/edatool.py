@@ -568,6 +568,8 @@ class Edatool(object):
         logger.debug("args  : " + " ".join(args))
 
         capture_output = quiet and not (self.verbose or self.stdout or self.stderr)
+        abs_work_root = os.path.abspath(self.work_root)
+        print(f"Entering directory '{abs_work_root}'")
         try:
             cp = run(
                 [cmd] + args,
@@ -593,6 +595,7 @@ class Edatool(object):
                 logger.debug(e.stderr)
 
             raise RuntimeError(_s)
+        print(f"Leaving directory '{abs_work_root}'")
         return cp.returncode, cp.stdout, cp.stderr
 
     def _filter_verilog_files(src_file):
