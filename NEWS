@@ -1,3 +1,10 @@
+0.6.6 2026-03-31 Olof Kindgren
+======================================================
+* ghdl: Support cocotb and properly handle multiple libs
+* vcs: Fix typo that caused unconditional rebuilds
+* vcs: Scope parameters to toplevel
+* vivado: Fix bug when not running pnr
+
 0.6.5 2026-01-23 Olof Kindgren
 ======================================================
 * sim: Only run cocotb-config when cocotb is enabled
