@@ -55,7 +55,7 @@ For users that are using Edalize through FuseSoC, the `flow` and `flow_options` 
 
       #New Flow API
       targets:
-        fpga:
+        sim:
           flow : sim
           flow_options:
             tool : icarus
