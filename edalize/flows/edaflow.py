@@ -343,6 +343,9 @@ class Edaflow(object):
         logger.debug("args  : " + " ".join(args))
 
         capture_output = quiet and not (self.verbose or self.stdout or self.stderr)
+        abs_cwd = os.path.abspath(cwd) if cwd else None
+        if abs_cwd:
+            print(f"Entering directory '{abs_cwd}'")
         try:
             cp = run(
                 [cmd] + args,
@@ -369,6 +372,8 @@ class Edaflow(object):
                 logger.debug(e.stderr)
 
             raise RuntimeError(_s)
+        if abs_cwd:
+            print(f"Leaving directory '{abs_cwd}'")
         return cp.returncode, cp.stdout, cp.stderr
 
     def build(self):
