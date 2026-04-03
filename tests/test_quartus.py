@@ -76,6 +76,7 @@ def test_quartus(make_edalize_test):
     tool_options = {
         "family": "Cyclone V",
         "device": "5CSXFC6D6F31C8ES",
+        "processors": 5,
         "quartus_options": ["some", "quartus_options"],
         "dse_options": ["some", "dse_options"],
     }
