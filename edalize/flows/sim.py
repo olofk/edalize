@@ -25,6 +25,13 @@ class Sim(Generic):
     def configure_tools(self, flow):
         if self.flow_options.get("cocotb_module"):
             tool = self.flow_options.get("tool")
+            libnamepath = ""
+            if tool in ["xcelium"]:
+                _, output, _ = self._run_tool(
+                    "cocotb-config", ["--lib-name-path", "vpi", tool], quiet=True
+                )
+                libnamepath = output.decode("utf8").strip()
+
             cocotb_options = {
                 "ghdl": (
                     "sim_options",
@@ -71,7 +78,7 @@ class Sim(Generic):
                     "xrun_options",
                     [
                         "-access +rwc",
-                        "-loadvpi $$(cocotb-config --lib-name-path vpi xcelium):vlog_startup_routines_bootstrap",
+                        f"-loadvpi {libnamepath}:vlog_startup_routines_bootstrap",
                     ],
                 ),
             }
