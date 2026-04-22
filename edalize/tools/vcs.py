@@ -53,6 +53,10 @@ class Vcs(Edatool):
             "type": "str",
             "desc": "Set name of the simulation binary (defaults to system name)",
         },
+        "vcs_unr_cfg_file": {
+            "type": "str",
+            "desc": "Unreachability config file",
+        },
     }
 
     def setup(self, edam):
@@ -89,10 +93,20 @@ class Vcs(Edatool):
         self.edam["files"] = unused_files
 
         binary_name = self.tool_options.get("binary_name", self.name)
+        unr = self.tool_options.get("vcs_unr_cfg_file")
+
+        # -unr needs to be on the command-line. In UNR mode, the -o option is also
+        # not used since the outbut binary is always called unrSimv
+        vcs_args = full64
+        if unr:
+            vcs_args.append(f"-unr={unr}")
+            binary_name = "unrSimv"
+        else:
+            vcs_args += ["-o", binary_name]
         self.commands.add(
             ["vcs"]
-            + full64
-            + ["-o", binary_name, "-file", "vcs.f", "-parameters", "parameters.txt"]
+            + vcs_args
+            + ["-file", "vcs.f", "-parameters", "parameters.txt"]
             + self.vcs_files,
             [binary_name],
             self.target_files + self.user_files + ["vcs.f", "parameters.txt"],

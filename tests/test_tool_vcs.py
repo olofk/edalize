@@ -78,6 +78,30 @@ def test_tool_vcs_3_stage(tool_fixture):
     )
 
 
+def test_tool_vcs_unr(tool_fixture):
+    tool_options = {
+        "vcs_unr_cfg_file": "my_unr_config.cfg",
+    }
+    tf = tool_fixture("vcs", tool_options=tool_options, paramtypes=[], ref_subdir="unr")
+
+    tf.tool.configure()
+    tf.compare_config_files(
+        [
+            "synopsys_sim.setup",
+            "libx.f",
+            "vcs.f",
+            "work.f",
+            "work_1.f",
+            "work_2.f",
+            "work_3.f",
+            "work_4.f",
+            "work_5.f",
+            "work_6.f",
+            "parameters.txt",
+        ]
+    )
+
+
 def test_tool_vcs_3_stage_minimal(tool_fixture):
     tf = tool_fixture("vcs", paramtypes=[], ref_subdir="minimal")
 
