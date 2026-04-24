@@ -71,6 +71,7 @@ class Vcs(Edatool):
         incdirs = []
         include_files = []
         unused_files = self.files.copy()
+        self.sim_setup_files = []
         # Get all include dirs. Move include files to a separate list
         for f in self.files:
             if not "simulation" in f.get("tags", ["simulation"]):
@@ -82,6 +83,9 @@ class Vcs(Edatool):
                 if self._add_include_dir(f, incdirs, force_slash=True):
                     include_files.append(f["name"])
                     unused_files.remove(f)
+            elif file_type == "synopsys_sim_setup":
+                self.sim_setup_files.append(f["name"])
+                unused_files.remove(f)
 
         full64 = [] if self.tool_options.get("32bit") else ["-full64"]
         if self.tool_options.get("2_stage_flow"):
@@ -279,6 +283,8 @@ class Vcs(Edatool):
         for lib in self.workdirs:
             if lib != "work":
                 s += f"{lib} : ./{lib}.workdir\n"
+        for fname in self.sim_setup_files:
+            s += f"OTHERS = {fname}\n"
         self.update_config_file("synopsys_sim.setup", s)
         for k, v in self.f_files.items():
             self.update_config_file(k, " ".join(v) + "\n")

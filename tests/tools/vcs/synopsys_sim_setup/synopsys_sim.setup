@@ -1,0 +1,5 @@
+WORK > DEFAULT
+DEFAULT : ./work.workdir
+libx : ./libx.workdir
+OTHERS = my_setup.setup
+OTHERS = extra_setup.setup

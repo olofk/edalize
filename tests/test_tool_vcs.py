@@ -102,6 +102,32 @@ def test_tool_vcs_unr(tool_fixture):
     )
 
 
+def test_tool_vcs_synopsys_sim_setup(tool_fixture):
+    files = [
+        {"name": "sv_file.sv", "file_type": "systemVerilogSource"},
+        {"name": "my_setup.setup", "file_type": "synopsys_sim_setup"},
+        {"name": "extra_setup.setup", "file_type": "synopsys_sim_setup"},
+        {"name": "vhdl_lfile", "file_type": "vhdlSource", "logical_name": "libx"},
+    ]
+    tf = tool_fixture(
+        "vcs",
+        files=files,
+        paramtypes=[],
+        ref_subdir="synopsys_sim_setup",
+    )
+
+    tf.tool.configure()
+    tf.compare_config_files(
+        [
+            "synopsys_sim.setup",
+            "libx.f",
+            "vcs.f",
+            "work.f",
+            "parameters.txt",
+        ]
+    )
+
+
 def test_tool_vcs_3_stage_minimal(tool_fixture):
     tf = tool_fixture("vcs", paramtypes=[], ref_subdir="minimal")
 
