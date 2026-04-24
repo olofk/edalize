@@ -1,0 +1,20 @@
+# VC Formal Test TCL Script
+set_fml_appmode {{ app }}
+read_file -top {{ top_level }} -format sverilog -sva -vcs "-assert svaext -sverilog {{ files }}"
+
+create_clock w_clk -period 100
+create_clock r_clk -period 150
+create_reset w_rst -sense high
+
+sim_config -default_input 0 
+sim_run -stable 
+sim_force w_rst -apply 1'b0
+sim_run -stable 
+sim_save_reset 
+
+if ($in_gui_session) { 
+    set_fml_var fml_witness_on true
+} else {
+    check_fv -block
+    exit
+}
