@@ -2,10 +2,10 @@
 # Microsemi Tcl Script
 # FPExpress
 
-puts "----------------- Opening Job file libero-test ------------------------------"
+puts "----------------- Opening Job file design ------------------------------"
 create_job_project \
 	-job_project_location ./prj \
-	-job_file ./prj/libero-test.job \
+	-job_file ./prj/design.job \
          -overwrite 0
 
 puts "----------------- Programming device -------------------------------------"
