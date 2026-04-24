@@ -1,3 +1,8 @@
+0.6.8 2026-04-24 Olof Kindgren
+======================================================
+* vcs: Support synopsys_sim.setup files
+* vcs: Support UNR mode
+
 0.6.7 2026-04-20 Olof Kindgren
 ======================================================
 * xcelium: Fix cocotb support
