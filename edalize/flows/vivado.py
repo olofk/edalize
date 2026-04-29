@@ -10,7 +10,7 @@ from edalize.flows.edaflow import Edaflow, FlowGraph
 class Vivado(Edaflow):
     """The Vivado flow executes AMD Vivado to create a bitstream and optionally program a board. Yosys can be used for synthesis by setting the synth option accordingly"""
 
-    argtypes = ["vlogdefine", "vlogparam"]
+    argtypes = ["vlogdefine", "vlogparam", "generic"]
 
     FLOW_DEFINED_TOOL_OPTIONS = {
         "yosys": {"arch": "xilinx", "output_format": "edif"},
