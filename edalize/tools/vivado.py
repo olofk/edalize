@@ -2,12 +2,15 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 import platform
 import re
 import subprocess
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -66,7 +69,7 @@ class Vivado(Edatool):
         },
     }
 
-    def get_version(self):
+    def get_version(self) -> str:
         """
         Get tool version.
 
@@ -88,7 +91,7 @@ class Vivado(Edatool):
 
         return version
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         """
         Configuration is the first phase of the build.
 
@@ -99,7 +102,7 @@ class Vivado(Edatool):
         super().setup(edam)
         src_files = []
         sim_files = []
-        incdirs = []
+        incdirs: list[str] = []
         edif_files = []
         has_vhdl2008 = False
         has_xci = False
@@ -259,7 +262,7 @@ class Vivado(Edatool):
         commands.set_default_target(bitstream)
         self.commands = commands
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         self.render_template(
             "vivado-project.tcl.j2", self.name + ".tcl", self.template_vars
         )
@@ -277,17 +280,17 @@ class Vivado(Edatool):
         )
         self.render_template("vivado-program.tcl.j2", self.name + "_pgm.tcl")
 
-    def build(self):
+    def build(self) -> tuple[str, list[str], str]:
         logger.info("Building")
-        args = []
+        args: list[str] = []
         if "pnr" in self.tool_options:
             if self.tool_options["pnr"] == "vivado":
                 pass
             elif self.tool_options["pnr"] == "none":
                 args.append("synth")
-        return ("make", self.args, self.work_root)
+        return ("make", self.args, self.work_root)  # type: ignore[attr-defined]  # pre-existing: self.args is never assigned
 
-    def run(self):
+    def run(self) -> tuple[str, list[str], str] | None:
         """
         Program the FPGA.
 
@@ -299,6 +302,6 @@ class Vivado(Edatool):
             if self.tool_options["pnr"] == "vivado":
                 pass
             elif self.tool_options["pnr"] == "none":
-                return
+                return None
 
         return ("make", ["pgm"], self.work_root)

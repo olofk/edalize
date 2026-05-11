@@ -2,6 +2,10 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
@@ -28,12 +32,12 @@ class Gls(Edaflow):
         },
     }
 
-    FLOW_DEFINED_TOOL_OPTIONS = {
+    FLOW_DEFINED_TOOL_OPTIONS: dict[str, dict[str, Any]] = {
         "yosys": {"output_format": "verilog"},
     }
 
     @classmethod
-    def get_tool_options(cls, flow_options):
+    def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         flow = flow_options.get("frontends", []).copy()
 
         flow.append(cls._require_flow_option(flow_options, "synth"))
@@ -42,17 +46,17 @@ class Gls(Edaflow):
 
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
 
-    def configure_flow(self, flow_options):
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
         synth = flow_options.get("synth")
 
         # Apply flow-defined tool options if any
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(synth, {})
 
         # Start flow graph dict
-        flow = {synth: {"fdto": fdto}}
+        flow: dict[str, dict[str, Any]] = {synth: {"fdto": fdto}}
 
         # Apply frontends
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -71,7 +75,7 @@ class Gls(Edaflow):
         # Create and return flow graph object
         return FlowGraph.fromdict(flow)
 
-    def configure_tools(self, graph):
+    def configure_tools(self, graph: FlowGraph) -> None:
         input_edam = self.edam.copy()
 
         for frontend in self.flow_options.get("frontends", []):
@@ -103,7 +107,7 @@ class Gls(Edaflow):
 
         self.commands.default_target = graph.get_node(sim).inst.commands.default_target
 
-    def run(self, args=None):
+    def run(self, args: Any = None) -> None:
         tool = self.flow_options.get("sim")
         run_tool = self.flow.get_node(tool).inst
 

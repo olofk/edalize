@@ -2,6 +2,10 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
@@ -10,7 +14,7 @@ class Trellis(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    _flow = {
+    _flow: dict[str, dict[str, Any]] = {
         "yosys": {"fdto": {"arch": "ecp5", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "ecp5"}},
         "ecppack": {"deps": ["nextpnr"], "fdto": {}},
@@ -27,7 +31,7 @@ class Trellis(Edaflow):
     }
 
     @classmethod
-    def get_tool_options(cls, flow_options):
+    def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         tools = flow_options.get("frontends", []) + list(cls._flow)
 
         flow_defined_tool_options = {}
@@ -35,11 +39,11 @@ class Trellis(Edaflow):
             flow_defined_tool_options[k] = v.get("fdto", {})
         return cls.get_filtered_tool_options(tools, flow_defined_tool_options)
 
-    def configure_flow(self, flow_options):
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
         flow = self._flow.copy()
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -68,6 +72,6 @@ class Trellis(Edaflow):
 
         return FlowGraph.fromdict(flow)
 
-    def build(self):
+    def build(self) -> None:
         (cmd, args) = self.build_runner.get_build_command()
         self._run_tool(cmd, args + [self.goal], cwd=self.work_root)

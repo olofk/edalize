@@ -2,6 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 import os
@@ -10,6 +12,9 @@ import subprocess
 import re
 import xml.etree.ElementTree as ET
 from functools import partial
+from typing import Any
+
+from edalize.edam import Edam, ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 
@@ -27,7 +32,7 @@ class Quartus(Edatool):
     }
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "The Quartus backend supports Intel Quartus Std and Pro editions to build systems and program the FPGA",
@@ -76,8 +81,15 @@ class Quartus(Edatool):
                     },
                 ],
             }
+        return None
 
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=False):
+    def __init__(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+        verbose: bool = False,
+    ) -> None:
         """
         Initial setup of the class.
 
@@ -130,7 +142,7 @@ class Quartus(Edatool):
                 self.jinja_env.filters["generic_value_str"], bool_is_str=True
             )
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         """
         Configuration is the first phase of the build.
 
@@ -177,7 +189,7 @@ class Quartus(Edatool):
 
     # Filter for just QSYS files. This verifies that they are compatible
     # with the identified Quartus version
-    def qsys_file_filter(self, f):
+    def qsys_file_filter(self, f: Any) -> str:
         name = ""
         if get_file_type(f) == "QSYS":
             # Compatibility checks
@@ -214,7 +226,7 @@ class Quartus(Edatool):
         return name
 
     # Allow the templates to get source file information
-    def src_file_filter(self, f):
+    def src_file_filter(self, f: Any) -> str:
         def _append_library(f):
             s = ""
             if f.logical_name:
@@ -264,7 +276,7 @@ class Quartus(Edatool):
 
         return ""
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         logger.info("Building")
         args = []
         if "pnr" in self.tool_options:
@@ -276,7 +288,7 @@ class Quartus(Edatool):
                 args.append("syn")
         self._run_tool("make", args, quiet=True)
 
-    def run_main(self):
+    def run_main(self) -> None:
         """
         Program the FPGA.
         """

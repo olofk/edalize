@@ -2,10 +2,14 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 import sys
+from typing import Any
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 
@@ -16,7 +20,7 @@ class Diamond(Edatool):
     argtypes = ["generic", "vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Backend for Lattice Diamond",
@@ -28,8 +32,9 @@ class Diamond(Edatool):
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         part = self.tool_options.get("part")
         if not part:
             raise RuntimeError("Missing required option 'part' for diamond backend")
@@ -115,7 +120,7 @@ prj_project close
                 )
             )
 
-    def src_file_filter(self, f):
+    def src_file_filter(self, f: Any) -> str:
         def _vhdl_source(f):
             s = "VHDL"
             if f.logical_name:
@@ -139,7 +144,7 @@ prj_project close
             logger.warning(_s.format(f.name, f.file_type))
         return ""
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         if sys.platform == "win32":
             tcl = "pnmainc"
         else:
@@ -148,5 +153,5 @@ prj_project close
         self._run_tool(tcl, [self.name + ".tcl"], quiet=True)
         self._run_tool(tcl, [self.name + "_run.tcl"], quiet=True)
 
-    def run_main(self):
+    def run_main(self) -> None:
         pass

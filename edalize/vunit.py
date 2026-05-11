@@ -2,10 +2,15 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import sys
 import logging
 from collections import OrderedDict
+from typing import Any
+
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 
@@ -18,7 +23,7 @@ class Vunit(Edatool):
     testrunner = "run.py"
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "VUnit testing framework",
@@ -42,8 +47,9 @@ class Vunit(Edatool):
                     },
                 ],
             }
+        return None
 
-    def get_vunit_runner_path(self, src_files):
+    def get_vunit_runner_path(self, src_files: list[Any]) -> str:
         # TODO: Figure out a better way to get the path to the runner
         runner = self.tool_options.get("vunit_runner", "")
         if len(runner) == 0:
@@ -53,7 +59,7 @@ class Vunit(Edatool):
                 return f.name
         return ""
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         (src_files, _incdirs) = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
         self.jinja_env.filters[
@@ -61,10 +67,10 @@ class Vunit(Edatool):
         ] = self.src_file_vhdl_standard_filter
 
         # vunit does not allow empty library name or 'work', so we use `vunit_test_runner_lib`:
-        libraries = OrderedDict()
+        libraries: OrderedDict[str, list[Any]] = OrderedDict()
 
-        core_files = {}
-        depend = {}
+        core_files: dict[str, list[str]] = {}
+        depend: dict[str, list[str]] = {}
         for f in src_files:
             lib = f.logical_name if f.logical_name else "vunit_test_runner_lib"
             libraries.setdefault(lib, []).append(f)
@@ -87,25 +93,25 @@ class Vunit(Edatool):
             },
         )
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         vunit_options = self.tool_options.get("vunit_options", [])
         testrunner = os.path.join(self.work_root, self.testrunner)
         self._run_tool(
             sys.executable, [testrunner, "--compile", "-k"] + vunit_options, quiet=True
         )
 
-    def run_main(self):
+    def run_main(self) -> None:
         vunit_options = self.tool_options.get("vunit_options", [])
         testrunner = os.path.join(self.work_root, self.testrunner)
         self._run_tool(sys.executable, [testrunner] + vunit_options)
 
-    def src_file_vhdl_standard_filter(self, f):
+    def src_file_vhdl_standard_filter(self, f: Any) -> str:
         fragments = f.file_type.split("-")
         if fragments[0] != "vhdlSource" or len(fragments) < 2:
             return ""
         return fragments[1]
 
-    def src_file_filter(self, f):
+    def src_file_filter(self, f: Any) -> str:
         file_mapping = {
             "verilogSource": lambda f: f.name,
             "systemVerilogSource": lambda f: f.name,

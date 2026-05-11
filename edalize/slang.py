@@ -2,10 +2,14 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import re
 import logging
+from typing import Any
 
+from edalize.edam import Edam, ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -30,21 +34,26 @@ Example snippet of a CAPI2 description file for Slang:
 
     """
 
-    tool_options = {"lists": {"mode": "String", "slang_options": "String"}}
+    tool_options: dict[str, Any] = {"lists": {"mode": "String", "slang_options": "String"}}
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    flags = []
+    flags: list[str] = []
 
-    def __init(self, edam=None, work_root=None, eda_api=None):
+    def __init(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+    ) -> int:
         # call the super method here
         super(Slang, self).__init__(edam, work_root, eda_api)
 
-        self.rtl_paths = None
-        self.incdirs = None
+        self.rtl_paths: list[str] | None = None
+        self.incdirs: list[str] | None = None
 
         # path for final rtl generation
-        self.gen_rtl_name = None
+        self.gen_rtl_name: str | None = None
 
         # contain the command line arguments
         self.flags = []
@@ -52,7 +61,7 @@ Example snippet of a CAPI2 description file for Slang:
         return 0
 
     @staticmethod
-    def get_doc(api_ver):
+    def get_doc(api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "slang is a software library that provides various components for lexing, parsing, type checking, and elaborating SystemVerilog code.",
@@ -71,9 +80,10 @@ Example snippet of a CAPI2 description file for Slang:
                     },
                 ],
             }
+        return None
 
     # we only need to get the list of files
-    def _get_file_names(self):
+    def _get_file_names(self) -> None:
         """
         get all the file names
         """
@@ -88,7 +98,7 @@ Example snippet of a CAPI2 description file for Slang:
             if ft_re.match(file_obj.file_type):
                 self.flags.append(file_obj.name)
 
-    def _get_run_mode_flags(self):
+    def _get_run_mode_flags(self) -> None:
         """
         get the current running mode: whether run to preprocess or lint
         """
@@ -98,28 +108,28 @@ Example snippet of a CAPI2 description file for Slang:
         elif run_mode == "preprocess":
             self.flags += ["--preprocess"]
 
-    def _get_define_flags(self) -> str:
+    def _get_define_flags(self) -> None:
         """
         understand flags necessary for various defines
         """
         for key, value in self.vlogdefine.items():
             self.flags.append("-D {}={}".format(key, self._param_value_str(value)))
 
-    def _get_param_flags(self):
+    def _get_param_flags(self) -> None:
         """
         get flags for parameters
         """
         for key, value in self.vlogparam.items():
             self.flags.append("-G {}={}".format(key, self._param_value_str(value)))
 
-    def _get_slang_options(self):
+    def _get_slang_options(self) -> None:
         """
         get extra options from user
         """
         slang_options = self.tool_options.get("slang_options", "")
         self.flags += " ".join(slang_options).split()
 
-    def _get_top_flags(self):
+    def _get_top_flags(self) -> None:
         """
         generate flags for top level module
         """
@@ -127,7 +137,7 @@ Example snippet of a CAPI2 description file for Slang:
             self.flags.append("--top")
             self.flags.append("{}".format(self.toplevel))
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         self._get_define_flags()
         self._get_param_flags()
         self._get_file_names()
@@ -137,9 +147,9 @@ Example snippet of a CAPI2 description file for Slang:
         self._run_tool("slang", self.flags)
         return
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         self.flags = []
         return
 
-    def run_main(self):
+    def run_main(self) -> None:
         return

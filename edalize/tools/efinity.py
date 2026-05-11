@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import sys
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -33,7 +36,7 @@ class Efinity(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         """
         Create required files to make an Efinix build. Two files required:
         - XML project file
@@ -143,7 +146,7 @@ class Efinity(Edatool):
         commands.set_default_target(bit_file)
         self.commands = commands
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         # Render XML project file
         self.render_template(
             "newproj_tmpl.xml.j2", self.name + ".xml", self.template_vars

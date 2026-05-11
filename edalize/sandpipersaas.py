@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import os
 import logging
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -31,7 +34,7 @@ class Sandpipersaas(Edatool):
     argtypes = ["plusarg", "vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "SandPiper SaaS Edition runs Redwood EDA's SandPiper™ TL-Verilog compiler as a microservice in the cloud to support low-overhead and zero-cost open-source development using commercial-grade capabilities. ",
@@ -71,8 +74,9 @@ class Sandpipersaas(Edatool):
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         logger.warning(
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
@@ -109,7 +113,7 @@ class Sandpipersaas(Edatool):
                 )
             else:
                 f.write(
-                    "OUTPUTDIR :=  \n".format(
+                    "OUTPUTDIR :=  \n".format(  # type: ignore[str-format]  # pre-existing: format placeholder missing
                         (self.tool_options.get("output_dir", " "))
                     )
                 )
@@ -134,5 +138,5 @@ class Sandpipersaas(Edatool):
 
             f.write(MAKEFILE_TEMPLATE.format(build_files=self.work_root))
 
-    def run_main(self):
+    def run_main(self) -> None:
         self._run_tool("make")

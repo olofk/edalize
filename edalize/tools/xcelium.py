@@ -2,8 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import logging
+from __future__ import annotations
 
+import logging
+from typing import Any
+
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -26,13 +30,13 @@ class Xcelium(Edatool):
     TCL_SCRIPT_TYPES = ["tclSource"]
     DPIC_LIB_TYPES = ["dpiLibrary"]
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         self.commands = EdaCommands()
 
         unused_files = self.files.copy()
-        incdirs = []
+        incdirs: list[str] = []
         include_files = []
         src_files = []
         tcl_files = []
@@ -113,8 +117,8 @@ class Xcelium(Edatool):
         # Append top level module
         top_cmd = ["-top", self.toplevel]
 
-        prev_fileopts = ("", "", {})
-        filegroups = []
+        prev_fileopts: Any = ("", "", {})
+        filegroups: list[Any] = []
         # Iterate over all relevant source files. If a file has
         # different file_type, logical_name or defines compared
         # to the previous file, we put it in a new file group
@@ -176,12 +180,12 @@ class Xcelium(Edatool):
         )
         self.commands.set_default_target(target)
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         print(self.xrun_f)
         # Keep all command-line options in xrun.f to detect build config changes
         self.update_config_file("xrun.f", "\n".join(self.xrun_f) + "\n")
 
-    def run(self):
+    def run(self) -> tuple[str, list[str], str]:
         args = ["-R"]
 
         # Set plusargs

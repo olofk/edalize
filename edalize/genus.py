@@ -2,12 +2,16 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 import platform
 import re
 import subprocess
+from typing import Any
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 from edalize.yosys import Yosys
@@ -30,7 +34,7 @@ class Genus(Edatool):
     argtypes = ["vlogdefine", "vlogparam", "generic"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "The genus backend executes cadence genus to build a gate-level netlist",
@@ -62,6 +66,7 @@ class Genus(Edatool):
                     },
                 ],
             }
+        return None
 
     """ Configuration is the first phase of the build
     This writes the project TCL files and Makefile. It first collects all
@@ -69,8 +74,8 @@ class Genus(Edatool):
      with the build steps.
     """
 
-    def configure_main(self):
-        def make_list(opt):
+    def configure_main(self) -> None:
+        def make_list(opt: Any) -> Any:
             if opt:
                 opt = (
                     ((opt.replace("[", "")).replace("]", "")).replace(",", "")
@@ -120,7 +125,7 @@ class Genus(Edatool):
             "genus-read-sources.tcl.j2", self.name + "-read-sources.tcl", template_vars
         )
 
-    def src_file_filter(self, f):
+    def src_file_filter(self, f: Any) -> str:
         file_types = {
             "verilogSource": "read_hdl -language v2001",
             "systemVerilogSource": "read_hdl -language sv",
@@ -161,10 +166,10 @@ class Genus(Edatool):
         logger.warning(_s.format(f.name, f.file_type))
         return "add_files -norecurse" + " " + f.name
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         logger.info("Building")
         logger.info(
             "(running make, which runs genus which has an unbelievably long lag before printing. be patient)"
         )
-        args = []
+        args: list[str] = []
         self._run_tool("make", args, quiet=True)

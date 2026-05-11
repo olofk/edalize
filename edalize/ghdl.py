@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import collections
 import logging
 import os.path
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -15,7 +18,7 @@ class Ghdl(Edatool):
     argtypes = ["vlogparam", "generic"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "GHDL is an open source VHDL simulator, which fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and partially the 1076-2008 version of VHDL",
@@ -32,8 +35,9 @@ class Ghdl(Edatool):
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         logger.warning(
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
@@ -97,7 +101,7 @@ class Ghdl(Edatool):
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
 
-        libraries = collections.OrderedDict()
+        libraries: collections.OrderedDict[str, list[str]] = collections.OrderedDict()
         library_options = "--work={lib} --workdir=./{lib}"
         ghdlimport = ""
         vhdl_sources = ""
@@ -161,7 +165,7 @@ class Ghdl(Edatool):
             },
         )
 
-    def run_main(self):
+    def run_main(self) -> None:
         cmd = "make"
         args = ["run"]
 

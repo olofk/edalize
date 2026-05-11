@@ -2,8 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
+from __future__ import annotations
 
+import os
+from typing import Any
+
+from edalize.flows.edaflow import FlowGraph
 from edalize.flows.generic import Generic
 
 
@@ -22,7 +26,7 @@ class Sim(Generic):
         },
     }
 
-    def configure_tools(self, flow):
+    def configure_tools(self, flow: FlowGraph) -> None:
         if self.flow_options.get("cocotb_module"):
             tool = self.flow_options.get("tool")
             libnamepath = ""
@@ -89,13 +93,13 @@ class Sim(Generic):
 
         super().configure_tools(flow)
 
-    def configure(self):
+    def configure(self) -> None:
         if self.flow_options.get("tool") == "vcs":
             with open(os.path.join(self.work_root, "pli.tab"), "w") as f:
                 f.write("acc+=rw,wn:*\n")
         super().configure()
 
-    def run(self, args=None):
+    def run(self, args: Any = None) -> None:
         tool = self.flow_options.get("tool")
         run_tool = self.flow.get_node(tool).inst
 

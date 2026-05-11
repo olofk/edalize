@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -50,7 +53,7 @@ quit
 """
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Xilinx ISim simulator from ISE design suite",
@@ -67,8 +70,9 @@ quit
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         # Check if any VPI modules are present and display warning
         if len(self.vpi_modules) > 0:
             modules = [m["name"] for m in self.vpi_modules]
@@ -151,7 +155,7 @@ quit
                 )
             )
 
-    def run_main(self):
+    def run_main(self) -> None:
         args = ["run"]
         # Plusargs
         if self.plusarg:

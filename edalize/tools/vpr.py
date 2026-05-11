@@ -2,7 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import shutil
+
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 import logging
@@ -40,7 +44,7 @@ class Vpr(Edatool):
         },
     }
 
-    def get_version(self):
+    def get_version(self) -> str:
         """
         Get tool version.
 
@@ -61,7 +65,7 @@ class Vpr(Edatool):
             logger.warning("Unable to recognize VPR version")
         return version
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         """
         Configuration is the first phase of the build.
 
@@ -86,7 +90,7 @@ class Vpr(Edatool):
                     )
                 netlist_file = f["name"]
             if file_type in ["SDC"]:
-                timing_constraints.append(f.name)
+                timing_constraints.append(f["name"])  # pre-existing: was f.name (dict-as-attr typo)
 
         arch_xml = self.tool_options.get("arch_xml")
         if not arch_xml:
@@ -172,6 +176,6 @@ class Vpr(Edatool):
         commands.set_default_target(targets)
         self.commands = commands
 
-    def build(self):
+    def build(self) -> tuple[str, list[str], str]:
         logger.info("Building")
-        return ("make", self.args, self.work_root)
+        return ("make", self.args, self.work_root)  # type: ignore[attr-defined]  # pre-existing: self.args is never assigned

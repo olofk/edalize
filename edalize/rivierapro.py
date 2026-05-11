@@ -2,9 +2,14 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
 import sys
+from typing import IO
+
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -20,7 +25,7 @@ class Rivierapro(Edatool):
     argtypes = ["plusarg", "vlogdefine", "vlogparam", "generic"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Riviera Pro simulator from Aldec",
@@ -49,16 +54,17 @@ class Rivierapro(Edatool):
                     },
                 ],
             }
+        return None
 
-    def _write_build_rtl_tcl_file(self, tcl_main):
+    def _write_build_rtl_tcl_file(self, tcl_main: IO[str]) -> None:
         tcl_build_rtl = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), "w")
 
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
         libs = []
-        common_compilation_sv = []
-        common_compilation_vhdl = []
+        common_compilation_sv: list[str] = []
+        common_compilation_vhdl: list[str] = []
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = "work"
@@ -154,7 +160,7 @@ class Rivierapro(Edatool):
                 "wrong compilation mode, use --compilation_mode=common for common compilation or --compilation_mode=sep for separate compilation"
             )
 
-    def _write_run_tcl_file(self):
+    def _write_run_tcl_file(self) -> None:
         tcl_launch = open(os.path.join(self.work_root, "edalize_launch.tcl"), "w")
 
         # FIXME: Handle failures. Save stdout/stderr
@@ -184,7 +190,7 @@ class Rivierapro(Edatool):
         tcl_run.write("exit\n")
         tcl_run.close()
 
-    def _write_build_vpi_tcl_file(self):
+    def _write_build_vpi_tcl_file(self) -> None:
         tcl_build_vpi = open(os.path.join(self.work_root, "edalize_build_vpi.tcl"), "w")
         for vpi_module in self.vpi_modules:
             _name = vpi_module["name"]
@@ -199,7 +205,7 @@ class Rivierapro(Edatool):
             tcl_build_vpi.write(_s)
         tcl_build_vpi.close()
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         tcl_main = open(os.path.join(self.work_root, "edalize_main.tcl"), "w")
         tcl_main.write("do edalize_build_rtl.tcl\n")
 
@@ -210,18 +216,18 @@ class Rivierapro(Edatool):
         tcl_main.close()
         self._write_run_tcl_file()
 
-    def build_pre(self):
+    def build_pre(self) -> None:
         if not os.getenv("ALDEC_PATH"):
             raise RuntimeError(
                 "Environment variable ALDEC_PATH was not found. It should be set to Riviera Pro install path. Please source <Riviera Pro install path>/etc/setenv to set it"
             )
         super(Rivierapro, self).build_pre()
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         args = ["-c", "-do", "do edalize_main.tcl; exit"]
         self._run_tool("vsim", args, quiet=True)
 
-    def run_main(self):
+    def run_main(self) -> None:
         if not os.getenv("ALDEC_PATH"):
             raise RuntimeError(
                 "Environment variable ALDEC_PATH was not found. It should be set to Riviera Pro install path. Please source <Riviera Pro install path>/etc/setenv to set it"

@@ -1,18 +1,26 @@
-import os
-from importlib import import_module
-
-from edalize.utils import EdaCommands
+from __future__ import annotations
 
 import logging
-
-logger = logging.getLogger(__name__)
+import os
 import subprocess
 import sys
+from importlib import import_module
+from typing import Any
+
+from edalize.edam import Edam
+from edalize.utils import EdaCommands
+
+logger = logging.getLogger(__name__)
 
 
 def subprocess_run_3_9(
-    *popenargs, input=None, capture_output=False, timeout=None, check=False, **kwargs
-):
+    *popenargs: Any,
+    input: Any = None,
+    capture_output: bool = False,
+    timeout: float | None = None,
+    check: bool = False,
+    **kwargs: Any,
+) -> subprocess.CompletedProcess[Any]:
     if input is not None:
         if kwargs.get("stdin") is not None:
             raise ValueError("stdin and input arguments may not both be used.")
@@ -29,9 +37,9 @@ def subprocess_run_3_9(
     with subprocess.Popen(*popenargs, **kwargs) as process:
         try:
             stdout, stderr = process.communicate(input, timeout=timeout)
-        except TimeoutExpired as exc:
+        except TimeoutExpired as exc:  # type: ignore[name-defined]  # pre-existing latent bug; unreachable on Python >=3.7
             process.kill()
-            if _mswindows:
+            if _mswindows:  # type: ignore[name-defined]  # same as above
                 # Windows accumulates the output in a single blocking
                 # read() call run on child threads, with the timeout
                 # being done in a join() on those threads.  communicate()
@@ -61,7 +69,7 @@ else:
     run = subprocess.run
 
 
-def merge_dict(d1, d2):
+def merge_dict(d1: dict[str, Any], d2: dict[str, Any]) -> dict[str, Any]:
     for key, value in d2.items():
         if isinstance(value, dict):
             d1[key] = merge_dict(d1.get(key, {}), value)
@@ -73,7 +81,13 @@ def merge_dict(d1, d2):
 
 
 class Node(object):
-    def __init__(self, name, deps=[], fdto={}, tool=None):
+    def __init__(
+        self,
+        name: str,
+        deps: list["Node"] = [],
+        fdto: dict[str, Any] = {},
+        tool: str | None = None,
+    ) -> None:
         self.deps = deps
         self.fdto = fdto
         self.tool = tool
@@ -83,11 +97,11 @@ class Node(object):
 
 
 class FlowGraph(object):
-    def __init__(self):
-        self._graph = {}
+    def __init__(self) -> None:
+        self._graph: dict[str, Node] = {}
 
     @classmethod
-    def fromdict(cls, d):
+    def fromdict(cls, d: dict[str, Any]) -> "FlowGraph":
         c = FlowGraph()
         _d = d.copy()
         while _d:
@@ -116,19 +130,19 @@ class FlowGraph(object):
                 raise RuntimeError("Unsatisfiable graph")
         return c
 
-    def add_node(self, name, node):
+    def add_node(self, name: str, node: Node) -> None:
         self._graph[name] = node
 
-    def get_node(self, name):
+    def get_node(self, name: str) -> Node:
         return self._graph[name]
 
-    def get_nodes(self):
+    def get_nodes(self) -> dict[str, Node]:
         return self._graph
 
 
 class Edaflow(object):
 
-    FLOW_OPTIONS = {
+    FLOW_OPTIONS: dict[str, dict[str, Any]] = {
         "build_runner": {
             "type": "str",
             "desc": "Tool to execute the build graph (Defaults to make)",
@@ -146,15 +160,23 @@ class Edaflow(object):
     }
 
     @classmethod
-    def get_flow_options(cls):
+    def get_flow_options(cls) -> dict[str, dict[str, Any]]:
         return cls.FLOW_OPTIONS.copy()
 
     @classmethod
-    def get_tool_options(cls, flow_options):
+    def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         return {}
 
+    # Subclasses override this to return the FlowGraph for the flow.
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
+        raise NotImplementedError(
+            f"{self.__class__.__name__} must implement configure_flow()"
+        )
+
     @classmethod
-    def _require_flow_option(cls, flow_options, option_name):
+    def _require_flow_option(
+        cls, flow_options: dict[str, Any], option_name: str
+    ) -> Any:
         """Check for mandatory flow option.
 
         Returns the value if it exists or otherwise throws a RuntimeError
@@ -172,8 +194,12 @@ class Edaflow(object):
     # tool options and return then all, except for the ones listed in
     # flow_defined_tool_options
     @classmethod
-    def get_filtered_tool_options(cls, tools, flow_defined_tool_options):
-        tool_opts = {}
+    def get_filtered_tool_options(
+        cls,
+        tools: list[str],
+        flow_defined_tool_options: dict[str, dict[str, Any]],
+    ) -> dict[str, Any]:
+        tool_opts: dict[str, Any] = {}
         for tool_name in tools:
 
             # Get available tool options from each tool in the list
@@ -193,7 +219,7 @@ class Edaflow(object):
 
         return tool_opts
 
-    def extract_flow_options(self):
+    def extract_flow_options(self) -> dict[str, Any]:
         return {
             k: v
             for (k, v) in self.edam.get("flow_options", {}).items()
@@ -201,8 +227,8 @@ class Edaflow(object):
         }
 
     # Filter out tool options for each tool from self.flow_options
-    def extract_tool_options(self):
-        tool_options = {}
+    def extract_tool_options(self) -> None:
+        tool_options: dict[str, Any] = {}
         edam_flow_opts = self.edam.get("flow_options", {})
         for name, node in self.flow.get_nodes().items():
             # Get the tool class
@@ -224,8 +250,8 @@ class Edaflow(object):
 
             self.edam["tool_options"] = tool_options
 
-    def configure_tools(self, graph):
-        def merge_edam(a, b):
+    def configure_tools(self, graph: FlowGraph) -> None:
+        def merge_edam(a: Any, b: Any) -> Any:
             # Yeah, I know. It's just a temporary hack
             return b
 
@@ -235,7 +261,7 @@ class Edaflow(object):
         # Configure each node in graph order
         while unconfigured_nodes:
             node = unconfigured_nodes.pop(0)
-            input_edam = {}
+            input_edam: Edam | dict[str, Any] = {}
 
             # Check all dependencies are fulfilled
             all_deps_configured = True
@@ -265,9 +291,9 @@ class Edaflow(object):
                             c.order_only_deps.insert(0, "pre_build")
                 self.commands.commands += node.inst.commands.commands
 
-    def add_scripts(self, depends, hook_name):
+    def add_scripts(self, depends: Any, hook_name: str) -> None:
         last_script = depends
-        hooks = self.edam.get("hooks", {})
+        hooks: dict[str, list[dict[str, Any]]] = self.edam.get("hooks", {})  # type: ignore[assignment]
         for script in hooks.get(hook_name, []):
 
             # _env = self.env.copy()
@@ -282,7 +308,7 @@ class Edaflow(object):
             last_script = script["name"]
         self.commands.add([], [hook_name], [last_script])
 
-    def __init__(self, edam, work_root, verbose=False):
+    def __init__(self, edam: Edam, work_root: str, verbose: bool = False) -> None:
         self.edam = edam
         self.commands = EdaCommands()
 
@@ -326,10 +352,10 @@ class Edaflow(object):
         except ModuleNotFoundError:
             raise RuntimeError(f"Could not find build runner '{_br}'")
 
-    def set_run_command(self):
+    def set_run_command(self) -> None:
         self.commands.add([], ["run"], ["pre_run"])
 
-    def configure(self):
+    def configure(self) -> None:
 
         # Write tool-specific config files
         for node in self.flow.get_nodes().values():
@@ -338,7 +364,14 @@ class Edaflow(object):
         # Write out execution file
         self.build_runner.write(self.commands, self.work_root)
 
-    def _run_tool(self, cmd, args=[], cwd=None, quiet=False, env={}):
+    def _run_tool(
+        self,
+        cmd: str,
+        args: list[str] = [],
+        cwd: str | None = None,
+        quiet: bool = False,
+        env: dict[str, str] = {},
+    ) -> tuple[int, bytes | None, bytes | None]:
         logger.debug("Running " + cmd)
         logger.debug("args  : " + " ".join(args))
 
@@ -376,10 +409,10 @@ class Edaflow(object):
             print(f"Leaving directory '{abs_cwd}'")
         return cp.returncode, cp.stdout, cp.stderr
 
-    def build(self):
+    def build(self) -> None:
         (cmd, args) = self.build_runner.get_build_command()
         self._run_tool(cmd, args=args, cwd=self.work_root)
 
     # Most flows won't have a run phase
-    def run(self, args=None):
+    def run(self, args: Any = None) -> None:
         pass

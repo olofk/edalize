@@ -2,12 +2,22 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
+from typing import Any
+
 from jinja2 import Environment, PackageLoader
+
+from edalize.edam import Edam, File as EdamFile, RunArgs
 from edalize.utils import EdaCommands
 
 # Jinja2 tests and filters, available in all templates
-def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
+def jinja_filter_param_value_str(
+    value: Any,
+    str_quote_style: str = "",
+    bool_is_str: bool = False,
+) -> str:
     """Convert a parameter value to string suitable to be passed to an EDA tool
 
     Rules:
@@ -31,15 +41,19 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
 
 
 class Edatool(object):
-    TOOL_OPTIONS = {}
+    TOOL_OPTIONS: dict[str, dict[str, Any]] = {}
 
     @classmethod
-    def get_tool_options(cls):
+    def get_tool_options(cls) -> dict[str, dict[str, Any]]:
         return cls.TOOL_OPTIONS
 
-    def __init__(self):
-        self.edam = None
-        self.prev_nodes = set()
+    # ``work_root`` is injected from outside (Edaflow.configure_tools) before
+    # ``setup()`` is called, so declare it here for type-checkers.
+    work_root: str
+
+    def __init__(self) -> None:
+        self.edam: Edam | None = None
+        self.prev_nodes: set[Any] = set()
         self.jinja_env = Environment(
             loader=PackageLoader(__package__, "templates"),
             trim_blocks=True,
@@ -49,7 +63,7 @@ class Edatool(object):
         self.jinja_env.filters["param_value_str"] = jinja_filter_param_value_str
         self.jinja_env.filters["generic_value_str"] = jinja_filter_param_value_str
 
-    def _require_tool_option(self, option_name):
+    def _require_tool_option(self, option_name: str) -> Any:
         option = self.tool_options.get(option_name)
         if not option:
             raise RuntimeError(
@@ -57,7 +71,7 @@ class Edatool(object):
             )
         return option
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         self.edam = edam
         try:
             self.name = edam["name"]
@@ -66,34 +80,37 @@ class Edatool(object):
 
         _tool_name = self.__class__.__name__.lower()
 
-        self.tool_options = edam.get("tool_options", {}).get(_tool_name, {})
+        self.tool_options: dict[str, Any] = (
+            edam.get("tool_options", {}).get(_tool_name, {})
+        )
 
         self.files = edam.get("files", [])
-        self.toplevel = edam.get("toplevel", [])
+        # See note in legacy edatool.py.
+        self.toplevel: Any = edam.get("toplevel", [])
         self.vpi_modules = edam.get("vpi", [])
 
         self.hooks = edam.get("hooks", {})
         self.parameters = edam.get("parameters", {})
 
-        self.plusarg = {}
-        self.vlogparam = {}
-        self.vlogdefine = {}
-        self.generic = {}
-        self.cmdlinearg = {}
+        self.plusarg: dict[str, Any] = {}
+        self.vlogparam: dict[str, Any] = {}
+        self.vlogdefine: dict[str, Any] = {}
+        self.generic: dict[str, Any] = {}
+        self.cmdlinearg: dict[str, Any] = {}
 
-        args = {}
+        args: RunArgs = {}
         for k, v in self.parameters.items():
             args[k] = v.get("default")
         self._apply_parameters(args)
 
-    def configure(self):
+    def configure(self) -> None:
         self.write_config_files()
 
     # Subclasses implement this. Called at the end of configure
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         pass
 
-    def update_config_file(self, file_name, contents):
+    def update_config_file(self, file_name: str, contents: str) -> None:
         """
         Check contents against the file file_name in work_root.
         If these differ or file_name doesn't exist,
@@ -101,17 +118,17 @@ class Edatool(object):
         """
         f = os.path.join(self.work_root, file_name)
         if os.path.exists(f):
-            old_file = open(f, "r").read()
+            old_file: str | None = open(f, "r").read()
         else:
             old_file = None
         if old_file != contents:
             with open(f, "w") as _f:
                 _f.write(contents)
 
-    def set_default_target(self, target):
+    def set_default_target(self, target: str) -> None:
         self.default_target = target
 
-    def _apply_parameters(self, args):
+    def _apply_parameters(self, args: RunArgs) -> None:
         for key, value in args.items():
             # Ignore parameters without value
             if value is None:
@@ -124,7 +141,12 @@ class Edatool(object):
                 paramtype = self.parameters[key]["paramtype"]
                 getattr(self, paramtype)[key] = value
 
-    def render_template(self, template_file, target_file, template_vars={}):
+    def render_template(
+        self,
+        template_file: str,
+        target_file: str,
+        template_vars: dict[str, Any] = {},
+    ) -> None:
         """
         Render a Jinja2 template for the backend
 
@@ -134,7 +156,12 @@ class Edatool(object):
         template = self.jinja_env.get_template("/".join([template_dir, template_file]))
         self.update_config_file(target_file, template.render(template_vars))
 
-    def _add_include_dir(self, f, incdirs, force_slash=False):
+    def _add_include_dir(
+        self,
+        f: EdamFile,
+        incdirs: list[str],
+        force_slash: bool = False,
+    ) -> bool:
         if f.get("is_include_file"):
             _incdir = f.get("include_path") or os.path.dirname(f["name"]) or "."
             if force_slash:
@@ -144,5 +171,10 @@ class Edatool(object):
             return True
         return False
 
-    def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):
+    def _param_value_str(
+        self,
+        param_value: Any,
+        str_quote_style: str = "",
+        bool_is_str: bool = False,
+    ) -> str:
         return jinja_filter_param_value_str(param_value, str_quote_style, bool_is_str)

@@ -2,9 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
+from typing import IO
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -57,7 +61,7 @@ class Xcelium(Edatool):
     argtypes = ["plusarg", "vlogdefine", "vlogparam", "generic"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Xcelium simulator from Cadence Design Systems",
@@ -84,14 +88,15 @@ class Xcelium(Edatool):
                     },
                 ],
             }
+        return None
 
-    def _write_build_rtl_f_file(self, tcl_main):
+    def _write_build_rtl_f_file(self, tcl_main: IO[str]) -> None:
         tcl_build_rtl = open(os.path.join(self.work_root, "edalize_build_rtl.f"), "w")
 
         (src_files, incdirs) = self._get_fileset_files()
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
-        libs = []
+        libs: list[str] = []
         self.dpi_libraries = ""
         for f in src_files:
             if not f.logical_name:
@@ -139,7 +144,7 @@ class Xcelium(Edatool):
                 line = "-makelib {} {} -endlib".format(f.logical_name, " ".join(args))
                 tcl_build_rtl.write(line + "\n")
 
-    def _write_makefile(self):
+    def _write_makefile(self) -> None:
         vpi_make = open(os.path.join(self.work_root, "Makefile"), "w")
         _parameters = []
         for key, value in self.vlogparam.items():
@@ -167,7 +172,7 @@ class Xcelium(Edatool):
 
         vpi_make.close()
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         tcl_main = open(os.path.join(self.work_root, "edalize_main.f"), "w")
         tcl_main.write("-f edalize_build_rtl.f\n")
 
@@ -175,7 +180,7 @@ class Xcelium(Edatool):
         self._write_makefile()
         tcl_main.close()
 
-    def run_main(self):
+    def run_main(self) -> None:
         args = ["run"]
 
         # Set plusargs

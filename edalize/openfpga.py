@@ -2,8 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
+
+from edalize.edam import Edam, ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -32,7 +36,7 @@ class Openfpga(Edatool):
     argtypes = ["plusarg", "vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "The OpenFPGA backend executes Yosys synthesis tool and VPR place and route. It can target multiple different open-source FPGAs (supported: sofa-chd, sofa-hd, sofa-qlhd, sofa-plus-hd)",
@@ -51,8 +55,15 @@ class Openfpga(Edatool):
                     },
                 ],
             }
+        return None
 
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=False):
+    def __init__(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+        verbose: bool = False,
+    ) -> None:
         """
         This calls the parent constructor, but also identifies whether the
         current system has correctly set the following environment variables:
@@ -61,7 +72,7 @@ class Openfpga(Edatool):
 
         - ``SOFA_PATH``: directory of the SOFA eFPGA IPs, available here: https://github.com/lnis-uofu/SOFA
         """
-        super(Openfpga, self).__init__(edam, work_root, verbose)
+        super(Openfpga, self).__init__(edam, work_root, verbose)  # type: ignore[arg-type]  # pre-existing: verbose passed where eda_api expected
 
         # Check environment variable setup
         if os.environ.get("OPENFPGA_PATH") is None:
@@ -81,7 +92,7 @@ Download and source the project: https://github.com/lnis-uofu/SOFA"""
         self.openfpga_flow = f"{self.openfpga_path}/openfpga_flow"
         self.sofa_path = os.environ["SOFA_PATH"]
 
-    def _write_testbench(self):
+    def _write_testbench(self) -> None:
         """
         As required by the OpenFPGA configuration format specifications, the
         benchmark variable need to be a Verilog file type, a made up of
@@ -111,7 +122,7 @@ Download and source the project: https://github.com/lnis-uofu/SOFA"""
 
         self.testbench_file = ",".join(tb_files)
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         """
         Configuration is the first phase of the build.
 
@@ -188,10 +199,10 @@ Download and source the project: https://github.com/lnis-uofu/SOFA"""
             "task_simulation.conf.j2", "config/task.conf", template_vars
         )
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         pass
 
-    def run_main(self):
+    def run_main(self) -> None:
         """
         Run the FPGA simulation.
         """

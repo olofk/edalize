@@ -2,8 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os.path
 from importlib import import_module
+from typing import Any
 
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
@@ -13,7 +16,7 @@ class Generic(Edaflow):
 
     argtypes = ["cmdlinearg", "generic", "plusarg", "vlogdefine", "vlogparam"]
 
-    FLOW_DEFINED_TOOL_OPTIONS = {}
+    FLOW_DEFINED_TOOL_OPTIONS: dict[str, dict[str, Any]] = {}
 
     FLOW_OPTIONS = {
         **Edaflow.FLOW_OPTIONS,
@@ -26,14 +29,14 @@ class Generic(Edaflow):
     }
 
     @classmethod
-    def get_tool_options(cls, flow_options):
+    def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         flow = flow_options.get("frontends", []).copy()
         tool = cls._require_flow_option(flow_options, "tool")
         flow.append(tool)
 
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
 
-    def configure_flow(self, flow_options):
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
         # Check for mandatory flow option "tool"
         tool = self._require_flow_option(flow_options, "tool")
 
@@ -41,10 +44,10 @@ class Generic(Edaflow):
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(tool, {})
 
         # Start flow graph dict
-        flow = {tool: {"fdto": fdto}}
+        flow: dict[str, dict[str, Any]] = {tool: {"fdto": fdto}}
 
         # Apply frontends
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -55,7 +58,7 @@ class Generic(Edaflow):
         # Create and return flow graph object
         return FlowGraph.fromdict(flow)
 
-    def configure_tools(self, graph):
+    def configure_tools(self, graph: FlowGraph) -> None:
         super().configure_tools(graph)
 
         # Set flow default target from the main tool's default target

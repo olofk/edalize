@@ -2,9 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 from pathlib import Path
+from typing import Any
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -59,16 +63,16 @@ class Vcs(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         self.commands = EdaCommands()
-        self.f_files = {}
-        self.workdirs = set()
-        self.target_files = []
-        self.user_files = []
+        self.f_files: dict[str, list[str]] = {}
+        self.workdirs: set[str] = set()
+        self.target_files: list[str] = []
+        self.user_files: list[str] = []
 
-        incdirs = []
+        incdirs: list[str] = []
         include_files = []
         unused_files = self.files.copy()
         self.sim_setup_files = []
@@ -124,9 +128,16 @@ class Vcs(Edatool):
         )
         self.commands.set_default_target(binary_name)
 
-    def _twostage_setup(self, edam, incdirs, include_files, unused_files, full64):
+    def _twostage_setup(
+        self,
+        edam: Edam,
+        incdirs: list[str],
+        include_files: list[str],
+        unused_files: list[Any],
+        full64: list[str],
+    ) -> None:
 
-        user_files = []
+        user_files: list[str] = []
 
         vlog_files = []
         has_sv = False
@@ -180,9 +191,16 @@ class Vcs(Edatool):
         self.target_files = include_files + vlog_files
         self.vcs_files = vlog_files
 
-    def _threestage_setup(self, edam, incdirs, include_files, unused_files, full64):
-        filegroups = []
-        prev_fileopts = ("", "", "")  # file_type, logical_name, defines
+    def _threestage_setup(
+        self,
+        edam: Edam,
+        incdirs: list[str],
+        include_files: list[str],
+        unused_files: list[Any],
+        full64: list[str],
+    ) -> None:
+        filegroups: list[Any] = []
+        prev_fileopts: Any = ("", "", "")  # file_type, logical_name, defines
         for f in unused_files.copy():
             lib = f.get("logical_name", "work")
 
@@ -226,7 +244,7 @@ class Vcs(Edatool):
                 prev_fileopts = fileopts
 
         cmds = []
-        depfiles = []
+        depfiles: list[str] = []
         for fg in filegroups:
             # Ignore empty file groups
             if fg[1]:
@@ -278,7 +296,7 @@ class Vcs(Edatool):
         )
         self.vcs_files = []
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         s = "WORK > DEFAULT\nDEFAULT : ./work.workdir\n"
         for lib in self.workdirs:
             if lib != "work":
@@ -296,7 +314,7 @@ class Vcs(Edatool):
             s += f"assign {_value} {self.toplevel}.{key}\n"
         self.update_config_file("parameters.txt", s)
 
-    def run(self):
+    def run(self) -> tuple[str, list[str], str]:
         args = ["run"]
 
         # Set plusargs

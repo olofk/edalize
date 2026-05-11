@@ -2,8 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os.path
+from __future__ import annotations
 
+import os.path
+from typing import Any
+
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 from functools import partial
@@ -37,8 +41,8 @@ class Gowin(Edatool):
         },
     }
 
-    def src_file_filter(self, f):
-        def _append_library(f):
+    def src_file_filter(self, f: Any) -> str:
+        def _append_library(f: Any) -> str:
             s = ""
             if f.get("logical_name"):
                 s += (
@@ -46,13 +50,13 @@ class Gowin(Edatool):
                 )
             return s
 
-        def _handle_src(t, f):
+        def _handle_src(t: str, f: Any) -> str:
             s = "add_file -type " + t
             s += ' "' + f["name"] + '"'
             s += _append_library(f)
             return s
 
-        def _handle_tcl(f):
+        def _handle_tcl(f: Any) -> str:
             return "source " + f["name"]
 
         file_mapping = {
@@ -72,7 +76,7 @@ class Gowin(Edatool):
 
         return ""
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         file_table = []
@@ -144,7 +148,7 @@ class Gowin(Edatool):
         commands.set_default_target(fs_file)
         self.commands = commands
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         self.render_template(
             "gowin-project.tcl.j2", "edalize_gowin_template.tcl", self.template_vars
         )

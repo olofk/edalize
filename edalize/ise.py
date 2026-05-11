@@ -2,8 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os.path
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 
@@ -64,7 +67,7 @@ quit
 """
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Xilinx ISE Design Suite",
@@ -101,8 +104,9 @@ quit
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         for i in ["family", "device", "package", "speed"]:
             if not i in self.tool_options:
                 raise RuntimeError("Missing required option '{}'".format(i))
@@ -115,7 +119,7 @@ quit
         with open(os.path.join(self.work_root, self.name + "_run.tcl"), "w") as f:
             f.write(self.TCL_RUN_FILE_TEMPLATE)
 
-    def _write_tcl_file(self):
+    def _write_tcl_file(self) -> None:
         tcl_file = open(os.path.join(self.work_root, self.name + ".tcl"), "w")
 
         tcl_file.write(
@@ -192,14 +196,14 @@ quit
         tcl_file.write('project set top "{}"\n'.format(self.toplevel))
         tcl_file.close()
 
-    def run_main(self):
+    def run_main(self) -> None:
         if ("pgm" not in self.tool_options) or (self.tool_options["pgm"] != "ise"):
             return
         pgm_file_name = os.path.join(self.work_root, self.name + ".pgm")
         self._write_pgm_file(pgm_file_name)
         self._run_tool("impact", ["-batch", pgm_file_name])
 
-    def _write_pgm_file(self, pgm_file_name):
+    def _write_pgm_file(self, pgm_file_name: str) -> None:
         pgm_file = open(pgm_file_name, "w")
         pgm_file.write(
             self.PGM_FILE_TEMPLATE.format(

@@ -2,6 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,6 +15,10 @@ from edalize.utils import EdaCommands
 
 
 class Nextpnr(Edatool):
+    # ``flow_config`` is injected by subflows (apicula/mistral/oxide/trellis)
+    # before ``configure()``, so declare it for type-checkers.
+    flow_config: dict[str, str] = {}
+
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:

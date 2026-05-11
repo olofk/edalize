@@ -2,8 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os.path
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -23,7 +26,7 @@ class Nextpnr(Edatool):
         "device_family": {"type": "str", "desc": "FPGA device family code"},
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
         cst_file = ""
         lpf_file = ""
@@ -169,6 +172,6 @@ class Nextpnr(Edatool):
             # GUI target
             commands.add(command + ["--gui"], ["build-gui"], [depends])
 
-        self.edam["files"] += output_files
+        self.edam["files"] += output_files  # type: ignore[arg-type]  # output_files are valid File dicts at runtime
         commands.set_default_target(targets)
         self.commands = commands

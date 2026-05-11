@@ -2,8 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 from edalize.verilator import Verilator as EdalizeVerilator
@@ -50,11 +53,11 @@ class Verilator(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         # Future improvement: Separate include directories of c and verilog files
-        incdirs = []
+        incdirs: list[str] = []
 
         verilator_file = self.name + ".vc"
 
@@ -159,11 +162,11 @@ class Verilator(Edatool):
 
         self.commands = commands
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         self.update_config_file(self.name + ".vc", "\n".join(self.vc) + "\n")
 
-    def run(self):
-        self.args = []
+    def run(self) -> tuple[str, list[str], str] | None:
+        self.args: list[str] = []
         for key, value in self.plusarg.items():
             self.args += ["+{}={}".format(key, self._param_value_str(value))]
         for key, value in self.cmdlinearg.items():
@@ -180,5 +183,5 @@ class Verilator(Edatool):
             "preprocess-only",
             "xml-only",
         ]:
-            return
+            return None
         return ("./V" + self.toplevel, self.args, self.work_root)

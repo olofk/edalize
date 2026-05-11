@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -39,12 +42,12 @@ class Yosys(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         yosys_template = self.tool_options.get("yosys_template")
 
-        incdirs = []
+        incdirs: list[str] = []
         file_table = []
         unused_files = []
 
@@ -141,7 +144,7 @@ class Yosys(Edatool):
         # Configure first call to Yosys
         targets = []
         depends = depfiles
-        variables = []
+        variables: dict[str, str] = {}
         logfile = ""
 
         targets = [default_target]
@@ -183,7 +186,7 @@ class Yosys(Edatool):
         commands.set_default_target(targets[0])
         self.commands = commands
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         yosys_template = self.tool_options.get("yosys_template")
         self.render_template(
             "edalize_yosys_procs.tcl.j2",

@@ -2,12 +2,16 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 import platform
 import re
 import subprocess
+from typing import Any
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 from edalize.yosys import Yosys
@@ -30,7 +34,7 @@ class Design_compiler(Edatool):
     argtypes = ["vlogdefine", "vlogparam", "generic"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "The design_compiler backend executes Synopsys design_copiler to build a gate-level netlist",
@@ -67,6 +71,7 @@ class Design_compiler(Edatool):
                     },
                 ],
             }
+        return None
 
     """ Configuration is the first phase of the build
     This writes the project TCL files and Makefile. It first collects all
@@ -74,8 +79,8 @@ class Design_compiler(Edatool):
      with the build steps.
     """
 
-    def configure_main(self):
-        def make_list(opt):
+    def configure_main(self) -> None:
+        def make_list(opt: Any) -> Any:
             if opt:
                 opt = (
                     ((opt.replace("[", "")).replace("]", "")).replace(",", "")
@@ -134,7 +139,7 @@ class Design_compiler(Edatool):
             template_vars,
         )
 
-    def src_file_filter(self, f):
+    def src_file_filter(self, f: Any) -> str:
         file_types = {
             "verilogSource": "analyze -format verilog",
             "systemVerilogSource": "analyze -format sverilog",
@@ -171,10 +176,10 @@ class Design_compiler(Edatool):
         logger.warning(_s.format(f.name, f.file_type))
         return "add_files -norecurse" + " " + f.name
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         logger.info("Building")
         logger.info(
             "(running make, which runs dc_shell which has an unbelievably long lag before printing. be patient)"
         )
-        args = []
+        args: list[str] = []
         self._run_tool("make", args, quiet=True)
