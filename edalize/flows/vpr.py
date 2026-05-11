@@ -15,7 +15,7 @@ class Vpr(Edaflow):
     def configure_flow(self, flow_options):
 
         flow = {
-            "yosys": {"ftdo": {"output_format": "blif"}},
+            "yosys": {"fdto": {"output_format": "blif"}},
             "vpr": {"deps": ["yosys"]},
         }
         return FlowGraph.fromdict(flow)
