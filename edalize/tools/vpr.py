@@ -86,7 +86,7 @@ class Vpr(Edatool):
                     )
                 netlist_file = f["name"]
             if file_type in ["SDC"]:
-                timing_constraints.append(f.name)
+                timing_constraints.append(f["name"])
 
         arch_xml = self.tool_options.get("arch_xml")
         if not arch_xml:
