@@ -61,7 +61,7 @@ class Openfpga(Edatool):
 
         - ``SOFA_PATH``: directory of the SOFA eFPGA IPs, available here: https://github.com/lnis-uofu/SOFA
         """
-        super(Openfpga, self).__init__(edam, work_root, verbose)
+        super(Openfpga, self).__init__(edam, work_root, eda_api, verbose)
 
         # Check environment variable setup
         if os.environ.get("OPENFPGA_PATH") is None:
