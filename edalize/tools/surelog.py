@@ -51,7 +51,7 @@ class Surelog(Edatool):
         # Handle verilog defines
         verilog_defines = []
         for key, value in self.vlogdefine.items():
-            verilog_params.append(f"+define+{key}={value}")
+            verilog_defines.append(f"+define+{key}={value}")
 
         # Handle verilog parameters
         verilog_params = []
