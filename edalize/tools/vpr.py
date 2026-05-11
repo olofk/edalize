@@ -174,4 +174,4 @@ class Vpr(Edatool):
 
     def build(self):
         logger.info("Building")
-        return ("make", self.args, self.work_root)
+        return ("make", [], self.work_root)
