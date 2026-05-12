@@ -17,7 +17,14 @@ from typing import Any, Generator, Iterable
 
 from jinja2 import Environment, PackageLoader
 
-from edalize.edam import Edam, File as EdamFile, HookScript, RunArgs, ToolDoc
+from edalize.edam import (
+    Edam,
+    File as EdamFile,
+    HookScript,
+    RunArgs,
+    ToolDoc,
+    ToolDocEntry,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -333,11 +340,22 @@ class Edatool(object):
                 cls, "_description", "Options for {} backend".format(cls.__name__)
             )
             opts: ToolDoc = {"description": desc}
-            for group in ["members", "lists", "dicts"]:
-                if group in cls.tool_options:
-                    opts[group] = []
-                    for _name, _type in cls.tool_options[group].items():
-                        opts[group].append({"name": _name, "type": _type, "desc": ""})
+            # TypedDict requires literal keys, so unroll the three doc groups.
+            if "members" in cls.tool_options:
+                opts["members"] = [
+                    {"name": n, "type": t, "desc": ""}
+                    for n, t in cls.tool_options["members"].items()
+                ]
+            if "lists" in cls.tool_options:
+                opts["lists"] = [
+                    {"name": n, "type": t, "desc": ""}
+                    for n, t in cls.tool_options["lists"].items()
+                ]
+            if "dicts" in cls.tool_options:
+                opts["dicts"] = [
+                    {"name": n, "type": t, "desc": ""}
+                    for n, t in cls.tool_options["dicts"].items()
+                ]
             return opts
         else:
             logger.warning(
@@ -736,7 +754,7 @@ def _class_doc(items: ToolDoc) -> str:
 
 
 def gen_tool_docs() -> str:
-    table: list[dict[str, str]] = []
+    table: list[ToolDocEntry] = []
     s = ""
     for backend in get_edatools():
         name = backend.__name__

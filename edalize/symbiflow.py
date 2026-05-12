@@ -38,7 +38,7 @@ class Symbiflow(Edatool):
     @classmethod
     def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
-            symbiflow_help = {
+            symbiflow_help: ToolDoc = {
                 "members": [
                     {
                         "name": "arch",

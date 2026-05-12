@@ -18,12 +18,12 @@ from __future__ import annotations
 import sys
 from typing import Any, Dict, List, Literal, Union
 
-# ``NotRequired`` only joined :mod:`typing` in Python 3.11.  Split the import
-# so mypy can follow the version branch statically.
+# ``NotRequired`` / ``Required`` joined :mod:`typing` in Python 3.11.  Split
+# the import so mypy can follow the version branch statically.
 if sys.version_info >= (3, 11):
-    from typing import NotRequired, TypedDict
+    from typing import NotRequired, Required, TypedDict
 else:
-    from typing_extensions import NotRequired, TypedDict
+    from typing_extensions import NotRequired, Required, TypedDict
 
 
 # ---------------------------------------------------------------------------
@@ -58,15 +58,18 @@ ParamType = Literal[
 """How a parameter is delivered to the underlying tool."""
 
 
-DataType = Literal["bool", "file", "int", "str"]
-"""The Python datatype of a parameter's value."""
+DataType = Literal["bool", "file", "int", "real", "str"]
+"""The Python datatype of a parameter's value.
+
+Must mirror FuseSoC's CAPI2 schema (``fusesoc/capi2/json_schema.py``).
+"""
 
 
 class Parameter(TypedDict, total=False):
     """A single entry inside ``edam["parameters"]``."""
 
     datatype: DataType
-    default: Union[bool, int, str]
+    default: Union[bool, int, float, str]
     description: str
     paramtype: ParamType
 
@@ -118,13 +121,13 @@ ToolOptions = Dict[str, Dict[str, Any]]
 class Edam(TypedDict, total=False):
     """The top-level EDAM dictionary handed to every backend.
 
-    Only ``name`` is strictly required by ``Edatool.__init__``; everything else
-    has a sensible default of ``[]`` / ``{}``. We mark them all as
-    ``NotRequired`` so user code can build EDAMs incrementally.
+    ``name`` is the only key ``Edatool.__init__`` indexes unconditionally,
+    so we mark it ``Required``.  Everything else has a sensible
+    ``[]`` / ``{}`` default and is ``NotRequired``.
     """
 
-    # Mandatory
-    name: str
+    # Mandatory — ``Edatool.__init__`` does ``edam["name"]`` directly.
+    name: Required[str]
 
     # Sources & build inputs
     files: List[File]
@@ -140,6 +143,16 @@ class Edam(TypedDict, total=False):
     flow_options: Dict[str, Any]
     flow: Dict[str, Any]
 
+    # Set by FuseSoC's edalizer (see fusesoc.edalizer):
+    #   * EDAM schema version (currently "0.2.1")
+    #   * per-core metadata bundle
+    #   * resolved per-core dependency map
+    #   * list of filter names to apply before tool dispatch
+    version: str
+    cores: Dict[str, Any]
+    dependencies: Dict[str, List[str]]
+    filters: List[str]
+
 
 # ---------------------------------------------------------------------------
 # Convenience aliases (used heavily across backends)
@@ -149,8 +162,28 @@ class Edam(TypedDict, total=False):
 # names, values are whatever ``argparse`` produced (str / int / bool / list).
 RunArgs = Dict[str, Any]
 
-# The dict produced by ``Edatool.get_doc(0)``.
-ToolDoc = Dict[str, Any]
+
+class ToolDocEntry(TypedDict, total=False):
+    """A single ``members`` / ``lists`` / ``dicts`` row inside a tool doc."""
+
+    name: str
+    type: str
+    desc: str
+
+
+class ToolDoc(TypedDict, total=False):
+    """The dict produced by ``Edatool.get_doc(0)``.
+
+    Concrete backends populate ``description`` and one or more of the
+    three group lists.  Modelling this explicitly lets static checkers
+    flag misindexed accesses (``doc["lits"]``) and missing returns from
+    ``get_doc``.
+    """
+
+    description: str
+    members: List[ToolDocEntry]
+    lists: List[ToolDocEntry]
+    dicts: List[ToolDocEntry]
 
 
 __all__ = [
@@ -164,6 +197,7 @@ __all__ = [
     "ParamType",
     "RunArgs",
     "ToolDoc",
+    "ToolDocEntry",
     "ToolOptions",
     "VpiModule",
 ]

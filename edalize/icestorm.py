@@ -24,7 +24,7 @@ class Icestorm(Edatool):
     @classmethod
     def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
-            options = {
+            options: ToolDoc = {
                 "members": [
                     {
                         "name": "pnr",

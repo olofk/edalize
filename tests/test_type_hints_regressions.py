@@ -573,7 +573,8 @@ def test_edam_datatype_literal_values():
     from edalize.edam import DataType
     from typing import get_args
 
-    assert set(get_args(DataType)) == {"bool", "file", "int", "str"}
+    # Must mirror FuseSoC CAPI2 schema (fusesoc/capi2/json_schema.py).
+    assert set(get_args(DataType)) == {"bool", "file", "int", "real", "str"}
 
 
 def test_edam_hookname_literal_values():
