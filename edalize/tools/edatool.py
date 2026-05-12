@@ -84,7 +84,7 @@ class Edatool(object):
             edam.get("tool_options", {}).get(_tool_name, {})
         )
 
-        self.files = edam.get("files", [])
+        self.files: list[EdamFile] = edam.get("files", [])
         # See note in legacy edatool.py.
         self.toplevel: Any = edam.get("toplevel", [])
         self.vpi_modules = edam.get("vpi", [])

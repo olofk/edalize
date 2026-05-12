@@ -271,9 +271,11 @@ class Edatool(object):
 
         if not edam:
             edam = eda_api
-        self.edam = edam
+        # NOTE: Edatool(edam=None) intentionally raises TypeError at the
+        # ``edam["name"]`` access below; upstream test_empty_edam pins this.
+        self.edam: Edam = edam  # type: ignore[assignment]  # narrowed at runtime
         try:
-            self.name = edam["name"]
+            self.name = edam["name"]  # type: ignore[index]
         except KeyError:
             raise RuntimeError("Missing required parameter 'name'")
 
@@ -281,7 +283,7 @@ class Edatool(object):
             edam.get("tool_options", {}).get(_tool_name, {}).copy()
         )
 
-        self.files: list[Any] = edam.get("files", [])
+        self.files: list[EdamFile] = edam.get("files", [])
         # EDAM allows toplevel to be a single name (most simulators) or a
         # list of names (some lint/synth flows). Concrete backends know which
         # they want, so expose it as ``Any`` to avoid forcing every backend

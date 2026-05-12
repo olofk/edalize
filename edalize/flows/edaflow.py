@@ -84,9 +84,9 @@ class Node(object):
     def __init__(
         self,
         name: str,
+        tool: str,
         deps: list["Node"] = [],
         fdto: dict[str, Any] = {},
-        tool: str | None = None,
     ) -> None:
         self.deps = deps
         self.fdto = fdto
