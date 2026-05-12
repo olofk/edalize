@@ -276,14 +276,15 @@ def test_019_edacommands_write_succeeds_after_set_default(tmp_path):
 # Change 9: Edaflow.configure_flow stub
 
 
-def test_020_edaflow_configure_flow_unimplemented_raises_attribute_error():
-    """Pristine behaviour: Edaflow does not define configure_flow; subclasses
-    must override it. A subclass that forgets raises AttributeError."""
+def test_020_edaflow_configure_flow_unimplemented_raises():
+    """Edaflow.configure_flow on the base raises NotImplementedError, with
+    a message that names the subclass. Strict upgrade from pristine's
+    AttributeError, same failure-mode shape."""
     from edalize.flows.edaflow import Edaflow
 
     flow = Edaflow.__new__(Edaflow)
-    with pytest.raises(AttributeError):
-        flow.configure_flow({})  # type: ignore[attr-defined]
+    with pytest.raises(NotImplementedError, match="configure_flow"):
+        flow.configure_flow({})
 
 
 # ---------------------------------------------------------------------------

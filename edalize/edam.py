@@ -74,12 +74,17 @@ class Parameter(TypedDict, total=False):
     paramtype: ParamType
 
 
-class HookScript(TypedDict, total=False):
-    """A single hook script entry."""
+class HookScript(TypedDict):
+    """A single hook script entry.
 
-    name: str
-    cmd: List[str]
-    env: Dict[str, str]
+    ``Edatool._run_scripts`` and ``Edaflow.add_scripts`` index ``name``
+    and ``cmd`` unconditionally, so they are required; ``env`` is
+    optional.
+    """
+
+    name: Required[str]
+    cmd: Required[List[str]]
+    env: NotRequired[Dict[str, str]]
 
 
 HookName = Literal["pre_build", "post_build", "pre_run", "post_run"]
@@ -163,27 +168,29 @@ class Edam(TypedDict, total=False):
 RunArgs = Dict[str, Any]
 
 
-class ToolDocEntry(TypedDict, total=False):
-    """A single ``members`` / ``lists`` / ``dicts`` row inside a tool doc."""
+class ToolDocEntry(TypedDict):
+    """A single ``members`` / ``lists`` / ``dicts`` row inside a tool doc.
 
-    name: str
-    type: str
-    desc: str
-
-
-class ToolDoc(TypedDict, total=False):
-    """The dict produced by ``Edatool.get_doc(0)``.
-
-    Concrete backends populate ``description`` and one or more of the
-    three group lists.  Modelling this explicitly lets static checkers
-    flag misindexed accesses (``doc["lits"]``) and missing returns from
-    ``get_doc``.
+    ``_class_doc()`` indexes all three keys unconditionally.
     """
 
-    description: str
-    members: List[ToolDocEntry]
-    lists: List[ToolDocEntry]
-    dicts: List[ToolDocEntry]
+    name: Required[str]
+    type: Required[str]
+    desc: Required[str]
+
+
+class ToolDoc(TypedDict):
+    """The dict produced by ``Edatool.get_doc(0)``.
+
+    ``description`` is required because every consumer of ``ToolDoc``
+    indexes it directly; the three group lists are optional, populated
+    only when the backend declares options of that shape.
+    """
+
+    description: Required[str]
+    members: NotRequired[List[ToolDocEntry]]
+    lists: NotRequired[List[ToolDocEntry]]
+    dicts: NotRequired[List[ToolDocEntry]]
 
 
 __all__ = [

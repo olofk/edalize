@@ -7,7 +7,7 @@ from __future__ import annotations
 import os.path
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class F4pga(Edaflow):
@@ -190,10 +190,11 @@ class F4pga(Edaflow):
         elif self.pnr_tool == "nextpnr":
             pnr_options.update({"arch": flow_options.get("arch", "xilinx")})
 
-        return [  # type: ignore[return-value]  # pre-existing: returns a list instead of FlowGraph
-            (synth_tool, [self.pnr_tool], synth_options),
-            (self.pnr_tool, [], pnr_options),
-        ]
+        flow: dict[str, FlowNodeSpec] = {
+            synth_tool: {"deps": [], "fdto": synth_options},
+            self.pnr_tool: {"deps": [synth_tool], "fdto": pnr_options},
+        }
+        return FlowGraph.fromdict(flow)
 
     # Adds the FASM and bitstream generation
     def configure_tools(self, nodes: FlowGraph) -> None:

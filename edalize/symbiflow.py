@@ -39,6 +39,8 @@ class Symbiflow(Edatool):
     def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             symbiflow_help: ToolDoc = {
+                # Placeholder; the return statement below sets the final description.
+                "description": "",
                 "members": [
                     {
                         "name": "arch",

@@ -21,6 +21,8 @@ class Oxide(Edatool):
     def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             options: ToolDoc = {
+                # Placeholder; the return statement below sets the final description.
+                "description": "",
                 "lists": [],
                 "members": [
                     {

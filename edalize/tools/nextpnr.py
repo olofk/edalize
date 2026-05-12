@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import os.path
 
-from edalize.edam import Edam
+from edalize.edam import Edam, File as EdamFile
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -99,7 +99,7 @@ class Nextpnr(Edatool):
         self.edam = edam.copy()
         self.edam["files"] = unused_files
 
-        output_files = []
+        output_files: list[EdamFile] = []
 
         # Write Makefile
         commands = EdaCommands()
@@ -172,6 +172,6 @@ class Nextpnr(Edatool):
             # GUI target
             commands.add(command + ["--gui"], ["build-gui"], [depends])
 
-        self.edam["files"] += output_files  # type: ignore[arg-type]  # output_files are valid File dicts at runtime
+        self.edam["files"] += output_files
         commands.set_default_target(targets)
         self.commands = commands

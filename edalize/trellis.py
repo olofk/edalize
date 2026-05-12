@@ -20,7 +20,8 @@ class Trellis(Edatool):
     @classmethod
     def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
-            options: ToolDoc = {"lists": [], "members": []}
+            # Placeholder description; the return statement below sets the final one.
+            options: ToolDoc = {"description": "", "lists": [], "members": []}
 
             Edatool._extend_options(options, Yosys)
             Edatool._extend_options(options, Nextpnr)

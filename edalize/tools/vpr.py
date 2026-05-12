@@ -178,4 +178,4 @@ class Vpr(Edatool):
 
     def build(self) -> tuple[str, list[str], str]:
         logger.info("Building")
-        return ("make", self.args, self.work_root)  # type: ignore[attr-defined]  # pre-existing: self.args is never assigned
+        return ("make", [], self.work_root)

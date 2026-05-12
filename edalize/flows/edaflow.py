@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 from importlib import import_module
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 if sys.version_info >= (3, 11):
     from typing import TypedDict
@@ -89,6 +89,10 @@ def merge_dict(d1: dict[str, Any], d2: dict[str, Any]) -> dict[str, Any]:
 
 
 class Node(object):
+    # NOTE: the mutable defaults on deps/fdto are an upstream anti-pattern
+    # that the test golden files actually enshrine (state leaks between
+    # Node instances and shows up in the recorded TCL).  Don't "fix" them
+    # inside an annotation PR; the test suite pins the leaky behaviour.
     def __init__(
         self,
         name: str,
@@ -188,11 +192,17 @@ class Edaflow(object):
     def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         return {}
 
-    # Subclasses override this to return the FlowGraph for the flow.
-    # Declared for type-checkers only — pristine Edaflow has no base method,
-    # so a subclass that forgets to override raises AttributeError as before.
-    if TYPE_CHECKING:
-        def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph: ...
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
+        """Build and return the :class:`FlowGraph` describing the flow.
+
+        Every subclass must override this. Pristine ``Edaflow`` did not
+        define the method at all, so a subclass that forgets to override
+        used to raise ``AttributeError``; raising ``NotImplementedError``
+        with the class name is a clearer error of the same kind.
+        """
+        raise NotImplementedError(
+            f"{self.__class__.__name__} must implement configure_flow()"
+        )
 
     @classmethod
     def _require_flow_option(
