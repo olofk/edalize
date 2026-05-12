@@ -206,6 +206,9 @@ def subprocess_run_3_9(
             raise subprocess.CalledProcessError(
                 retcode, process.args, output=stdout, stderr=stderr
             )
+    # ``Popen.poll()`` returns ``Optional[int]``; by this point in the
+    # function the process has exited so ``retcode`` is always set.
+    assert retcode is not None
     return subprocess.CompletedProcess(process.args, retcode, stdout, stderr)
 
 
@@ -280,8 +283,12 @@ class Edatool(object):
 
         if not edam:
             edam = eda_api
-        # NOTE: Edatool(edam=None) intentionally raises TypeError at the
-        # ``edam["name"]`` access below; upstream test_empty_edam pins this.
+        # ``Edatool(edam=None)`` must raise TypeError (upstream test_empty_edam
+        # pins this). Convert the loose Optional parameter into a narrowed
+        # non-Optional local so the rest of the body type-checks under strict
+        # mode without changing the observable failure mode.
+        if edam is None:
+            raise TypeError("'NoneType' object is not subscriptable")
         self.edam: Edam = edam
         try:
             self.name = edam["name"]
@@ -303,10 +310,15 @@ class Edatool(object):
         self.hooks = edam.get("hooks", {})
         self.parameters = edam.get("parameters", {})
 
+        # work_root remains Optional at the API boundary: upstream tests
+        # construct backends without a work_root just to inspect parsing.
         self.work_root = work_root
         self.env = os.environ.copy()
 
-        self.env["WORK_ROOT"] = self.work_root
+        # ``self.env`` is a plain dict (not os.environ), so storing None
+        # is fine; downstream code that needs work_root as a string will
+        # crash naturally if it is None.
+        self.env["WORK_ROOT"] = self.work_root  # type: ignore[assignment]
 
         self.plusarg: OrderedDict[str, Any] = OrderedDict()
         self.vlogparam: OrderedDict[str, Any] = OrderedDict()
@@ -326,7 +338,9 @@ class Edatool(object):
         # module that the class comes form and then load that to see which
         # package it belongs to in order to get the right path for jinja.
 
-        _package = import_module(self.__class__.__module__).__spec__.parent
+        _spec = import_module(self.__class__.__module__).__spec__
+        assert _spec is not None and _spec.parent is not None
+        _package = _spec.parent
 
         self.jinja_env = Environment(
             loader=PackageLoader(_package, "templates"),
@@ -378,15 +392,19 @@ class Edatool(object):
     @classmethod
     def _extend_options(cls, options: ToolDoc, other_class: type["Edatool"]) -> None:
         help = other_class.get_doc(0)
+        if help is None:
+            return
 
+        options["members"] = list(options.get("members", []))
+        options["lists"] = list(options.get("lists", []))
         options["members"].extend(
             m
-            for m in help["members"]
+            for m in help.get("members", [])
             if m["name"] not in [i["name"] for i in options["members"]]
         )
         options["lists"].extend(
             m
-            for m in help["lists"]
+            for m in help.get("lists", [])
             if m["name"] not in [i["name"] for i in options["lists"]]
         )
 
@@ -440,7 +458,9 @@ class Edatool(object):
             parsed_args = self.parse_args(args, self.argtypes)
         else:
             parsed_args = args
-        self._apply_parameters(parsed_args)
+        # ``_apply_parameters(None)`` intentionally raises AttributeError
+        # to preserve pristine behaviour for the run_pre(None) path.
+        self._apply_parameters(parsed_args)  # type: ignore[arg-type]
         if "pre_run" in self.hooks:
             self._run_scripts(self.hooks["pre_run"], "pre_run")
 
@@ -515,7 +535,7 @@ class Edatool(object):
 
         # backend_args.
         backend_args = parser.add_argument_group("Backend arguments")
-        _opts = self.__class__.get_doc(0)
+        _opts = self.__class__.get_doc(0) or {"description": ""}
         for _opt in _opts.get("members", []) + _opts.get("lists", []):
             backend_args.add_argument("--" + _opt["name"], help=_opt["desc"])
 
@@ -531,7 +551,7 @@ class Edatool(object):
         return args_dict
 
     def _apply_parameters(self, args: RunArgs) -> None:
-        _opts = self.__class__.get_doc(0)
+        _opts = self.__class__.get_doc(0) or {"description": ""}
         # Parse arguments
         backend_members = [x["name"] for x in _opts.get("members", [])]
         backend_lists = [x["name"] for x in _opts.get("lists", [])]
@@ -563,6 +583,7 @@ class Edatool(object):
         """
         template_dir = str(self.__class__.__name__).lower()
         template = self.jinja_env.get_template("/".join([template_dir, template_file]))
+        assert self.work_root is not None, "render_template requires a work_root"
         file_path = os.path.join(self.work_root, target_file)
         with open(file_path, "w") as f:
             f.write(template.render(template_vars))
@@ -626,7 +647,7 @@ class Edatool(object):
                 _env.update(script["env"])
             logger.info("Running {} script {}".format(hook_name, script["name"]))
             logger.debug("Environment: " + str(_env))
-            logger.debug("Working directory: " + self.work_root)
+            logger.debug("Working directory: " + str(self.work_root))
             try:
                 run(
                     script["cmd"],
@@ -660,6 +681,7 @@ class Edatool(object):
         logger.debug("args  : " + " ".join(args))
 
         capture_output = quiet and not (self.verbose or self.stdout or self.stderr)
+        assert self.work_root is not None, "_run_tool requires a work_root"
         abs_work_root = os.path.abspath(self.work_root)
         print(f"Entering directory '{abs_work_root}'")
         try:
@@ -781,7 +803,9 @@ def gen_tool_docs() -> str:
         )
 
         s += "\n{} backend\n{}\n\n".format(name, "~" * (len(name) + 8))
-        s += _class_doc(backend.get_doc(0))
+        backend_doc = backend.get_doc(0)
+        if backend_doc is not None:
+            s += _class_doc(backend_doc)
 
     return (
         _class_doc(

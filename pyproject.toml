@@ -90,13 +90,11 @@ exclude = [
 ]
 
 # Per-module overrides for modules that pass `mypy --strict` cleanly.
-# Add modules to this list as they get cleaned up. The next candidate
-# is edalize.edatool itself, which has ~22 strict errors clustered
-# around the loose ``Edam | None`` / ``str | None`` constructor params
-# that upstream test_empty_edam pins.
+# Add modules to this list as they get cleaned up.
 [[tool.mypy.overrides]]
 module = [
     "edalize.edam",
+    "edalize.edatool",
     "edalize.tools.edatool",
     "edalize.flows.edaflow",
 ]
@@ -111,10 +109,3 @@ no_implicit_optional = true
 strict_equality = true
 strict_optional = true
 check_untyped_defs = true
-
-# Lighter override for edalize.edatool: keep the basic hints honest
-# without forcing a constructor-signature change.
-[[tool.mypy.overrides]]
-module = ["edalize.edatool"]
-disallow_incomplete_defs = true
-warn_return_any = true
