@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Apicula(Edaflow):
@@ -16,7 +16,7 @@ class Apicula(Edaflow):
     argtypes = ["vlogdefine", "vlogparam"]
     verbose = False
 
-    _flow: dict[str, dict[str, Any]] = {
+    _flow: dict[str, FlowNodeSpec] = {
         "yosys": {"fdto": {"arch": "gowin", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "gowin"}},
         "gowinpack": {"deps": ["nextpnr"], "fdto": {}},

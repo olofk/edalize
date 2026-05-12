@@ -7,7 +7,7 @@ from __future__ import annotations
 import os.path
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Vivado(Edaflow):
@@ -48,7 +48,7 @@ class Vivado(Edaflow):
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
 
     def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
-        flow: dict[str, dict[str, Any]] = {}
+        flow: dict[str, FlowNodeSpec] = {}
 
         # Add any user-specified frontends to the flow
         deps: list[str] = []

@@ -7,7 +7,7 @@ from __future__ import annotations
 import os.path
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Vpr(Edaflow):
@@ -17,8 +17,8 @@ class Vpr(Edaflow):
 
     def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
 
-        flow = {
-            "yosys": {"ftdo": {"output_format": "blif"}},
+        flow: dict[str, FlowNodeSpec] = {
+            "yosys": {"fdto": {"output_format": "blif"}},
             "vpr": {"deps": ["yosys"]},
         }
         return FlowGraph.fromdict(flow)

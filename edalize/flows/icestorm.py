@@ -8,7 +8,7 @@ import os.path
 from importlib import import_module
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Icestorm(Edaflow):
@@ -16,7 +16,7 @@ class Icestorm(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    _flow: dict[str, dict[str, Any]] = {
+    _flow: dict[str, FlowNodeSpec] = {
         "yosys": {"fdto": {"arch": "ice40", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "ice40"}},
         "icepack": {"deps": ["nextpnr"]},

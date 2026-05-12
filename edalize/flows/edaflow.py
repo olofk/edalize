@@ -7,6 +7,11 @@ import sys
 from importlib import import_module
 from typing import TYPE_CHECKING, Any
 
+if sys.version_info >= (3, 11):
+    from typing import TypedDict
+else:
+    from typing_extensions import TypedDict
+
 from edalize.edam import Edam
 from edalize.utils import EdaCommands
 
@@ -96,12 +101,25 @@ class Node(object):
         self.inst = getattr(import_module(f"edalize.tools.{tool}"), tool.capitalize())()
 
 
+class FlowNodeSpec(TypedDict, total=False):
+    """A single node entry inside the ``flow`` dict consumed by
+    :meth:`FlowGraph.fromdict`.
+
+    Modelling it as a TypedDict catches misspellings like ``ftdo`` (instead
+    of ``fdto``) at static-check time.
+    """
+
+    deps: list[str]
+    fdto: dict[str, Any]
+    tool: str
+
+
 class FlowGraph(object):
     def __init__(self) -> None:
         self._graph: dict[str, Node] = {}
 
     @classmethod
-    def fromdict(cls, d: dict[str, Any]) -> "FlowGraph":
+    def fromdict(cls, d: dict[str, FlowNodeSpec]) -> "FlowGraph":
         c = FlowGraph()
         _d = d.copy()
         while _d:

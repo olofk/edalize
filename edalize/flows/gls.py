@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Gls(Edaflow):
@@ -53,7 +53,7 @@ class Gls(Edaflow):
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(synth, {})
 
         # Start flow graph dict
-        flow: dict[str, dict[str, Any]] = {synth: {"fdto": fdto}}
+        flow: dict[str, FlowNodeSpec] = {synth: {"fdto": fdto}}
 
         # Apply frontends
         deps: list[str] = []

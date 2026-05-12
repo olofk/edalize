@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Trellis(Edaflow):
@@ -14,7 +14,7 @@ class Trellis(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    _flow: dict[str, dict[str, Any]] = {
+    _flow: dict[str, FlowNodeSpec] = {
         "yosys": {"fdto": {"arch": "ecp5", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "ecp5"}},
         "ecppack": {"deps": ["nextpnr"], "fdto": {}},

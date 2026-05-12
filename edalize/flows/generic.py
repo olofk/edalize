@@ -8,7 +8,7 @@ import os.path
 from importlib import import_module
 from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Generic(Edaflow):
@@ -44,7 +44,7 @@ class Generic(Edaflow):
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(tool, {})
 
         # Start flow graph dict
-        flow: dict[str, dict[str, Any]] = {tool: {"fdto": fdto}}
+        flow: dict[str, FlowNodeSpec] = {tool: {"fdto": fdto}}
 
         # Apply frontends
         deps: list[str] = []
