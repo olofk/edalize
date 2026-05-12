@@ -503,7 +503,7 @@ class Edatool(object):
                         _descr[_paramtype]
                     )
 
-                default = None
+                default: Any = None
                 if not param.get("default") is None:
                     try:
                         if param["datatype"] == "bool":

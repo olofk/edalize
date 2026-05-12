@@ -81,7 +81,6 @@ no_implicit_optional = false
 strict_optional = false
 # Keep noise down while we ramp up coverage; remove once everything is annotated.
 allow_untyped_globals = true
-allow_redefinition = true
 
 # Test code is intentionally not type-checked yet.
 exclude = [

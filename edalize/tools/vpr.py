@@ -106,7 +106,9 @@ class Vpr(Edatool):
         # First, check if gen_constraint value list is passed in and is the correct size
         gen_constr_list = self.tool_options.get("generate_constraints", [])
 
-        depends = netlist_file
+        # ``depends`` alternates between a single dep name (str) and a list
+        # of dep names; widen the annotation so both reassignments type-check.
+        depends: str | list[str] = netlist_file
         targets = self.name + ".net"
         command = ["vpr", arch_xml, netlist_file, "--pack"]
         command += (
@@ -114,6 +116,7 @@ class Vpr(Edatool):
             if gen_constr_list
             else []
         )
+        assert isinstance(depends, str)
         commands.add(command, [targets], [depends])
 
         # Run generate constraints script if correct list exists

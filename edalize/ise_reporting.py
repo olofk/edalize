@@ -76,7 +76,7 @@ class IseReporting(Reporting):
         # Build up a case-insensitive match for any of the below units
         units = ["ps", "ns", "micro", "ms", "%", "MHz", "GHz", "kHz"]
 
-        pp_units = pp.CaselessLiteral(units[0])
+        pp_units: pp.ParserElement = pp.CaselessLiteral(units[0])
         for u in units[1:]:
             pp_units |= pp.CaselessLiteral(u)
 

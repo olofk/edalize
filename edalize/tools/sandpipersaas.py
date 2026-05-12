@@ -108,7 +108,7 @@ class Sandpipersaas(Edatool):
         commands.add([_gen_s], targets, deps)
         commands.add_env_var("RM", "rm -rf")
 
-        commands.add(["${RM} " + self.work_root], ["clean"], " ")  # type: ignore[arg-type]  # pre-existing: depends should be a list
+        commands.add(["${RM} " + self.work_root], ["clean"], [])
         commands.set_default_target(output_file_path)
         self.commands = commands
 

@@ -23,9 +23,6 @@ class Vpr(Edaflow):
         }
         return FlowGraph.fromdict(flow)
 
-    def build_tool_graph(self) -> Any:
-        return super().build_tool_graph()  # type: ignore[misc]  # pre-existing: base class has no build_tool_graph
-
     def configure_tools(self, nodes: FlowGraph) -> None:
         super().configure_tools(nodes)
         name = self.edam["name"]
