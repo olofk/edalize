@@ -254,7 +254,11 @@ class FileAction(argparse.Action):
 
 
 class Edatool(object):
-    argtypes: list[str] = []
+    # Subclasses set ``argtypes`` (the list of EDAM paramtypes their argparse
+    # wiring accepts). Declared without a default to avoid creating a shared
+    # mutable list at this layer; backends that don't set it raise the same
+    # AttributeError as on main.
+    argtypes: list[str]
 
     def __init__(
         self,
@@ -332,8 +336,9 @@ class Edatool(object):
     # backend assigns a schema dict {"members": {...}, "lists": {...},
     # "dicts": {...}} describing its accepted options; as an *instance*
     # attribute ``self.tool_options`` is the live values dict pulled out of the
-    # EDAM. We use ``dict[str, Any]`` so both shapes type-check at this layer.
-    tool_options: dict[str, Any] = {}
+    # EDAM. We declare it here for type-checkers but don't assign a default
+    # to avoid sharing a mutable dict across subclasses.
+    tool_options: dict[str, Any]
 
     @classmethod
     def get_doc(cls, api_ver: int) -> ToolDoc | None:
@@ -520,9 +525,7 @@ class Edatool(object):
             args_dict[key] = _value
         return args_dict
 
-    def _apply_parameters(self, args: RunArgs | None) -> None:
-        if args is None:
-            return
+    def _apply_parameters(self, args: RunArgs) -> None:
         _opts = self.__class__.get_doc(0)
         # Parse arguments
         backend_members = [x["name"] for x in _opts.get("members", [])]

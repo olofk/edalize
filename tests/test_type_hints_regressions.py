@@ -64,11 +64,13 @@ def rich_edam(name: str = "t") -> dict[str, Any]:
 # Change 1: Edatool._apply_parameters(None) → silent no-op
 
 
-def test_001_apply_parameters_none_is_noop(tmp_path):
+def test_001_apply_parameters_none_raises(tmp_path):
+    """Pristine behaviour: _apply_parameters(None) crashes at args.items()."""
     from edalize.icarus import Icarus
 
     icarus = Icarus(rich_edam(), str(tmp_path))
-    icarus._apply_parameters(None)  # type: ignore[arg-type]
+    with pytest.raises(AttributeError):
+        icarus._apply_parameters(None)  # type: ignore[arg-type]
 
 
 def test_002_apply_parameters_empty_dict_is_noop(tmp_path):
@@ -113,11 +115,14 @@ def test_006_run_pre_accepts_dict(tmp_path):
     icarus.run_pre({})
 
 
-def test_007_run_pre_accepts_none(tmp_path):
+def test_007_run_pre_none_crashes(tmp_path):
+    """Pristine behaviour: run_pre(None) forwards None to _apply_parameters,
+    which crashes at args.items(). Annotation work must preserve this."""
     from edalize.icarus import Icarus
 
     icarus = Icarus(rich_edam(), str(tmp_path))
-    icarus.run_pre(None)
+    with pytest.raises(AttributeError):
+        icarus.run_pre(None)
 
 
 # Change 3: Make.write accepts str or Path
@@ -198,26 +203,34 @@ def test_012_vpr_handles_sdc_files(tmp_path):
 # Change 6: Edatool.tool_options class default is empty dict (only on the base)
 
 
-def test_013_base_edatool_has_class_tool_options():
+def test_013_base_edatool_has_no_class_tool_options():
+    """Pristine behaviour: bare Edatool has no `tool_options` class attribute.
+    Adding one would create shared mutable state across subclasses, so the
+    annotation-only declaration must not assign a default."""
     from edalize.edatool import Edatool
 
-    assert Edatool.tool_options == {}
+    assert not hasattr(Edatool, "tool_options")
 
 
-def test_014_concrete_backends_override_tool_options():
+def test_014_concrete_backends_set_tool_options_per_instance(tmp_path):
+    """Pristine behaviour: legacy backends populate tool_options per
+    instance in __init__, not as a class attribute."""
     from edalize.icarus import Icarus
 
-    # Icarus should not inherit the empty base; it has its own schema.
-    assert hasattr(Icarus, "tool_options")
+    i = Icarus(minimal_edam(), str(tmp_path))
+    assert isinstance(i.tool_options, dict)
+    assert "tool_options" not in Icarus.__dict__
 
 
 # Change 7: Nextpnr.flow_config class default
 
 
-def test_015_nextpnr_has_flow_config_default():
+def test_015_nextpnr_has_no_class_flow_config_default():
+    """Pristine behaviour: Nextpnr.flow_config is unbound at the class level.
+    Subflows inject it per-instance before configure()."""
     from edalize.nextpnr import Nextpnr
 
-    assert Nextpnr.flow_config == {}
+    assert "flow_config" not in Nextpnr.__dict__
 
 
 def test_016_nextpnr_flow_config_writable(tmp_path):
@@ -231,18 +244,22 @@ def test_016_nextpnr_flow_config_writable(tmp_path):
 # Change 8: EdaCommands.default_target class default
 
 
-def test_017_edacommands_default_target_starts_empty():
+def test_017_edacommands_default_target_unset_initially():
+    """Pristine behaviour: EdaCommands.default_target is unbound until
+    set_default_target() is called."""
     from edalize.utils import EdaCommands
 
     cmds = EdaCommands()
-    assert cmds.default_target == ""
+    assert not hasattr(cmds, "default_target")
 
 
-def test_018_edacommands_write_raises_clear_error_on_missing_target(tmp_path):
+def test_018_edacommands_write_raises_on_missing_target(tmp_path):
+    """Pristine behaviour: write() with no default target raises
+    AttributeError when it tries to read self.default_target."""
     from edalize.utils import EdaCommands
 
     cmds = EdaCommands()
-    with pytest.raises(RuntimeError, match="default target"):
+    with pytest.raises(AttributeError):
         cmds.write(str(tmp_path / "Makefile"))
 
 
@@ -259,14 +276,14 @@ def test_019_edacommands_write_succeeds_after_set_default(tmp_path):
 # Change 9: Edaflow.configure_flow stub
 
 
-def test_020_edaflow_configure_flow_raises_notimplemented():
+def test_020_edaflow_configure_flow_unimplemented_raises_attribute_error():
+    """Pristine behaviour: Edaflow does not define configure_flow; subclasses
+    must override it. A subclass that forgets raises AttributeError."""
     from edalize.flows.edaflow import Edaflow
 
-    # Direct instantiation isn't supported; use a temporary subclass that
-    # skips __init__ to expose the stub.
     flow = Edaflow.__new__(Edaflow)
-    with pytest.raises(NotImplementedError, match="configure_flow"):
-        flow.configure_flow({})
+    with pytest.raises(AttributeError):
+        flow.configure_flow({})  # type: ignore[attr-defined]
 
 
 # ---------------------------------------------------------------------------
@@ -1132,10 +1149,11 @@ def test_verilator_no_incdirs_set_leftover(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_nextpnr_uninitialized_flow_config_is_empty():
+def test_nextpnr_uninitialized_flow_config_is_unbound():
+    """Pristine behaviour: Nextpnr.flow_config has no class-level default."""
     from edalize.nextpnr import Nextpnr
 
-    assert Nextpnr.flow_config == {}
+    assert "flow_config" not in Nextpnr.__dict__
 
 
 def test_nextpnr_subclass_sets_flow_config(tmp_path):
@@ -1158,14 +1176,15 @@ def test_nextpnr_get_doc_invalid_returns_none():
     assert Nextpnr.get_doc(99) is None
 
 
-def test_nextpnr_no_default_flow_config_leak_between_instances(tmp_path):
+def test_nextpnr_instance_flow_config_independent(tmp_path):
+    """Pristine behaviour: setting flow_config on one Nextpnr instance does
+    not leak to another; both start with no flow_config until injected."""
     from edalize.nextpnr import Nextpnr
 
     a = Nextpnr(minimal_edam("a"), str(tmp_path / "a"))
     b = Nextpnr(minimal_edam("b"), str(tmp_path / "b"))
     a.flow_config = {"arch": "ecp5"}
-    # Instance-level assignment shouldn't bleed onto the other instance.
-    assert b.flow_config == {}
+    assert not hasattr(b, "flow_config")
 
 
 # ---------------------------------------------------------------------------

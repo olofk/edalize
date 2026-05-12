@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 from importlib import import_module
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from edalize.edam import Edam
 from edalize.utils import EdaCommands
@@ -168,10 +168,10 @@ class Edaflow(object):
         return {}
 
     # Subclasses override this to return the FlowGraph for the flow.
-    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement configure_flow()"
-        )
+    # Declared for type-checkers only — pristine Edaflow has no base method,
+    # so a subclass that forgets to override raises AttributeError as before.
+    if TYPE_CHECKING:
+        def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph: ...
 
     @classmethod
     def _require_flow_option(

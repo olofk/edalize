@@ -19,7 +19,9 @@ class EdaCommands(object):
             self.order_only_deps = order_only_deps[:]
             self.variables = variables
 
-    default_target: str = ""
+    # ``default_target`` is set by ``set_default_target()`` before ``write()``;
+    # declared only for type-checkers.
+    default_target: str
 
     def __init__(self) -> None:
         self.commands: list[EdaCommands.Command] = []
