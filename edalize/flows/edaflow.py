@@ -65,6 +65,9 @@ def subprocess_run_3_9(
             raise subprocess.CalledProcessError(
                 retcode, process.args, output=stdout, stderr=stderr
             )
+    # ``Popen.poll()`` returns ``Optional[int]``; by this point in the
+    # function the process has exited so ``retcode`` is always set.
+    assert retcode is not None
     return subprocess.CompletedProcess(process.args, retcode, stdout, stderr)
 
 

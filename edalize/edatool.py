@@ -160,8 +160,13 @@ def get_edatools() -> list[type["Edatool"]]:
 
 
 def subprocess_run_3_9(
-    *popenargs, input=None, capture_output=False, timeout=None, check=False, **kwargs
-):
+    *popenargs: Any,
+    input: Any = None,
+    capture_output: bool = False,
+    timeout: float | None = None,
+    check: bool = False,
+    **kwargs: Any,
+) -> subprocess.CompletedProcess[Any]:
     if input is not None:
         if kwargs.get("stdin") is not None:
             raise ValueError("stdin and input arguments may not both be used.")
@@ -178,7 +183,7 @@ def subprocess_run_3_9(
     with subprocess.Popen(*popenargs, **kwargs) as process:
         try:
             stdout, stderr = process.communicate(input, timeout=timeout)
-        except TimeoutExpired as exc:
+        except TimeoutExpired as exc:  # type: ignore[name-defined]  # pre-existing: unreachable on Python >=3.7
             process.kill()
             if _mswindows:
                 # Windows accumulates the output in a single blocking
@@ -277,9 +282,9 @@ class Edatool(object):
             edam = eda_api
         # NOTE: Edatool(edam=None) intentionally raises TypeError at the
         # ``edam["name"]`` access below; upstream test_empty_edam pins this.
-        self.edam: Edam = edam  # type: ignore[assignment]  # narrowed at runtime
+        self.edam: Edam = edam
         try:
-            self.name = edam["name"]  # type: ignore[index]
+            self.name = edam["name"]
         except KeyError:
             raise RuntimeError("Missing required parameter 'name'")
 
