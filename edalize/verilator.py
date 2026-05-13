@@ -295,4 +295,4 @@ class Verilator(Edatool):
         ]:
             return
         logger.info("Running simulation")
-        self._run_tool("./V" + self.toplevel, self.args)  # type: ignore[operator]  # simulators assume str toplevel
+        self._run_tool("./V" + self.toplevel, self.args)

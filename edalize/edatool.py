@@ -13,7 +13,7 @@ import sys
 from collections import OrderedDict
 from dataclasses import dataclass
 from importlib import import_module
-from typing import Any, Generator, Iterable
+from typing import Any, Generator, Iterable, cast
 
 from jinja2 import Environment, PackageLoader
 
@@ -393,7 +393,10 @@ class Edatool(object):
     def _extend_options(cls, options: ToolDoc, other_class: type["Edatool"]) -> None:
         help = other_class.get_doc(0)
         if help is None:
-            return
+            raise RuntimeError(
+                f"{other_class.__name__}.get_doc(0) returned None; cannot extend "
+                "options with this backend"
+            )
 
         options["members"] = list(options.get("members", []))
         options["lists"] = list(options.get("lists", []))
@@ -458,9 +461,10 @@ class Edatool(object):
             parsed_args = self.parse_args(args, self.argtypes)
         else:
             parsed_args = args
-        # ``_apply_parameters(None)`` intentionally raises AttributeError
-        # to preserve pristine behaviour for the run_pre(None) path.
-        self._apply_parameters(parsed_args)  # type: ignore[arg-type]
+        # ``_apply_parameters(None)`` intentionally raises AttributeError to
+        # preserve pristine behaviour for the run_pre(None) path. ``cast``
+        # records that intent without changing runtime semantics.
+        self._apply_parameters(cast(RunArgs, parsed_args))
         if "pre_run" in self.hooks:
             self._run_scripts(self.hooks["pre_run"], "pre_run")
 
@@ -535,7 +539,12 @@ class Edatool(object):
 
         # backend_args.
         backend_args = parser.add_argument_group("Backend arguments")
-        _opts = self.__class__.get_doc(0) or {"description": ""}
+        _opts = self.__class__.get_doc(0)
+        if _opts is None:
+            raise RuntimeError(
+                f"{self.__class__.__name__}.get_doc(0) returned None; "
+                "cannot wire up backend CLI arguments"
+            )
         for _opt in _opts.get("members", []) + _opts.get("lists", []):
             backend_args.add_argument("--" + _opt["name"], help=_opt["desc"])
 
@@ -551,7 +560,12 @@ class Edatool(object):
         return args_dict
 
     def _apply_parameters(self, args: RunArgs) -> None:
-        _opts = self.__class__.get_doc(0) or {"description": ""}
+        _opts = self.__class__.get_doc(0)
+        if _opts is None:
+            raise RuntimeError(
+                f"{self.__class__.__name__}.get_doc(0) returned None; "
+                "cannot classify backend options vs EDAM parameters"
+            )
         # Parse arguments
         backend_members = [x["name"] for x in _opts.get("members", [])]
         backend_lists = [x["name"] for x in _opts.get("lists", [])]

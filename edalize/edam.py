@@ -31,21 +31,25 @@ else:
 # ---------------------------------------------------------------------------
 
 
-class File(TypedDict, total=False):
-    """A single source file entry inside ``edam["files"]``."""
+class File(TypedDict):
+    """A single source file entry inside ``edam["files"]``.
 
-    name: str
-    file_type: str
-    is_include_file: bool
-    include_path: str
-    logical_name: str
-    core: str
+    ``name`` is required because FuseSoC always emits it and every backend
+    indexes ``f["name"]`` directly. All other keys are optional.
+    """
+
+    name: Required[str]
+    file_type: NotRequired[str]
+    is_include_file: NotRequired[bool]
+    include_path: NotRequired[str]
+    logical_name: NotRequired[str]
+    core: NotRequired[str]
     # Backend-specific tags that gate inclusion in a particular flow.
-    tags: List[str]
+    tags: NotRequired[List[str]]
     # Per-file Verilog defines merged on top of the global ones.
-    define: Dict[str, Any]
+    define: NotRequired[Dict[str, Any]]
     # Free-form version label used by a few vendor backends.
-    version: str
+    version: NotRequired[str]
 
 
 ParamType = Literal[
@@ -65,13 +69,18 @@ Must mirror FuseSoC's CAPI2 schema (``fusesoc/capi2/json_schema.py``).
 """
 
 
-class Parameter(TypedDict, total=False):
-    """A single entry inside ``edam["parameters"]``."""
+class Parameter(TypedDict):
+    """A single entry inside ``edam["parameters"]``.
 
-    datatype: DataType
-    default: Union[bool, int, float, str]
-    description: str
-    paramtype: ParamType
+    ``datatype`` and ``paramtype`` are required: FuseSoC's CAPI2 schema
+    rejects parameters missing them, and ``parse_args`` / ``_apply_parameters``
+    index both directly. ``default`` and ``description`` are optional.
+    """
+
+    datatype: Required[DataType]
+    paramtype: Required[ParamType]
+    default: NotRequired[Union[bool, int, float, str]]
+    description: NotRequired[str]
 
 
 class HookScript(TypedDict):
@@ -99,13 +108,17 @@ class Hooks(TypedDict, total=False):
     post_run: List[HookScript]
 
 
-class VpiModule(TypedDict, total=False):
-    """A single VPI module entry inside ``edam["vpi"]``."""
+class VpiModule(TypedDict):
+    """A single VPI module entry inside ``edam["vpi"]``.
 
-    name: str
-    src_files: List[str]
-    include_dirs: List[str]
-    libs: List[str]
+    FuseSoC always emits all four keys when it emits a VPI entry, and
+    multiple backends index them directly, so all are required.
+    """
+
+    name: Required[str]
+    src_files: Required[List[str]]
+    include_dirs: Required[List[str]]
+    libs: Required[List[str]]
 
 
 # ---------------------------------------------------------------------------

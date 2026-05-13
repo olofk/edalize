@@ -5,14 +5,14 @@ import os
 import subprocess
 import sys
 from importlib import import_module
-from typing import Any
+from typing import Any, cast
 
 if sys.version_info >= (3, 11):
     from typing import TypedDict
 else:
     from typing_extensions import TypedDict
 
-from edalize.edam import Edam
+from edalize.edam import Edam, HookName, HookScript
 from edalize.utils import EdaCommands
 
 logger = logging.getLogger(__name__)
@@ -326,9 +326,9 @@ class Edaflow(object):
                             c.order_only_deps.insert(0, "pre_build")
                 self.commands.commands += node.inst.commands.commands
 
-    def add_scripts(self, depends: Any, hook_name: str) -> None:
+    def add_scripts(self, depends: Any, hook_name: HookName) -> None:
         last_script = depends
-        hooks: dict[str, list[dict[str, Any]]] = self.edam.get("hooks", {})  # type: ignore[assignment]
+        hooks = cast("dict[HookName, list[HookScript]]", self.edam.get("hooks", {}))
         for script in hooks.get(hook_name, []):
 
             # _env = self.env.copy()
