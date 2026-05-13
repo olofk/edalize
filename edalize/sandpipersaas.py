@@ -112,11 +112,9 @@ class Sandpipersaas(Edatool):
                     )
                 )
             else:
-                f.write(
-                    "OUTPUTDIR :=  \n".format(  # type: ignore[str-format]  # pre-existing: format placeholder missing
-                        (self.tool_options.get("output_dir", " "))
-                    )
-                )
+                # The .format(...) call was a pre-existing no-op (template has
+                # no placeholder); just emit the empty default directly.
+                f.write("OUTPUTDIR :=  \n")
 
             if self.tool_options.get("includes", []) != []:
                 f.write(

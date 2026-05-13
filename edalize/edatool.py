@@ -818,8 +818,12 @@ def gen_tool_docs() -> str:
 
         s += "\n{} backend\n{}\n\n".format(name, "~" * (len(name) + 8))
         backend_doc = backend.get_doc(0)
-        if backend_doc is not None:
-            s += _class_doc(backend_doc)
+        if backend_doc is None:
+            raise RuntimeError(
+                f"{name}.get_doc(0) returned None; cannot render backend "
+                "documentation"
+            )
+        s += _class_doc(backend_doc)
 
     return (
         _class_doc(

@@ -7,7 +7,7 @@ from __future__ import annotations
 import os.path
 from typing import Any
 
-from edalize.edam import Edam
+from edalize.edam import Edam, File as EdamFile
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 from functools import partial
@@ -41,8 +41,8 @@ class Gowin(Edatool):
         },
     }
 
-    def src_file_filter(self, f: Any) -> str:
-        def _append_library(f: Any) -> str:
+    def src_file_filter(self, f: EdamFile) -> str:
+        def _append_library(f: EdamFile) -> str:
             s = ""
             if f.get("logical_name"):
                 s += (
@@ -50,13 +50,13 @@ class Gowin(Edatool):
                 )
             return s
 
-        def _handle_src(t: str, f: Any) -> str:
+        def _handle_src(t: str, f: EdamFile) -> str:
             s = "add_file -type " + t
             s += ' "' + f["name"] + '"'
             s += _append_library(f)
             return s
 
-        def _handle_tcl(f: Any) -> str:
+        def _handle_tcl(f: EdamFile) -> str:
             return "source " + f["name"]
 
         file_mapping = {
