@@ -183,7 +183,7 @@ def subprocess_run_3_9(
     with subprocess.Popen(*popenargs, **kwargs) as process:
         try:
             stdout, stderr = process.communicate(input, timeout=timeout)
-        except TimeoutExpired as exc:  # type: ignore[name-defined]  # pre-existing: unreachable on Python >=3.7
+        except TimeoutExpired as exc:  # type: ignore[name-defined]  # pre-existing: unreachable on Python >=3.8
             process.kill()
             if _mswindows:
                 # Windows accumulates the output in a single blocking
