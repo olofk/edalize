@@ -3,6 +3,7 @@
 some
 verilator
 options
+2
 +incdir+.
 -CFLAGS -I.
 sv_file.sv

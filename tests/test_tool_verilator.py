@@ -4,9 +4,9 @@ from .edalize_tool_common import tool_fixture
 def test_tool_verilator(tool_fixture):
 
     tool_options = {
-        "make_options": ["a", "few", "make", "options"],
-        "verilator_options": ["some", "verilator", "options"],
-        "run_options": ["and", "some", "run", "options"],
+        "make_options": ["a", "few", "make", "options", 1],
+        "verilator_options": ["some", "verilator", "options", 2],
+        "run_options": ["and", "some", "run", "options", 3],
     }
 
     tf = tool_fixture("verilator", tool_options=tool_options)

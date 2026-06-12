@@ -69,7 +69,7 @@ class Verilator(Edatool):
             raise RuntimeError(_s.format(mode, ", ".join(EdalizeVerilator.modes)))
         vc.append("--" + mode)
 
-        vc += self.tool_options.get("verilator_options", [])
+        vc += list(map(str, self.tool_options.get("verilator_options", [])))
 
         vlt_files = []
         vlog_files = []
@@ -169,7 +169,7 @@ class Verilator(Edatool):
         for key, value in self.cmdlinearg.items():
             self.args += ["--{}={}".format(key, self._param_value_str(value))]
 
-        self.args += self.tool_options.get("run_options", [])
+        self.args += list(map(str, self.tool_options.get("run_options", [])))
 
         # Default to cc mode if not specified
         if "mode" not in self.tool_options:
