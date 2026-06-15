@@ -43,3 +43,9 @@ set_property source_mgmt_mode None [current_project]
 # can be achieved using `get_ips -exclude_bd_ips`
 upgrade_ip [get_ips -filter {SCOPE !~ "*.bd"}]
 generate_target all [get_ips -filter {SCOPE !~ "*.bd"}]
+
+# Update marker file for Make. (Run the subsequent jobs only if the marker has been updated)
+# This prevents the synthesis from being triggered again if Vivado randomly updates the XPR file's timestamp.
+set marker_file [open "design.xpr.marker" w]
+puts $marker_file [clock seconds]
+close $marker_file

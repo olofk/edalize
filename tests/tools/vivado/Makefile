@@ -2,15 +2,15 @@
 
 all: design.bit
 
-design.xpr: design.tcl sdc_file sv_file.sv tcl_file.tcl vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file xci_file.xci xdc_file.xdc bootrom.mem another_sv_file.sv
+design.xpr design.xpr.marker: design.tcl sdc_file sv_file.sv tcl_file.tcl vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file xci_file.xci xdc_file.xdc bootrom.mem another_sv_file.sv
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source design.tcl
 
-design.v design.edn: design_synth.tcl design_netlist.tcl | design.xpr
+design.v design.edn: design_synth.tcl design_netlist.tcl design.xpr.marker | design.xpr
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source design_synth.tcl design_netlist.tcl design.xpr
 
 synth: design.v design.edn
 
-design.bit: design_synth.tcl design_run.tcl | design.xpr
+design.bit: design_synth.tcl design_run.tcl design.xpr.marker | design.xpr
 	$(EDALIZE_LAUNCHER) vivado -notrace -mode batch -source design_synth.tcl design_run.tcl design.xpr
 
 build-gui: design.xpr
