@@ -7,51 +7,27 @@ import re
 from collections import OrderedDict
 
 from edalize.edatool import Edatool
-from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
 
 
-class Spyglass(Edatool):
+class Dc_shell(Edatool):
 
-    _description = """ Synopsys (formerly Atrenta) Spyglass Backend
+    _description = """ Synopsys (formerly Atrenta) DC_shell Backend
 
-Spyglass performs static source code analysis on HDL code and checks for common
-coding errors or coding style violations.
-
-Example snippet of a CAPI2 description file
-
-::
-
-   spyglass:
-     methodology: "GuideWare/latest/block/rtl_handoff"
-     goals:
-       - lint/lint_rtl
-     spyglass_options:
-       # prevent error SYNTH_5273 on generic RAM descriptions
-       - handlememory yes
-     rule_parameters:
-       # Allow localparam to be used in case labels (e.g. in state machines)
-       - handle_static_caselabels yes
-
+This module generates the file list for dc_shell. 
 """
 
     tool_options = {
-        "members": {"methodology": "String"},
         "lists": {
-            "goals": "String",
-            "spyglass_options": "String",
-            "rule_parameters": "String",
+            "dc_options": "String",
         },
     }
 
     argtypes = ["vlogdefine", "vlogparam"]
 
     tool_options_defaults = {
-        "methodology": "GuideWare/latest/block/rtl_handoff",
-        "goals": ["lint/lint_rtl"],
-        "spyglass_options": [],
-        "rule_parameters": [],
+        "dc_options": [],
     }
 
     def _set_tool_options_defaults(self):
@@ -103,41 +79,16 @@ Example snippet of a CAPI2 description file
         }
 
         self.render_template(
-            "spyglass-project.prj.j2", self.name + ".prj", template_vars
+            "dc_shell.tcl.j2", "dc.read_design.tcl", template_vars
         )
 
-        # Create a single TCL file for each goal
-        goals = ["Design_Read"] + self.tool_options["goals"]
-
-        for goal in goals:
-            template_vars["goal"] = goal
-            sanitized_goal = re.sub(r"[^a-zA-Z0-9]", "_", goal).lower()
-            template_vars["sanitized_goals"].append(sanitized_goal)
-
-            self.render_template(
-                "spyglass-run-goal.tcl.j2",
-                "spyglass-run-%s.tcl" % sanitized_goal,
-                template_vars,
-            )
-
-        self.render_template("Makefile.j2", "Makefile", template_vars)
-
     def src_file_filter(self, f):
-        def _vhdl_source(f):
-            s = "read_file -type vhdl"
-            if f.logical_name:
-                s += " -library " + f.logical_name
-            return s
 
         file_types = {
-            "verilogSource": "read_file -type verilog",
-            "systemVerilogSource": "read_file -type verilog",
-            "vhdlSource": _vhdl_source(f),
-            "tclSource": "source",
-            "waiver": "read_file -type waiver",
-            "awl": "read_file -type awl",
+            "verilogSource": "analyze -format sverilog",
+            "systemVerilogSource": "analyze -format sverilog",
         }
-        _file_type = get_file_type(f)
+        _file_type = f.file_type.split("-")[0]
         if _file_type in file_types:
             return file_types[_file_type] + " " + f.name
         elif _file_type == "user":
@@ -146,7 +97,7 @@ Example snippet of a CAPI2 description file
             _s = "{} has unknown file type '{}'"
             logger.warning(_s.format(f.name, f.file_type))
         return ""
-    
+
     def run_main(self):
         args = ["-i"]
 
