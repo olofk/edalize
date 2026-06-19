@@ -4,7 +4,7 @@ TOPLEVEL = vhdl_lfile
 TOPLEVEL_LIBS = --work=libx --workdir=./libx
 ANALYZE_OPTIONS = some analyze_options -P./libx
 RUN_OPTIONS = a few run_options
-
+TOP_WORKDIR = --workdir=./libx
 VHDL_SOURCES =  vhdl_file.vhd vhdl_lfile vhdl2008_file
 
 all: work-obj08.cf
@@ -13,7 +13,7 @@ run: $(TOPLEVEL)
 	$(EDALIZE_LAUNCHER) ghdl -r $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL) $(RUN_OPTIONS) $(EXTRA_OPTIONS)
 
 $(TOPLEVEL): $(VHDL_SOURCES) work-obj08.cf
-	$(EDALIZE_LAUNCHER) ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL)
+	$(EDALIZE_LAUNCHER) ghdl -m $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOP_WORKDIR) $(TOPLEVEL)
 
 $(TOPLEVEL).v: $(VHDL_SOURCES) work-obj08.cf
 	$(EDALIZE_LAUNCHER) ghdl --synth --out=verilog $(STD) $(ANALYZE_OPTIONS) $(TOPLEVEL_LIBS) $(TOPLEVEL)

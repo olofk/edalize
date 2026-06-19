@@ -4,9 +4,12 @@ import os.path
 import shutil
 
 import pytest
+import logging
 
 from edalize.edatool import get_edatool
 
+logger = logging.getLogger('Edalize')
+logger.setLevel (logging.INFO)
 
 tests_dir = os.path.dirname(__file__)
 
@@ -136,9 +139,15 @@ def compare_files(ref_dir, work_root, files):
         if "GOLDEN_RUN" in os.environ:
             shutil.copy(generated_file, reference_file)
 
+
+        with open(reference_file) as fref, open(generated_file) as fgen:
+            if fref.read() != fgen.read():
+                logger.info(f"{fref}")
+                logger.info(f"{fgen}")
+
+
         with open(reference_file) as fref, open(generated_file) as fgen:
             assert fref.read() == fgen.read(), f
-
 
 def get_flow(name):
     return getattr(import_module("edalize.flows.{}".format(name)), name.capitalize())
