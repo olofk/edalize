@@ -59,13 +59,13 @@
 		<efx:param name="load_delaym" value="on" value_type="e_bool"/>
     </efx:place_and_route>
     <efx:bitstream_generation tool_name="efx_pgm">
-		<efx:param name="mode" value="active" value_type="e_string"/>
+		<efx:param name="mode" value="{{tool_options.bitstream_gen.mode}}" value_type="e_string"/>
 		<efx:param name="width" value="1" value_type="e_string"/>
 		<!-- on, off, smart -->
 		<efx:param name="enable_roms" value="smart" value_type="e_option"/>
 		<efx:param name="spi_low_power_mode" value="on" value_type="e_bool"/>
 		<efx:param name="io_weak_pullup" value="on" value_type="e_bool"/>
-      	<efx:param name="oscillator_clock_divider" value="DIV8" value_type="e_option"/>
+      	<efx:param name="oscillator_clock_divider" value="{{tool_options.bitstream_gen.clk_div}}" value_type="e_option"/>
       	<!-- on, off -->
 		<efx:param name="bitstream_compression" value="on" value_type="e_bool"/>
         <!-- on, off -->
@@ -75,6 +75,10 @@
         <efx:param name="jtag_usercode" value="0xFFFFFFFF" value_type="e_string"/>
         <!-- on, off -->
 		<efx:param name="release_tri_then_reset" value="on" value_type="e_bool"/>
+        <!-- on, off -->
+        {% for k in tool_options.bitstream_gen.formats %}
+        <efx:param name="generate_{{k}}" value="on" value_type="e_bool"/>
+        {% endfor %}
     </efx:bitstream_generation>
 	<efx:debugger>
 		<efx:param name="work_dir" value="work_dbg" value_type="e_string" />
