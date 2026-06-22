@@ -20,6 +20,7 @@ class Xcelium(Edatool):
         },
         "timescale": {"type": "str", "desc": "Default timescale for simulation"},
         "xrun_options": {"type": "str", "desc": "Additional run options for xrun"},
+        "gui": {"type": "bool", "desc": "Invoke the Graphical User Interface (GUI)"},
     }
 
     V_SRC_FILE_TYPES = ["verilogSource", "systemVerilogSource"]
@@ -183,6 +184,9 @@ class Xcelium(Edatool):
 
     def run(self):
         args = ["-R"]
+
+        if self.tool_options.get("gui"):
+            args += ["-gui"]
 
         # Set plusargs
         if self.plusarg:
