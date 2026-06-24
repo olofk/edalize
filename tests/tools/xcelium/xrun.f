@@ -1,6 +1,4 @@
 -sv
--input
-tcl_file.tcl
 +define+vlogdefine_bool=1
 +define+vlogdefine_int=42
 +define+vlogdefine_str=""hello""

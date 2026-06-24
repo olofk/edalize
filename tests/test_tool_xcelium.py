@@ -22,6 +22,12 @@ def test_tool_xcelium(tool_fixture):
         ]
     )
 
+    cmd, args, _ = tf.tool.run()
+    assert cmd == "xrun"
+    assert "-R" in args
+    assert "-input" in args
+    assert args[args.index("-input") + 1] == "tcl_file.tcl"
+
 
 def test_tool_xcelium_minimal(tool_fixture):
     tf = tool_fixture("xcelium", tool_options={}, paramtypes=[], ref_subdir="minimal")
@@ -34,6 +40,12 @@ def test_tool_xcelium_minimal(tool_fixture):
             "xrun.f",
         ]
     )
+
+    cmd, args, _ = tf.tool.run()
+    assert cmd == "xrun"
+    assert "-R" in args
+    assert "-input" in args
+    assert args[args.index("-input") + 1] == "tcl_file.tcl"
 
 
 @pytest.mark.parametrize("gui", (None, False, True))
