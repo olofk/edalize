@@ -84,9 +84,9 @@ class Xcelium(Edatool):
         )
 
         # Append TCL scripts
-        tcl_cmd = []
+        self.tcl_cmd = []
         for tcl in tcl_files:
-            tcl_cmd += ["-input", tcl]
+            self.tcl_cmd += ["-input", tcl]
 
         # Append DPI libraries
         dpi_lib_cmd = []
@@ -167,7 +167,6 @@ class Xcelium(Edatool):
         self.xrun_f = (
             en_64bit_cmd
             + sv_cmd
-            + tcl_cmd
             + dpi_lib_cmd
             + macro_def_cmd
             + vlogparam_cmd
@@ -183,7 +182,7 @@ class Xcelium(Edatool):
         self.update_config_file("xrun.f", "\n".join(self.xrun_f) + "\n")
 
     def run(self):
-        args = ["-R"]
+        args = ["-R"] + self.tcl_cmd
 
         if self.tool_options.get("gui"):
             args += ["-gui"]
