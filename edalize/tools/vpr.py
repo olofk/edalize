@@ -2,7 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import shutil
+
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 import logging
@@ -40,7 +44,7 @@ class Vpr(Edatool):
         },
     }
 
-    def get_version(self):
+    def get_version(self) -> str:
         """
         Get tool version.
 
@@ -61,7 +65,7 @@ class Vpr(Edatool):
             logger.warning("Unable to recognize VPR version")
         return version
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         """
         Configuration is the first phase of the build.
 
@@ -86,7 +90,7 @@ class Vpr(Edatool):
                     )
                 netlist_file = f["name"]
             if file_type in ["SDC"]:
-                timing_constraints.append(f.name)
+                timing_constraints.append(f["name"])  # pre-existing: was f.name (dict-as-attr typo)
 
         arch_xml = self.tool_options.get("arch_xml")
         if not arch_xml:
@@ -102,7 +106,9 @@ class Vpr(Edatool):
         # First, check if gen_constraint value list is passed in and is the correct size
         gen_constr_list = self.tool_options.get("generate_constraints", [])
 
-        depends = netlist_file
+        # ``depends`` alternates between a single dep name (str) and a list
+        # of dep names; widen the annotation so both reassignments type-check.
+        depends: str | list[str] = netlist_file
         targets = self.name + ".net"
         command = ["vpr", arch_xml, netlist_file, "--pack"]
         command += (
@@ -110,6 +116,7 @@ class Vpr(Edatool):
             if gen_constr_list
             else []
         )
+        assert isinstance(depends, str)
         commands.add(command, [targets], [depends])
 
         # Run generate constraints script if correct list exists
@@ -172,6 +179,6 @@ class Vpr(Edatool):
         commands.set_default_target(targets)
         self.commands = commands
 
-    def build(self):
+    def build(self) -> tuple[str, list[str], str]:
         logger.info("Building")
-        return ("make", self.args, self.work_root)
+        return ("make", [], self.work_root)

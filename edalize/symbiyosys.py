@@ -2,10 +2,15 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import re
+from typing import Any
+
 import jinja2
 
+from edalize.edam import Edam, ToolDoc
 from edalize.edatool import Edatool
 
 
@@ -104,7 +109,7 @@ You can reproduce the example above with something like
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    tool_options = {
+    tool_options: dict[str, Any] = {
         "lists": {
             # A list of tasks to run from the .sby file. Passed on the sby
             # command line.
@@ -112,7 +117,13 @@ You can reproduce the example above with something like
         }
     }
 
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+    def __init__(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+        verbose: bool = True,
+    ) -> None:
         super(Symbiyosys, self).__init__(edam, work_root, eda_api, verbose)
 
         # Register Jinja filters
@@ -120,18 +131,18 @@ You can reproduce the example above with something like
 
         # The list of RTL paths in the fileset (populated at configure time by
         # _get_file_names)
-        self.rtl_paths = None
+        self.rtl_paths: list[str] | None = None
 
         # The list of include directories in the fileset (populated at
         # configure time by _get_file_names)
-        self.incdirs = None
+        self.incdirs: list[str] | None = None
 
         # The name of the interpolated .sby file that we create in the work
         # root
         self.sby_name = "test.sby"
 
     @staticmethod
-    def get_doc(api_ver):
+    def get_doc(api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "SymbiYosys formal verification wrapper for Yosys",
@@ -146,14 +157,15 @@ You can reproduce the example above with something like
                     }
                 ],
             }
+        return None
 
-    def _get_file_names(self):
+    def _get_file_names(self) -> str:
         """Read the fileset to get our file names"""
         assert self.rtl_paths is None
 
         src_files, self.incdirs = self._get_fileset_files()
         self.rtl_paths = []
-        bn_to_path = {}
+        bn_to_path: dict[str, str] = {}
         sby_names = []
 
         # RTL files have types verilogSource or systemVerilogSource*. We
@@ -194,7 +206,7 @@ You can reproduce the example above with something like
 
         return sby_names[0]
 
-    def _get_read_flags(self):
+    def _get_read_flags(self) -> str:
         """
         Return a string with the flags that should be passed for each read.
 
@@ -208,7 +220,7 @@ You can reproduce the example above with something like
             + ["-I{}".format(inc) for inc in self.incdirs]
         )
 
-    def _get_chparam(self):
+    def _get_chparam(self) -> str:
         """
         Return a string for the {{chparam}} variable.
         """
@@ -225,7 +237,7 @@ You can reproduce the example above with something like
         chparam_lst.append(self.toplevel)
         return " ".join(chparam_lst)
 
-    def _gen_reads(self, value):
+    def _gen_reads(self, value: str) -> str:
         """
         Custom jinja filter that generates read lines for each source file.
 
@@ -247,7 +259,7 @@ You can reproduce the example above with something like
 
         return "\n".join(lines)
 
-    def _interpolate_sby(self, src):
+    def _interpolate_sby(self, src: str) -> None:
         """
         Patch a .sby template to read the right paths.
 
@@ -288,7 +300,7 @@ You can reproduce the example above with something like
         with open(dst_path, "w") as df:
             df.write(template.render(template_ctxt))
 
-    def _dump_file_lists(self):
+    def _dump_file_lists(self) -> None:
         """
         Dump the list of RTL files and incdirs in work_root.
 
@@ -302,15 +314,15 @@ You can reproduce the example above with something like
         with open(os.path.join(self.work_root, "incdirs.txt"), "w") as handle:
             handle.write("\n".join(self.incdirs) + "\n")
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         clean_sby_name = self._get_file_names()
         self._interpolate_sby(clean_sby_name)
         self._dump_file_lists()
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         pass
 
-    def run_main(self):
+    def run_main(self) -> None:
         tasknames = self.tool_options.get("tasknames", [])
         if not isinstance(tasknames, list):
             raise RuntimeError(

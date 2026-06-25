@@ -2,12 +2,15 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 import platform
 import re
 import subprocess
 
+from edalize.edam import Edam, ToolDoc
 from edalize.edatool import Edatool
 from edalize.yosys import Yosys
 from edalize.flows.vivado import Vivado as Vivado_underlying
@@ -29,7 +32,7 @@ class Vivado(Edatool):
     argtypes = ["vlogdefine", "vlogparam", "generic"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "The Vivado backend executes Xilinx Vivado to build systems and program the FPGA",
@@ -93,8 +96,15 @@ class Vivado(Edatool):
                     },
                 ],
             }
+        return None
 
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+    def __init__(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+        verbose: bool = True,
+    ) -> None:
         logger.warning(
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
@@ -102,10 +112,10 @@ class Vivado(Edatool):
         edam["flow_options"] = edam["tool_options"]["vivado"]
         self.vivado = Vivado_underlying(edam, work_root, verbose)
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         self.vivado.configure()
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         logger.info("Building")
         args = []
         if "pnr" in self.tool_options:
@@ -121,7 +131,7 @@ class Vivado(Edatool):
 
         self._run_tool("make", args)
 
-    def run_main(self):
+    def run_main(self) -> None:
         """
         Program the FPGA.
 
@@ -134,8 +144,8 @@ class Vivado(Edatool):
 
         self._run_tool("make", ["pgm"])
 
-    def build_pre(self):
+    def build_pre(self) -> None:
         pass
 
-    def build_post(self):
+    def build_post(self) -> None:
         pass

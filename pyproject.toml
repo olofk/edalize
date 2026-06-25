@@ -24,7 +24,8 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
     "Jinja2>=3",
-    "importlib_metadata>=1.4; python_version < '3.10'"
+    "importlib_metadata>=1.4; python_version < '3.10'",
+    "typing_extensions>=4.6; python_version < '3.11'",
 ]
 requires-python = ">=3.9, <4"
 
@@ -47,7 +48,63 @@ write_to = "edalize/version.py"
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
+    "mypy>=1.8",
 ]
 
 [tool.setuptools.packages.find]
 include = ["edalize", "edalize.tools", "edalize.flows", "edalize.build_runners"]
+
+[tool.setuptools.package-data]
+edalize = ["py.typed"]
+
+# ---------------------------------------------------------------------------
+# mypy configuration
+#
+# We deliberately start lenient so the CI gate stays green while annotations
+# are added incrementally. Tighten module-by-module as backends are cleaned up.
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.10"
+files = ["edalize"]
+# Edalize is laid out as PEP 420 namespace packages (no __init__.py).
+namespace_packages = true
+explicit_package_bases = true
+# Lenient defaults for incremental adoption:
+ignore_missing_imports = true
+check_untyped_defs = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+warn_unused_ignores = false
+warn_redundant_casts = true
+warn_return_any = false
+no_implicit_optional = false
+strict_optional = false
+# Keep noise down while we ramp up coverage; remove once everything is annotated.
+allow_untyped_globals = true
+
+# Test code is intentionally not type-checked yet.
+exclude = [
+    "^edalize/tests/",
+    "build/",
+]
+
+# Per-module overrides for modules that pass `mypy --strict` cleanly.
+# Add modules to this list as they get cleaned up.
+[[tool.mypy.overrides]]
+module = [
+    "edalize.edam",
+    "edalize.edatool",
+    "edalize.tools.edatool",
+    "edalize.flows.edaflow",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+warn_return_any = true
+warn_unused_ignores = true
+no_implicit_optional = true
+strict_equality = true
+strict_optional = true
+check_untyped_defs = true

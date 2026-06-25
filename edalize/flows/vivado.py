@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os.path
+from __future__ import annotations
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+import os.path
+from typing import Any
+
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Vivado(Edaflow):
@@ -12,7 +15,7 @@ class Vivado(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    FLOW_DEFINED_TOOL_OPTIONS = {
+    FLOW_DEFINED_TOOL_OPTIONS: dict[str, dict[str, Any]] = {
         "yosys": {"arch": "xilinx", "output_format": "edif"},
     }
 
@@ -35,7 +38,7 @@ class Vivado(Edaflow):
     }
 
     @classmethod
-    def get_tool_options(cls, flow_options):
+    def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         flow = flow_options.get("frontends", []).copy()
 
         if flow_options.get("synth") == "yosys":
@@ -44,11 +47,11 @@ class Vivado(Edaflow):
 
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
 
-    def configure_flow(self, flow_options):
-        flow = {}
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
+        flow: dict[str, FlowNodeSpec] = {}
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -66,14 +69,14 @@ class Vivado(Edaflow):
         self.commands.set_default_target(name + ".bit")
         return FlowGraph.fromdict(flow)
 
-    def build(self):
+    def build(self) -> None:
         (cmd, args) = self.build_runner.get_build_command()
         pnr_opt = self.flow_options.get("pnr", "")
         if pnr_opt == "none":
             args.append("synth")
         self._run_tool(cmd, args=args, cwd=self.work_root)
 
-    def run(self):
+    def run(self, args: Any = None) -> None:
         if self.flow_options.get("pgm"):
 
             # Get run command from tool instance

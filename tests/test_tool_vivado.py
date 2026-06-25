@@ -23,7 +23,7 @@ def test_tool_vivado_tags(tool_fixture):
 
     files = FILES.copy()
     files.append(
-        {"name": "testbench.v", "file_type": "verilogSource", "tags": "simulation"}
+        {"name": "testbench.v", "file_type": "verilogSource", "tags": ["simulation"]}
     )
 
     tf = tool_fixture("vivado", files=files, ref_subdir="tags")

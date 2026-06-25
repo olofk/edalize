@@ -12,11 +12,13 @@ The tests in :mod:`tests/test_reporting.py` are the current best reference
 for use of the reporting modules.
 """
 
+from __future__ import annotations
+
 import abc
 import io
 import logging
 import pathlib
-from typing import Dict, Union, Callable, Optional
+from typing import Any, Callable, Dict, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -311,7 +313,7 @@ class Reporting(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def report_summary(cls, resources, timing):
+    def report_summary(cls, resources: Any, timing: Any) -> Dict[str, Any]:
         """
         Resource summary in a backend-independent format.
 
@@ -341,7 +343,7 @@ class Reporting(abc.ABC):
         pass
 
     @classmethod
-    def report_resources(cls, report_file: str):
+    def report_resources(cls, report_file: str) -> Any:
         """
         Detailed device-dependent resource information.
 
@@ -359,7 +361,7 @@ class Reporting(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def report_timing(cls, report_file: str):
+    def report_timing(cls, report_file: str) -> Any:
         """
         Detailed device-dependent timing information.
 
@@ -403,7 +405,7 @@ class Reporting(abc.ABC):
         :rtype: dict(str, pandas.DataFrame)
         """
 
-        result = {"summary": None, "resources": None, "timing": None}
+        result: Dict[str, Any] = {"summary": None, "resources": None, "timing": None}
 
         report_dir = pathlib.Path(dir)
         resource_rpt = list(report_dir.glob(cls._resource_rpt_pattern))

@@ -2,8 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
+from typing import Any
 
 from edalize.edatool import Edatool
 
@@ -39,7 +42,9 @@ Example snippet of a CAPI2 description file for VCS:
 
     argtypes = ["plusarg", "vlogdefine", "vlogparam"]
 
-    def _filelist_has_filetype(self, file_list, string, match_type="prefix"):
+    def _filelist_has_filetype(
+        self, file_list: list[Any], string: str, match_type: str = "prefix"
+    ) -> bool:
         for f in file_list:
             if match_type == "prefix" and f.file_type.startswith(string):
                 return True
@@ -47,8 +52,8 @@ Example snippet of a CAPI2 description file for VCS:
                 return True
         return False
 
-    def configure_main(self):
-        def _vcs_filelist_filter(src_file):
+    def configure_main(self) -> None:
+        def _vcs_filelist_filter(src_file: Any) -> bool:
             ft = src_file.file_type
             # XXX: C source files can be passed to VCS to be compiled into DPI
             # libraries; passing C sources together with RTL sources is a
@@ -94,7 +99,7 @@ Example snippet of a CAPI2 description file for VCS:
 
         self.render_template("Makefile.j2", "Makefile", template_vars)
 
-    def run_main(self):
+    def run_main(self) -> None:
         args = ["run"]
 
         # Set plusargs

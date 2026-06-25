@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import re
+from __future__ import annotations
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+import re
+from typing import Any
+
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Apicula(Edaflow):
@@ -13,7 +16,7 @@ class Apicula(Edaflow):
     argtypes = ["vlogdefine", "vlogparam"]
     verbose = False
 
-    _flow = {
+    _flow: dict[str, FlowNodeSpec] = {
         "yosys": {"fdto": {"arch": "gowin", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "gowin"}},
         "gowinpack": {"deps": ["nextpnr"], "fdto": {}},
@@ -53,7 +56,7 @@ class Apicula(Edaflow):
     }
 
     @classmethod
-    def get_tool_options(cls, flow_options):
+    def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         tools = flow_options.get("frontends", []) + list(cls._flow)
 
         flow_defined_tool_options = {}
@@ -61,12 +64,12 @@ class Apicula(Edaflow):
             flow_defined_tool_options[tool] = parameters.get("fdto", {})
         return cls.get_filtered_tool_options(tools, flow_defined_tool_options)
 
-    def configure_flow(self, flow_options):
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
 
         flow = self._flow.copy()
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -103,7 +106,7 @@ class Apicula(Edaflow):
 
         return FlowGraph.fromdict(flow)
 
-    def configure_tools(self, flow):
+    def configure_tools(self, flow: FlowGraph) -> None:
         self.edam["tool_options"]["nextpnr"]["device"] = self.device
         self.edam["tool_options"]["gowinpack"]["device"] = self.device
         self.edam["tool_options"]["nextpnr"]["device_family"] = self.device_family
@@ -112,11 +115,11 @@ class Apicula(Edaflow):
 
         super().configure_tools(flow)
 
-    def build(self):
+    def build(self) -> None:
         (cmd, args) = self.build_runner.get_build_command()
         self._run_tool(cmd, args=args, cwd=self.work_root, quiet=True)
 
-    def run(self):
+    def run(self, args: Any = None) -> None:
         (cmd, args) = self.build_runner.get_build_command()
         args += ["openfpgaloader"]
         self._run_tool(cmd, args=args, cwd=self.work_root)

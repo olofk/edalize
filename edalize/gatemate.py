@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os.path
 import re
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import EdaCommands
 from edalize.yosys import Yosys
@@ -15,9 +18,11 @@ class Gatemate(Edatool):
     argtypes = ["vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
-            options = {
+            options: ToolDoc = {
+                # Placeholder; the return statement below sets the final description.
+                "description": "",
                 "lists": [
                     {
                         "name": "p_r_options",
@@ -41,8 +46,9 @@ class Gatemate(Edatool):
                 "members": options["members"],
                 "lists": options["lists"],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         (src_files, incdirs) = self._get_fileset_files()
         synth_out = self.name + "_synth.v"
 

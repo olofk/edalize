@@ -2,11 +2,14 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import re
 import os
 import subprocess
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -17,7 +20,7 @@ class Veriblelint(Edatool):
     argtypes = ["vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Verible lint backend (verible-verilog-lint)",
@@ -41,11 +44,12 @@ class Veriblelint(Edatool):
                     },
                 ],
             }
+        return None
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         pass
 
-    def _get_tool_args(self):
+    def _get_tool_args(self) -> list[str]:
         args = ["--lint_fatal", "--parse_fatal"]
 
         if "rules" in self.tool_options:
@@ -57,7 +61,7 @@ class Veriblelint(Edatool):
 
         return args
 
-    def run_main(self):
+    def run_main(self) -> None:
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
         src_files_filtered = []

@@ -2,12 +2,15 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 import platform
 import re
 import subprocess
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import EdaCommands
 from edalize.yosys import Yosys
@@ -33,9 +36,11 @@ class Symbiflow(Edatool):
     fpga_interchange_families = ["xc7"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
-            symbiflow_help = {
+            symbiflow_help: ToolDoc = {
+                # Placeholder; the return statement below sets the final description.
+                "description": "",
                 "members": [
                     {
                         "name": "arch",
@@ -81,11 +86,12 @@ class Symbiflow(Edatool):
                 "description": "The Symbiflow backend executes Yosys sythesis tool and VPR/Nextpnr place and route. It can target multiple different FPGA vendors",
                 "members": symbiflow_members,
             }
+        return None
 
-    def get_version(self):
+    def get_version(self) -> str:
         return "1.0"
 
-    def configure_nextpnr(self):
+    def configure_nextpnr(self) -> None:
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
         vendor = self.tool_options.get("vendor")
 
@@ -241,7 +247,7 @@ endif
         commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, "Makefile"))
 
-    def configure_vpr(self):
+    def configure_vpr(self) -> None:
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
         has_vhdl = "vhdlSource" in [x.file_type for x in src_files]
@@ -397,7 +403,7 @@ endif
             commands.set_default_target(targets)
         commands.write(os.path.join(self.work_root, "Makefile"))
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         if self.tool_options.get("pnr") == "nextpnr":
             self.configure_nextpnr()
         elif self.tool_options.get("pnr") in ["vtr", "vpr"]:
@@ -407,5 +413,5 @@ endif
                 "Unsupported PnR tool: {}".format(self.tool_options.get("pnr"))
             )
 
-    def run_main(self):
+    def run_main(self) -> None:
         logger.info("Programming")

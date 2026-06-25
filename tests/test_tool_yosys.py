@@ -41,7 +41,7 @@ def test_tool_yosys_tags(tool_fixture):
     tool_options = {"arch": "ice40"}
     files = FILES.copy()
     files.append(
-        {"name": "testbench.v", "file_type": "verilogSource", "tags": "simulation"}
+        {"name": "testbench.v", "file_type": "verilogSource", "tags": ["simulation"]}
     )
 
     tf = tool_fixture(

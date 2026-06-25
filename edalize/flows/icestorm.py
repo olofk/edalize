@@ -2,10 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os.path
 from importlib import import_module
+from typing import Any
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Icestorm(Edaflow):
@@ -13,7 +16,7 @@ class Icestorm(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    _flow = {
+    _flow: dict[str, FlowNodeSpec] = {
         "yosys": {"fdto": {"arch": "ice40", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "ice40"}},
         "icepack": {"deps": ["nextpnr"]},
@@ -31,7 +34,7 @@ class Icestorm(Edaflow):
     }
 
     @classmethod
-    def get_tool_options(cls, flow_options):
+    def get_tool_options(cls, flow_options: dict[str, Any]) -> dict[str, Any]:
         tools = flow_options.get("frontends", []) + list(cls._flow)
 
         flow_defined_tool_options = {}
@@ -39,12 +42,12 @@ class Icestorm(Edaflow):
             flow_defined_tool_options[k] = v.get("fdto", {})
         return cls.get_filtered_tool_options(tools, flow_defined_tool_options)
 
-    def configure_flow(self, flow_options):
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
 
         flow = self._flow.copy()
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -73,7 +76,7 @@ class Icestorm(Edaflow):
 
         return FlowGraph.fromdict(flow)
 
-    def configure_tools(self, nodes):
+    def configure_tools(self, nodes: FlowGraph) -> None:
         super().configure_tools(nodes)
 
         name = self.edam["name"]
@@ -84,5 +87,5 @@ class Icestorm(Edaflow):
         self.commands.add(command, [targets], [depends])
         self.commands.add([], ["stats"], [targets])
 
-    def build(self):
+    def build(self) -> None:
         self._run_tool("make", [self.goal], cwd=self.work_root)

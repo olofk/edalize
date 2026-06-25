@@ -2,10 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os
 import logging
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -63,7 +66,7 @@ class Verilator(Edatool):
     ]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Verilator is the fastest free Verilog HDL simulator, and outperforms most commercial simulators",
@@ -122,8 +125,9 @@ class Verilator(Edatool):
                     },
                 ],
             }
+        return None
 
-    def check_managed_parser(self):
+    def check_managed_parser(self) -> None:
         managed = (
             "cli_parser" not in self.tool_options
             or self.tool_options["cli_parser"] == "managed"
@@ -133,7 +137,7 @@ class Verilator(Edatool):
                 "The cli_parser argument is deprecated. Use run_options to pass raw arguments to verilated models"
             )
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         logger.warning(
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
@@ -145,11 +149,8 @@ class Verilator(Edatool):
 
         self._write_config_files()
 
-    def _write_config_files(self):
+    def _write_config_files(self) -> None:
         # Future improvement: Separate include directories of c and verilog files
-        incdirs = set()
-        src_files = []
-
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
         self.verilator_file = self.name + ".vc"
@@ -239,7 +240,7 @@ class Verilator(Edatool):
                 )
             )
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         logger.info("Building simulation model")
         if "mode" not in self.tool_options:
             self.tool_options["mode"] = "cc"
@@ -273,7 +274,7 @@ class Verilator(Edatool):
         if str(self.tool_options.get("gen-preprocess")).lower() == "true":
             self._run_tool("make", ["preprocess-only"], quiet=True)
 
-    def run_main(self):
+    def run_main(self) -> None:
         self.check_managed_parser()
         self.args = []
         for key, value in self.plusarg.items():

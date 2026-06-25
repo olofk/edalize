@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -40,7 +43,7 @@ class Icarus(Edatool):
     argtypes = ["plusarg", "vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code written in Verilog (IEEE-1364) into some target format",
@@ -60,8 +63,9 @@ class Icarus(Edatool):
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         logger.warning(
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
@@ -149,7 +153,7 @@ class Icarus(Edatool):
                     )
                 )
 
-    def run_main(self):
+    def run_main(self) -> None:
         args = ["run"]
 
         # Set plusargs

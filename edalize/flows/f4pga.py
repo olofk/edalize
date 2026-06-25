@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os.path
+from __future__ import annotations
 
-from edalize.flows.edaflow import Edaflow
+import os.path
+from typing import Any
+
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class F4pga(Edaflow):
@@ -96,7 +99,7 @@ class F4pga(Edaflow):
     ]
 
     # Creates the flow tree with Yosys and VPR or NextPNR nodes
-    def configure_flow(self, flow_options):
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
 
         # Set target
         # toplevel = self.edam["toplevel"]
@@ -149,7 +152,7 @@ class F4pga(Edaflow):
             )
             synth_options.update({"f4pga_synth_part_file": part_json})
 
-        pnr_options = {}
+        pnr_options: dict[str, Any] = {}
         if self.pnr_tool == "vpr":
             self.eblif_file = f"{self.name}.eblif"
             pnr_options.update({"arch_xml": self.arch_xml})
@@ -187,13 +190,14 @@ class F4pga(Edaflow):
         elif self.pnr_tool == "nextpnr":
             pnr_options.update({"arch": flow_options.get("arch", "xilinx")})
 
-        return [
-            (synth_tool, [self.pnr_tool], synth_options),
-            (self.pnr_tool, [], pnr_options),
-        ]
+        flow: dict[str, FlowNodeSpec] = {
+            synth_tool: {"deps": [], "fdto": synth_options},
+            self.pnr_tool: {"deps": [synth_tool], "fdto": pnr_options},
+        }
+        return FlowGraph.fromdict(flow)
 
     # Adds the FASM and bitstream generation
-    def configure_tools(self, nodes):
+    def configure_tools(self, nodes: FlowGraph) -> None:
         super().configure_tools(nodes)
 
         if self.pnr_tool != "nextpnr":

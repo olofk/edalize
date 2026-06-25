@@ -2,9 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
+from typing import IO, Any
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -49,7 +53,7 @@ class Questaformal(Edatool):
     argtypes = ["plusarg", "vlogdefine", "vlogparam", "generic"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Questa Formal from Mentor Graphics",
@@ -76,8 +80,9 @@ class Questaformal(Edatool):
                     },
                 ],
             }
+        return None
 
-    def _write_build_rtl_tcl_file(self, tcl_main):
+    def _write_build_rtl_tcl_file(self, tcl_main: IO[str]) -> None:
         tcl_build_rtl = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), "w")
 
         (src_files, incdirs) = self._get_fileset_files()
@@ -132,7 +137,7 @@ class Questaformal(Edatool):
                 args += [f.name.replace("\\", "/")]
                 tcl_build_rtl.write("{} {}\n".format(cmd, " ".join(args)))
 
-    def _write_makefile(self):
+    def _write_makefile(self) -> None:
         vpi_make = open(os.path.join(self.work_root, "Makefile"), "w")
         _parameters = []
         for key, value in self.vlogparam.items():
@@ -174,7 +179,7 @@ class Questaformal(Edatool):
 
         vpi_make.close()
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         tcl_main = open(os.path.join(self.work_root, "edalize_main.tcl"), "w")
         tcl_main.write("onerror { quit -code 1; }\n")
         tcl_main.write("do edalize_build_rtl.tcl\n")
@@ -192,7 +197,7 @@ class Questaformal(Edatool):
         self._write_makefile()
         tcl_main.close()
 
-    def run_main(self):
+    def run_main(self) -> None:
         args = ["run"]
 
         # Set plusargs

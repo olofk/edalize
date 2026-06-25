@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -16,7 +19,7 @@ class Yosys(Edatool):
     argtypes = ["vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Open source synthesis tool targeting many different FPGAs",
@@ -60,8 +63,9 @@ class Yosys(Edatool):
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         logger.warning(
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
@@ -69,7 +73,7 @@ class Yosys(Edatool):
 
         yosys_template = self.tool_options.get("yosys_template")
 
-        incdirs = []
+        incdirs: list[str] = []
         file_table = []
         unused_files = []
 

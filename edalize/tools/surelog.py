@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import os.path
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -16,10 +19,10 @@ class Surelog(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
-        incdirs = []
+        incdirs: list[str] = []
         file_table = []
         unused_files = []
 
@@ -49,9 +52,9 @@ class Surelog(Edatool):
         self.edam["files"].append({"name": output_file, "file_type": "uhdm"})
 
         # Handle verilog defines
-        verilog_defines = []
+        verilog_defines: list[str] = []
         for key, value in self.vlogdefine.items():
-            verilog_params.append(f"+define+{key}={value}")
+            verilog_defines.append(f"+define+{key}={value}")
 
         # Handle verilog parameters
         verilog_params = []

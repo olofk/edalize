@@ -2,6 +2,9 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -18,7 +21,7 @@ class Ecppack(Edatool):
         }
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         unused_files = []

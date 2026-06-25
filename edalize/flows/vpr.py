@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os.path
+from __future__ import annotations
 
-from edalize.flows.edaflow import Edaflow, FlowGraph
+import os.path
+from typing import Any
+
+from edalize.flows.edaflow import Edaflow, FlowGraph, FlowNodeSpec
 
 
 class Vpr(Edaflow):
@@ -12,18 +15,15 @@ class Vpr(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    def configure_flow(self, flow_options):
+    def configure_flow(self, flow_options: dict[str, Any]) -> FlowGraph:
 
-        flow = {
-            "yosys": {"ftdo": {"output_format": "blif"}},
+        flow: dict[str, FlowNodeSpec] = {
+            "yosys": {"fdto": {"output_format": "blif"}},
             "vpr": {"deps": ["yosys"]},
         }
         return FlowGraph.fromdict(flow)
 
-    def build_tool_graph(self):
-        return super().build_tool_graph()
-
-    def configure_tools(self, nodes):
+    def configure_tools(self, nodes: FlowGraph) -> None:
         super().configure_tools(nodes)
         name = self.edam["name"]
         self.commands.set_default_target(name + ".analysis")

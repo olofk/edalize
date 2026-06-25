@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 from io import StringIO
 import os
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -30,11 +33,11 @@ class Icarus(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         scr_file = StringIO()
-        incdirs = []
+        incdirs: list[str] = []
         vlog_files = []
         depfiles = []
         unused_files = []
@@ -117,10 +120,10 @@ class Icarus(Edatool):
         self.commands = commands
         self.scr_file = scr_file
 
-    def write_config_files(self):
+    def write_config_files(self) -> None:
         self.update_config_file(self.name + ".scr", self.scr_file.getvalue())
 
-    def run(self):
+    def run(self) -> tuple[str, list[str], str]:
         args = ["run"]
 
         # Set plusargs

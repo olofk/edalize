@@ -2,11 +2,14 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
 import re
 import shutil
 
+from edalize.edam import Edam, ToolDoc
 from edalize.edatool import Edatool
 
 
@@ -18,7 +21,7 @@ class Openroad(Edatool):
     argtypes = ["vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Open source flow for ASIC synthesis, placement and routing",
@@ -36,25 +39,32 @@ class Openroad(Edatool):
                 ],
                 "lists": [],
             }
+        return None
 
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+    def __init__(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+        verbose: bool = True,
+    ) -> None:
         super(Openroad, self).__init__(edam, work_root, eda_api, verbose)
 
         # The list of RTL paths in the fileset (populated at configure time by
         # _get_file_names)
-        self.rtl_paths = None
+        self.rtl_paths: list[str] | None = None
 
         # The list of include directories in the fileset (populated at
         # configure time by _get_file_names)
-        self.incdirs = None
+        self.incdirs: list[str] | None = None
 
-    def _get_file_names(self):
+    def _get_file_names(self) -> None:
         """Read the fileset to get our file names"""
         assert self.rtl_paths is None
 
         src_files, self.incdirs = self._get_fileset_files()
         self.rtl_paths = []
-        bn_to_path = {}
+        bn_to_path: dict[str, str] = {}
 
         # RTL files have types verilogSource or systemVerilogSource*
         ft_re = re.compile(r"(:?systemV|v)erilogSource")
@@ -73,7 +83,7 @@ class Openroad(Edatool):
                 bn_to_path[basename] = file_obj.name
                 continue
 
-    def _dump_file_lists(self):
+    def _dump_file_lists(self) -> None:
         """
         Dump the list of RTL files and incdirs in work_root.
 
@@ -87,7 +97,7 @@ class Openroad(Edatool):
         with open(os.path.join(self.work_root, "incdirs.txt"), "w") as handle:
             handle.write("\n".join(self.incdirs) + "\n")
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         self._get_file_names()
         self._dump_file_lists()
 
@@ -167,10 +177,10 @@ class Openroad(Edatool):
                 os.path.join(self.work_root, "Makefile"),
             )
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         pass
 
-    def run_main(self):
+    def run_main(self) -> None:
         print("run_main")
         args = [
             "DESIGN_CONFIG=./config.mk",

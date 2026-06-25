@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import re
 from collections import OrderedDict
+from typing import Any
 
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
@@ -36,7 +39,7 @@ Example snippet of a CAPI2 description file
 
 """
 
-    tool_options = {
+    tool_options: dict[str, Any] = {
         "members": {"methodology": "String"},
         "lists": {
             "goals": "String",
@@ -47,14 +50,14 @@ Example snippet of a CAPI2 description file
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    tool_options_defaults = {
+    tool_options_defaults: dict[str, Any] = {
         "methodology": "GuideWare/latest/block/rtl_handoff",
         "goals": ["lint/lint_rtl"],
         "spyglass_options": [],
         "rule_parameters": [],
     }
 
-    def _set_tool_options_defaults(self):
+    def _set_tool_options_defaults(self) -> None:
         for key, default_value in self.tool_options_defaults.items():
             if not key in self.tool_options:
                 logger.info(
@@ -63,7 +66,7 @@ Example snippet of a CAPI2 description file
                 )
                 self.tool_options[key] = default_value
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         """
         Configuration is the first phase of the build.
 
@@ -122,8 +125,8 @@ Example snippet of a CAPI2 description file
 
         self.render_template("Makefile.j2", "Makefile", template_vars)
 
-    def src_file_filter(self, f):
-        def _vhdl_source(f):
+    def src_file_filter(self, f: Any) -> str:
+        def _vhdl_source(f: Any) -> str:
             s = "read_file -type vhdl"
             if f.logical_name:
                 s += " -library " + f.logical_name

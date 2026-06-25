@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -14,10 +17,10 @@ class Sv2v(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
-        incdirs = []
+        incdirs: list[str] = []
         sv_files = []
         unused_files = []
 

@@ -2,9 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 import os.path
 
+from edalize.edam import Edam
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -39,7 +42,7 @@ class Sandpipersaas(Edatool):
         },
     }
 
-    def setup(self, edam):
+    def setup(self, edam: Edam) -> None:
         super().setup(edam)
 
         if len(self.files) > 1:
@@ -105,11 +108,11 @@ class Sandpipersaas(Edatool):
         commands.add([_gen_s], targets, deps)
         commands.add_env_var("RM", "rm -rf")
 
-        commands.add(["${RM} " + self.work_root], ["clean"], " ")
+        commands.add(["${RM} " + self.work_root], ["clean"], [])
         commands.set_default_target(output_file_path)
         self.commands = commands
 
-    def run(self):
+    def run(self) -> tuple[str, list[str], str]:
         args = [self.output_file_path]
         # Set plusargs
         if self.plusarg:

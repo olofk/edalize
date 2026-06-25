@@ -2,12 +2,15 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 import os.path
 
+from edalize.edam import Edam, ToolDoc
 from edalize.edatool import Edatool
 from edalize.nextpnr import Nextpnr
 from edalize.yosys import Yosys
@@ -19,9 +22,11 @@ class Icestorm(Edatool):
     argtypes = ["vlogdefine", "vlogparam"]
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
-            options = {
+            options: ToolDoc = {
+                # Placeholder; the return statement below sets the final description.
+                "description": "",
                 "members": [
                     {
                         "name": "pnr",
@@ -50,8 +55,15 @@ class Icestorm(Edatool):
                 "members": options["members"],
                 "lists": options["lists"],
             }
+        return None
 
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+    def __init__(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+        verbose: bool = True,
+    ) -> None:
         logger.warning(
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
@@ -62,14 +74,14 @@ class Icestorm(Edatool):
 
         self.icestorm = Icestorm2(edam, work_root, verbose)
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         self.icestorm.configure()
 
-    def build_pre(self):
+    def build_pre(self) -> None:
         pass
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         self.icestorm.build()
 
-    def build_post(self):
+    def build_post(self) -> None:
         pass

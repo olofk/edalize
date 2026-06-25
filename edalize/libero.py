@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import logging
 import os
 import shutil
 from pathlib import Path
 from collections import defaultdict
+from typing import Any
+
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 
@@ -11,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Libero(Edatool):
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "The Libero backend supports Microsemi Libero to build systems and program the FPGA",
@@ -58,6 +63,7 @@ class Libero(Edatool):
                     },
                 ],
             }
+        return None
 
     argtypes = ["vlogdefine", "vlogparam", "generic"]
     mandatory_options = ["family", "die", "package", "range"]
@@ -66,7 +72,7 @@ class Libero(Edatool):
         "range": "IND",
     }
 
-    def _set_tool_options_defaults(self):
+    def _set_tool_options_defaults(self) -> None:
         for key, default_value in self.tool_options_defaults.items():
             if not key in self.tool_options:
                 logger.info(
@@ -75,7 +81,7 @@ class Libero(Edatool):
                 )
                 self.tool_options[key] = default_value
 
-    def _check_mandatory_options(self):
+    def _check_mandatory_options(self) -> None:
         shouldExit = 0
         for key in self.mandatory_options:
             if not key in self.tool_options:
@@ -84,7 +90,7 @@ class Libero(Edatool):
         if shouldExit:
             raise RuntimeError("Missing required tool options")
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         """
         Configuration is the first phase of the build.
 
@@ -169,7 +175,7 @@ class Libero(Edatool):
 
         logger.info("Cores and Libero TCL Scripts generated.")
 
-    def src_file_filter(self, f):
+    def src_file_filter(self, f: Any) -> str:
         file_types = {
             "verilogSource": "-hdl_source {",
             "systemVerilogSource": "-hdl_source {",
@@ -188,7 +194,7 @@ class Libero(Edatool):
             return file_types[_file_type] + f.name
         return ""
 
-    def tcl_file_filter(self, f):
+    def tcl_file_filter(self, f: Any) -> str:
         file_types = {
             "tclSource": "source ",
         }
@@ -197,19 +203,22 @@ class Libero(Edatool):
             return file_types[_file_type] + f.name
         return ""
 
-    def syn_constraint_file_filter(self, f):
+    def syn_constraint_file_filter(self, f: Any) -> str | None:
         if f.file_type in ["FDC", "NDC", "SDC"]:
             return f.name
+        return None
 
-    def pnr_constraint_file_filter(self, f):
+    def pnr_constraint_file_filter(self, f: Any) -> str | None:
         if f.file_type in ["FPPDC", "PDC", "SDC"]:
             return f.name
+        return None
 
-    def tim_constraint_file_filter(self, f):
+    def tim_constraint_file_filter(self, f: Any) -> str | None:
         if f.file_type == "SDC":
             return f.name
+        return None
 
-    def build_main(self):
+    def build_main(self, target: str | None = None) -> None:
         logger.info("Executing Libero TCL Scripts.")
         escaped_name = self.name.replace(".", "_")
         if shutil.which("libero"):
@@ -224,5 +233,5 @@ class Libero(Edatool):
                 + '"'
             )
 
-    def run_main(self):
+    def run_main(self) -> None:
         pass

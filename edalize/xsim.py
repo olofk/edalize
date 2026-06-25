@@ -2,10 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
 
 from collections import OrderedDict
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -43,7 +46,7 @@ XSIM_OPTIONS  = {xsim_options}
 """
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "XSim simulator from the Xilinx Vivado suite",
@@ -67,8 +70,9 @@ XSIM_OPTIONS  = {xsim_options}
                     },
                 ],
             }
+        return None
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         self._write_config_files()
 
         # Check if any VPI modules are present and display warning
@@ -76,7 +80,7 @@ XSIM_OPTIONS  = {xsim_options}
             modules = [m["name"] for m in self.vpi_modules]
             logger.error("VPI modules not supported by Xsim: %s" % ", ".join(modules))
 
-    def _write_config_files(self):
+    def _write_config_files(self) -> None:
         mfc = self.tool_options.get("compilation_mode") == "common"
         with open(os.path.join(self.work_root, self.name + ".prj"), "w") as f:
             mfcu = []
@@ -150,7 +154,7 @@ XSIM_OPTIONS  = {xsim_options}
         with open(os.path.join(self.work_root, "Makefile"), "w") as f:
             f.write(self.MAKEFILE_TEMPLATE)
 
-    def run_main(self):
+    def run_main(self) -> None:
         args = ["run"]
         # Plusargs
         if self.plusarg:

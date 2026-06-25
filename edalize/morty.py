@@ -2,9 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import os
 import logging
+from typing import Any
 
+from edalize.edam import ToolDoc
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -33,14 +37,14 @@ Get `morty` from here: https://github.com/zarubaf/morty
         - -s, --suffix <SUFFIX>        Append a name to all global names
 """
 
-    tool_options = {
+    tool_options: dict[str, Any] = {
         "lists": {
             "morty_options": "String",  # runtime options (passed to morty)
         }
     }
 
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             return {
                 "description": "Run the (System-) Verilog pickle tool called `morty`.",
@@ -52,8 +56,9 @@ Get `morty` from here: https://github.com/zarubaf/morty
                     },
                 ],
             }
+        return None
 
-    def build_main(self, target=None):
+    def build_main(self, target: str | None = None) -> None:
         args = list()
         src_files_filtered = list()
         (src_files, incdirs) = self._get_fileset_files()
@@ -76,5 +81,5 @@ Get `morty` from here: https://github.com/zarubaf/morty
         # Go and do your thing!
         self._run_tool("morty", args, quiet=True)
 
-    def run_main(self):
+    def run_main(self) -> None:
         logger.warn("Morty does not support running. Use build instead.")

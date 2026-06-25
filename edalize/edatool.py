@@ -2,18 +2,29 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import argparse
+import logging
+import os
+import pkgutil
+import subprocess
+import sys
 from collections import OrderedDict
 from dataclasses import dataclass
 from importlib import import_module
-import os
-import pkgutil
+from typing import Any, Generator, Iterable, cast
 
-
-import subprocess
-import logging
-import sys
 from jinja2 import Environment, PackageLoader
+
+from edalize.edam import (
+    Edam,
+    File as EdamFile,
+    HookScript,
+    RunArgs,
+    ToolDoc,
+    ToolDocEntry,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +54,7 @@ NON_TOOL_PACKAGES = [
     "quartus_reporting",
     "version",
     "edatool",
+    "edam",
 ]
 
 
@@ -53,7 +65,7 @@ class ToolResolutionError(RuntimeError):
 @dataclass
 class Tool:
     name: str
-    tool_class: type
+    tool_class: type["Edatool"]
 
     @property
     def module_path(self) -> str:
@@ -64,7 +76,7 @@ class Tool:
         return self.tool_class.__name__
 
 
-def get_edatool(name: str) -> type:
+def get_edatool(name: str) -> type["Edatool"]:
     if name not in get_edatool_map():
         raise ToolResolutionError(f"Tool {name} not found in edatools.")
 
@@ -73,7 +85,7 @@ def get_edatool(name: str) -> type:
     return tool_class
 
 
-def get_entrypoint_tool_extensions():
+def get_entrypoint_tool_extensions() -> Generator[Tool, None, None]:
     extension_tools = entry_points(group="edalize.legacy_tool")
 
     for tool in extension_tools:
@@ -87,7 +99,7 @@ def get_entrypoint_tool_extensions():
         yield Tool(tool.name, tool_class)
 
 
-def get_namespace_tool_extensions():
+def get_namespace_tool_extensions() -> Generator[Tool, None, None]:
     import edalize as namespace_package_to_search
 
     for mod in pkgutil.iter_modules(
@@ -116,10 +128,12 @@ def get_namespace_tool_extensions():
             yield tool
 
 
-def get_edatool_map():
-    tool_map = {tool.name: tool for tool in get_namespace_tool_extensions()}
+def get_edatool_map() -> dict[str, Tool]:
+    tool_map: dict[str, Tool] = {
+        tool.name: tool for tool in get_namespace_tool_extensions()
+    }
 
-    entrypoint_tools = {}
+    entrypoint_tools: dict[str, Tool] = {}
     for tool in get_entrypoint_tool_extensions():
         if tool.name in entrypoint_tools:
             # Arguably this should be fatal, but we will just log a warning
@@ -140,14 +154,19 @@ def get_edatool_map():
     return tool_map
 
 
-def get_edatools():
+def get_edatools() -> list[type["Edatool"]]:
     # Tools from entrypoint will get precedence.
     return [tool.tool_class for tool in get_edatool_map().values()]
 
 
 def subprocess_run_3_9(
-    *popenargs, input=None, capture_output=False, timeout=None, check=False, **kwargs
-):
+    *popenargs: Any,
+    input: Any = None,
+    capture_output: bool = False,
+    timeout: float | None = None,
+    check: bool = False,
+    **kwargs: Any,
+) -> subprocess.CompletedProcess[Any]:
     if input is not None:
         if kwargs.get("stdin") is not None:
             raise ValueError("stdin and input arguments may not both be used.")
@@ -164,7 +183,7 @@ def subprocess_run_3_9(
     with subprocess.Popen(*popenargs, **kwargs) as process:
         try:
             stdout, stderr = process.communicate(input, timeout=timeout)
-        except TimeoutExpired as exc:
+        except TimeoutExpired as exc:  # type: ignore[name-defined]  # pre-existing: unreachable on Python >=3.8
             process.kill()
             if _mswindows:
                 # Windows accumulates the output in a single blocking
@@ -187,6 +206,9 @@ def subprocess_run_3_9(
             raise subprocess.CalledProcessError(
                 retcode, process.args, output=stdout, stderr=stderr
             )
+    # ``Popen.poll()`` returns ``Optional[int]``; by this point in the
+    # function the process has exited so ``retcode`` is always set.
+    assert retcode is not None
     return subprocess.CompletedProcess(process.args, retcode, stdout, stderr)
 
 
@@ -197,7 +219,11 @@ else:
 
 
 # Jinja2 tests and filters, available in all templates
-def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
+def jinja_filter_param_value_str(
+    value: Any,
+    str_quote_style: str = "",
+    bool_is_str: bool = False,
+) -> str:
     """
     Convert a parameter value to string suitable to be passed to an EDA tool.
 
@@ -222,7 +248,13 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
 
 
 class FileAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: str | None = None,
+    ) -> None:
         path = os.path.expandvars(values[0])
         path = os.path.expanduser(path)
         path = os.path.abspath(path)
@@ -230,7 +262,19 @@ class FileAction(argparse.Action):
 
 
 class Edatool(object):
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+    # Subclasses set ``argtypes`` (the list of EDAM paramtypes their argparse
+    # wiring accepts). Declared without a default to avoid creating a shared
+    # mutable list at this layer; backends that don't set it raise the same
+    # AttributeError as on main.
+    argtypes: list[str]
+
+    def __init__(
+        self,
+        edam: Edam | None = None,
+        work_root: str | None = None,
+        eda_api: Edam | None = None,
+        verbose: bool = True,
+    ) -> None:
         _tool_name = self.__class__.__name__.lower()
 
         self.verbose = verbose
@@ -239,33 +283,50 @@ class Edatool(object):
 
         if not edam:
             edam = eda_api
-        self.edam = edam
+        # ``Edatool(edam=None)`` must raise TypeError (upstream test_empty_edam
+        # pins this). Convert the loose Optional parameter into a narrowed
+        # non-Optional local so the rest of the body type-checks under strict
+        # mode without changing the observable failure mode.
+        if edam is None:
+            raise TypeError("'NoneType' object is not subscriptable")
+        self.edam: Edam = edam
         try:
             self.name = edam["name"]
         except KeyError:
             raise RuntimeError("Missing required parameter 'name'")
 
-        self.tool_options = edam.get("tool_options", {}).get(_tool_name, {}).copy()
+        self.tool_options: dict[str, Any] = (
+            edam.get("tool_options", {}).get(_tool_name, {}).copy()
+        )
 
-        self.files = edam.get("files", [])
-        self.toplevel = edam.get("toplevel", [])
+        self.files: list[EdamFile] = edam.get("files", [])
+        # EDAM allows toplevel to be a single name (most simulators) or a
+        # list of names (some lint/synth flows). Concrete backends know which
+        # they want, so expose it as ``Any`` to avoid forcing every backend
+        # to narrow at every usage site.
+        self.toplevel: Any = edam.get("toplevel", [])
         self.vpi_modules = edam.get("vpi", [])
 
         self.hooks = edam.get("hooks", {})
         self.parameters = edam.get("parameters", {})
 
+        # work_root remains Optional at the API boundary: upstream tests
+        # construct backends without a work_root just to inspect parsing.
         self.work_root = work_root
         self.env = os.environ.copy()
 
-        self.env["WORK_ROOT"] = self.work_root
+        # ``self.env`` is a plain dict (not os.environ), so storing None
+        # is fine; downstream code that needs work_root as a string will
+        # crash naturally if it is None.
+        self.env["WORK_ROOT"] = self.work_root  # type: ignore[assignment]
 
-        self.plusarg = OrderedDict()
-        self.vlogparam = OrderedDict()
-        self.vlogdefine = OrderedDict()
-        self.generic = OrderedDict()
-        self.cmdlinearg = OrderedDict()
+        self.plusarg: OrderedDict[str, Any] = OrderedDict()
+        self.vlogparam: OrderedDict[str, Any] = OrderedDict()
+        self.vlogdefine: OrderedDict[str, Any] = OrderedDict()
+        self.generic: OrderedDict[str, Any] = OrderedDict()
+        self.cmdlinearg: OrderedDict[str, Any] = OrderedDict()
 
-        args = OrderedDict()
+        args: OrderedDict[str, Any] = OrderedDict()
         for k, v in self.parameters.items():
             args[k] = v.get("default")
         self._apply_parameters(args)
@@ -277,7 +338,9 @@ class Edatool(object):
         # module that the class comes form and then load that to see which
         # package it belongs to in order to get the right path for jinja.
 
-        _package = import_module(self.__class__.__module__).__spec__.parent
+        _spec = import_module(self.__class__.__module__).__spec__
+        assert _spec is not None and _spec.parent is not None
+        _package = _spec.parent
 
         self.jinja_env = Environment(
             loader=PackageLoader(_package, "templates"),
@@ -288,40 +351,67 @@ class Edatool(object):
         self.jinja_env.filters["param_value_str"] = jinja_filter_param_value_str
         self.jinja_env.filters["generic_value_str"] = jinja_filter_param_value_str
 
+    # ``tool_options`` is overloaded: as a *class* attribute every concrete
+    # backend assigns a schema dict {"members": {...}, "lists": {...},
+    # "dicts": {...}} describing its accepted options; as an *instance*
+    # attribute ``self.tool_options`` is the live values dict pulled out of the
+    # EDAM. We declare it here for type-checkers but don't assign a default
+    # to avoid sharing a mutable dict across subclasses.
+    tool_options: dict[str, Any]
+
     @classmethod
-    def get_doc(cls, api_ver):
+    def get_doc(cls, api_ver: int) -> ToolDoc | None:
         if api_ver == 0:
             desc = getattr(
                 cls, "_description", "Options for {} backend".format(cls.__name__)
             )
-            opts = {"description": desc}
-            for group in ["members", "lists", "dicts"]:
-                if group in cls.tool_options:
-                    opts[group] = []
-                    for _name, _type in cls.tool_options[group].items():
-                        opts[group].append({"name": _name, "type": _type, "desc": ""})
+            opts: ToolDoc = {"description": desc}
+            # TypedDict requires literal keys, so unroll the three doc groups.
+            if "members" in cls.tool_options:
+                opts["members"] = [
+                    {"name": n, "type": t, "desc": ""}
+                    for n, t in cls.tool_options["members"].items()
+                ]
+            if "lists" in cls.tool_options:
+                opts["lists"] = [
+                    {"name": n, "type": t, "desc": ""}
+                    for n, t in cls.tool_options["lists"].items()
+                ]
+            if "dicts" in cls.tool_options:
+                opts["dicts"] = [
+                    {"name": n, "type": t, "desc": ""}
+                    for n, t in cls.tool_options["dicts"].items()
+                ]
             return opts
         else:
             logger.warning(
                 "Invalid API version '{}' for get_tool_options".format(api_ver)
             )
+            return None
 
     @classmethod
-    def _extend_options(cls, options, other_class):
+    def _extend_options(cls, options: ToolDoc, other_class: type["Edatool"]) -> None:
         help = other_class.get_doc(0)
+        if help is None:
+            raise RuntimeError(
+                f"{other_class.__name__}.get_doc(0) returned None; cannot extend "
+                "options with this backend"
+            )
 
+        options["members"] = list(options.get("members", []))
+        options["lists"] = list(options.get("lists", []))
         options["members"].extend(
             m
-            for m in help["members"]
+            for m in help.get("members", [])
             if m["name"] not in [i["name"] for i in options["members"]]
         )
         options["lists"].extend(
             m
-            for m in help["lists"]
+            for m in help.get("lists", [])
             if m["name"] not in [i["name"] for i in options["lists"]]
         )
 
-    def configure(self, args=[]):
+    def configure(self, args: list[str] = []) -> None:
         if args:
             logger.error(
                 "Edalize has stopped supporting passing arguments as a function argument. Set these values as default values in the EDAM object instead"
@@ -331,61 +421,65 @@ class Edatool(object):
         self.configure_main()
         self.configure_post()
 
-    def configure_pre(self):
+    def configure_pre(self) -> None:
         pass
 
-    def configure_main(self):
+    def configure_main(self) -> None:
         pass
 
-    def configure_post(self):
+    def configure_post(self) -> None:
         pass
 
-    def build(self):
+    def build(self) -> None:
         self.build_pre()
         self.build_main()
         self.build_post()
 
-    def build_pre(self):
+    def build_pre(self) -> None:
         if "pre_build" in self.hooks:
             self._run_scripts(self.hooks["pre_build"], "pre_build")
 
-    def build_main(self, target=None):
+    def build_main(self, target: str | None = None) -> None:
         logger.info(
             "Building{}".format("" if target is None else "target " + " ".join(target))
         )
         self._run_tool("make", [] if target is None else [target], quiet=True)
 
-    def build_post(self):
+    def build_post(self) -> None:
         if "post_build" in self.hooks:
             self._run_scripts(self.hooks["post_build"], "post_build")
 
-    def run(self, args={}):
+    def run(self, args: list[str] | RunArgs = {}) -> None:
         logger.info("Running")
         self.run_pre(args)
         self.run_main()
         self.run_post()
 
-    def run_pre(self, args=None):
-        if type(args) == list:
+    def run_pre(self, args: list[str] | RunArgs | None = None) -> None:
+        parsed_args: RunArgs | None
+        if isinstance(args, list):
             parsed_args = self.parse_args(args, self.argtypes)
         else:
             parsed_args = args
-        self._apply_parameters(parsed_args)
+        # ``_apply_parameters(None)`` intentionally raises AttributeError to
+        # preserve pristine behaviour for the run_pre(None) path. ``cast``
+        # records that intent without changing runtime semantics.
+        self._apply_parameters(cast(RunArgs, parsed_args))
         if "pre_run" in self.hooks:
             self._run_scripts(self.hooks["pre_run"], "pre_run")
 
-    def run_main(self):
+    def run_main(self) -> None:
         pass
 
-    def run_post(self):
+    def run_post(self) -> None:
         if "post_run" in self.hooks:
             self._run_scripts(self.hooks["post_run"], "post_run")
 
-    def set_default_target(self, target):
+    def set_default_target(self, target: str) -> None:
         self.default_target = target
 
-    def parse_args(self, args, paramtypes):
-        typedict = {
+    def parse_args(self, args: list[str], paramtypes: Iterable[str]) -> RunArgs:
+        typedict: dict[str, dict[str, Any]] = {
             "bool": {"action": "store_true"},
             "file": {"type": str, "nargs": 1, "action": FileAction},
             "int": {"type": int, "nargs": 1},
@@ -413,7 +507,7 @@ class Edatool(object):
                         _descr[_paramtype]
                     )
 
-                default = None
+                default: Any = None
                 if not param.get("default") is None:
                     try:
                         if param["datatype"] == "bool":
@@ -446,6 +540,11 @@ class Edatool(object):
         # backend_args.
         backend_args = parser.add_argument_group("Backend arguments")
         _opts = self.__class__.get_doc(0)
+        if _opts is None:
+            raise RuntimeError(
+                f"{self.__class__.__name__}.get_doc(0) returned None; "
+                "cannot wire up backend CLI arguments"
+            )
         for _opt in _opts.get("members", []) + _opts.get("lists", []):
             backend_args.add_argument("--" + _opt["name"], help=_opt["desc"])
 
@@ -460,8 +559,13 @@ class Edatool(object):
             args_dict[key] = _value
         return args_dict
 
-    def _apply_parameters(self, args):
+    def _apply_parameters(self, args: RunArgs) -> None:
         _opts = self.__class__.get_doc(0)
+        if _opts is None:
+            raise RuntimeError(
+                f"{self.__class__.__name__}.get_doc(0) returned None; "
+                "cannot classify backend options vs EDAM parameters"
+            )
         # Parse arguments
         backend_members = [x["name"] for x in _opts.get("members", [])]
         backend_lists = [x["name"] for x in _opts.get("lists", [])]
@@ -480,7 +584,12 @@ class Edatool(object):
             paramtype = self.parameters[key]["paramtype"]
             getattr(self, paramtype)[key] = value
 
-    def render_template(self, template_file, target_file, template_vars={}):
+    def render_template(
+        self,
+        template_file: str,
+        target_file: str,
+        template_vars: dict[str, Any] = {},
+    ) -> None:
         """
         Render a Jinja2 template for the backend.
 
@@ -488,11 +597,17 @@ class Edatool(object):
         """
         template_dir = str(self.__class__.__name__).lower()
         template = self.jinja_env.get_template("/".join([template_dir, template_file]))
+        assert self.work_root is not None, "render_template requires a work_root"
         file_path = os.path.join(self.work_root, target_file)
         with open(file_path, "w") as f:
             f.write(template.render(template_vars))
 
-    def _add_include_dir(self, f, incdirs, force_slash=False):
+    def _add_include_dir(
+        self,
+        f: EdamFile,
+        incdirs: list[str],
+        force_slash: bool = False,
+    ) -> bool:
         if f.get("is_include_file"):
             _incdir = f.get("include_path") or os.path.dirname(f["name"]) or "."
             if force_slash:
@@ -502,22 +617,24 @@ class Edatool(object):
             return True
         return False
 
-    def _get_fileset_files(self, force_slash=False):
+    def _get_fileset_files(
+        self, force_slash: bool = False
+    ) -> tuple[list[Any], list[str]]:
         class File:
             def __init__(
                 self,
-                name,
-                file_type,
-                logical_name,
-                core=None,
-            ):
+                name: str,
+                file_type: str,
+                logical_name: str,
+                core: str | None = None,
+            ) -> None:
                 self.name = name
                 self.file_type = file_type
                 self.logical_name = logical_name
                 self.core = core
 
-        incdirs = []
-        src_files = []
+        incdirs: list[str] = []
+        src_files: list[File] = []
         for f in self.files:
             if not self._add_include_dir(f, incdirs, force_slash):
                 _name = f["name"]
@@ -529,17 +646,22 @@ class Edatool(object):
                 src_files.append(File(_name, file_type, logical_name, core))
         return (src_files, incdirs)
 
-    def _param_value_str(self, param_value, str_quote_style="", bool_is_str=False):
+    def _param_value_str(
+        self,
+        param_value: Any,
+        str_quote_style: str = "",
+        bool_is_str: bool = False,
+    ) -> str:
         return jinja_filter_param_value_str(param_value, str_quote_style, bool_is_str)
 
-    def _run_scripts(self, scripts, hook_name):
+    def _run_scripts(self, scripts: list[HookScript], hook_name: str) -> None:
         for script in scripts:
             _env = self.env.copy()
             if "env" in script:
                 _env.update(script["env"])
             logger.info("Running {} script {}".format(hook_name, script["name"]))
             logger.debug("Environment: " + str(_env))
-            logger.debug("Working directory: " + self.work_root)
+            logger.debug("Working directory: " + str(self.work_root))
             try:
                 run(
                     script["cmd"],
@@ -563,11 +685,17 @@ class Edatool(object):
                     logger.debug(e.stderr)
                 raise RuntimeError(msg)
 
-    def _run_tool(self, cmd, args=[], quiet=False):
+    def _run_tool(
+        self,
+        cmd: str,
+        args: list[str] = [],
+        quiet: bool = False,
+    ) -> tuple[int, bytes | None, bytes | None]:
         logger.debug("Running " + cmd)
         logger.debug("args  : " + " ".join(args))
 
         capture_output = quiet and not (self.verbose or self.stdout or self.stderr)
+        assert self.work_root is not None, "_run_tool requires a work_root"
         abs_work_root = os.path.abspath(self.work_root)
         print(f"Entering directory '{abs_work_root}'")
         try:
@@ -598,13 +726,16 @@ class Edatool(object):
         print(f"Leaving directory '{abs_work_root}'")
         return cp.returncode, cp.stdout, cp.stderr
 
-    def _filter_verilog_files(src_file):
-        ft = src_file.file_type
+    def _filter_verilog_files(src_file: Any) -> bool:
+        ft: str = src_file.file_type
         return ft.startswith("verilogSource") or ft.startswith("systemVerilogSource")
 
     def _write_fileset_to_f_file(
-        self, output_file, include_vlogparams=True, filter_func=_filter_verilog_files
-    ):
+        self,
+        output_file: str,
+        include_vlogparams: bool = True,
+        filter_func: Any = _filter_verilog_files,
+    ) -> list[Any]:
         """
         Write a file list (*.f) file.
 
@@ -638,8 +769,8 @@ class Edatool(object):
             return unused_files
 
 
-def _class_doc(items):
-    s = items["description"] + "\n\n"
+def _class_doc(items: ToolDoc) -> str:
+    s: str = items["description"] + "\n\n"
     lines = []
     name_len = 10
     type_len = 4
@@ -668,8 +799,8 @@ def _class_doc(items):
     return s
 
 
-def gen_tool_docs():
-    table = []
+def gen_tool_docs() -> str:
+    table: list[ToolDocEntry] = []
     s = ""
     for backend in get_edatools():
         name = backend.__name__
@@ -686,7 +817,13 @@ def gen_tool_docs():
         )
 
         s += "\n{} backend\n{}\n\n".format(name, "~" * (len(name) + 8))
-        s += _class_doc(backend.get_doc(0))
+        backend_doc = backend.get_doc(0)
+        if backend_doc is None:
+            raise RuntimeError(
+                f"{name}.get_doc(0) returned None; cannot render backend "
+                "documentation"
+            )
+        s += _class_doc(backend_doc)
 
     return (
         _class_doc(
