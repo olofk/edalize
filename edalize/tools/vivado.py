@@ -219,8 +219,7 @@ class Vivado(Edatool):
             commands.add(
                 vivado_command + tcl_scripts + [project_file],
                 targets,
-                tcl_scripts,
-                [project_file],
+                tcl_scripts + [project_file],
             )
         else:
             targets = edif_files
@@ -233,8 +232,7 @@ class Vivado(Edatool):
         commands.add(
             command=vivado_command + tcl_scripts + [project_file],
             targets=[bitstream],
-            depends=tcl_scripts,
-            order_only_deps=[project_file],
+            depends=tcl_scripts + [project_file],
         )
 
         commands.add(["vivado", project_file], ["build-gui"], [project_file])
