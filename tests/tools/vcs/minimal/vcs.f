@@ -1,1 +1,1 @@
--top top_module
+-top top_module c_file.c cpp_file.cpp
