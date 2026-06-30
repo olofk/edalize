@@ -48,6 +48,10 @@ Example snippet of a CAPI2 description file for VCS:
         return False
 
     def configure_main(self):
+        logger.warning(
+            "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
+        )
+
         def _vcs_filelist_filter(src_file):
             ft = src_file.file_type
             # XXX: C source files can be passed to VCS to be compiled into DPI
