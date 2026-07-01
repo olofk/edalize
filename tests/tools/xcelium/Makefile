@@ -2,5 +2,5 @@
 
 all: xcelium.d/run.d/hdl.var
 
-xcelium.d/run.d/hdl.var: sv_file.sv vlog_file.v vlog_with_define.v another_sv_file.sv vlog_incfile tcl_file.tcl xrun.f
-	$(EDALIZE_LAUNCHER) xrun -elaborate -f xrun.f -enable_cmdline_define_redefinition sv_file.sv vlog_file.v -define FD_KEY=FD_VAL vlog_with_define.v another_sv_file.sv
+xcelium.d/run.d/hdl.var: sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v vhdl_file.vhd vhdl_lfile vhdl2008_file another_sv_file.sv vlog_incfile tcl_file.tcl xrun.f
+	$(EDALIZE_LAUNCHER) xrun -elaborate -f xrun.f -enable_cmdline_define_redefinition -makelib worklib -sv sv_file.sv -endlib -makelib worklib vlog_file.v -endlib -makelib worklib -define FD_KEY=FD_VAL vlog_with_define.v -endlib -makelib worklib vlog05_file.v -endlib -makelib worklib vhdl_file.vhd -endlib -makelib libx vhdl_lfile -endlib -makelib worklib -v200x vhdl2008_file -endlib -makelib worklib -sv another_sv_file.sv -endlib
