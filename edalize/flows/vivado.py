@@ -31,6 +31,10 @@ class Vivado(Edaflow):
                 "type": "str",
                 "desc": "Synthesis tool. Allowed values are vivado (default) and yosys.",
             },
+            "gui": {
+                "type": "bool",
+                "desc": "Invoke the Graphical User Interface (GUI)",
+            },
         },
     }
 
@@ -69,11 +73,18 @@ class Vivado(Edaflow):
     def build(self):
         (cmd, args) = self.build_runner.get_build_command()
         pnr_opt = self.flow_options.get("pnr", "")
-        if pnr_opt == "none":
+        if self.flow_options.get("gui"):
+            # Invoking the GUI by user has the highest precedence over anything else
+            args.append("build-gui")
+        elif pnr_opt == "none":
             args.append("synth")
         self._run_tool(cmd, args=args, cwd=self.work_root)
 
     def run(self):
+        if self.flow_options.get("gui"):
+            # To avoid accidentally programming FPGA after closing GUI
+            return
+
         if self.flow_options.get("pgm"):
 
             # Get run command from tool instance
