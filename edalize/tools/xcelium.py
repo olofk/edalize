@@ -19,7 +19,11 @@ class Xcelium(Edatool):
             "desc": "Disable 64-bit mode",
         },
         "timescale": {"type": "str", "desc": "Default timescale for simulation"},
-        "xrun_options": {"type": "str", "desc": "Additional run options for xrun"},
+        "xrun_options": {
+            "type": "str",
+            "desc": "Additional run options for xrun",
+            "list": True,
+        },
         "gui": {"type": "bool", "desc": "Invoke the Graphical User Interface (GUI)"},
     }
 
