@@ -239,6 +239,7 @@ FILES = [
     {"name": "verible_waiver.vbw", "file_type": "veribleLintWaiver"},
     {"name": "verible_waiver2.vbw", "file_type": "veribleLintWaiver"},
     {"name": "config.sby.j2", "file_type": "sbyConfigTemplate"},
+    {"name": "config.tcl.j2", "file_type": "vcfConfigTemplate"},
     {"name": "another_sv_file.sv", "file_type": "systemVerilogSource"},
     {"name": "pdc_constraint_file.pdc", "file_type": "PDC"},
     {"name": "qsf_constraint_file.qsf", "file_type": "QSF"},
