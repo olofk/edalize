@@ -2,5 +2,28 @@
 import os
 import sys
 
+args = sys.argv[1:]
+
 with open("vivado.cmd", "a") as f:
-    f.write(" ".join(sys.argv[1:]) + "\n")
+    f.write(" ".join(args) + "\n")
+
+if "-source" not in args:
+    sys.exit(0)
+
+source_args = args[args.index("-source") + 1 :]
+script_names = [os.path.basename(arg) for arg in source_args if arg.endswith(".tcl")]
+
+for script_name in script_names:
+    if script_name.endswith("_netlist.tcl"):
+        name = script_name[: -len("_netlist.tcl")]
+        open(f"{name}.v", "a").close()
+        open(f"{name}.edn", "a").close()
+
+    elif script_name.endswith("_run.tcl"):
+        name = script_name[: -len("_run.tcl")]
+        open(f"{name}.bit", "a").close()
+
+    elif not script_name.endswith(("_synth.tcl", "_pgm.tcl")):
+        name = os.path.splitext(script_name)[0]
+        open(f"{name}.xpr", "a").close()
+        open(f"{name}.xpr.marker", "a").close()

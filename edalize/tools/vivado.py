@@ -200,6 +200,7 @@ class Vivado(Edatool):
         vivado_command = ["vivado", "-notrace", "-mode", "batch", "-source"]
 
         project_file = self.name + ".xpr"
+        project_file_marker = self.name + ".xpr.marker"
         project_tcl = self.name + ".tcl"
         synth_tcl = self.name + "_synth.tcl"
         netlist_tcl = self.name + "_netlist.tcl"
@@ -209,7 +210,7 @@ class Vivado(Edatool):
         tcl_scripts = [project_tcl]
         commands.add(
             vivado_command + tcl_scripts,
-            [project_file],
+            [project_file, project_file_marker],
             tcl_scripts + dep_files + edif_files,
         )
         synth = self.tool_options.get("synth", "vivado")
@@ -219,7 +220,7 @@ class Vivado(Edatool):
             commands.add(
                 vivado_command + tcl_scripts + [project_file],
                 targets,
-                tcl_scripts,
+                tcl_scripts + [project_file_marker],
                 [project_file],
             )
         else:
@@ -233,7 +234,7 @@ class Vivado(Edatool):
         commands.add(
             command=vivado_command + tcl_scripts + [project_file],
             targets=[bitstream],
-            depends=tcl_scripts,
+            depends=tcl_scripts + [project_file_marker],
             order_only_deps=[project_file],
         )
 

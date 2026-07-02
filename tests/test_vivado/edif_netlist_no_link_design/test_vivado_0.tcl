@@ -16,3 +16,9 @@ set_property top top_module [current_fileset]
 set_property source_mgmt_mode None [current_project]
 
 
+
+# Update marker file for Make. (Run the subsequent jobs only if the marker has been updated)
+# This prevents the synthesis from being triggered again if Vivado randomly updates the XPR file's timestamp.
+set marker_file [open "test_vivado_0.xpr.marker" w]
+puts $marker_file [clock seconds]
+close $marker_file
