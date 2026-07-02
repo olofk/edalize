@@ -72,6 +72,29 @@ def merge_dict(d1, d2):
     return d1
 
 
+def merge_edam(a, b):
+    """Merge two EDAM dicts coming from different flow graph dependencies.
+
+    Dicts are merged recursively and scalar values from the second EDAM
+    win. Lists are concatenated, but entries from the second EDAM that
+    already exist in the first one are skipped, so that files, hooks etc.
+    inherited from a common ancestor node don't show up once per
+    dependency. Neither input is modified.
+    """
+
+    def _merge(x, y):
+        if isinstance(x, dict) and isinstance(y, dict):
+            merged = dict(x)
+            for key, value in y.items():
+                merged[key] = _merge(merged[key], value) if key in merged else value
+            return merged
+        if isinstance(x, list) and isinstance(y, list):
+            return x + [e for e in y if e not in x]
+        return y
+
+    return _merge(a, b)
+
+
 class Node(object):
     def __init__(self, name, deps=[], fdto={}, tool=None):
         self.deps = deps
@@ -225,10 +248,6 @@ class Edaflow(object):
             self.edam["tool_options"] = tool_options
 
     def configure_tools(self, graph):
-        def merge_edam(a, b):
-            # Yeah, I know. It's just a temporary hack
-            return b
-
         # Instantiate each node and add to list of unconfigured nodes
         unconfigured_nodes = list(graph.get_nodes().values())
 
