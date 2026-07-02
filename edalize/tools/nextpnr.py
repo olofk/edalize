@@ -29,6 +29,7 @@ class Nextpnr(Edatool):
         lpf_file = ""
         pcf_file = ""
         sdc_file = ""
+        ccf_file = ""
         netlist = ""
         chipdb_file = ""
         placement_constraints = []
@@ -59,6 +60,14 @@ class Nextpnr(Edatool):
                         )
                     )
                 pcf_file = f["name"]
+            if file_type == "CCF":
+                if ccf_file:
+                    raise RuntimeError(
+                        "Nextpnr only supports one CCF file. Found {} and {}".format(
+                            ccf_file, f["name"]
+                        )
+                    )
+                ccf_file = f["name"]
             if file_type == "chipdb":
                 if chipdb_file:
                     raise RuntimeError(
@@ -89,7 +98,7 @@ class Nextpnr(Edatool):
                 unused_files.append(f)
 
         arch = self._require_tool_option("arch")
-        arches = ["xilinx", "ecp5", "gowin", "ice40"]
+        arches = ["xilinx", "ecp5", "gowin", "ice40", "gatemate"]
         if not arch in arches:
             raise RuntimeError("Invalid arch. Allowed options are " + ", ".join(arches))
 
@@ -148,6 +157,21 @@ class Nextpnr(Edatool):
                 output = ["--write", targets]
                 output_files += [
                     {"name": targets, "file_type": "nextpnrRoutedJson"},
+                ]
+                nextpnr_postfix = "himbaechel"
+            elif arch == "gatemate":
+                device = self.tool_options.get("device")
+                if not device:
+                    raise RuntimeError(
+                        "Missing required option 'device' for nextpnr-himbaechel"
+                    )
+                arch_options += ["--device", device]
+
+                targets = self.name + ".cfg"
+                constraints = ["-o ccf={}".format(ccf_file)] if ccf_file else []
+                output = ["-o out={}".format(targets)]
+                output_files += [
+                    {"name": targets, "file_type": "gatemateConfig"},
                 ]
                 nextpnr_postfix = "himbaechel"
             else:
