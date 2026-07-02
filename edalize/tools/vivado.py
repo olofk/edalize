@@ -150,10 +150,7 @@ class Vivado(Edatool):
                         f"move_files -fileset sim_1 [get_files {f['name']}]"
                     )
                     sim_files.append(
-                        f"set_property used_in_synthesis false [get_files {f['name']}]"
-                    )
-                    sim_files.append(
-                        f"set_property used_in_implementation false [get_files {f['name']}]"
+                        f"set_property used_in simulation [get_files {f['name']}]"
                     )
                     unused_files.append(f)
 
