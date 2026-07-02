@@ -270,14 +270,11 @@ class Edaflow(object):
         hooks = self.edam.get("hooks", {})
         for script in hooks.get(hook_name, []):
 
-            # _env = self.env.copy()
-            # if 'env' in script:
-            #    _env.update(script['env'])
-
             targets = script["name"]
             command = script["cmd"]
-            # FIXME : Add env vars
-            self.commands.add(command, [targets], [last_script])
+            self.commands.add(
+                command, [targets], [last_script], variables=script.get("env", {})
+            )
 
             last_script = script["name"]
         self.commands.add([], [hook_name], [last_script])
