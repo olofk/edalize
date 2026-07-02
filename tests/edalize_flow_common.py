@@ -49,9 +49,15 @@ def flow_fixture(tmp_path):
         toplevel="top_module",
         ref_subdir="",
         config_files=[],
+        paramtypes=["plusarg", "vlogdefine", "vlogparam"],
     ):
 
-        edam = get_edam(flow_options=flow_options, files=files, toplevel=toplevel)
+        edam = get_edam(
+            flow_options=flow_options,
+            files=files,
+            toplevel=toplevel,
+            paramtypes=paramtypes,
+        )
         ff = FlowFixture(flow_name, edam, tmp_path, ref_subdir)
 
         # ff.flow.work_root = tmp_path
