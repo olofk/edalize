@@ -124,7 +124,7 @@ class Edatool(object):
                 paramtype = self.parameters[key]["paramtype"]
                 getattr(self, paramtype)[key] = value
 
-    def render_template(self, template_file, target_file, template_vars={}):
+    def render_template(self, template_file, target_file, template_vars=None):
         """
         Render a Jinja2 template for the backend
 
@@ -132,7 +132,7 @@ class Edatool(object):
         """
         template_dir = str(self.__class__.__name__).lower()
         template = self.jinja_env.get_template("/".join([template_dir, template_file]))
-        self.update_config_file(target_file, template.render(template_vars))
+        self.update_config_file(target_file, template.render(template_vars or {}))
 
     def _add_include_dir(self, f, incdirs, force_slash=False):
         if f.get("is_include_file"):
