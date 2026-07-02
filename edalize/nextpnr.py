@@ -37,6 +37,8 @@ class Nextpnr(Edatool):
         pcf_file = ""
         pdc_file = ""
         qsf_file = ""
+        ccf_file = ""
+        sdc_file = ""
         netlist = ""
         unused_files = []
         for f in self.files:
@@ -48,7 +50,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 cst_file = f["name"]
-            if f["file_type"] == "LPF":
+            elif f["file_type"] == "LPF":
                 if lpf_file:
                     raise RuntimeError(
                         "Nextpnr only supports one LPF file. Found {} and {}".format(
@@ -56,7 +58,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 lpf_file = f["name"]
-            if f["file_type"] == "PDC":
+            elif f["file_type"] == "PDC":
                 if pdc_file:
                     raise RuntimeError(
                         "Nextpnr only supports one PDC file. Found {} and {}".format(
@@ -64,7 +66,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 pdc_file = f["name"]
-            if f["file_type"] == "PCF":
+            elif f["file_type"] == "PCF":
                 if pcf_file:
                     raise RuntimeError(
                         "Nextpnr only supports one PCF file. Found {} and {}".format(
@@ -72,7 +74,7 @@ class Nextpnr(Edatool):
                         )
                     )
                 pcf_file = f["name"]
-            if f["file_type"] == "QSF":
+            elif f["file_type"] == "QSF":
                 if qsf_file:
                     raise RuntimeError(
                         "Nextpnr only supports one QSF file. Found {} and {}".format(
@@ -80,6 +82,22 @@ class Nextpnr(Edatool):
                         )
                     )
                 qsf_file = f["name"]
+            elif f["file_type"] == "CCF":
+                if ccf_file:
+                    raise RuntimeError(
+                        "Nextpnr only supports one CCF file. Found {} and {}".format(
+                            ccf_file, f["name"]
+                        )
+                    )
+                ccf_file = f["name"]
+            elif f["file_type"] == "SDC":
+                if sdc_file:
+                    raise RuntimeError(
+                        "Nextpnr only supports one SDC file. Found {} and {}".format(
+                            sdc_file, f["name"]
+                        )
+                    )
+                sdc_file = f["name"]
             elif f["file_type"] == "jsonNetlist":
                 if netlist:
                     raise RuntimeError(
@@ -132,12 +150,26 @@ class Nextpnr(Edatool):
             targets = self.name + ".pack"
             constraints = ["--cst", cst_file] if cst_file else []
             output = ["--write", targets]
+        elif arch == "gatemate":
+            device = self.tool_options.get("device")
+            if not device:
+                raise RuntimeError("Missing required option 'device' for nextpnr-himbaechel for gatemate")
+            arch_options += ["--device", device]
+            targets = self.name + ".txt"
+            constraints = ["-o", f"ccf={ccf_file}"] if ccf_file else []
+            constraints += ["--sdc", sdc_file] if sdc_file else []
+            output = ["-o", f"out={targets}"]
         else:
             targets = self.name + ".asc"
             constraints = ["--pcf", pcf_file] if pcf_file else []
             output = ["--asc", targets]
 
         depends = netlist
+        
+        # Architectures covered by nextpnr-himbaechel
+        if arch in ["gatemate"]:
+            arch = "himbaechel"
+        
         command = ["nextpnr-" + arch, "-l", "next.log"]
         command += arch_options + self.tool_options.get("nextpnr_options", [])
         command += constraints + ["--json", depends] + output
