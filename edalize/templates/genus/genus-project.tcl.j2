@@ -28,6 +28,12 @@ set_multi_cpu_usage -local_cpu {{jobs}}
 
 set READ_SOURCES {{ name }}-read-sources
 
+# A variable containing all top-module parameters passed by FuseSoC, ready to
+# be passed on to the `elaborate`-command (within the `$GENUS_SCRIPT` like this:
+#
+#     elaborate -parameters "$ELABORATE_PARAMETERS" "$TOP_MODULE"
+set ELABORATE_PARAMETERS {{ parameters }}
+
 {% if script_dir -%}
 set SCRIPT_DIR {{ script_dir }}
 {% else %}
