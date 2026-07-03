@@ -27,6 +27,8 @@ def test_tool_xcelium(tool_fixture):
     assert "-R" in args
     assert "-input" in args
     assert args[args.index("-input") + 1] == "tcl_file.tcl"
+    assert "-sv_lib" in args
+    assert args[args.index("-sv_lib") + 1] == "libdpi.so"
 
 
 def test_tool_xcelium_minimal(tool_fixture):
@@ -46,6 +48,8 @@ def test_tool_xcelium_minimal(tool_fixture):
     assert "-R" in args
     assert "-input" in args
     assert args[args.index("-input") + 1] == "tcl_file.tcl"
+    assert "-sv_lib" in args
+    assert args[args.index("-sv_lib") + 1] == "libdpi.so"
 
 
 @pytest.mark.parametrize("gui", (None, False, True))

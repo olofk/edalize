@@ -21,7 +21,7 @@ INCS := -I$(XCELIUM_HOME)/tools/include
 XRUN ?= $(XCELIUM_HOME)/tools/bin/xrun
 
 TOPLEVEL      := top_module
-DPI_LIBRARIES := -sv_lib libdpi1.so -sv_lib libdpi2.so
+DPI_LIBRARIES := -sv_lib libdpi.so -sv_lib libdpi1.so -sv_lib libdpi2.so
 PARAMETERS    ?= vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello
 PLUSARGS      ?= plusarg_bool=1 plusarg_int=42 plusarg_str=hello
 XMSIM_OPTIONS ?= a few xmsim_options

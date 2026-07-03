@@ -244,6 +244,7 @@ FILES = [
     {"name": "qsf_constraint_file.qsf", "file_type": "QSF"},
     {"name": "pdc_floorplan_constraint_file.pdc", "file_type": "FPPDC"},
     {"name": "lpf_file.lpf", "file_type": "LPF"},
+    {"name": "libdpi.so", "file_type": "dpiLibrary"},
 ]
 """Files of all supported file types."""
 
