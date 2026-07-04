@@ -145,14 +145,14 @@ class Vivado(Edatool):
             if cmd:
                 if not self._add_include_dir(f, incdirs, True):
                     src_files.append(cmd + " {" + f["name"] + "}")
-                if "simulation" in f.get("tags", []):
-                    sim_files.append(
-                        f"move_files -fileset sim_1 [get_files {f['name']}]"
-                    )
-                    sim_files.append(
-                        f"set_property used_in simulation [get_files {f['name']}]"
-                    )
-                    unused_files.append(f)
+                    if "simulation" in f.get("tags", []):
+                        sim_files.append(
+                            f"move_files -fileset sim_1 [get_files {f['name']}]"
+                        )
+                        sim_files.append(
+                            f"set_property used_in simulation [get_files {f['name']}]"
+                        )
+                        unused_files.append(f)
 
                 dep_files.append(f["name"])
             else:

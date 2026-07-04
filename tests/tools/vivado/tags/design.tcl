@@ -25,8 +25,7 @@ read_mem {bootrom.mem}
 read_verilog -sv {another_sv_file.sv}
 read_verilog {testbench.v}
 move_files -fileset sim_1 [get_files testbench.v]
-set_property used_in_synthesis false [get_files testbench.v]
-set_property used_in_implementation false [get_files testbench.v]
+set_property used_in simulation [get_files testbench.v]
 
 set_property include_dirs [list . .] [get_filesets sources_1]
 set_property top top_module [current_fileset]
