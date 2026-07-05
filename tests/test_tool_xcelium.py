@@ -56,7 +56,9 @@ def test_tool_xcelium_gui(tool_fixture, gui: bool | None) -> None:
     if gui is not None:
         tool_options["gui"] = gui
 
-    tf = tool_fixture("xcelium", tool_options=tool_options, paramtypes=[])
+    tf = tool_fixture(
+        "xcelium", tool_options=tool_options, paramtypes=[], ref_subdir="minimal"
+    )
 
     tf.tool.configure()
     command, args, _ = tf.tool.run()
