@@ -1,0 +1,8 @@
+sv work sv_file.sv
+verilog work vlog_file.v
+verilog work vlog_with_define.v -d FD_KEY=FD_VAL
+verilog work vlog05_file.v
+vhdl work vhdl_file.vhd
+vhdl libx vhdl_lfile
+vhdl2008 work vhdl2008_file
+sv work another_sv_file.sv
