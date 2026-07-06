@@ -118,6 +118,12 @@ class Xcelium(Edatool):
             val = self._param_value_str(v, str_quote_style='"')
             vlogparam_cmd.append(f"-defparam {self.toplevel}.{k}={val}")
 
+        # Append VHDL generics
+        generic_cmd = []
+        for k, v in self.generic.items():
+            val = self._param_value_str(v, str_quote_style='"')
+            generic_cmd.extend(("-generic", f"{k}={val}"))
+
         # Append include directories
         incdir_cmd = ["+incdir+" + d for d in incdirs]
 
@@ -186,6 +192,7 @@ class Xcelium(Edatool):
             + dpi_lib_cmd
             + macro_def_cmd
             + vlogparam_cmd
+            + generic_cmd
             + incdir_cmd
             + top_cmd
             + self.tool_options.get("xrun_options", [])
