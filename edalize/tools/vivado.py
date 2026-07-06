@@ -109,6 +109,7 @@ class Vivado(Edatool):
 
         dep_files = []
         for f in self.files:
+            f["name"] = f["name"].replace("\\", "/")
             file_type = f.get("file_type", "")
             cmd = ""
             if file_type.startswith("verilogSource"):
