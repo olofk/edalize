@@ -7,6 +7,7 @@ import os.path
 import platform
 import re
 import subprocess
+from pathlib import Path
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -109,7 +110,7 @@ class Vivado(Edatool):
 
         dep_files = []
         for f in self.files:
-            f["name"] = f["name"].replace("\\", "/")
+            f["name"] = Path(f["name"]).as_posix()
             file_type = f.get("file_type", "")
             cmd = ""
             if file_type.startswith("verilogSource"):
