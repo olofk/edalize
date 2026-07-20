@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os
+from pathlib import Path
+from xml.etree import ElementTree as ET
 
 from edalize.flows.generic import Generic
 
@@ -121,3 +123,47 @@ class Sim(Generic):
             env = {}
 
         self._run_tool(cmd, args=args, cwd=cwd, env=env)
+
+        if cocotb_module:
+            # Check for failed tests from generated JUnit XML file. Support for cocotb 1.9 and 2.0
+            results_xml = Path(cwd) / "results.xml"
+
+            if not results_xml.exists():
+                # Cocotb 2.0 with pytest as runner
+                pytest_current_test: str | None = os.environ.get("PYTEST_CURRENT_TEST")
+
+                if pytest_current_test:
+                    # https://github.com/cocotb/cocotb/blob/v2.0.1/src/cocotb_tools/runner.py#L516
+                    current_test_name: str = pytest_current_test.split(":")[-1].split(
+                        " "
+                    )[0]
+                    results_xml = Path(cwd) / f"{current_test_name}.result.xml"
+
+            self._check_junit_xml(results_xml)
+
+    def _check_junit_xml(self, file: Path) -> None:
+        """Check test results from generated JUnit XML file.
+
+        Args:
+            file: Path to generated JUnit XML file with test results.
+
+        Raises:
+            FileExistsError: When JUnit XML file was not found.
+            RuntimeError: When one of tests failed.
+        """
+        if not file.exists():
+            raise FileExistsError(
+                f"ERROR: Simulation terminated abnormally. Results file {file} not found."
+            )
+
+        failed: int = 0
+        tests: int = 0
+
+        for testsuite in ET.parse(file).getroot().findall("testsuite"):
+            for testcase in testsuite.findall("testcase"):
+                failed += len(testcase.findall("failure"))
+                failed += len(testcase.findall("error"))
+                tests += 1
+
+        if failed:
+            raise RuntimeError(f"ERROR: Failed {failed} of {tests} tests.")
