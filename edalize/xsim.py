@@ -69,6 +69,9 @@ XSIM_OPTIONS  = {xsim_options}
             }
 
     def configure_main(self):
+        logger.warning(
+            "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
+        )
         self._write_config_files()
 
         # Check if any VPI modules are present and display warning
