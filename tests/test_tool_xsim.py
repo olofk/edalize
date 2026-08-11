@@ -2,6 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from __future__ import annotations
+
 import pytest
 
 from .edalize_tool_common import tool_fixture

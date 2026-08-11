@@ -2,5 +2,5 @@
 
 all: xsim.dir/work.top_module/xsimk
 
-xsim.dir/work.top_module/xsimk: xsim.prj sv_file.sv tcl_file.tcl vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file another_sv_file.sv
+xsim.dir/work.top_module/xsimk: xsim.prj sv_file.sv tcl_file.tcl vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file another_sv_file.sv libdpi.so
 	$(EDALIZE_LAUNCHER) xelab --prj xsim.prj --lib work --lib libx --include . top_module
