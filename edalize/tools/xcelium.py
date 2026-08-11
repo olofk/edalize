@@ -174,7 +174,6 @@ class Xcelium(Edatool):
                 "-elaborate",
                 "-f",
                 "xrun.f",
-                "-enable_cmdline_define_redefinition",
             ]
             + files_cmd,
             [target],
