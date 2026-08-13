@@ -7,6 +7,7 @@ import os.path
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 from functools import partial
+from pathlib import Path
 
 
 class Gowin(Edatool):
@@ -37,23 +38,37 @@ class Gowin(Edatool):
         },
     }
 
+    @staticmethod
+    def _file_name(f):
+        """Return the file name with forward slashes, also on Windows.
+
+        Backslashes are escape characters in Tcl, so a Windows path used
+        verbatim makes gw_sh look for a file whose separators have been
+        eaten. Gowin accepts forward slashes on every platform.
+        """
+        return Path(f["name"]).as_posix()
+
     def src_file_filter(self, f):
         def _append_library(f):
             s = ""
             if f.get("logical_name"):
                 s += (
-                    "\nset_file_prop -lib " + f["logical_name"] + ' "' + f["name"] + '"'
+                    "\nset_file_prop -lib "
+                    + f["logical_name"]
+                    + ' "'
+                    + self._file_name(f)
+                    + '"'
                 )
             return s
 
         def _handle_src(t, f):
             s = "add_file -type " + t
-            s += ' "' + f["name"] + '"'
+            s += ' "' + self._file_name(f) + '"'
             s += _append_library(f)
             return s
 
         def _handle_tcl(f):
-            return "source " + f["name"]
+            return 'source "' + self._file_name(f) + '"'
 
         file_mapping = {
             "verilogSource": partial(_handle_src, "verilog"),
@@ -110,7 +125,7 @@ class Gowin(Edatool):
             cmd = self.src_file_filter(f)
 
             if cmd:
-                depfiles.append(f["name"])
+                depfiles.append(self._file_name(f))
                 file_table.append(cmd)
             else:
                 unused_files.append(f)
