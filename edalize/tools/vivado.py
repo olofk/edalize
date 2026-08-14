@@ -147,6 +147,8 @@ class Vivado(Edatool):
             if cmd:
                 if not self._add_include_dir(f, incdirs, True):
                     src_files.append(cmd + " {" + f["name"] + "}")
+                    # An include file is never read into the project, so
+                    # get_files would not find it here
                     if "simulation" in f.get("tags", []):
                         sim_files.append(
                             f"move_files -fileset sim_1 [get_files {f['name']}]"
@@ -154,7 +156,11 @@ class Vivado(Edatool):
                         sim_files.append(
                             f"set_property used_in simulation [get_files {f['name']}]"
                         )
-                        unused_files.append(f)
+
+                # Simulation files are for the next tool in the flow, whether
+                # or not this one read them into the project
+                if "simulation" in f.get("tags", []):
+                    unused_files.append(f)
 
                 dep_files.append(f["name"])
             else:

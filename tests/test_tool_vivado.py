@@ -40,3 +40,34 @@ def test_tool_vivado_tags(tool_fixture):
             name + "_pgm.tcl",
         ]
     )
+
+
+def test_tool_vivado_simulation_include_file(tool_fixture):
+    """A simulation include file has to reach the next tool in the flow.
+
+    Vivado itself never reads an include file into the project, but the
+    simulator further down the flow still needs it.
+    """
+    files = [
+        {"name": "top.v", "file_type": "verilogSource"},
+        {
+            "name": "defs.svh",
+            "file_type": "systemVerilogSource",
+            "is_include_file": True,
+            "tags": ["simulation"],
+        },
+        {"name": "tb.sv", "file_type": "systemVerilogSource", "tags": ["simulation"]},
+    ]
+
+    tf = tool_fixture("vivado", files=files, paramtypes=[], has_makefile=False)
+    tf.tool.configure()
+
+    forwarded = [f["name"] for f in tf.tool.edam["files"]]
+    assert "defs.svh" in forwarded
+    assert "tb.sv" in forwarded
+
+    # The include file is not part of the project, so it must not be named
+    # in a get_files call that would match nothing
+    tcl = (tf.tool.work_root / "design.tcl").read_text()
+    assert "get_files defs.svh" not in tcl
+    assert "get_files tb.sv" in tcl
