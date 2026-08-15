@@ -2,7 +2,7 @@
 
 all: custom_binary_name
 
-work.workdir/AN.DB/make.vlogan work.workdir/64/vhmra.sdb libx.workdir/64/vhmra.sdb: sv_file.sv vlog_incfile vlog_file.v vlog_incfile vlog_with_define.v vlog_incfile vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file another_sv_file.sv vlog_incfile work.f work_1.f work_2.f work_3.f work_4.f libx.f work_5.f work_6.f
+work.workdir/AN.DB/make.vlogan work.workdir/64/vhmra.sdb libx.workdir/64/vhmra.sdb: sv_file.sv vlog_incfile vlog_file.v vlog_incfile vlog_with_define.v vlog_incfile vlog05_file.v vlog_incfile vhdl_file.vhd vhdl_lfile vhdl2008_file another_sv_file.sv vlog_incfile c_header.h c_header.h work.f work_1.f work_2.f work_3.f work_4.f libx.f work_5.f work_6.f
 	$(EDALIZE_LAUNCHER) vlogan -full64 -file work.f -work work -l work.log sv_file.sv
 	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_1.f -work work -l work_1.log vlog_file.v
 	$(EDALIZE_LAUNCHER) vlogan -full64 -file work_2.f -work work -l work_2.log vlog_with_define.v

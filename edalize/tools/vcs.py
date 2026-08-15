@@ -69,7 +69,8 @@ class Vcs(Edatool):
         self.user_files = []
 
         incdirs = []
-        include_files = []
+        rtl_include_files = []
+        c_include_files = []
         unused_files = self.files.copy()
         self.sim_setup_files = []
         # Get all include dirs. Move include files to a separate list
@@ -81,7 +82,12 @@ class Vcs(Edatool):
                 "systemVerilogSource"
             ):
                 if self._add_include_dir(f, incdirs, force_slash=True):
-                    include_files.append(f["name"])
+                    rtl_include_files.append(f["name"])
+                    unused_files.remove(f)
+
+            elif file_type.startswith("cSource") or file_type.startswith("cppSource"):
+                if self._add_include_dir(f, incdirs, force_slash=True):
+                    c_include_files.append(f["name"])
                     unused_files.remove(f)
             elif file_type == "synopsys_sim_setup":
                 self.sim_setup_files.append(f["name"])
@@ -89,9 +95,13 @@ class Vcs(Edatool):
 
         full64 = [] if self.tool_options.get("32bit") else ["-full64"]
         if self.tool_options.get("2_stage_flow"):
-            self._twostage_setup(edam, incdirs, include_files, unused_files, full64)
+            self._twostage_setup(
+                edam, incdirs, rtl_include_files, c_include_files, unused_files, full64
+            )
         else:
-            self._threestage_setup(edam, incdirs, include_files, unused_files, full64)
+            self._threestage_setup(
+                edam, incdirs, rtl_include_files, c_include_files, unused_files, full64
+            )
 
         self.edam = edam.copy()
         self.edam["files"] = unused_files
@@ -124,11 +134,16 @@ class Vcs(Edatool):
         )
         self.commands.set_default_target(binary_name)
 
-    def _twostage_setup(self, edam, incdirs, include_files, unused_files, full64):
+    def _twostage_setup(
+        self, edam, incdirs, rtl_include_files, c_include_files, unused_files, full64
+    ):
 
         user_files = []
 
         vlog_files = []
+
+        c_files = []
+
         has_sv = False
         for f in unused_files.copy():
             if not "simulation" in f.get("tags", ["simulation"]):
@@ -152,6 +167,9 @@ class Vcs(Edatool):
                 )
             elif file_type == "user":
                 user_files.append(f["name"])
+            elif file_type == "cSource" or file_type == "cppSource":
+                c_files.append(fname)
+                unused_files.remove(f)
 
             if f.get("define"):
                 logger.warning(
@@ -177,11 +195,14 @@ class Vcs(Edatool):
 
         self.f_files["vcs.f"] = options
 
-        self.target_files = include_files + vlog_files
-        self.vcs_files = vlog_files
+        self.target_files = rtl_include_files + c_include_files + vlog_files + c_files
+        self.vcs_files = vlog_files + c_files
 
-    def _threestage_setup(self, edam, incdirs, include_files, unused_files, full64):
+    def _threestage_setup(
+        self, edam, incdirs, rtl_include_files, c_include_files, unused_files, full64
+    ):
         filegroups = []
+        c_files = []
         prev_fileopts = ("", "", "")  # file_type, logical_name, defines
         for f in unused_files.copy():
             lib = f.get("logical_name", "work")
@@ -208,6 +229,9 @@ class Vcs(Edatool):
             elif file_type == "user":
                 self.user_files.append(f["name"])
                 cmd = None
+            elif file_type == "cSource" or file_type == "cppSource":
+                c_files.append(f["name"])
+                cmd = None
             else:
                 cmd = None
 
@@ -230,7 +254,7 @@ class Vcs(Edatool):
         for fg in filegroups:
             # Ignore empty file groups
             if fg[1]:
-                (cmd, file_type, lib, defines) = fg[0]
+                cmd, file_type, lib, defines = fg[0]
                 depfiles += fg[1]
                 options = self.tool_options.get("analysis_options", []).copy()
                 if cmd == "vlogan":
@@ -240,7 +264,7 @@ class Vcs(Edatool):
                     options += [defines]
                     options += ["+incdir+" + d for d in incdirs]
                     target_file = f"{lib}.workdir/AN.DB/make.vlogan"
-                    depfiles += include_files
+                    depfiles += rtl_include_files
                 elif cmd == "vhdlan":
                     options += self.tool_options.get("vhdlan_options", [])
                     target_file = f"{lib}.workdir/64/vhmra.sdb"
@@ -270,11 +294,11 @@ class Vcs(Edatool):
                     + ["-file", f_file, "-work", lib, "-l", logfile]
                     + fg[1]
                 )
-
+        depfiles += c_include_files
         self.commands.add(cmds, self.target_files, depfiles + list(self.f_files.keys()))
 
-        self.f_files["vcs.f"] = ["-top", self.toplevel] + self.tool_options.get(
-            "vcs_options", []
+        self.f_files["vcs.f"] = (
+            ["-top", self.toplevel] + self.tool_options.get("vcs_options", []) + c_files
         )
         self.vcs_files = []
 
