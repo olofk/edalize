@@ -285,7 +285,7 @@ class Vivado(Edatool):
                 pass
             elif self.tool_options["pnr"] == "none":
                 args.append("synth")
-        return ("make", self.args, self.work_root)
+        return ("make", args, self.work_root)
 
     def run(self):
         """
