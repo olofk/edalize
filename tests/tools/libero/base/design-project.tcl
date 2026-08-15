@@ -2,11 +2,11 @@
 # Microsemi Tcl Script
 # Libero
 
-puts "----------------- Creating project libero-test ------------------------------"
+puts "----------------- Creating project design ------------------------------"
 # Create a new project with device parameters
 new_project \
     -location {./prj} \
-    -name libero-test \
+    -name design \
     -project_description {} \
     -hdl {VERILOG} \
     -family {PolarFire} \
@@ -26,6 +26,7 @@ create_links \
     -hdl_source {vlog_with_define.v} \
     -hdl_source {vlog05_file.v} \
     -hdl_source {vhdl_file.vhd} \
+    -hdl_source {vhdl_lfile} \
     -hdl_source {another_sv_file.sv} \
     -io_pdc {pdc_constraint_file.pdc} \
     -fp_pdc {pdc_floorplan_constraint_file.pdc} \
@@ -49,14 +50,14 @@ set_root -module {top_module::work}
 
 # Configure Synthesize tool to use the generated Synplify TCL script
 configure_tool -name {SYNTHESIZE} \
-        -params [join [list "SYNPLIFY_TCL_FILE" [file join [file dirname [info script]] ./libero-test-syn-user.tcl]] ":"]
+        -params [join [list "SYNPLIFY_TCL_FILE" [file join [file dirname [info script]] ./design-syn-user.tcl]] ":"]
 
-puts "Configured Synthesize tool to use script: libero-test-syn-user.tcl"
+puts "Configured Synthesize tool to use script: design-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"
 puts "- ../../."
 
 puts "----------------------- Synthesize Constraints ---------------------------"
-puts "File: sdc_file.sdc"
+puts "File: -file {sdc_file.sdc}"
 # Configure Synthesize tool to use the project constraints
 organize_tool_files -tool {SYNTHESIZE} \
         -file {sdc_file.sdc} \
@@ -64,9 +65,9 @@ organize_tool_files -tool {SYNTHESIZE} \
 
 # Configure Place and Route tool to use the project constraints
 puts "----------------------- Place and Route Constraints ----------------------"
-puts "File: sdc_file.sdc"
-puts "File: pdc_constraint_file.pdc"
-puts "File: pdc_floorplan_constraint_file.pdc"
+puts "File: -file {sdc_file.sdc}"
+puts "File: -file {pdc_constraint_file.pdc}"
+puts "File: -file {pdc_floorplan_constraint_file.pdc}"
 
 organize_tool_files -tool {PLACEROUTE} \
         -file {sdc_file.sdc} \
@@ -76,12 +77,12 @@ organize_tool_files -tool {PLACEROUTE} \
 
 # Configure Verify Timing tool to use the project constraints
 puts "----------------------- Verify Timings Constraints -----------------------"
-puts "File: sdc_file.sdc"
+puts "File: -file {sdc_file.sdc}"
 organize_tool_files -tool {VERIFYTIMING} \
         -file {sdc_file.sdc} \
         -module {top_module::work} -input_type {constraint}
 
 save_project
 
-puts "If desired, execute the libero-test-build.tcl script to run the generation flow."
+puts "If desired, execute the design-build.tcl script to run the generation flow."
 puts "----------------- Finished Importing project -----------------------------"
