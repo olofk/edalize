@@ -290,7 +290,8 @@ class Reporting(abc.ABC):
         :rtype: dict
         """
 
-        report = open(report_file, "r", encoding=cls._report_encoding).read()
+        with open(report_file, "r", encoding=cls._report_encoding) as f:
+            report = f.read()
 
         tables = {}
         for k, v in parser(report).items():

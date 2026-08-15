@@ -101,7 +101,8 @@ class Edatool(object):
         """
         f = os.path.join(self.work_root, file_name)
         if os.path.exists(f):
-            old_file = open(f, "r").read()
+            with open(f, "r") as _f:
+                old_file = _f.read()
         else:
             old_file = None
         if old_file != contents:
