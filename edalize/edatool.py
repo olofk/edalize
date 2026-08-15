@@ -321,7 +321,7 @@ class Edatool(object):
             if m["name"] not in [i["name"] for i in options["lists"]]
         )
 
-    def configure(self, args=[]):
+    def configure(self, args=None):
         if args:
             logger.error(
                 "Edalize has stopped supporting passing arguments as a function argument. Set these values as default values in the EDAM object instead"
@@ -359,7 +359,7 @@ class Edatool(object):
         if "post_build" in self.hooks:
             self._run_scripts(self.hooks["post_build"], "post_build")
 
-    def run(self, args={}):
+    def run(self, args=None):
         logger.info("Running")
         self.run_pre(args)
         self.run_main()
@@ -369,7 +369,7 @@ class Edatool(object):
         if type(args) == list:
             parsed_args = self.parse_args(args, self.argtypes)
         else:
-            parsed_args = args
+            parsed_args = args or {}
         self._apply_parameters(parsed_args)
         if "pre_run" in self.hooks:
             self._run_scripts(self.hooks["pre_run"], "pre_run")
@@ -480,7 +480,7 @@ class Edatool(object):
             paramtype = self.parameters[key]["paramtype"]
             getattr(self, paramtype)[key] = value
 
-    def render_template(self, template_file, target_file, template_vars={}):
+    def render_template(self, template_file, target_file, template_vars=None):
         """
         Render a Jinja2 template for the backend.
 
@@ -490,7 +490,7 @@ class Edatool(object):
         template = self.jinja_env.get_template("/".join([template_dir, template_file]))
         file_path = os.path.join(self.work_root, target_file)
         with open(file_path, "w") as f:
-            f.write(template.render(template_vars))
+            f.write(template.render(template_vars or {}))
 
     def _add_include_dir(self, f, incdirs, force_slash=False):
         if f.get("is_include_file"):
@@ -563,7 +563,8 @@ class Edatool(object):
                     logger.debug(e.stderr)
                 raise RuntimeError(msg)
 
-    def _run_tool(self, cmd, args=[], quiet=False):
+    def _run_tool(self, cmd, args=None, quiet=False):
+        args = args or []
         logger.debug("Running " + cmd)
         logger.debug("args  : " + " ".join(args))
 
