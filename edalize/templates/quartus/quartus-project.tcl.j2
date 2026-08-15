@@ -7,6 +7,9 @@ set_global_assignment -name TOP_LEVEL_ENTITY {{ toplevel }}
 {% if has_vhdl2008 %}
 set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 {% endif %}
+{% if processors %}
+set_global_assignment -name NUM_PARALLEL_PROCESSORS {{ processors }}
+{% endif %}
 {% if vlogparam %}
 {% for k, v in vlogparam.items() %}
 set_parameter -name {{k}} {{v|param_value_str}}

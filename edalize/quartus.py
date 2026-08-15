@@ -62,6 +62,11 @@ class Quartus(Edatool):
                         "type": "String",
                         "desc": "Programming tool. Default is 'none', set to 'quartus' to program the FPGA in the run stage.",
                     },
+                    {
+                        "name": "processors",
+                        "type": "int",
+                        "desc": "Number of processors that Quartus will use for parallel compilation, Can be from 1 to 24.",
+                    },
                 ],
                 "lists": [
                     {
@@ -142,6 +147,8 @@ class Quartus(Edatool):
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
         self.jinja_env.filters["qsys_file_filter"] = self.qsys_file_filter
 
+        processors = self.tool_options.get("processors", None)
+
         has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
         has_qsys = "QSYS" in [x.file_type for x in src_files]
 
@@ -157,6 +164,7 @@ class Quartus(Edatool):
             "vlogdefine": self.vlogdefine,
             "generic": self.generic,
             "has_vhdl2008": has_vhdl2008,
+            "processors": processors,
         }
 
         # Render Makefile based on detected version
