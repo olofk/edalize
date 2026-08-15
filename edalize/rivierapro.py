@@ -47,10 +47,16 @@ class Rivierapro(Edatool):
                         "type": "String",
                         "desc": "Additional run options for vsim",
                     },
+                    {
+                        "name": "ccomp_options",
+                        "type": "String",
+                        "desc": "Additional run options for ccomp",
+                    },
                 ],
             }
 
     def _write_build_rtl_tcl_file(self, tcl_main):
+        self.dpilibrary = []
         tcl_build_rtl = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), "w")
 
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
@@ -59,6 +65,7 @@ class Rivierapro(Edatool):
         libs = []
         common_compilation_sv = []
         common_compilation_vhdl = []
+        dpi_files = []
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = "work"
@@ -68,6 +75,15 @@ class Rivierapro(Edatool):
             if f.file_type.startswith("verilogSource") or f.file_type.startswith(
                 "systemVerilogSource"
             ):
+                if ( f.name.endswith(".c") or f.name.endswith(".cpp") or f.name.endswith(".cc") or f.name.endswith(".h") or f.name.endswith(".hpp") ):
+                    #Riviera do not accept DPI-C files as arguments to vlog command. Edalize also do not have dedicated DPI support.
+                    #As a workaround all files passed with type verilogSource/systemVerilogSource and C/C++ extensions are passed to single ccomp command
+                    #to build single so/dll file for whole project. All verilog include dirs are used in this ccomp. 
+                    #The lib is named: <project_name>_dpi
+                    #Extra ccomp arguments can be passed by ccomp_options config edam parameter.
+                    cmd = None
+                    dpi_files +=  [f.name]
+                else:
                 cmd = "vlog"
                 args = []
                 args += self.tool_options.get("vlog_options", [])
@@ -145,6 +161,14 @@ class Rivierapro(Edatool):
             if common_compilation_vhdl:
                 tcl_build_rtl.write("{} \n".format(" ".join(common_compilation_vhdl)))
 
+        if dpi_files != [] :
+            dpiargs = [ "-dpi" ] 
+            dpiargs += self.tool_options.get("ccomp_options", [])
+            dpiargs += list(map(lambda x: x.replace( "+incdir+", "-I"), vlog_include_dirs))
+            dpiargs.append( f"-o {self.name}_dpi" )
+            dpiargs =  dpiargs + dpi_files
+            tcl_build_rtl.write("ccomp {} \n".format(" ".join(dpiargs)))
+            self.dpilibrary = [f"-sv_lib {self.name}_dpi"]
         if not (
             self.tool_options.get("compilation_mode") == "common"
             or self.tool_options.get("compilation_mode") == None
@@ -165,6 +189,7 @@ class Rivierapro(Edatool):
         args = ["vsim"]
         args += self.tool_options.get("vsim_options", [])
         args += vpi_options
+        args += self.dpilibrary
         args += self.toplevel.split()
 
         # Plusargs
