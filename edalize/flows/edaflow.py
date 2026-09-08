@@ -282,6 +282,19 @@ class Edaflow(object):
                     for c in node.inst.commands.commands:
                         if not "run" in c.targets:
                             c.order_only_deps.insert(0, "pre_build")
+                # A frontend may validate files without producing new sources.
+                # Honor its completion target even when no file dependency links
+                # it to the next tool. Order-only edges avoid unnecessary rebuilds.
+                for dependency in node.deps:
+                    target = dependency.inst.commands.default_target
+                    if any(
+                        target in command.depends
+                        for command in node.inst.commands.commands
+                    ):
+                        continue
+                    for command in node.inst.commands.commands:
+                        if any(command.commands):
+                            command.order_only_deps.append(target)
                 self.commands.commands += node.inst.commands.commands
 
     def add_scripts(self, depends, hook_name):
