@@ -4,12 +4,11 @@ all: post_build
 
 pre_build: 
 
-.PHONY: lint | pre_build
-
-lint: sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile config.vbl verible_waiver.vbw verible_waiver2.vbw another_sv_file.sv | pre_build
+design.verible.done: sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v vlog_incfile config.vbl verible_waiver.vbw verible_waiver2.vbw another_sv_file.sv Makefile | pre_build
 	$(EDALIZE_LAUNCHER) verible-verilog-lint --lint_fatal=false --parse_fatal=true --rules_config=config.vbl --waiver_files=verible_waiver.vbw,verible_waiver2.vbw sv_file.sv vlog_file.v vlog_with_define.v vlog05_file.v another_sv_file.sv
+	$(EDALIZE_LAUNCHER) touch design.verible.done
 
-post_build: lint
+post_build: design.verible.done
 
 pre_run: 
 

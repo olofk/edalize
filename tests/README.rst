@@ -23,12 +23,23 @@ In a more complex test setup (e.g. for ``vcs``),
 Testcases
 =========
 
-To define a testcase, use the :func:`edalize_common.make_edalize_test` pytest factory fixture.
-This defines a factory that you can call to set up a mocked-up backend appropriately.
-See the documentation for :py:class:`edalize_common.TestFixture` for details of the supported keywords.
+Tests for legacy backends use the
+:func:`edalize_common.make_edalize_test` pytest factory fixture. This defines a
+factory that sets up a mocked backend. See
+:py:class:`edalize_common.TestFixture` for the supported keywords. The
+:py:attr:`backend` attribute of the returned fixture has
+:py:meth:`configure`, :py:meth:`build`, and :py:meth:`run` methods. Call the
+applicable phases in order, set up files as necessary between calls, and check
+the results with :py:meth:`compare_files`.
 
-The :py:attr:`backend` attribute of the returned fixture has :py:meth:`configure`, :py:meth:`build` and :py:meth:`run` methods.
-The testcase should call these in order, setting up files as necessary between calls and checking whether the results match by calling the fixture's :py:meth:`compare_files` method.
+Tests for modern tool nodes use the ``tool_fixture`` fixture from
+``edalize_tool_common``. Tests for flows use the ``flow_fixture`` fixture from
+``edalize_flow_common``. These fixtures construct EDAM through the shared test
+infrastructure and expose ``tool`` or ``flow`` objects, respectively. Compare
+generated Makefiles and configuration files with their fixture comparison
+helpers. When a flow test executes a mocked command, prepend the tracked
+``tests/mock_commands`` directory to ``PATH`` with pytest's ``monkeypatch``
+fixture.
 
 If the environment variable :envvar:`GOLDEN_RUN` is set, the :py:meth:`compare_files` method copies the generated files are copied to become the new reference files, rather than checking their contents.
 

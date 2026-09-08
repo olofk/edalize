@@ -1,0 +1,3 @@
+# Flow Makefiles are byte-exact generated fixtures. Empty generated targets
+# intentionally retain a trailing separator to match EdaCommands output.
+tests/flows/**/Makefile whitespace=-blank-at-eol
