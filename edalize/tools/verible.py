@@ -7,6 +7,13 @@ from edalize.utils import EdaCommands
 
 
 class Verible(Edatool):
+    """Lint unpreprocessed sources, preserving them for downstream tools.
+
+    Compiler parameters and defines are not passed to Verible. A successful
+    invocation creates a stamp; source, rule, waiver, or Makefile changes
+    invalidate it.
+    """
+
     description = "Verible lint (verible-verilog-lint)"
 
     TOOL_OPTIONS = {
@@ -53,7 +60,7 @@ class Verible(Edatool):
         src_files = []
         rules_files = []
         waiver_files = []
-        unused_files = []
+        output_files = []
         depfiles = []
 
         for f in self.files:
@@ -62,9 +69,8 @@ class Verible(Edatool):
                 "systemVerilogSource"
             ):
                 depfiles.append(f["name"])
-                if f.get("is_include_file"):
-                    unused_files.append(f)
-                else:
+                output_files.append(f)
+                if not f.get("is_include_file"):
                     src_files.append(f["name"])
             elif file_type == "veribleLintRules":
                 rules_files.append(f["name"])
@@ -73,7 +79,7 @@ class Verible(Edatool):
                 waiver_files.append(f["name"])
                 depfiles.append(f["name"])
             else:
-                unused_files.append(f)
+                output_files.append(f)
 
         if not src_files:
             raise RuntimeError(
@@ -85,7 +91,7 @@ class Verible(Edatool):
             )
 
         self.edam = edam.copy()
-        self.edam["files"] = unused_files
+        self.edam["files"] = output_files
 
         lint_fatal = self.tool_options.get("lint_fatal", True)
         parse_fatal = self.tool_options.get("parse_fatal", True)
@@ -105,11 +111,11 @@ class Verible(Edatool):
             args.append("--waiver_files=" + ",".join(waiver_files))
 
         commands = EdaCommands()
-        commands.add([], [".PHONY"], ["lint"])
+        stamp = self.name + ".verible.done"
         commands.add(
-            ["verible-verilog-lint"] + args + src_files,
-            ["lint"],
-            depfiles,
+            [["verible-verilog-lint"] + args + src_files, ["touch", stamp]],
+            [stamp],
+            depfiles + ["Makefile"],
         )
-        commands.set_default_target("lint")
+        commands.set_default_target(stamp)
         self.commands = commands

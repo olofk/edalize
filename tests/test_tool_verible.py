@@ -1,10 +1,13 @@
 import pytest
 
 from .edalize_tool_common import FILES, tool_fixture
+from .verible_common import assert_fatality_arguments, assert_fatality_option_types
 
 
 def _command_args(tool):
-    command = next(c for c in tool.commands.commands if c.targets == ["lint"])
+    command = next(
+        c for c in tool.commands.commands if c.targets == [tool.commands.default_target]
+    )
     return command.commands[0]
 
 
@@ -12,14 +15,12 @@ def test_tool_verible_fatality_defaults(tool_fixture):
     from edalize.tools.verible import Verible
 
     tool_options = Verible.get_tool_options()
-    assert tool_options["lint_fatal"]["type"] == "bool"
-    assert tool_options["parse_fatal"]["type"] == "bool"
+    assert_fatality_option_types(tool_options)
 
-    tf = tool_fixture("verible")
+    tool_case = tool_fixture("verible")
 
-    args = _command_args(tf.tool)
-    assert args.count("--lint_fatal=true") == 1
-    assert args.count("--parse_fatal=true") == 1
+    args = _command_args(tool_case.tool)
+    assert_fatality_arguments(args, {"lint_fatal": True, "parse_fatal": True})
 
 
 @pytest.mark.parametrize(
@@ -45,13 +46,13 @@ def test_tool_verible_rejects_raw_fatality_args(tool_fixture, raw_arg):
 
 
 def test_tool_verible_preserves_unrelated_raw_args(tool_fixture):
-    tf = tool_fixture(
+    tool_case = tool_fixture(
         "verible",
         tool_options={"verible_lint_args": ["--show_diagnostic_context"]},
         has_makefile=False,
     )
 
-    assert _command_args(tf.tool).count("--show_diagnostic_context") == 1
+    assert _command_args(tool_case.tool).count("--show_diagnostic_context") == 1
 
 
 def test_tool_verible_rules_and_ruleset(tool_fixture):
@@ -67,9 +68,9 @@ def test_tool_verible_rules_and_ruleset(tool_fixture):
 
 
 def test_tool_verible_selects_inputs_and_preserves_unrelated_files(tool_fixture):
-    tf = tool_fixture("verible", has_makefile=False)
+    tool_case = tool_fixture("verible", has_makefile=False)
 
-    args = _command_args(tf.tool)
+    args = _command_args(tool_case.tool)
     assert args[-5:] == [
         "sv_file.sv",
         "vlog_file.v",
@@ -81,13 +82,17 @@ def test_tool_verible_selects_inputs_and_preserves_unrelated_files(tool_fixture)
     assert "--rules_config=config.vbl" in args
     assert "--waiver_files=verible_waiver.vbw,verible_waiver2.vbw" in args
 
-    assert {"name": "qip_file.qip", "file_type": "QIP"} in tf.tool.edam["files"]
+    assert tool_case.tool.edam["files"] == [
+        f
+        for f in FILES
+        if f["file_type"] not in ("veribleLintRules", "veribleLintWaiver")
+    ]
 
 
 def test_tool_verible_omits_unsupported_parameters(tool_fixture):
-    tf = tool_fixture("verible", has_makefile=False)
+    tool_case = tool_fixture("verible", has_makefile=False)
 
-    args = [str(arg) for arg in _command_args(tf.tool)]
+    args = [str(arg) for arg in _command_args(tool_case.tool)]
     assert not any(arg.startswith(("-D", "-G", "+define+")) for arg in args)
     assert not any("vlogdefine_" in arg or "vlogparam_" in arg for arg in args)
 
