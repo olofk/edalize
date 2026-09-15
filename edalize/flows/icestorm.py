@@ -61,7 +61,7 @@ class Icestorm(Edaflow):
 
         pnr = flow_options.get("pnr", "next")
         if pnr == "next":
-            self.goal = "bitstream"
+            self.goal = ""
         elif pnr == "none":
             self.goal = "synth"
         else:
@@ -85,4 +85,7 @@ class Icestorm(Edaflow):
         self.commands.add([], ["stats"], [targets])
 
     def build(self):
-        self._run_tool("make", [self.goal], cwd=self.work_root)
+        args = []
+        if self.goal:
+            args.append(self.goal)
+        self._run_tool("make", args, cwd=self.work_root)
