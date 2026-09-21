@@ -20,16 +20,16 @@ class Gatemate(Edatool):
             options = {
                 "lists": [
                     {
-                        "name": "p_r_options",
+                        "name": "nextpnr_options",
                         "type": "string",
-                        "desc": "Additional option for p_r",
+                        "desc": "Additional option for nextpnr",
                     },
                 ],
                 "members": [
                     {
                         "name": "device",
                         "type": "String",
-                        "desc": "Required device option for p_r command (e.g. CCGM1A1)",
+                        "desc": "Required device option for nextpnr command (e.g. CCGM1A1)",
                     },
                 ],
             }
@@ -44,11 +44,11 @@ class Gatemate(Edatool):
 
     def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files()
-        synth_out = self.name + "_synth.v"
+        synth_out = self.name + ".json"
 
         device = self.tool_options.get("device")
         if not device:
-            raise RuntimeError("Missing required option 'device' for p_r")
+            raise RuntimeError("Missing required option 'device' for nextpnr")
 
         match = re.search("^CCGM1A([1-9]{1,2})$", device)
         if not match:
@@ -64,21 +64,21 @@ class Gatemate(Edatool):
             if f.file_type == "CCF":
                 if ccf_file:
                     raise RuntimeError(
-                        "p_r only supports one ccf file. Found {} and {}".format(
+                        "nextpnr only supports one ccf file. Found {} and {}".format(
                             ccf_file, f.name
                         )
                     )
                 else:
                     ccf_file = f.name
 
-        # p_r_log_file = None
-        p_r_log_file = "p_r.log"
+        # nextpnr_log_file = None
+        nextpnr_log_file = "nextpnr.log"
 
         # Pass GateMate tool options to yosys
         self.edam["tool_options"] = {
             "yosys": {
                 "arch": "gatemate",
-                "output_format": "verilog",
+                "output_format": "json",
                 "output_name": synth_out,
                 "yosys_synth_options": self.tool_options.get("yosys_synth_options", []),
                 "yosys_as_subtool": True,
@@ -103,28 +103,32 @@ class Gatemate(Edatool):
         commands = EdaCommands()
         commands.commands = yosys.commands
 
-        # PnR & image generation
-        commands.add_var("P_R := $(shell which p_r)")
-        targets = self.name + "_00.cfg.bit"
+        # nextpnr & image generation
+        commands.add_var("NEXTPNR := $(shell which nextpnr-himbaechel)")
+        cfg_target = self.name + ".cfg"
         command = [
-            "$(P_R)",
-            "-A",
-            device_number,
-            "-i",
-            synth_out,
-            "-o",
-            self.name,
-            "-lib",
-            "ccag",
-            " ".join(self.tool_options.get("p_r_options", "")),
+            "$(NEXTPNR)",
+            "--device",
+            device,
+            "--json",
+            "$<",
+            "-o out=" + cfg_target,
+            " ".join(self.tool_options.get("nextpnr_options", "")),
         ]
         if ccf_file is not None:
-            command += ["-ccf", ccf_file]
+            command += ["-o ccf=" + ccf_file]
 
-        if p_r_log_file is not None:
-            command += [">", p_r_log_file]
+        if nextpnr_log_file is not None:
+            command += ["--log", nextpnr_log_file]
 
-        commands.add(command, [targets], [synth_out])
+        commands.add(command, [cfg_target], [synth_out])
 
-        commands.set_default_target(targets)
+        commands.add_var("GMPACK := $(shell which gmpack)")
+        bit_target = self.name + ".bit"
+        command = [
+            "$(GMPACK) $< $@",
+        ]
+        commands.add(command, [bit_target], [cfg_target])
+
+        commands.set_default_target(bit_target)
         commands.write(os.path.join(self.work_root, "Makefile"))
