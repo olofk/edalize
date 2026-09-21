@@ -126,7 +126,7 @@ class Xcelium(Edatool):
         generic_cmd = []
         for k, v in self.generic.items():
             val = self._param_value_str(v, str_quote_style='"')
-            generic_cmd.extend(("-generic", f"{k}={val}"))
+            generic_cmd.extend(("-generic", f"{k}=>{val}"))
 
         # Append include directories
         incdir_cmd = ["+incdir+" + d for d in incdirs]
