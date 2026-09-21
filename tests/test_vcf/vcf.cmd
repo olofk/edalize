@@ -1,0 +1,1 @@
+-batch -f test.tcl -output_log_file vcf.log -lic_wait 240
