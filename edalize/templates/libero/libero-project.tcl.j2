@@ -27,7 +27,7 @@ new_project \
 
 {% if incdirs %}
 # Set up the include directories
-set_global_include_path_order -paths "{% for incdir in incdirs %} {{incdir}} {% endfor %}"
+set_global_include_path_order -paths "{% for incdir in incdirs %} ../{{incdir}} {% endfor %}"
 build_design_hierarchy
 {% endif %}
 
@@ -62,9 +62,9 @@ set_root -module {{op}}{{toplevel}}::work{{cl}}
 
 
 
-# Configure Synthesize tool to use the generated Synplify TCL script 
+# Configure Synthesize tool to use the generated Synplify TCL script
 configure_tool -name {SYNTHESIZE} \
-        -params [join "SYNPLIFY_TCL_FILE:" [file join [file dirname [info script]] /{{name}}-syn-user.tcl]]
+        -params [join [list "SYNPLIFY_TCL_FILE" [file join [file dirname [info script]] ./{{name}}-syn-user.tcl]] ":"]
 
 puts "Configured Synthesize tool to use script: {{name}}-syn-user.tcl"
 puts "Configured Synthesize tool to include dirs:"
@@ -122,5 +122,5 @@ organize_tool_files -tool {VERIFYTIMING} \
 
 save_project
 
-puts "If desired, execute the {{name}}-run.tcl script to run the generation flow."
+puts "If desired, execute the {{name}}-build.tcl script to run the generation flow."
 puts "----------------- Finished Importing project -----------------------------"
