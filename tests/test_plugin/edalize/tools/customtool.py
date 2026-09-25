@@ -46,12 +46,13 @@ class Customtool(Edatool):
         self.config_file = self.name + ".cfg"
 
         # Define the command(s) to run the actual EDA tool
-        # This example just uses wc to count the number of
-        # charactes, words and lines of the source files
-        # and writes the results to a file
+        # This example uses wc to count lines in the source and config files
+        # and writes the results to a file.
         commands = EdaCommands()
+        commands.add_var("CUSTOM_TOOL := wc")
+        commands.add_var("CUSTOM_TOOL += -l")
         commands.add(
-            ["wc"]
+            ["$(CUSTOM_TOOL)"]
             + self.tool_options.get("custom_tool_options", [])
             + used_files
             + [self.config_file, ">", output_file],

@@ -283,6 +283,7 @@ class Edaflow(object):
                         if not "run" in c.targets:
                             c.order_only_deps.insert(0, "pre_build")
                 self.commands.commands += node.inst.commands.commands
+                self.commands.variables += node.inst.commands.variables
 
     def add_scripts(self, depends, hook_name):
         last_script = depends
