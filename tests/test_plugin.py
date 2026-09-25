@@ -40,18 +40,20 @@ def test_flow_plugin():
     sys.path = orgpath
 
 
-def test_tool_plugin():
+def test_tool_plugin(tmp_path, monkeypatch):
     import os
-    import sys
+
+    from edalize.flows.generic import Generic
 
     with pytest.raises(ModuleNotFoundError):
         from edalize.tools.customtool import Customtool
 
-    # Copy original sys.path and add plugin path
-    orgpath = sys.path.copy()
-    sys.path.append(os.path.join(os.path.dirname(__file__), "test_plugin"))
+    monkeypatch.syspath_prepend(os.path.join(os.path.dirname(__file__), "test_plugin"))
 
     from edalize.tools.customtool import Customtool
 
-    # Restore original sys.path
-    sys.path = orgpath
+    edam = {"name": "design", "files": [], "flow_options": {"tool": "customtool"}}
+    flow = Generic(edam, tmp_path)
+    flow.configure()
+    flow.build()
+    assert (tmp_path / "design.count").read_text().split() == ["1", "design.cfg"]
