@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 from importlib import import_module
 
 from edalize.utils import EdaCommands
@@ -232,9 +233,12 @@ class Edaflow(object):
             ToolClass = getattr(
                 import_module(f"edalize.tools.{node.tool}"), node.tool.capitalize()
             )
-            # Inject the flow-defined tool options to the EDAM
+            # Inject the flow-defined tool options to the EDAM. merge_dict
+            # updates its first argument in place, and node.fdto is usually a
+            # dict owned by the flow class, so merge into a copy to keep the
+            # EDAM options out of the class.
             tool_options[node.tool] = merge_dict(
-                node.fdto, tool_options.get(node.tool, {})
+                deepcopy(node.fdto), tool_options.get(node.tool, {})
             )
 
             # Assign the EDAM-defined tool options to the right tool

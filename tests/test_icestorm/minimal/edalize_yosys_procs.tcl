@@ -21,7 +21,7 @@ proc set_params {} {
 }
 
 proc synth {top} {
-synth_ice40 some yosys_synth_options -top $top
+synth_ice40  -top $top
 }
 
 set top top_module
