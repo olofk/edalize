@@ -1,4 +1,5 @@
 import os
+from difflib import get_close_matches
 from importlib import import_module
 
 from edalize.utils import EdaCommands
@@ -247,6 +248,38 @@ class Edaflow(object):
 
             self.edam["tool_options"] = tool_options
 
+    def check_flow_options(self):
+        """Warn about flow options that the flow will end up ignoring.
+
+        extract_flow_options and extract_tool_options both keep only the
+        options they recognise, so a misspelled option name is dropped
+        without a trace. Compare the EDAM against everything the flow and
+        the tools in its graph accept, and warn about the rest.
+
+        Must be called after the flow graph is created, as the set of valid
+        options depends on which tools ended up in the graph.
+        """
+        valid_options = set(self.get_flow_options())
+
+        for node in self.flow.get_nodes().values():
+            ToolClass = getattr(
+                import_module(f"edalize.tools.{node.tool}"), node.tool.capitalize()
+            )
+            valid_options |= set(ToolClass.get_tool_options())
+
+        flow_name = self.__class__.__name__.lower()
+
+        for opt_name in self.edam.get("flow_options", {}):
+            if opt_name in valid_options:
+                continue
+
+            msg = f"Ignoring unknown option '{opt_name}' for flow '{flow_name}'"
+            suggestions = get_close_matches(opt_name, valid_options)
+            if suggestions:
+                quoted = [f"'{s}'" for s in suggestions]
+                msg += ". Did you mean " + " or ".join(quoted) + "?"
+            logger.warning(msg)
+
     def configure_tools(self, graph):
         # Instantiate each node and add to list of unconfigured nodes
         unconfigured_nodes = list(graph.get_nodes().values())
@@ -314,6 +347,10 @@ class Edaflow(object):
         # Rearrange tool_options so that each tool gets their
         # own tool_options
         self.extract_tool_options()
+
+        # Everything not picked up by the two calls above is ignored, so
+        # tell the user about it instead of failing silently
+        self.check_flow_options()
 
         self.work_root = work_root
 
