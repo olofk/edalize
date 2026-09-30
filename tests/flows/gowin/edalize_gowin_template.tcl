@@ -3,7 +3,7 @@ set_device GW1NR-LV9QN88PC6/I5
 
 add_file -type sdc "sdc_file"
 add_file -type verilog "sv_file.sv"
-source tcl_file.tcl
+source "tcl_file.tcl"
 add_file -type verilog "vlog_file.v"
 add_file -type verilog "vlog_with_define.v"
 add_file -type verilog "vlog_incfile"
