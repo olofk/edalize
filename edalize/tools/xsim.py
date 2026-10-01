@@ -3,7 +3,11 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import shlex
+import shutil
+import sys
 import logging
+
+from pathlib import Path
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -59,6 +63,7 @@ class Xsim(Edatool):
         """The simulator runtime command with arguments to run compiled and elaborated design."""
 
         for f in self.files:
+            f["name"] = Path(f["name"]).as_posix()
             file_type: str = f.get("file_type", "")
             file: str
 
@@ -155,7 +160,11 @@ class Xsim(Edatool):
         if not library:
             library = "work"
 
-        target = f"xsim.dir/{library}.{toplevel}/xsimk"
+        # xelab writes the snapshot kernel as xsimk.exe on Windows. Without the
+        # suffix the make target never exists, so make re-runs xelab on every
+        # build instead of only when a dependency changed.
+        xsimk = "xsimk.exe" if sys.platform == "win32" else "xsimk"
+        target = f"xsim.dir/{library}.{toplevel}/{xsimk}"
         self.commands.add(xelab, [target], depends)
         self.commands.set_default_target(target)
 
@@ -165,4 +174,7 @@ class Xsim(Edatool):
 
     def run(self) -> tuple[str, list[str], str]:
         """Run compiled and elaborated design with the AMD/Xilinx XSim logic simulator."""
-        return (self.xsim[0], self.xsim[1:], self.work_root)
+        # On Windows Vivado ships xsim only as xsim.bat. subprocess.run() never
+        # tries .bat when given a bare command name, so resolve it here, where
+        # PATHEXT is honoured. On other platforms this returns the name unchanged.
+        return (shutil.which(self.xsim[0]) or self.xsim[0], self.xsim[1:], self.work_root)
