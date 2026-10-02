@@ -96,9 +96,9 @@ def merge_edam(a, b):
 
 
 class Node(object):
-    def __init__(self, name, deps=[], fdto={}, tool=None):
-        self.deps = deps
-        self.fdto = fdto
+    def __init__(self, name, deps=None, fdto=None, tool=None):
+        self.deps = deps if deps is not None else []
+        self.fdto = fdto if fdto is not None else {}
         self.tool = tool
 
         # Import and instantiate the tool class requested by "tool"
@@ -357,7 +357,9 @@ class Edaflow(object):
         # Write out execution file
         self.build_runner.write(self.commands, self.work_root)
 
-    def _run_tool(self, cmd, args=[], cwd=None, quiet=False, env={}):
+    def _run_tool(self, cmd, args=None, cwd=None, quiet=False, env=None):
+        args = args or []
+        env = env or {}
         logger.debug("Running " + cmd)
         logger.debug("args  : " + " ".join(args))
 
