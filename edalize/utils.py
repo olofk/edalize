@@ -1,3 +1,28 @@
+# Jinja2 tests and filters, available in all templates
+def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
+    """
+    Convert a parameter value to string suitable to be passed to an EDA tool.
+
+    Rules:
+
+    - Booleans are represented as 0/1 or "true"/"false" depending on the
+      bool_is_str argument
+    - Strings are either passed through or enclosed in the characters specified
+      in str_quote_style (e.g. '"' or '\\"')
+    - Everything else (including int, float, etc.) are converted using the str()
+      function.
+    """
+    if type(value) == bool:
+        if bool_is_str:
+            return "true" if value else "false"
+        else:
+            return "1" if value else "0"
+    elif type(value) == str:
+        return str_quote_style + str(value) + str_quote_style
+    else:
+        return str(value)
+
+
 class EdaCommands(object):
     class Command(object):
         def __init__(
