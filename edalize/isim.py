@@ -79,7 +79,7 @@ quit
 
             for src_file in src_files:
                 prefix = ""
-                logical_name = ""
+                lib = "work"
                 if src_file.file_type in [
                     "verilogSource",
                     "verilogSource-95",
@@ -89,7 +89,7 @@ quit
                 elif src_file.file_type.startswith("vhdlSource"):
                     prefix = "vhdl"
                     if src_file.logical_name:
-                        logical_name = src_file.logical_name + " "
+                        lib = src_file.logical_name
                 elif src_file.file_type in [
                     "systemVerilogSource",
                     "systemVerilogSource-3.0",
@@ -104,9 +104,7 @@ quit
                     _s = "{} has unknown file type '{}'"
                     logger.warning(_s.format(src_file.name, src_file.file_type))
                 if prefix:
-                    f.write(
-                        "{} work {}{}\n".format(prefix, logical_name, src_file.name)
-                    )
+                    f.write("{} {} {}\n".format(prefix, lib, src_file.name))
 
         with open(os.path.join(self.work_root, "run_" + self.name + ".tcl"), "w") as f:
             f.write(self.RUN_TCL_TEMPLATE)
