@@ -174,7 +174,9 @@ class Rivierapro(Edatool):
         for key, value in self.vlogparam.items():
             args += ["-g{}={}".format(key, self._param_value_str(value))]
         for key, value in self.generic.items():
-            args += ["-g{}={}".format(key, self._param_value_str(value))]
+            args += [
+                "-g{}={}".format(key, self._param_value_str(value, bool_is_str=True))
+            ]
         tcl_launch.write(" ".join(args) + "\n")
         tcl_launch.close()
 
