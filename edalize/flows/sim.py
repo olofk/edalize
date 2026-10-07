@@ -97,6 +97,12 @@ class Sim(Generic):
                 f.write("acc+=rw,wn:*\n")
         super().configure()
 
+    def _has_vhdl(self):
+        return any(
+            f.get("file_type", "").startswith("vhdlSource")
+            for f in self.edam.get("files", [])
+        )
+
     def run(self, args=None):
         tool = self.flow_options.get("tool")
         run_tool = self.flow.get_node(tool).inst
@@ -111,7 +117,6 @@ class Sim(Generic):
             self.verbose = False
             _, libpy, _ = self._run_tool("cocotb-config", ["--libpython"], quiet=True)
             _, pybin, _ = self._run_tool("cocotb-config", ["--python-bin"], quiet=True)
-            self.verbose = prev_verbose
 
             env = {
                 "COCOTB_TEST_MODULES": cocotb_module,
@@ -119,6 +124,20 @@ class Sim(Generic):
                 "LIBPYTHON_LOC": libpy.decode("utf-8").strip(),
                 "PYGPI_PYTHON_BIN": pybin.decode("utf-8").strip(),
             }
+
+            # A VHDL design is driven through VHPI, which is loaded next to the
+            # VPI library that configure_tools already put on the command line.
+            # https://docs.cocotb.org/en/stable/custom_flows.html
+            if tool == "xcelium" and self._has_vhdl():
+                _, vhpi, _ = self._run_tool(
+                    "cocotb-config", ["--lib-name-path", "vhpi", tool], quiet=True
+                )
+                env["GPI_EXTRA"] = (
+                    vhpi.decode("utf-8").strip() + ":cocotbvhpi_entry_point"
+                )
+                args += ["-NEW_VHPI_PROPAGATE_DELAY"]
+
+            self.verbose = prev_verbose
         else:
             env = {}
 
