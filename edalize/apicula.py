@@ -25,6 +25,16 @@ class Apicula(Edatool):
                         "type": "String",
                         "desc": "Required device option for nextpnr-gowin and gowin_pack command (e.g. GW1N-LV1QN48C6/I5)",
                     },
+                    {
+                        "name": "nextpnr",
+                        "type": "String",
+                        "desc": "Optional. Nextpnr arch to use, gowin or himbaechel",
+                    },
+                    {
+                        "name": "family",
+                        "type": "String",
+                        "desc": "Optional. FPGA Family option required for nextpnr-himbaechel",
+                    },
                 ],
             }
 
@@ -45,6 +55,8 @@ class Apicula(Edatool):
             "This backend is deprecated and will eventually be removed. Please migrate to the flow API instead.  See https://edalize.readthedocs.io/en/latest/ref/migrations.html#migrating-from-the-tool-api-to-the-flow-api for more details."
         )
         # Pass apicula tool options to yosys and nextpnr
+        nextpnr_arch = self.tool_options.get("nextpnr")
+        family = self.tool_options.get("family")
         self.edam["tool_options"] = {
             "yosys": {
                 "arch": "gowin",
@@ -56,6 +68,7 @@ class Apicula(Edatool):
             },
             "nextpnr": {
                 "device": self.tool_options.get("device"),
+                "family": family,
                 "nextpnr_options": self.tool_options.get("nextpnr_options", []),
             },
         }
@@ -64,7 +77,7 @@ class Apicula(Edatool):
         yosys.configure()
 
         nextpnr = Nextpnr(yosys.edam, self.work_root)
-        nextpnr.flow_config = {"arch": "gowin"}
+        nextpnr.flow_config = {"arch": nextpnr_arch if nextpnr_arch else "gowin"}
         nextpnr.configure()
 
         # Write Makefile
@@ -76,10 +89,11 @@ class Apicula(Edatool):
         # Image generation
         depends = self.name + ".pack"
         targets = self.name + ".fs"
+        print(family)
         command = [
             "gowin_pack",
             "-d",
-            self.tool_options.get("device"),
+            family if family else self.tool_options.get("device"),
             "-o",
             targets,
             depends,

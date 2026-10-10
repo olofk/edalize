@@ -124,6 +124,17 @@ class Nextpnr(Edatool):
             targets = self.name + ".fasm"
             constraints = ["--pdc", pdc_file] if pdc_file else []
             output = ["--fasm", targets]
+        elif arch == "himbaechel":
+            print(self.tool_options)
+            device = self.tool_options.get("device")
+            family = self.tool_options.get("family")
+            if not device:
+                raise RuntimeError("Missing required option 'device' for nextpnr-himbaechel")
+            arch_options += ["--device", device]
+            targets = self.name + ".pack"
+            arch_options += ["--vopt family=" + family] if family else []
+            constraints = ["--vopt cst=" + cst_file] if cst_file else []
+            output = ["--write", targets]
         elif arch == "gowin":
             device = self.tool_options.get("device")
             if not device:
