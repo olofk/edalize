@@ -1,0 +1,48 @@
+# Get access to useful python package
+import os
+import sys
+
+# Tell python where to get IP Manager's API package
+ipm_home = os.environ["EFXIPM_HOME"]
+sys.path.append(ipm_home + "/bin")
+
+from efx_ipmgr import api_v2
+from ipm_api_service.design import IPMDesignAPI
+from ipm_api_service.projectxml import ProjectXML
+
+name = sys.argv[1]
+part = sys.argv[2]
+workdir = "."
+
+ipm = IPMDesignAPI(
+    device_name=part, family_name=name, project_path=workdir, is_verbose=True
+)
+project_xml_path = workdir + "/" + name + ".xml"
+projectxml = ProjectXML(project_xml_path=project_xml_path, is_verbose=True)
+
+module_name = "{{ module_name }}"
+vendor = "{{ vendor }}"
+library = "{{ library }}"
+name = "{{ name }}"
+
+ipm.create_ip(
+    module_name=module_name,
+    vendor=vendor,
+    library=library,
+    name=name,
+)
+
+configs = {
+    {% for k, v in config.items() %}
+    "{{k}}": "{{v}}",
+    {% endfor %}
+}
+
+ipm.config_ip(module_name=module_name, configs=configs)
+
+success, errors, param = ipm.validate_ip(module_name=module_name)
+
+if success:
+    result = ipm.generate_ip(module_name=module_name)
+    projectxml.add_ip(module_name=module_name)
+    projectxml.save()
