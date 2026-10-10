@@ -72,7 +72,7 @@ directly in the Python console.
 
 First we have to import Edalize objects::
 
-  from edalize import *
+  from edalize.edatool import get_edatool
 
 The os module is also required for this tutorial::
 
