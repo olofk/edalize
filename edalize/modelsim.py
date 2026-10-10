@@ -141,9 +141,9 @@ class Modelsim(Edatool):
                 cmd = "vcom"
                 if f.file_type.endswith("-87"):
                     args = ["-87"]
-                if f.file_type.endswith("-93"):
+                elif f.file_type.endswith("-93"):
                     args = ["-93"]
-                if f.file_type.endswith("-2008"):
+                elif f.file_type.endswith("-2008"):
                     args = ["-2008"]
                 else:
                     args = []
