@@ -110,7 +110,8 @@ Example snippet of a CAPI2 description file for Slang:
         get flags for parameters
         """
         for key, value in self.vlogparam.items():
-            self.flags.append("-G {}={}".format(key, self._param_value_str(value)))
+            self.flags.append("-G")
+            self.flags.append("{}={}".format(key, self._param_value_str(value)))
 
     def _get_slang_options(self):
         """
