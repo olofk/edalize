@@ -63,7 +63,7 @@ class Vunit(Edatool):
         # vunit does not allow empty library name or 'work', so we use `vunit_test_runner_lib`:
         libraries = OrderedDict()
 
-        core_files = {}
+        core_files = {core: [] for core in self.edam.get("dependencies", {})}
         depend = {}
         for f in src_files:
             lib = f.logical_name if f.logical_name else "vunit_test_runner_lib"

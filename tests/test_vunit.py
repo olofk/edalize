@@ -97,6 +97,62 @@ def test_vunit_hooks(tmpdir):
             hooks.main.assert_called_with(vu_mock)
 
 
+@pytest.mark.parametrize("with_source_files", [True, False])
+def test_vunit_empty_cores(tmp_path, monkeypatch, with_source_files):
+    import runpy
+    import sys
+    from types import ModuleType
+
+    from edalize.edatool import get_edatool
+
+    sources = {
+        "design.vhd": MagicMock(),
+        "dependency.vhd": MagicMock(),
+    }
+    files = (
+        [
+            {"name": name, "file_type": "vhdlSource", "core": core}
+            for name, core in (
+                ("design.vhd", "design"),
+                ("dependency.vhd", "dependency"),
+            )
+        ]
+        if with_source_files
+        else []
+    )
+    edam = {
+        "name": "empty_cores",
+        "toplevel": "top",
+        "files": files,
+        "dependencies": {
+            "empty": [],
+            "dependency": [],
+            "design": ["dependency", "empty"],
+        },
+    }
+    backend = get_edatool("vunit")(edam=edam, work_root=str(tmp_path))
+    backend.configure()
+
+    hooks = MagicMock()
+    vu = hooks.create.return_value
+    vu.add_library.return_value.add_source_file.side_effect = lambda name: sources[name]
+    hooks_module = ModuleType("edalize.vunit_hooks")
+    hooks_module.VUnitRunner = MagicMock(return_value=hooks)
+    monkeypatch.setitem(sys.modules, "edalize.vunit_hooks", hooks_module)
+
+    result = runpy.run_path(str(tmp_path / "run.py"))
+
+    assert result["core_files"]["empty"] == []
+    if with_source_files:
+        sources["design.vhd"].add_dependency_on.assert_any_call(
+            [sources["dependency.vhd"]]
+        )
+        sources["dependency.vhd"].add_dependency_on.assert_not_called()
+    else:
+        vu.add_library.assert_not_called()
+    hooks.main.assert_called_once_with(vu)
+
+
 if __name__ == "__main__":
     from os.path import dirname
     import sys
