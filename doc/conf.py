@@ -19,6 +19,12 @@ sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../tests/"))
 sys.path.insert(0, os.path.abspath("../tests/test_vunit/vunit_mock/"))
 
+from importlib import import_module
+from pkgutil import iter_modules
+
+import edalize.flows
+import edalize.tools
+from edalize.edatool import gen_tool_docs
 
 # -- Project information -----------------------------------------------------
 
@@ -208,16 +214,9 @@ epub_exclude_files = ["search.html"]
 # Take class documentation from both __init__(), and the class docstring.
 autoclass_content = "both"
 
-from edalize.edatool import gen_tool_docs
-
 s = gen_tool_docs()
 with open(os.path.join(os.path.abspath("."), "edam/legacytools.rst"), "w") as f:
     f.write(s)
-
-from importlib import import_module
-from pkgutil import iter_modules
-
-import edalize.flows
 
 
 def make_rst_table(options):
@@ -276,8 +275,6 @@ for k, v in discovered_plugins.items():
 
 with open(os.path.join(os.path.abspath("."), "edam/flows.rst"), "w") as f:
     f.write(s)  # make_rst_table(table)+s)
-
-import edalize.tools
 
 discovered_plugins = {
     name: import_module(name) for finder, name, ispkg in iter_namespace(edalize.tools)

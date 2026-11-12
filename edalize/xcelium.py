@@ -91,7 +91,6 @@ class Xcelium(Edatool):
         src_files, incdirs = self._get_fileset_files()
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
-        libs = []
         self.dpi_libraries = ""
         for f in src_files:
             if not f.logical_name:

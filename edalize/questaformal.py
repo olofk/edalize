@@ -160,7 +160,7 @@ class Questaformal(Edatool):
         for vpi_module in self.vpi_modules:
             _name = vpi_module["name"]
             _objs = [os.path.splitext(s)[0] + ".o" for s in vpi_module["src_files"]]
-            _libs = ["-l" + l for l in vpi_module["libs"]]
+            _libs = ["-l" + lib for lib in vpi_module["libs"]]
             _incs = ["-I" + d for d in vpi_module["include_dirs"]]
             _s = VPI_MAKE_SECTION.format(
                 name=_name,

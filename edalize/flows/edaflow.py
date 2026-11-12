@@ -1,11 +1,11 @@
 import logging
 import os
+import subprocess
 from importlib import import_module
 
 from edalize.utils import EdaCommands
 
 logger = logging.getLogger(__name__)
-import subprocess
 
 run = subprocess.run
 

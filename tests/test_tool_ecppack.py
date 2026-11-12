@@ -16,7 +16,7 @@ def test_tool_ecppack(tool_fixture):
 
 def test_tool_ecppack_no_input(tool_fixture):
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("ecppack", files=[])
+        tool_fixture("ecppack", files=[])
     assert "No input file specified for ecppack" in str(e.value)
 
 
@@ -28,7 +28,7 @@ def test_tool_ecppack_multiple_inputs(tool_fixture):
     files.append({"name": "b.config", "file_type": "nextpnrTrellisConfig"})
 
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("ecppack", files=files)
+        tool_fixture("ecppack", files=files)
     assert "ecppack only supports one input file. Found a.config and b.config" in str(
         e.value
     )

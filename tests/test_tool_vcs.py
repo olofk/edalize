@@ -13,8 +13,6 @@ def test_tool_vcs_2_stage(tool_fixture):
 
     tf = tool_fixture("vcs", tool_options=tool_options, ref_subdir="2stage_basic")
 
-    name = "design"
-
     tf.tool.configure()
     tf.compare_config_files(
         [
@@ -32,8 +30,6 @@ def test_tool_vcs_2_stage_minimal(tool_fixture):
     tf = tool_fixture(
         "vcs", tool_options=tool_options, paramtypes=[], ref_subdir="2stage_minimal"
     )
-
-    name = "design"
 
     tf.tool.configure()
     tf.compare_config_files(
@@ -58,8 +54,6 @@ def test_tool_vcs_3_stage(tool_fixture):
     }
 
     tf = tool_fixture("vcs", tool_options=tool_options, ref_subdir="basic")
-
-    name = "design"
 
     tf.tool.configure()
     tf.compare_config_files(
@@ -131,8 +125,6 @@ def test_tool_vcs_synopsys_sim_setup(tool_fixture):
 
 def test_tool_vcs_3_stage_minimal(tool_fixture):
     tf = tool_fixture("vcs", paramtypes=[], ref_subdir="minimal")
-
-    name = "design"
 
     tf.tool.configure()
     tf.compare_config_files(

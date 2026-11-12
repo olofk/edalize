@@ -15,8 +15,6 @@ def test_tool_xcelium(tool_fixture):
 
     tf = tool_fixture("xcelium", tool_options=tool_options)
 
-    name = "design"
-
     tf.tool.configure()
     tf.compare_config_files(
         [
@@ -35,8 +33,6 @@ def test_tool_xcelium(tool_fixture):
 
 def test_tool_xcelium_minimal(tool_fixture):
     tf = tool_fixture("xcelium", tool_options={}, paramtypes=[], ref_subdir="minimal")
-
-    name = "design"
 
     tf.tool.configure()
     tf.compare_config_files(

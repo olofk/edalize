@@ -59,7 +59,6 @@ class Sandpipersaas(Edatool):
         outputdir = ""
         includes = ""
         endpoint = ""
-        build_files = self.work_root
         output_file_path = outputfile
         if self.tool_options.get("output_dir", " ") != " ":
             outputdir = "--outdir " + " ".join(self.tool_options.get("output_dir", " "))

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def test_apicula_no_device(flow_fixture):
     flow_options = {}
     with pytest.raises(RuntimeError) as e:
-        ff = flow_fixture("apicula", flow_options=flow_options, ref_subdir="error")
+        flow_fixture("apicula", flow_options=flow_options, ref_subdir="error")
     assert "Missing required option 'device' for apicula" in str(e.value)
 
 
@@ -24,12 +24,12 @@ def test_apicula_devices(flow_fixture):
 
     flow_options = {"device": "GW3NR-LV9Q"}
     with pytest.raises(RuntimeError) as e:
-        ff = flow_fixture("apicula", flow_options=flow_options, ref_subdir="error")
+        flow_fixture("apicula", flow_options=flow_options, ref_subdir="error")
     assert "Unknown device GW3NR-LV9Q" in str(e.value)
 
     flow_options = {"device": "GW1NR-LV9QN88PC6/I5", "device_family": "Q"}
     with pytest.raises(RuntimeError) as e:
-        ff = flow_fixture("apicula", flow_options=flow_options, ref_subdir="error")
+        flow_fixture("apicula", flow_options=flow_options, ref_subdir="error")
     assert "Unknown device family code Q" in str(e.value)
 
     # Tang Nano 20k

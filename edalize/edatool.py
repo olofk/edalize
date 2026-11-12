@@ -11,12 +11,11 @@ import sys
 from collections import OrderedDict
 from dataclasses import dataclass
 from importlib import import_module
+from importlib.metadata import entry_points
 
 from jinja2 import Environment, PackageLoader
 
 logger = logging.getLogger(__name__)
-
-from importlib.metadata import entry_points
 
 NON_TOOL_PACKAGES = [
     "flows",
@@ -148,12 +147,12 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     - Everything else (including int, float, etc.) are converted using the str()
       function.
     """
-    if type(value) == bool:
+    if type(value) is bool:
         if bool_is_str:
             return "true" if value else "false"
         else:
             return "1" if value else "0"
-    elif type(value) == str:
+    elif type(value) is str:
         return str_quote_style + str(value) + str_quote_style
     else:
         return str(value)
@@ -300,7 +299,7 @@ class Edatool:
         self.run_post()
 
     def run_pre(self, args=None):
-        if type(args) == list:
+        if type(args) is list:
             parsed_args = self.parse_args(args, self.argtypes)
         else:
             parsed_args = args
@@ -383,7 +382,7 @@ class Edatool:
         for key, value in vars(parser.parse_args(args)).items():
             if value is None:
                 continue
-            if type(value) == list:
+            if type(value) is list:
                 _value = value[0]
             else:
                 _value = value

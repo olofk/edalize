@@ -91,7 +91,9 @@ class Xcelium(Edatool):
         en_64bit_cmd = [] if self.tool_options.get("32bit") else ["-64bit"]
 
         # Append timescale option
-        timescale_cmd = (
+        # FIXME: timescale_cmd is never added to a command, so the timescale
+        # option is ignored
+        timescale_cmd = (  # noqa: F841
             ["-timescale", self.tool_options.get("timescale")]
             if self.tool_options.get("timescale")
             else []

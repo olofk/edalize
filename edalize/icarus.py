@@ -138,7 +138,7 @@ class Icarus(Edatool):
 
             for vpi_module in self.vpi_modules:
                 _incs = ["-I" + s for s in vpi_module["include_dirs"]]
-                _libs = ["-l" + l for l in vpi_module["libs"]]
+                _libs = ["-l" + lib for lib in vpi_module["libs"]]
                 _srcs = vpi_module["src_files"]
                 f.write(
                     VPI_MAKE_SECTION.format(

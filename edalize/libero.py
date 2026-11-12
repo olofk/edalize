@@ -128,7 +128,6 @@ class Libero(Edatool):
             "generic": self.generic,
             "tool_options": self.tool_options,
             "toplevel": self.toplevel,
-            "generic": self.generic,
             "prj_root": "./prj",
             "op": "{",
             "cl": "}",

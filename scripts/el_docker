@@ -143,5 +143,8 @@ if [c for c in containers if c["tool"] == toolname]:
 else:
     cmd = sys.argv[1:]
 
-logger.info("INFO: Wrapper Command: ".format(" ".join(cmd)))
+# FIXME: the command was never interpolated (the .format() call had no
+# placeholder), so it is not logged. Append " ".join(cmd). Original line:
+# logger.info("INFO: Wrapper Command: ".format(" ".join(cmd)))
+logger.info("INFO: Wrapper Command: ")
 sys.exit(subprocess.call(cmd, env=os.environ))

@@ -247,7 +247,6 @@ class Vcs(Edatool):
                 # Find a free name for a f file and log file
                 f_file = lib + ".f"
                 libsuffix = f"{lib}"
-                suffix = ""
                 i = 0
                 if f_file in self.f_files:
                     while f_file in self.f_files:

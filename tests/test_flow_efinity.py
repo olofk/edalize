@@ -23,5 +23,5 @@ def test_efinity_no_env(flow_fixture, monkeypatch):
 
     flow_options = {"family": "Trion", "part": "T8F81", "timing": "C2"}
     with pytest.raises(RuntimeError) as e:
-        ff = flow_fixture("efinity", flow_options=flow_options)
+        flow_fixture("efinity", flow_options=flow_options)
     assert "The environment variable EFINITY_HOME is not set" in str(e.value)

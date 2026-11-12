@@ -9,17 +9,17 @@ def test_empty_edam():
     h, edam_file = tempfile.mkstemp()
 
     with pytest.raises(TypeError):
-        backend = get_edatool("icarus")(edam=None)
+        get_edatool("icarus")(edam=None)
 
 
 def test_incomplete_edam():
     from edalize.edatool import get_edatool
 
     with pytest.raises(RuntimeError) as excinfo:
-        backend = get_edatool("icarus")(edam={"version": "0.1.2"})
+        get_edatool("icarus")(edam={"version": "0.1.2"})
     assert "Missing required parameter 'name'" in str(excinfo.value)
 
-    backend = get_edatool("icarus")(edam={"version": "0.1.2", "name": "corename"})
+    get_edatool("icarus")(edam={"version": "0.1.2", "name": "corename"})
 
 
 def test_edam_files():

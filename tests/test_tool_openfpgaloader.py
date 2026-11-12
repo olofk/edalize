@@ -23,5 +23,5 @@ def test_tool_openfpgaloader_gowin(tool_fixture):
 
 def test_tool_openfpgaloader_gowin_no_file(tool_fixture):
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("openfpgaloader", files=[], ref_subdir="gowin-error")
+        tool_fixture("openfpgaloader", files=[], ref_subdir="gowin-error")
     assert "No input file specified for openFPGAloader" in str(e.value)

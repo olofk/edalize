@@ -135,7 +135,7 @@ class Rivierapro(Edatool):
                     else:
                         common_compilation_vhdl += [f.name, "\\\n"]
                 if (self.tool_options.get("compilation_mode")) == "sep" or (
-                    self.tool_options.get("compilation_mode") == None
+                    self.tool_options.get("compilation_mode") is None
                 ):
                     tcl_build_rtl.write("{} {}\n".format(cmd, " ".join(args)))
 
@@ -147,7 +147,7 @@ class Rivierapro(Edatool):
 
         if not (
             self.tool_options.get("compilation_mode") == "common"
-            or self.tool_options.get("compilation_mode") == None
+            or self.tool_options.get("compilation_mode") is None
             or self.tool_options.get("compilation_mode") == "sep"
         ):
             raise RuntimeError(
@@ -189,7 +189,7 @@ class Rivierapro(Edatool):
         for vpi_module in self.vpi_modules:
             _name = vpi_module["name"]
             _incs = " ".join(["-I" + d for d in vpi_module["include_dirs"]])
-            _libs = " ".join(["-l" + l for l in vpi_module["libs"]])
+            _libs = " ".join(["-l" + lib for lib in vpi_module["libs"]])
             _options = "-std=c99"
             _srcs = " ".join(vpi_module["src_files"])
             _s = "ccomp -pli -o {}.so {} {} {} {}\n".format(

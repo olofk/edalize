@@ -22,7 +22,7 @@ def test_tool_yosys(arch, output_format, tool_fixture):
 
 def test_tool_yosys_noarch(tool_fixture):
     with pytest.raises(RuntimeError) as e:
-        tool = tool_fixture("yosys")
+        tool_fixture("yosys")
     assert "yosys requires tool option 'arch'" in str(e.value)
 
 

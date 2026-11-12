@@ -177,9 +177,11 @@ Download and source the project: https://github.com/lnis-uofu/SOFA""")
             )
 
         # Render the OpenFPGA task configuration file
+        # FIXME: swallows every OSError, not just "already exists". Use
+        # os.makedirs(..., exist_ok=True) and drop the try/except.
         try:
             os.makedirs(os.path.join(self.work_root, "config"))
-        except:
+        except OSError:
             pass
         self.render_template(
             "task_simulation.conf.j2", "config/task.conf", template_vars

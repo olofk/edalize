@@ -56,7 +56,7 @@ def test_tool_sandpipersaas_multiple_files(tool_fixture):
     ]
 
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("sandpipersaas", files=files)
+        tool_fixture("sandpipersaas", files=files)
     assert "Only 1 TL-V top-level file is allowed" in str(e.value)
 
 
@@ -64,5 +64,5 @@ def test_tool_sandpipersaas_wrong_file_type(tool_fixture):
     files = [{"name": "vlog_file.v", "file_type": "verilogSource"}]
 
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("sandpipersaas", files=files)
+        tool_fixture("sandpipersaas", files=files)
     assert "Expected file type: TLVerilogSource" in str(e.value)

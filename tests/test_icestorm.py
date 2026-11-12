@@ -61,7 +61,7 @@ def test_icestorm_multiple_pcf(make_edalize_test):
     ]
 
     with pytest.raises(RuntimeError) as e:
-        tf = make_edalize_test("icestorm", param_types=[], files=files)
+        make_edalize_test("icestorm", param_types=[], files=files)
     assert (
         "Nextpnr only supports one PCF file. Found pcf_file.pcf and pcf_file2.pcf"
         in str(e.value)
@@ -90,7 +90,7 @@ def test_icestorm_invalid_pnr(make_edalize_test):
     name = "test_icestorm_0"
 
     with pytest.raises(RuntimeError) as e:
-        tf = make_edalize_test(
+        make_edalize_test(
             "icestorm",
             test_name=name,
             param_types=["vlogdefine", "vlogparam"],

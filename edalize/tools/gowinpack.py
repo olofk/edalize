@@ -38,7 +38,6 @@ class Gowinpack(Edatool):
             raise RuntimeError("No device or device family specified")
 
         routed_json_file = ""
-        bin_file = ""
         for f in self.files:
             if f.get("file_type") == "nextpnrRoutedJson":
                 if routed_json_file:

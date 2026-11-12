@@ -42,7 +42,7 @@ class Efinity(Edatool):
         super().setup(edam)
 
         self.efinity_home = os.getenv("EFINITY_HOME")
-        if self.efinity_home == None:
+        if self.efinity_home is None:
             raise RuntimeError("The environment variable EFINITY_HOME is not set.")
 
         if sys.platform == "win32" or sys.platform == "cygwin":

@@ -89,7 +89,7 @@ class IseReporting(Reporting):
         # SkipTo in the below timespec parser will pickup whitespace including
         # new lines if they are included in the report.
         def remove_ws_and_newlines(s):
-            lines = [l.strip() for l in s.splitlines()]
+            lines = [line.strip() for line in s.splitlines()]
             return " ".join(lines)
 
         timespec = (

@@ -208,10 +208,10 @@ class Reporting(abc.ABC):
         """
 
         all_lines = table_str.strip().splitlines()
-        lines = [l for l in all_lines if not l.startswith(hline)]
+        lines = [line for line in all_lines if not line.startswith(hline)]
 
         # Get the positions of any horizontal lines
-        hline_index = [i for i, l in enumerate(all_lines) if l.startswith(hline)]
+        hline_index = [i for i, line in enumerate(all_lines) if line.startswith(hline)]
 
         # Decide whether there is a header row
         #
@@ -225,13 +225,13 @@ class Reporting(abc.ABC):
 
         csv_lines = []
 
-        for l in lines:
+        for line in lines:
             # Remove leading and trailing whitespace and separators. Do this
             # in two steps or it will consume empty cells like
             #
             # |    |    |    | alpha | beta |   |   |
 
-            clean_line = l.strip().strip(sep)
+            clean_line = line.strip().strip(sep)
 
             # Split the line by the separator, clean any whitespace, and
             # rejoin the line with the new separator. The cell will be quoted
@@ -253,7 +253,7 @@ class Reporting(abc.ABC):
         header_row_count = hline_index[1] - hline_index[0] - 1
 
         if has_header and header_row_count > 1:
-            head = [l.split(new_sep) for l in csv_lines[:header_row_count]]
+            head = [line.split(new_sep) for line in csv_lines[:header_row_count]]
 
             new_head = []
 

@@ -12,7 +12,6 @@ def run_symbiflow_test(tf, config_files=list()):
 
 
 def test_symbiflow_vtr(make_edalize_test):
-    tool = "symbiflow"
     tool_options = {
         "part": "xc7a35tcsg324-1",
         "package": "csg324-1",
@@ -39,7 +38,6 @@ def test_symbiflow_vtr(make_edalize_test):
 
 
 def test_symbiflow_nextpnr_xilinx(make_edalize_test):
-    tool = "symbiflow"
     tool_options = {
         "arch": "xilinx",
         "part": "xc7a35tcsg324-1",
@@ -73,7 +71,6 @@ def test_symbiflow_nextpnr_xilinx(make_edalize_test):
 
 
 def test_symbiflow_nextpnr_fpga_interchange(make_edalize_test):
-    tool = "symbiflow"
     tool_options = {
         "arch": "fpga_interchange",
         "part": "xc7a35tcsg324-1",

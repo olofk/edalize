@@ -49,7 +49,7 @@ def test_tool_vpr_multiple_netlists(tool_fixture):
     files.append({"name": "b.blif", "file_type": "blif"})
 
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("vpr", files=files)
+        tool_fixture("vpr", files=files)
     assert "VPR only supports one netlist file. Found a.eblif and b.blif" in str(
         e.value
     )

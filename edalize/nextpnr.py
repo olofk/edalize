@@ -4,11 +4,10 @@
 
 import logging
 
-logger = logging.getLogger(__name__)
-
-
 from edalize.edatool import Edatool
 from edalize.utils import EdaCommands
+
+logger = logging.getLogger(__name__)
 
 
 class Nextpnr(Edatool):

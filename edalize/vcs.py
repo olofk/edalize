@@ -75,7 +75,9 @@ Example snippet of a CAPI2 description file for VCS:
         if self.plusarg:
             for key, value in self.plusarg.items():
                 plusarg = "+" + key
-                if value != True:
+                # FIXME: an int plusarg of 1 equals True and is emitted as a
+                # bare `+key` instead of `+key=1`. Should be `is not True`.
+                if value != True:  # noqa: E712
                     plusarg += "=" + self._param_value_str(value)
                 plusargs.append(plusarg)
 

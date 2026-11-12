@@ -16,7 +16,7 @@ def test_tool_icepack(tool_fixture):
 
 def test_tool_icepack_no_input(tool_fixture):
     with pytest.raises(RuntimeError) as e:
-        tool = tool_fixture("icepack", files=[])
+        tool_fixture("icepack", files=[])
     assert "No input file specified for icepack" in str(e.value)
 
 
@@ -28,7 +28,7 @@ def test_tool_icepack_multiple_inputs(tool_fixture):
     files.append({"name": "another_asc_file.asc", "file_type": "iceboxAscii"})
 
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("icepack", files=files)
+        tool_fixture("icepack", files=files)
     assert (
         "Icepack only supports one input file. Found asc_file.asc and another_asc_file.asc"
         in str(e.value)

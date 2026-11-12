@@ -116,7 +116,10 @@ class Design_compiler(Edatool):
 
         jobs = self.tool_options.get("jobs", None)
 
-        run_template_vars = {"jobs": " -jobs " + str(jobs) if jobs is not None else ""}
+        # FIXME: never passed to a template, so the jobs option is ignored
+        run_template_vars = {  # noqa: F841
+            "jobs": " -jobs " + str(jobs) if jobs is not None else ""
+        }
 
         self.render_template(
             "design-compiler-project.tcl.j2", self.name + ".tcl", template_vars

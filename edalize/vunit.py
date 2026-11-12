@@ -65,7 +65,6 @@ class Vunit(Edatool):
         libraries = OrderedDict()
 
         core_files = {}
-        depend = {}
         for f in src_files:
             lib = f.logical_name if f.logical_name else "vunit_test_runner_lib"
             libraries.setdefault(lib, []).append(f)

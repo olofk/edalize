@@ -25,5 +25,5 @@ def test_tool_efinity_no_env(tool_fixture):
     import pytest
 
     with pytest.raises(RuntimeError) as e:
-        tf = tool_fixture("efinity")
+        tool_fixture("efinity")
     assert "The environment variable EFINITY_HOME is not set" in str(e.value)

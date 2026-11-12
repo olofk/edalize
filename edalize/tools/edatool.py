@@ -20,12 +20,12 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     - Everything else (including int, float, etc.) are converted using the str()
       function.
     """
-    if type(value) == bool:
+    if type(value) is bool:
         if bool_is_str:
             return "true" if value else "false"
         else:
             return "1" if value else "0"
-    elif type(value) == str:
+    elif type(value) is str:
         return str_quote_style + str(value) + str_quote_style
     else:
         return str(value)

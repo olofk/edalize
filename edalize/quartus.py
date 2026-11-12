@@ -114,9 +114,9 @@ class Quartus(Edatool):
             )
 
             match = re.search(version_exp, str(qsh_text))
-            if match != None:
+            if match is not None:
                 version = match.groupdict()
-        except:
+        except Exception:
             # It is possible for this to have been run on a box without
             # Quartus being installed. Allow these errors to be ignored
             logger.warning("Unable to recognise Quartus version via quartus_sh")
@@ -143,7 +143,6 @@ class Quartus(Edatool):
         self.jinja_env.filters["qsys_file_filter"] = self.qsys_file_filter
 
         has_vhdl2008 = "vhdlSource-2008" in [x.file_type for x in src_files]
-        has_qsys = "QSYS" in [x.file_type for x in src_files]
 
         escaped_name = self.name.replace(".", "_")
 

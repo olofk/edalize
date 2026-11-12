@@ -38,9 +38,6 @@ def test_vivado_minimal(params, tmpdir, make_edalize_test):
         os.path.join(tests_dir, "mock_commands") + ":" + os.environ["PATH"]
     )
     tool = "vivado"
-    tool_options = {
-        "part": "xc7a35tcsg324-1",
-    }
     name = f"test_vivado_{test_name}_0"
     work_root = str(tmpdir)
     edam = {

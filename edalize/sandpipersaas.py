@@ -108,9 +108,7 @@ class Sandpipersaas(Edatool):
                     )
                 )
             else:
-                f.write(
-                    "OUTPUTDIR :=  \n".format(self.tool_options.get("output_dir", " "))
-                )
+                f.write("OUTPUTDIR :=  \n")
 
             if self.tool_options.get("includes", []) != []:
                 f.write(
