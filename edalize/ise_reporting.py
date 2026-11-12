@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from edalize.reporting import Reporting
 
@@ -167,7 +167,7 @@ class IseReporting(Reporting):
         return stat.parse_string(report_str)
 
     @staticmethod
-    def _parse_map_tables(report_str: str) -> Dict[str, str]:
+    def _parse_map_tables(report_str: str) -> dict[str, str]:
         """
         Parse the tables from a ISE map report.
 
@@ -220,7 +220,7 @@ class IseReporting(Reporting):
         return result
 
     @classmethod
-    def report_resources(cls, report_file: str) -> Dict[str, pd.DataFrame]:
+    def report_resources(cls, report_file: str) -> dict[str, pd.DataFrame]:
         """
         Report resource data from a map report.
 
@@ -232,7 +232,7 @@ class IseReporting(Reporting):
         return cls._report_to_df(cls._parse_map_tables, report_file)
 
     @classmethod
-    def report_timing(cls, report_file: str) -> Dict[str, Any]:
+    def report_timing(cls, report_file: str) -> dict[str, Any]:
         """
         Report period constraints, and overall minimum period and maximum frequency.
         """
@@ -259,7 +259,7 @@ class IseReporting(Reporting):
         return timing
 
     @staticmethod
-    def report_summary(resources: Dict[str, pd.DataFrame], timing: Dict[str, Any]):
+    def report_summary(resources: dict[str, pd.DataFrame], timing: dict[str, Any]):
 
         util = resources["Utilization by Hierarchy"]
 
@@ -279,7 +279,7 @@ class IseReporting(Reporting):
 
         # The basic resource data is ints, but the timing information is more
         # complex
-        summary = {}  # type: Dict[str, Any]
+        summary: dict[str, Any] = {}
 
         # Resources in this table are of the form 123/456 and we want the
         # second (total) number

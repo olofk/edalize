@@ -4,7 +4,7 @@ Vivado-specific reporting routines
 
 import io
 import logging
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 from edalize.reporting import Reporting
 
@@ -40,7 +40,7 @@ class VivadoReporting(Reporting):
     _table_sep = "|"
 
     @staticmethod
-    def _parse_utilization_tables(util_str: str) -> Dict[str, str]:
+    def _parse_utilization_tables(util_str: str) -> dict[str, str]:
         """
         Find all of the section titles and tables in a Vivado utilization report.
 
@@ -153,12 +153,12 @@ class VivadoReporting(Reporting):
         return table_dict
 
     @classmethod
-    def report_resources(cls, report_file: str) -> Dict[str, pd.DataFrame]:
+    def report_resources(cls, report_file: str) -> dict[str, pd.DataFrame]:
 
         return cls._report_to_df(cls._parse_utilization_tables, report_file)
 
     @classmethod
-    def report_timing(cls, report_file: str) -> Dict[str, pd.DataFrame]:
+    def report_timing(cls, report_file: str) -> dict[str, pd.DataFrame]:
 
         report = open(report_file).read()
 
@@ -219,10 +219,10 @@ class VivadoReporting(Reporting):
 
     @staticmethod
     def report_summary(
-        resources: Dict[str, pd.DataFrame], timing: Dict[str, pd.DataFrame]
-    ) -> Dict[str, int | float | Dict[str, float | None]]:
+        resources: dict[str, pd.DataFrame], timing: dict[str, pd.DataFrame]
+    ) -> dict[str, int | float | dict[str, float | None]]:
 
-        summary = {}  # type: Dict[str, Union[int, float, Dict[str, Optional[float]]]]
+        summary: dict[str, int | float | dict[str, float | None]] = {}
 
         # Vivado uses different tables and row values for different families.
         # This at least works with the Artix 7 and Kintex Ultrascale+

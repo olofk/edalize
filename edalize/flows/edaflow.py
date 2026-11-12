@@ -6,58 +6,8 @@ from edalize.utils import EdaCommands
 
 logger = logging.getLogger(__name__)
 import subprocess
-import sys
 
-
-def subprocess_run_3_9(
-    *popenargs, input=None, capture_output=False, timeout=None, check=False, **kwargs
-):
-    if input is not None:
-        if kwargs.get("stdin") is not None:
-            raise ValueError("stdin and input arguments may not both be used.")
-        kwargs["stdin"] = subprocess.PIPE
-
-    if capture_output:
-        if kwargs.get("stdout") is not None or kwargs.get("stderr") is not None:
-            raise ValueError(
-                "stdout and stderr arguments may not be used " "with capture_output."
-            )
-        kwargs["stdout"] = subprocess.PIPE
-        kwargs["stderr"] = subprocess.PIPE
-
-    with subprocess.Popen(*popenargs, **kwargs) as process:
-        try:
-            stdout, stderr = process.communicate(input, timeout=timeout)
-        except TimeoutExpired as exc:
-            process.kill()
-            if _mswindows:
-                # Windows accumulates the output in a single blocking
-                # read() call run on child threads, with the timeout
-                # being done in a join() on those threads.  communicate()
-                # _after_ kill() is required to collect that and add it
-                # to the exception.
-                exc.stdout, exc.stderr = process.communicate()
-            else:
-                # POSIX _communicate already populated the output so
-                # far into the TimeoutExpired exception.
-                process.wait()
-            raise
-        except:  # Including KeyboardInterrupt, communicate handled that.
-            process.kill()
-            # We don't call process.wait() as .__exit__ does that for us.
-            raise
-        retcode = process.poll()
-        if check and retcode:
-            raise subprocess.CalledProcessError(
-                retcode, process.args, output=stdout, stderr=stderr
-            )
-    return subprocess.CompletedProcess(process.args, retcode, stdout, stderr)
-
-
-if sys.version_info < (3, 7):
-    run = subprocess_run_3_9
-else:
-    run = subprocess.run
+run = subprocess.run
 
 
 def merge_dict(d1, d2):

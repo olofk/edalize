@@ -58,8 +58,7 @@ Example snippet of a CAPI2 description file
         for key, default_value in self.tool_options_defaults.items():
             if not key in self.tool_options:
                 logger.info(
-                    "Set Spyglass tool option %s to default value %s"
-                    % (key, str(default_value))
+                    f"Set Spyglass tool option {key} to default value {default_value}"
                 )
                 self.tool_options[key] = default_value
 
@@ -116,7 +115,7 @@ Example snippet of a CAPI2 description file
 
             self.render_template(
                 "spyglass-run-goal.tcl.j2",
-                "spyglass-run-%s.tcl" % sanitized_goal,
+                f"spyglass-run-{sanitized_goal}.tcl",
                 template_vars,
             )
 

@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Dict, Union
+from typing import Union
 
 from edalize.reporting import Reporting
 
@@ -38,7 +38,7 @@ class QuartusReporting(Reporting):
     _report_encoding = "ISO-8859-1"
 
     @staticmethod
-    def _parse_tables(report_str: str) -> Dict[str, str]:
+    def _parse_tables(report_str: str) -> dict[str, str]:
         """
         Parse the tables from a fitter report.
 
@@ -71,17 +71,17 @@ class QuartusReporting(Reporting):
         return result
 
     @classmethod
-    def report_timing(cls, report_file: str) -> Dict[str, pd.DataFrame]:
+    def report_timing(cls, report_file: str) -> dict[str, pd.DataFrame]:
         return cls._report_to_df(cls._parse_tables, report_file)
 
     @classmethod
-    def report_resources(cls, report_file: str) -> Dict[str, pd.DataFrame]:
+    def report_resources(cls, report_file: str) -> dict[str, pd.DataFrame]:
         return cls._report_to_df(cls._parse_tables, report_file)
 
     @staticmethod
     def report_summary(
-        resources: pd.DataFrame, timing: Dict[str, pd.DataFrame]
-    ) -> Dict[str, int | float]:
+        resources: pd.DataFrame, timing: dict[str, pd.DataFrame]
+    ) -> dict[str, int | float]:
 
         util = resources["Fitter Resource Utilization by Entity"].iloc[0]
 
@@ -92,7 +92,7 @@ class QuartusReporting(Reporting):
             "dsp": ["DSP Elements", "DSP Blocks"],
         }
 
-        summary = {}  # type: Dict[str, Union[int, float]]
+        summary: dict[str, int | float] = {}
 
         # Resources in this table are mostly of the form 345.5 (123.3) and we
         # want the first (total) number

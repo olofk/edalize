@@ -77,7 +77,7 @@ XSIM_OPTIONS  = {xsim_options}
         # Check if any VPI modules are present and display warning
         if len(self.vpi_modules) > 0:
             modules = [m["name"] for m in self.vpi_modules]
-            logger.error("VPI modules not supported by Xsim: %s" % ", ".join(modules))
+            logger.error(f"VPI modules not supported by Xsim: {', '.join(modules)}")
 
     def _write_config_files(self):
         mfc = self.tool_options.get("compilation_mode") == "common"

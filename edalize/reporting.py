@@ -17,7 +17,7 @@ import io
 import logging
 import pathlib
 from collections.abc import Callable
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class Reporting(abc.ABC):
         new_sep: str = ",",
         hline: str = "+",
         header_threshold: int = 2,
-    ) -> Dict[str, bool | str]:
+    ) -> dict[str, bool | str]:
         """
         Convert report tables to CSV.
 
@@ -274,8 +274,8 @@ class Reporting(abc.ABC):
 
     @classmethod
     def _report_to_df(
-        cls, parser: Callable[[str], Dict], report_file: str
-    ) -> Dict[str, pd.DataFrame]:
+        cls, parser: Callable[[str], dict], report_file: str
+    ) -> dict[str, pd.DataFrame]:
         """
         Helper for reports returning a number of tables.
 
@@ -377,7 +377,7 @@ class Reporting(abc.ABC):
         pass
 
     @classmethod
-    def report(cls, dir: str) -> Dict[str, pd.DataFrame]:
+    def report(cls, dir: str) -> dict[str, pd.DataFrame]:
         """
         Report a common summary format along with device-specific resource and timing information.
 

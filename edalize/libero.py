@@ -71,8 +71,7 @@ class Libero(Edatool):
         for key, default_value in self.tool_options_defaults.items():
             if not key in self.tool_options:
                 logger.info(
-                    "Set Libero tool option %s to default value %s"
-                    % (key, str(default_value))
+                    f"Set Libero tool option {key} to default value {default_value}"
                 )
                 self.tool_options[key] = default_value
 

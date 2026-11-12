@@ -72,7 +72,7 @@ quit
         # Check if any VPI modules are present and display warning
         if len(self.vpi_modules) > 0:
             modules = [m["name"] for m in self.vpi_modules]
-            logger.error("VPI modules not supported by Isim: %s" % ", ".join(modules))
+            logger.error(f"VPI modules not supported by Isim: {', '.join(modules)}")
 
         with open(os.path.join(self.work_root, self.name + ".prj"), "w") as f:
             src_files, self.incdirs = self._get_fileset_files()
