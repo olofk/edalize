@@ -1,7 +1,5 @@
 import os
 
-from .edalize_common import tests_dir
-
 
 def test_openfpga(make_edalize_test):
     # Standard tool options

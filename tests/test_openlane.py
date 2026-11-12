@@ -1,6 +1,3 @@
-import os
-
-
 def test_openlane(make_edalize_test):
     tool_options = {}
     paramtypes = ["vlogdefine"]

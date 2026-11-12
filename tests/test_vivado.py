@@ -28,8 +28,6 @@ def test_vivado(make_edalize_test):
 def test_vivado_minimal(params, tmpdir, make_edalize_test):
     import os
 
-    import edalize
-
     from .edalize_common import compare_files, tests_dir
 
     test_name, synth_tool = params

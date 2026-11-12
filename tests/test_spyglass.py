@@ -1,6 +1,3 @@
-from .edalize_common import tests_dir
-
-
 def run_spyglass_test(tf):
     tf.backend.configure()
 

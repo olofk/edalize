@@ -1,3 +1,1 @@
-from os.path import abspath, dirname, join
-
-from .ui import VUnit
+from .ui import VUnit as VUnit

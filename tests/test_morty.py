@@ -1,6 +1,3 @@
-import os
-
-
 def test_morty(make_edalize_test):
     tool_options = {"morty_options": ["--prefix", "blub"]}
     paramtypes = ["vlogdefine"]

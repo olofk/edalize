@@ -1,7 +1,5 @@
 import os
 
-import pytest
-
 from .edalize_common import tests_dir
 
 

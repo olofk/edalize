@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import sys
 
 with open("quartus_dse.cmd", "w") as f:

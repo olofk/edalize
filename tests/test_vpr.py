@@ -5,8 +5,6 @@ import pytest
 
 @pytest.mark.parametrize("params", [("minimal", "vpr")])
 def test_vpr(params, tmpdir):
-    import os
-
     from .edalize_common import compare_files, get_flow, tests_dir
 
     test_name = "vpr"

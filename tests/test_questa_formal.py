@@ -1,8 +1,6 @@
 import filecmp
 import os
 
-from .edalize_common import tests_dir
-
 
 def test_questa_formal(make_edalize_test):
     tool_options = {
