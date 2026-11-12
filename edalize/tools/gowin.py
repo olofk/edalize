@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os.path
+from functools import partial
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
-from functools import partial
 
 
 class Gowin(Edatool):

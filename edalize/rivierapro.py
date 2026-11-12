@@ -2,9 +2,10 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
 import sys
+
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -63,7 +64,7 @@ class Rivierapro(Edatool):
             if not f.logical_name:
                 f.logical_name = "work"
             if not f.logical_name in libs:
-                tcl_build_rtl.write("vlib {}\n".format(f.logical_name))
+                tcl_build_rtl.write(f"vlib {f.logical_name}\n")
                 libs.append(f.logical_name)
             if f.file_type.startswith("verilogSource") or f.file_type.startswith(
                 "systemVerilogSource"
@@ -82,7 +83,7 @@ class Rivierapro(Edatool):
                     args += ["-sv"]
 
                 for k, v in self.vlogdefine.items():
-                    args += ["+define+{}={}".format(k, self._param_value_str(v))]
+                    args += [f"+define+{k}={self._param_value_str(v)}"]
 
                 args += vlog_include_dirs
             elif f.file_type.startswith("vhdlSource"):
@@ -98,7 +99,7 @@ class Rivierapro(Edatool):
                 args += self.tool_options.get("vcom_options", [])
             elif f.file_type == "tclSource":
                 cmd = None
-                tcl_main.write("do {}\n".format(f.name))
+                tcl_main.write(f"do {f.name}\n")
             elif f.file_type == "user":
                 cmd = None
             else:
@@ -114,7 +115,7 @@ class Rivierapro(Edatool):
                         common_compilation_sv += ["vlog"]
                         for k, v in self.vlogdefine.items():
                             common_compilation_sv += [
-                                "+define+{}={}".format(k, self._param_value_str(v))
+                                f"+define+{k}={self._param_value_str(v)}"
                             ]
                         common_compilation_sv += self.tool_options.get(
                             "vlog_options", []
@@ -169,12 +170,12 @@ class Rivierapro(Edatool):
 
         # Plusargs
         for key, value in self.plusarg.items():
-            args += ["+{}={}".format(key, self._param_value_str(value))]
+            args += [f"+{key}={self._param_value_str(value)}"]
         # Top-level parameters
         for key, value in self.vlogparam.items():
-            args += ["-g{}={}".format(key, self._param_value_str(value))]
+            args += [f"-g{key}={self._param_value_str(value)}"]
         for key, value in self.generic.items():
-            args += ["-g{}={}".format(key, self._param_value_str(value))]
+            args += [f"-g{key}={self._param_value_str(value)}"]
         tcl_launch.write(" ".join(args) + "\n")
         tcl_launch.close()
 
@@ -215,7 +216,7 @@ class Rivierapro(Edatool):
             raise RuntimeError(
                 "Environment variable ALDEC_PATH was not found. It should be set to Riviera Pro install path. Please source <Riviera Pro install path>/etc/setenv to set it"
             )
-        super(Rivierapro, self).build_pre()
+        super().build_pre()
 
     def build_main(self):
         args = ["-c", "-do", "do edalize_main.tcl; exit"]

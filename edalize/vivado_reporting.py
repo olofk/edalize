@@ -4,7 +4,7 @@ Vivado-specific reporting routines
 
 import io
 import logging
-from typing import Dict, Union, Optional
+from typing import Dict, Optional, Union
 
 from edalize.reporting import Reporting
 
@@ -160,7 +160,7 @@ class VivadoReporting(Reporting):
     @classmethod
     def report_timing(cls, report_file: str) -> Dict[str, pd.DataFrame]:
 
-        report = open(report_file, "r").read()
+        report = open(report_file).read()
 
         timing = cls._parse_timing_summary_tables(report)
 
@@ -220,7 +220,7 @@ class VivadoReporting(Reporting):
     @staticmethod
     def report_summary(
         resources: Dict[str, pd.DataFrame], timing: Dict[str, pd.DataFrame]
-    ) -> Dict[str, Union[int, float, Dict[str, Optional[float]]]]:
+    ) -> Dict[str, int | float | Dict[str, float | None]]:
 
         summary = {}  # type: Dict[str, Union[int, float, Dict[str, Optional[float]]]]
 

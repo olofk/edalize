@@ -81,7 +81,7 @@ class QuartusReporting(Reporting):
     @staticmethod
     def report_summary(
         resources: pd.DataFrame, timing: Dict[str, pd.DataFrame]
-    ) -> Dict[str, Union[int, float]]:
+    ) -> Dict[str, int | float]:
 
         util = resources["Fitter Resource Utilization by Entity"].iloc[0]
 

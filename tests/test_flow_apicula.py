@@ -1,5 +1,7 @@
 import logging
+
 import pytest
+
 from .edalize_flow_common import flow_fixture
 
 logger = logging.getLogger(__name__)

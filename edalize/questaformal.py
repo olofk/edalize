@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
 
 from edalize.edatool import Edatool
 
@@ -88,7 +88,7 @@ class Questaformal(Edatool):
             if not f.logical_name:
                 f.logical_name = "work"
             if not f.logical_name in libs:
-                tcl_build_rtl.write("vlib {}\n".format(f.logical_name))
+                tcl_build_rtl.write(f"vlib {f.logical_name}\n")
                 libs.append(f.logical_name)
             if f.file_type.startswith("verilogSource") or f.file_type.startswith(
                 "systemVerilogSource"
@@ -99,7 +99,7 @@ class Questaformal(Edatool):
                 args += self.tool_options.get("vlog_options", [])
 
                 for k, v in self.vlogdefine.items():
-                    args += ["+define+{}={}".format(k, self._param_value_str(v))]
+                    args += [f"+define+{k}={self._param_value_str(v)}"]
 
                 if f.file_type.startswith("systemVerilogSource"):
                     args += ["-sv"]
@@ -119,7 +119,7 @@ class Questaformal(Edatool):
 
             elif f.file_type == "tclSource":
                 cmd = None
-                tcl_main.write("do {}\n".format(f.name))
+                tcl_main.write(f"do {f.name}\n")
             elif f.file_type == "user":
                 cmd = None
             else:
@@ -136,14 +136,12 @@ class Questaformal(Edatool):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), "w")
         _parameters = []
         for key, value in self.vlogparam.items():
-            _parameters += ["{}={}".format(key, self._param_value_str(value))]
+            _parameters += [f"{key}={self._param_value_str(value)}"]
         for key, value in self.generic.items():
-            _parameters += [
-                "{}={}".format(key, self._param_value_str(value, bool_is_str=True))
-            ]
+            _parameters += [f"{key}={self._param_value_str(value, bool_is_str=True)}"]
         _plusargs = []
         for key, value in self.plusarg.items():
-            _plusargs += ["{}={}".format(key, self._param_value_str(value))]
+            _plusargs += [f"{key}={self._param_value_str(value)}"]
 
         _qverify_options = self.tool_options.get("qverify_options", [])
 
@@ -182,10 +180,10 @@ class Questaformal(Edatool):
         tcl_autocheck = open(os.path.join(self.work_root, "edalize_autocheck.tcl"), "w")
         _autocheck_options = self.tool_options.get(
             "autocheck_options",
-            ["enable", "compile -d {}".format(self.toplevel), "verify -timeout 10m"],
+            ["enable", f"compile -d {self.toplevel}", "verify -timeout 10m"],
         )
         for ac_option in _autocheck_options:
-            tcl_autocheck.write("autocheck {}\n".format(ac_option))
+            tcl_autocheck.write(f"autocheck {ac_option}\n")
         tcl_autocheck.close()
 
         self._write_build_rtl_tcl_file(tcl_main)
@@ -199,7 +197,7 @@ class Questaformal(Edatool):
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
-                plusargs += ["{}={}".format(key, self._param_value_str(value))]
+                plusargs += [f"{key}={self._param_value_str(value)}"]
             args.append("PLUSARGS=" + " ".join(plusargs))
 
         self._run_tool("make", args)

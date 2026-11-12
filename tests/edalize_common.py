@@ -1,7 +1,7 @@
-from collections import OrderedDict
-from importlib import import_module
 import os.path
 import shutil
+from collections import OrderedDict
+from importlib import import_module
 
 import pytest
 
@@ -58,9 +58,7 @@ class TestFixture:
 
         raw_ref_dir = os.path.join(tests_dir, "test_" + tool_name, ref_dir)
 
-        self.test_name = (
-            "test_{}_0".format(tool_name) if test_name is None else test_name
-        )
+        self.test_name = f"test_{tool_name}_0" if test_name is None else test_name
         self.ref_dir = os.path.normpath(raw_ref_dir)
         self.work_root = work_root
         self.backend = _setup_backend(
@@ -140,7 +138,7 @@ def compare_files(ref_dir, work_root, files):
 
 
 def get_flow(name):
-    return getattr(import_module("edalize.flows.{}".format(name)), name.capitalize())
+    return getattr(import_module(f"edalize.flows.{name}"), name.capitalize())
 
 
 def param_gen(paramtypes):

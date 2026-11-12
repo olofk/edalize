@@ -52,7 +52,7 @@ class Efinity(Edatool):
 
         for i in ["family", "part", "timing"]:
             if not i in self.tool_options:
-                raise RuntimeError("Missing required option '{}'".format(i))
+                raise RuntimeError(f"Missing required option '{i}'")
 
         design_files = []
         constr_files = []

@@ -9,8 +9,8 @@ import re
 import subprocess
 
 from edalize.edatool import Edatool
-from edalize.yosys import Yosys
 from edalize.flows.vivado import Vivado as Vivado_underlying
+from edalize.yosys import Yosys
 
 logger = logging.getLogger(__name__)
 

@@ -105,13 +105,13 @@ quit
     def configure_main(self):
         for i in ["family", "device", "package", "speed"]:
             if not i in self.tool_options:
-                raise RuntimeError("Missing required option '{}'".format(i))
+                raise RuntimeError(f"Missing required option '{i}'")
         self._write_tcl_file()
         with open(os.path.join(self.work_root, "Makefile"), "w") as f:
             f.write(self.MAKEFILE_TEMPLATE)
         with open(os.path.join(self.work_root, "config.mk"), "w") as f:
-            f.write("NAME     := {}\n".format(self.name))
-            f.write("TOPLEVEL := {}\n".format(self.toplevel))
+            f.write(f"NAME     := {self.name}\n")
+            f.write(f"TOPLEVEL := {self.toplevel}\n")
         with open(os.path.join(self.work_root, self.name + "_run.tcl"), "w") as f:
             f.write(self.TCL_RUN_FILE_TEMPLATE)
 
@@ -170,26 +170,26 @@ quit
         _libraries = []
         for f in src_files:
             if f.file_type == "tclSource":
-                tcl_file.write("source {}\n".format(f.name))
+                tcl_file.write(f"source {f.name}\n")
             elif f.file_type.startswith("verilogSource"):
-                tcl_file.write("xfile add {}\n".format(f.name))
+                tcl_file.write(f"xfile add {f.name}\n")
             elif f.file_type == "UCF":
-                tcl_file.write("xfile_add_exist_ok {}\n".format(f.name))
+                tcl_file.write(f"xfile_add_exist_ok {f.name}\n")
             elif f.file_type == "BMM":
-                tcl_file.write("xfile add {}\n".format(f.name))
+                tcl_file.write(f"xfile add {f.name}\n")
             elif f.file_type.startswith("vhdlSource"):
                 if f.logical_name:
                     if not f.logical_name in _libraries:
-                        tcl_file.write("lib_vhdl new {}\n".format(f.logical_name))
+                        tcl_file.write(f"lib_vhdl new {f.logical_name}\n")
                         _libraries.append(f.logical_name)
                     _s = "xfile add {} -lib_vhdl {}\n"
                     tcl_file.write(_s.format(f.name, f.logical_name))
                 else:
-                    tcl_file.write("xfile add {}\n".format(f.name))
+                    tcl_file.write(f"xfile add {f.name}\n")
             elif f.file_type == "user":
                 pass
 
-        tcl_file.write('project set top "{}"\n'.format(self.toplevel))
+        tcl_file.write(f'project set top "{self.toplevel}"\n')
         tcl_file.close()
 
     def run_main(self):

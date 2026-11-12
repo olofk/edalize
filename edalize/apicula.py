@@ -5,8 +5,8 @@
 import os.path
 
 from edalize.edatool import Edatool
-from edalize.utils import EdaCommands
 from edalize.nextpnr import Nextpnr
+from edalize.utils import EdaCommands
 from edalize.yosys import Yosys
 
 

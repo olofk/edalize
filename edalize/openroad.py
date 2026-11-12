@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os
-from pathlib import Path
 import re
 import shutil
+from pathlib import Path
 
 from edalize.edatool import Edatool
 
@@ -38,7 +38,7 @@ class Openroad(Edatool):
             }
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
-        super(Openroad, self).__init__(edam, work_root, eda_api, verbose)
+        super().__init__(edam, work_root, eda_api, verbose)
 
         # The list of RTL paths in the fileset (populated at configure time by
         # _get_file_names)
@@ -65,9 +65,7 @@ class Openroad(Edatool):
                 if basename in bn_to_path:
                     raise RuntimeError(
                         "More than one RTL file with the same"
-                        "basename: {!r} and {!r}.".format(
-                            bn_to_path[basename], file_obj.name
-                        )
+                        f"basename: {bn_to_path[basename]!r} and {file_obj.name!r}."
                     )
 
                 bn_to_path[basename] = file_obj.name

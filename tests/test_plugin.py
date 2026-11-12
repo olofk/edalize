@@ -5,6 +5,7 @@ def test_legacy_backend_plugin():
     import os
     import sys
     from pkgutil import walk_packages
+
     from edalize.edatool import get_edatools
 
     edatools = [x.__name__ for x in get_edatools()]

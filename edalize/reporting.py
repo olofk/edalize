@@ -16,7 +16,8 @@ import abc
 import io
 import logging
 import pathlib
-from typing import Dict, Union, Callable, Optional
+from collections.abc import Callable
+from typing import Dict, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class Reporting(abc.ABC):
     @staticmethod
     def period_to_freq(
         p: float, in_unit: str = "ns", out_unit: str = "MHz"
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Convert a clock period to a freqency.
         """
@@ -79,10 +80,10 @@ class Reporting(abc.ABC):
         period_exp = period_map.get(in_unit.casefold())
 
         if period_exp is None:
-            raise ValueError("Unsupported period unit {}".format(in_unit))
+            raise ValueError(f"Unsupported period unit {in_unit}")
 
         if freq_exp is None:
-            raise ValueError("Unsupported frequency unit {}".format(out_unit))
+            raise ValueError(f"Unsupported frequency unit {out_unit}")
 
         # Try to handle a None or NaN period value (perhaps a missing value
         # from a report) and numbers as strings ("123.432")
@@ -98,7 +99,7 @@ class Reporting(abc.ABC):
         new_sep: str = ",",
         hline: str = "+",
         header_threshold: int = 2,
-    ) -> Dict[str, Union[bool, str]]:
+    ) -> Dict[str, bool | str]:
         """
         Convert report tables to CSV.
 
@@ -242,7 +243,7 @@ class Reporting(abc.ABC):
                 clean_cell = cell.strip()
                 # Quote the cell if it contains the new separator
                 if new_sep in clean_cell:
-                    clean_cell = '"{}"'.format(clean_cell)
+                    clean_cell = f'"{clean_cell}"'
                 new_line.append(clean_cell)
 
             csv_lines.append(new_sep.join(new_line))
@@ -290,7 +291,7 @@ class Reporting(abc.ABC):
         :rtype: dict
         """
 
-        report = open(report_file, "r", encoding=cls._report_encoding).read()
+        report = open(report_file, encoding=cls._report_encoding).read()
 
         tables = {}
         for k, v in parser(report).items():
@@ -413,9 +414,7 @@ class Reporting(abc.ABC):
         # report
         if len(resource_rpt) != 1 or len(timing_rpt) != 1:
             logger.error(
-                "Found {} utilization and {} timing reports in directory {}".format(
-                    len(resource_rpt), len(timing_rpt), dir
-                )
+                f"Found {len(resource_rpt)} utilization and {len(timing_rpt)} timing reports in directory {dir}"
             )
             return result
 

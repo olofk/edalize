@@ -2,10 +2,10 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
-
+import os
 from collections import OrderedDict
+
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -107,14 +107,14 @@ XSIM_OPTIONS  = {xsim_options}
                         lib = src_file.logical_name
                     else:
                         lib = "work"
-                    f.write("{} {} {}\n".format(cmd, lib, src_file.name))
+                    f.write(f"{cmd} {lib} {src_file.name}\n")
             if mfc:
                 f.write("sv work " + " ".join(mfcu))
 
         with open(os.path.join(self.work_root, "config.mk"), "w") as f:
             vlog_defines = " ".join(
                 [
-                    "--define {}={}".format(k, self._param_value_str(v))
+                    f"--define {k}={self._param_value_str(v)}"
                     for k, v, in self.vlogdefine.items()
                 ]
             )
@@ -131,7 +131,7 @@ XSIM_OPTIONS  = {xsim_options}
             gen_param.update(self.generic)
             gen_param_args = " ".join(
                 [
-                    '--generic_top "{}={}"'.format(k, self._param_value_str(v))
+                    f'--generic_top "{k}={self._param_value_str(v)}"'
                     for k, v in gen_param.items()
                 ]
             )

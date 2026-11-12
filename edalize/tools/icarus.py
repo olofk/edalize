@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-from io import StringIO
 import os
+from io import StringIO
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -61,7 +61,7 @@ class Icarus(Edatool):
             timescale = self.tool_options.get("timescale")
             if timescale:
                 with open(os.path.join(self.work_root, "timescale.v"), "w") as tsfile:
-                    tsfile.write("`timescale {}\n".format(timescale))
+                    tsfile.write(f"`timescale {timescale}\n")
                 scr_file.write("timescale.v\n")
 
             for f in self.files:
@@ -127,7 +127,7 @@ class Icarus(Edatool):
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
-                plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+                plusargs += [f"+{key}={self._param_value_str(value)}"]
             args.append("EXTRA_OPTIONS=" + " ".join(plusargs))
 
         return ("make", args, self.work_root)

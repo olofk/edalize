@@ -1,5 +1,6 @@
 import filecmp
 import os
+
 from .edalize_common import make_edalize_test, tests_dir
 
 

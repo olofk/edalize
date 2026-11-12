@@ -138,13 +138,11 @@ class Nextpnr(Edatool):
                 device_family = self.tool_options.get("device_family", "")
                 arch_options += ["--device", device]
                 arch_options += (
-                    ["--vopt", "family={}".format(device_family)]
-                    if device_family
-                    else []
+                    ["--vopt", f"family={device_family}"] if device_family else []
                 )
                 targets = self.name + ".routed.json"
-                constraints = ["--sdc={}".format(sdc_file)] if sdc_file else []
-                constraints += ["--vopt", "cst={}".format(cst_file)] if cst_file else []
+                constraints = [f"--sdc={sdc_file}"] if sdc_file else []
+                constraints += ["--vopt", f"cst={cst_file}"] if cst_file else []
                 output = ["--write", targets]
                 output_files += [
                     {"name": targets, "file_type": "nextpnrRoutedJson"},

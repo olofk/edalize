@@ -1,5 +1,6 @@
-from .edalize_common import make_edalize_test
 import pytest
+
+from .edalize_common import make_edalize_test
 
 
 def test_ise(make_edalize_test):

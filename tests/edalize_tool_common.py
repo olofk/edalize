@@ -2,7 +2,8 @@ from importlib import import_module
 from pathlib import Path
 
 import pytest
-from .edalize_common import compare_files, param_gen, FILES
+
+from .edalize_common import FILES, compare_files, param_gen
 
 
 def get_edam(
@@ -25,7 +26,7 @@ def get_edam(
 
 
 def get_tool(name):
-    return getattr(import_module("edalize.tools.{}".format(name)), name.capitalize())
+    return getattr(import_module(f"edalize.tools.{name}"), name.capitalize())
 
 
 class ToolFixture:

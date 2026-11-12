@@ -4,6 +4,7 @@
 
 import os
 import re
+
 import jinja2
 
 from edalize.edatool import Edatool
@@ -113,7 +114,7 @@ You can reproduce the example above with something like
     }
 
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
-        super(Symbiyosys, self).__init__(edam, work_root, eda_api, verbose)
+        super().__init__(edam, work_root, eda_api, verbose)
 
         # Register Jinja filters
         self.jinja_env.filters["gen_reads"] = self._gen_reads
@@ -171,9 +172,7 @@ You can reproduce the example above with something like
                 if basename in bn_to_path:
                     raise RuntimeError(
                         "More than one RTL file with the same"
-                        "basename: {!r} and {!r}.".format(
-                            bn_to_path[basename], file_obj.name
-                        )
+                        f"basename: {bn_to_path[basename]!r} and {file_obj.name!r}."
                     )
 
                 bn_to_path[basename] = file_obj.name
@@ -202,10 +201,10 @@ You can reproduce the example above with something like
         """
         return " ".join(
             [
-                "-D{}={}".format(key, self._param_value_str(value))
+                f"-D{key}={self._param_value_str(value)}"
                 for key, value in self.vlogdefine.items()
             ]
-            + ["-I{}".format(inc) for inc in self.incdirs]
+            + [f"-I{inc}" for inc in self.incdirs]
         )
 
     def _get_chparam(self):
@@ -235,7 +234,7 @@ You can reproduce the example above with something like
 
         See the class documentation for more details.
         """
-        base_cmd = "read {} {} ".format(value, self._get_read_flags())
+        base_cmd = f"read {value} {self._get_read_flags()} "
 
         lines = []
         for path in self.rtl_paths:
@@ -271,8 +270,7 @@ You can reproduce the example above with something like
                 template = self.jinja_env.from_string(sf.read())
             except jinja2.TemplateError as err:
                 raise RuntimeError(
-                    "Failed to load {!r} "
-                    "as a Jinja2 template: {}.".format(src_path, err)
+                    f"Failed to load {src_path!r} as a Jinja2 template: {err}."
                 )
 
         files = "\n".join(self.rtl_paths)
@@ -315,7 +313,7 @@ You can reproduce the example above with something like
         if not isinstance(tasknames, list):
             raise RuntimeError(
                 '"tasknames" tool option should be '
-                "a list of strings. Got {!r}.".format(tasknames)
+                f"a list of strings. Got {tasknames!r}."
             )
 
         self._run_tool("sby", ["-d", "build", self.sby_name] + tasknames)

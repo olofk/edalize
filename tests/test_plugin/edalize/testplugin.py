@@ -1,4 +1,5 @@
 import logging
+
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)

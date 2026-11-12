@@ -4,6 +4,7 @@
 
 import logging
 import os.path
+
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ class Openlane(Edatool):
 
         defines = ""
         for k, v in self.vlogdefine.items():
-            defines += " {}={}".format(k, self._param_value_str(v))
+            defines += f" {k}={self._param_value_str(v)}"
 
         template_vars = {
             "top": self.toplevel,

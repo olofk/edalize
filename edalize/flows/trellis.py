@@ -61,9 +61,7 @@ class Trellis(Edaflow):
             self.goal = "synth"
         else:
             raise RuntimeError(
-                "Invalid pnr option '{}'. Valid values are 'next' for nextpnr or 'none' to only perform synthesis".format(
-                    pnr
-                )
+                f"Invalid pnr option '{pnr}'. Valid values are 'next' for nextpnr or 'none' to only perform synthesis"
             )
 
         return FlowGraph.fromdict(flow)

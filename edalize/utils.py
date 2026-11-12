@@ -1,5 +1,5 @@
-class EdaCommands(object):
-    class Command(object):
+class EdaCommands:
+    class Command:
         def __init__(
             self, commands, targets, depends, order_only_deps=[], variables={}
         ):

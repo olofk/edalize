@@ -1,10 +1,10 @@
-from typing import List
 from pathlib import Path
+from typing import List
 
 from edalize.utils import EdaCommands
 
 
-class Make(object):
+class Make:
     def __init__(self, flow_options):
         self.build_options = flow_options.get("flow_make_options", [])
 

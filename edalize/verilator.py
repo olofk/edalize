@@ -4,7 +4,6 @@
 
 import logging
 import os
-import logging
 
 from edalize.edatool import Edatool
 
@@ -170,10 +169,10 @@ class Verilator(Edatool):
                 f.write("--" + self.tool_options["mode"] + "\n")
             if "libs" in self.tool_options:
                 for lib in self.tool_options["libs"]:
-                    f.write("-LDFLAGS {}\n".format(lib))
+                    f.write(f"-LDFLAGS {lib}\n")
             for include_dir in incdirs:
                 f.write("+incdir+" + include_dir + "\n")
-                f.write("-CFLAGS -I{}\n".format(include_dir))
+                f.write(f"-CFLAGS -I{include_dir}\n")
             vlt_files = []
             vlog_files = []
             opt_c_files = []
@@ -192,7 +191,7 @@ class Verilator(Edatool):
             if vlt_files:
                 f.write("\n".join(vlt_files) + "\n")
             f.write("\n".join(vlog_files) + "\n")
-            f.write("--top-module {}\n".format(self.toplevel))
+            f.write(f"--top-module {self.toplevel}\n")
             if str(self.tool_options.get("exe")).lower() != "false":
                 f.write("--exe\n")
             f.write("\n".join(opt_c_files))
@@ -210,7 +209,7 @@ class Verilator(Edatool):
             f.write(
                 "".join(
                     [
-                        "-D{}={}\n".format(key, self._param_value_str(value))
+                        f"-D{key}={self._param_value_str(value)}\n"
                         for key, value in self.vlogdefine.items()
                     ]
                 )
@@ -277,9 +276,9 @@ class Verilator(Edatool):
         self.check_managed_parser()
         self.args = []
         for key, value in self.plusarg.items():
-            self.args += ["+{}={}".format(key, self._param_value_str(value))]
+            self.args += [f"+{key}={self._param_value_str(value)}"]
         for key, value in self.cmdlinearg.items():
-            self.args += ["--{}={}".format(key, self._param_value_str(value))]
+            self.args += [f"--{key}={self._param_value_str(value)}"]
 
         self.args += self.tool_options.get("run_options", [])
 

@@ -3,13 +3,14 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import os.path
 import os
+import os.path
 import platform
-import subprocess
 import re
+import subprocess
 import xml.etree.ElementTree as ET
 from functools import partial
+
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 
@@ -87,7 +88,7 @@ class Quartus(Edatool):
         if not edam:
             edam = eda_api
 
-        super(Quartus, self).__init__(edam, work_root, eda_api, verbose)
+        super().__init__(edam, work_root, eda_api, verbose)
 
         # Acquire quartus_sh identification information from available tool if
         # possible. We always default to version 18.1 Standard if a problem is encountered
@@ -202,7 +203,7 @@ class Quartus(Edatool):
                     # don't specify.
                     if not self.isPro:
                         name = f.name
-            except (ET.ParseError, IOError):
+            except (OSError, ET.ParseError):
                 logger.warning("Unable to parse QSYS file " + f.name)
 
             # Give QSYS files special attributes to make the logic in

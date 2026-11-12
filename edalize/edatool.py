@@ -3,16 +3,15 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import argparse
+import logging
+import os
+import pkgutil
+import subprocess
+import sys
 from collections import OrderedDict
 from dataclasses import dataclass
 from importlib import import_module
-import os
-import pkgutil
 
-
-import subprocess
-import logging
-import sys
 from jinja2 import Environment, PackageLoader
 
 logger = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ try:
 except ImportError:
     _mswindows = False
 
-from importlib.metadata import entry_points, EntryPoint
+from importlib.metadata import EntryPoint, entry_points
 
 NON_TOOL_PACKAGES = [
     "flows",
@@ -225,7 +224,7 @@ class FileAction(argparse.Action):
         setattr(namespace, self.dest, [path])
 
 
-class Edatool(object):
+class Edatool:
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
         _tool_name = self.__class__.__name__.lower()
 
@@ -287,9 +286,7 @@ class Edatool(object):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            desc = getattr(
-                cls, "_description", "Options for {} backend".format(cls.__name__)
-            )
+            desc = getattr(cls, "_description", f"Options for {cls.__name__} backend")
             opts = {"description": desc}
             for group in ["members", "lists", "dicts"]:
                 if group in cls.tool_options:
@@ -298,9 +295,7 @@ class Edatool(object):
                         opts[group].append({"name": _name, "type": _type, "desc": ""})
             return opts
         else:
-            logger.warning(
-                "Invalid API version '{}' for get_tool_options".format(api_ver)
-            )
+            logger.warning(f"Invalid API version '{api_ver}' for get_tool_options")
 
     @classmethod
     def _extend_options(cls, options, other_class):
@@ -387,7 +382,7 @@ class Edatool(object):
             "int": {"type": int, "nargs": 1},
             "str": {"type": str, "nargs": 1},
         }
-        progname = os.path.basename(sys.argv[0]) + " run {}".format(self.name)
+        progname = os.path.basename(sys.argv[0]) + f" run {self.name}"
 
         parser = argparse.ArgumentParser(prog=progname, conflict_handler="resolve")
         param_groups = {}
@@ -428,15 +423,11 @@ class Edatool(object):
                         **typedict[param["datatype"]],
                     )
                 except KeyError as e:
-                    raise RuntimeError(
-                        "Invalid data type {} for parameter '{}'".format(str(e), name)
-                    )
+                    raise RuntimeError(f"Invalid data type {e} for parameter '{name}'")
                 param_type_map[name.replace("-", "_")] = _paramtype
             else:
                 logging.warning(
-                    "Parameter '{}' has unsupported type '{}' for requested backend".format(
-                        name, _paramtype
-                    )
+                    f"Parameter '{name}' has unsupported type '{_paramtype}' for requested backend"
                 )
 
         # backend_args.
@@ -577,10 +568,10 @@ class Edatool(object):
                 check=True,
             )
         except FileNotFoundError:
-            _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
+            _s = f"Command '{cmd}' not found. Make sure it is in $PATH"
             raise RuntimeError(_s)
         except subprocess.CalledProcessError as e:
-            _s = "'{}' exited with an error: {}".format(e.cmd, e.returncode)
+            _s = f"'{e.cmd}' exited with an error: {e.returncode}"
             logger.debug(_s)
 
             if e.stdout:
@@ -613,14 +604,14 @@ class Edatool(object):
 
             for key, value in self.vlogdefine.items():
                 define_str = self._param_value_str(param_value=value)
-                f.write("+define+{}={}\n".format(key, define_str))
+                f.write(f"+define+{key}={define_str}\n")
 
             if include_vlogparams:
                 for key, value in self.vlogparam.items():
                     param_str = self._param_value_str(
                         param_value=value, str_quote_style='"'
                     )
-                    f.write("-pvalue+{}.{}={}\n".format(self.toplevel, key, param_str))
+                    f.write(f"-pvalue+{self.toplevel}.{key}={param_str}\n")
 
             for id in incdirs:
                 f.write("+incdir+" + id + "\n")

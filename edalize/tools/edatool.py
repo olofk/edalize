@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os
+
 from jinja2 import Environment, PackageLoader
+
 from edalize.utils import EdaCommands
 
 
@@ -31,7 +33,7 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
         return str(value)
 
 
-class Edatool(object):
+class Edatool:
     TOOL_OPTIONS = {}
 
     @classmethod
@@ -102,7 +104,7 @@ class Edatool(object):
         """
         f = os.path.join(self.work_root, file_name)
         if os.path.exists(f):
-            old_file = open(f, "r").read()
+            old_file = open(f).read()
         else:
             old_file = None
         if old_file != contents:

@@ -1,4 +1,5 @@
 import os
+
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 

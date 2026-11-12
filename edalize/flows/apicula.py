@@ -87,15 +87,13 @@ class Apicula(Edaflow):
         if not device:
             raise RuntimeError("Missing required option 'device' for apicula")
         if device_family_code not in ["", "C"]:
-            raise RuntimeError(
-                "Unknown device family code {}".format(device_family_code)
-            )
+            raise RuntimeError(f"Unknown device family code {device_family_code}")
         match = re.match("^GW(1N|2A|5A)[A-Z]*-[A-Z]V([0-9]+)", device)
         device_family = ""
         if match:
-            device_family = "GW{}-{}{}".format(match[1], match[2], device_family_code)
+            device_family = f"GW{match[1]}-{match[2]}{device_family_code}"
         else:
-            raise RuntimeError("Unknown device {}".format(device))
+            raise RuntimeError(f"Unknown device {device}")
 
         self.device = device
         self.device_family = device_family

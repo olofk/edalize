@@ -2,15 +2,16 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import shutil
-from edalize.tools.edatool import Edatool
-from edalize.utils import EdaCommands
 import logging
-import pathlib
 import os.path
+import pathlib
 import platform
 import re
+import shutil
 import subprocess
+
+from edalize.tools.edatool import Edatool
+from edalize.utils import EdaCommands
 
 logger = logging.getLogger(__name__)
 

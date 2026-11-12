@@ -96,7 +96,7 @@ class Yosys(Edatool):
 
         verilog_defines = []
         for key, value in self.vlogdefine.items():
-            verilog_defines.append("{{{key} {value}}}".format(key=key, value=value))
+            verilog_defines.append(f"{{{key} {value}}}")
 
         verilog_params = []
         for key, value in self.vlogparam.items():

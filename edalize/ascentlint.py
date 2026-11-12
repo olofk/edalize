@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import re
 import os
+import re
 from collections import OrderedDict
 
 from edalize.edatool import Edatool

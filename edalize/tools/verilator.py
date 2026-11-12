@@ -125,7 +125,7 @@ class Verilator(Edatool):
                 "-G{}={}".format(k, self._param_value_str(v, str_quote_style='\\"'))
             )
         for k, v in self.vlogdefine.items():
-            vc.append("-D{}={}".format(k, self._param_value_str(v)))
+            vc.append(f"-D{k}={self._param_value_str(v)}")
 
         self.vc = vc
 
@@ -165,9 +165,9 @@ class Verilator(Edatool):
     def run(self):
         self.args = []
         for key, value in self.plusarg.items():
-            self.args += ["+{}={}".format(key, self._param_value_str(value))]
+            self.args += [f"+{key}={self._param_value_str(value)}"]
         for key, value in self.cmdlinearg.items():
-            self.args += ["--{}={}".format(key, self._param_value_str(value))]
+            self.args += [f"--{key}={self._param_value_str(value)}"]
 
         self.args += list(map(str, self.tool_options.get("run_options", [])))
 

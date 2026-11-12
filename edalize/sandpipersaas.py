@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 
 from edalize.edatool import Edatool
 
@@ -98,20 +98,18 @@ class Sandpipersaas(Edatool):
                 )
             )
             f.write(
-                "OUTPUTFILE :=  {}\n".format((self.tool_options.get("output_file", "")))
+                "OUTPUTFILE :=  {}\n".format(self.tool_options.get("output_file", ""))
             )
-            f.write("INPUTFILE := {}\n".format((self.files[0].get("name"))))
+            f.write("INPUTFILE := {}\n".format(self.files[0].get("name")))
             if self.tool_options.get("output_dir", " ") != " ":
                 f.write(
                     "OUTPUTDIR :=  --outdir {}\n".format(
-                        (self.tool_options.get("output_dir", " "))
+                        self.tool_options.get("output_dir", " ")
                     )
                 )
             else:
                 f.write(
-                    "OUTPUTDIR :=  \n".format(
-                        (self.tool_options.get("output_dir", " "))
-                    )
+                    "OUTPUTDIR :=  \n".format(self.tool_options.get("output_dir", " "))
                 )
 
             if self.tool_options.get("includes", []) != []:
@@ -126,7 +124,7 @@ class Sandpipersaas(Edatool):
             if self.tool_options.get("endpoint", " ") != " ":
                 f.write(
                     "ENDPOINT := --endpoint {}\n".format(
-                        (self.tool_options.get("endpoint", " "))
+                        self.tool_options.get("endpoint", " ")
                     )
                 )
             else:

@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 import os.path
 
 from edalize.edatool import Edatool
+from edalize.flows.icestorm import Icestorm as Icestorm2
 from edalize.nextpnr import Nextpnr
 from edalize.yosys import Yosys
-from edalize.flows.icestorm import Icestorm as Icestorm2
 
 
 class Icestorm(Edatool):

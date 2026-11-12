@@ -1,6 +1,6 @@
 import os
-import pytest
 
+import pytest
 
 from .edalize_common import make_edalize_test
 

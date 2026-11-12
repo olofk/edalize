@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 from edalize.reporting import Reporting
 
@@ -237,7 +237,7 @@ class IseReporting(Reporting):
         Report period constraints, and overall minimum period and maximum frequency.
         """
 
-        report = open(report_file, "r").read()
+        report = open(report_file).read()
 
         period = cls._parse_twr_period(report)
         stats = cls._parse_twr_stats(report)

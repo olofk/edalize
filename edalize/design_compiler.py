@@ -7,11 +7,11 @@ import os.path
 import platform
 import re
 import subprocess
+from importlib import import_module
 
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 from edalize.yosys import Yosys
-from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +105,7 @@ class Design_compiler(Edatool):
             "design_compiler-settings", None
         )
         design_compiler_command = (
-            "source {} && design_compiler".format(design_compiler_settings)
+            f"source {design_compiler_settings} && design_compiler"
             if design_compiler_settings
             else "design_compiler"
         )
@@ -155,7 +155,7 @@ class Design_compiler(Edatool):
                     for k, v in self.vlogdefine.items():
                         # Skip reddefinition of SYNTHESIS which is a reserved macro in IEEE Verilog synthesizable subset
                         if k != "SYNTHESIS":
-                            cmd_define += " {}={}".format(k, self._param_value_str(v))
+                            cmd_define += f" {k}={self._param_value_str(v)}"
                     cmd_define += " }"
 
                 cmd += cmd_define + " " + "-work work " + f.name

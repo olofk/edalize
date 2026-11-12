@@ -1,4 +1,5 @@
 import os
+
 from .edalize_common import make_edalize_test
 
 qsys_file = """<?xml version="1.0" encoding="UTF-8"?>

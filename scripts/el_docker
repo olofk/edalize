@@ -1,10 +1,10 @@
 #!/usr/bin/python3
+import logging
 import os
+import shlex
 import shutil
 import subprocess
 import sys
-import logging
-import shlex
 
 logger = logging.getLogger(__name__)
 symbiflow_init = "bash -lec {}"
@@ -107,9 +107,9 @@ if [c for c in containers if c["tool"] == toolname]:
             init = ""
 
     if image:
-        logger.info("INFO: Will use image '{}' with init '{}'".format(image, init))
+        logger.info(f"INFO: Will use image '{image}' with init '{init}'")
     else:
-        logger.error("ERROR: Tool {} not found in container list.".format(toolname))
+        logger.error(f"ERROR: Tool {toolname} not found in container list.")
         exit(1)
 
     _extra = os.environ.get("EDALIZE_EXTRA_DOCKER_FLAGS")

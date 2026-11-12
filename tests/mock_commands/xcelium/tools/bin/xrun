@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import sys
 import shlex
+import sys
 
 with open("xrun.cmd", "w") as f:
     f.write(" ".join(shlex.quote(arg) for arg in sys.argv[1:]) + "\n")

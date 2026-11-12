@@ -7,11 +7,11 @@ import os.path
 import platform
 import re
 import subprocess
+from importlib import import_module
 
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 from edalize.yosys import Yosys
-from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ class Genus(Edatool):
 
         genus_settings = self.tool_options.get("genus-settings", None)
         genus_command = (
-            "source {} && genus".format(genus_settings) if genus_settings else "genus"
+            f"source {genus_settings} && genus" if genus_settings else "genus"
         )
 
         self.render_template(
@@ -142,7 +142,7 @@ class Genus(Edatool):
                     for k, v in self.vlogdefine.items():
                         # Skip reddefinition of SYNTHESIS which is a reserved macro in IEEE Verilog synthesizable subset
                         if k != "SYNTHESIS":
-                            cmd_define += " {}={}".format(k, self._param_value_str(v))
+                            cmd_define += f" {k}={self._param_value_str(v)}"
                     cmd_define += " }"
 
                 cmd += cmd_define + " " + "-library work " + f.name

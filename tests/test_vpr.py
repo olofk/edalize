@@ -1,11 +1,14 @@
 import os
+
 import pytest
+
 from .edalize_common import make_edalize_test
 
 
 @pytest.mark.parametrize("params", [("minimal", "vpr")])
 def test_vpr(params, tmpdir):
     import os
+
     from .edalize_common import compare_files, get_flow, tests_dir
 
     test_name = "vpr"
@@ -13,7 +16,7 @@ def test_vpr(params, tmpdir):
         os.path.join(tests_dir, "mock_commands") + ":" + os.environ["PATH"]
     )
     tool = "vpr"
-    name = "test_vpr_{}_0".format(test_name)
+    name = f"test_vpr_{test_name}_0"
     work_root = str(tmpdir)
 
     edam = {

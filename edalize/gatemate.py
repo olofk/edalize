@@ -52,11 +52,11 @@ class Gatemate(Edatool):
 
         match = re.search("^CCGM1A([1-9]{1,2})$", device)
         if not match:
-            raise RuntimeError("{} is not known device name".format(device))
+            raise RuntimeError(f"{device} is not known device name")
 
         device_number = match.groups()[0]
         if device_number not in ["1", "2", "4", "9", "16", "25"]:
-            raise RuntimeError("Rel. size {} is not unsupported".format(device_number))
+            raise RuntimeError(f"Rel. size {device_number} is not unsupported")
 
         ccf_file = None
 
@@ -64,9 +64,7 @@ class Gatemate(Edatool):
             if f.file_type == "CCF":
                 if ccf_file:
                     raise RuntimeError(
-                        "p_r only supports one ccf file. Found {} and {}".format(
-                            ccf_file, f.name
-                        )
+                        f"p_r only supports one ccf file. Found {ccf_file} and {f.name}"
                     )
                 else:
                     ccf_file = f.name

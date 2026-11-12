@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
 
 from edalize.edatool import Edatool
 
@@ -105,7 +105,7 @@ Example snippet of a CAPI2 description file for VCS:
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
-                plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+                plusargs += [f"+{key}={self._param_value_str(value)}"]
             args.append("EXTRA_OPTIONS=" + " ".join(plusargs))
 
         self._run_tool("make", args)

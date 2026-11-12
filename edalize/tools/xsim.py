@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import shlex
 import logging
+import shlex
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands

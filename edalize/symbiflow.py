@@ -7,11 +7,11 @@ import os.path
 import platform
 import re
 import subprocess
+from importlib import import_module
 
 from edalize.edatool import Edatool
 from edalize.utils import EdaCommands
 from edalize.yosys import Yosys
-from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +117,7 @@ class Symbiflow(Edatool):
         arch = self.tool_options.get("arch")
         if arch not in self.archs:
             logger.error(
-                'Missing or invalid "arch" parameter: {} in "tool_options"'.format(arch)
+                f'Missing or invalid "arch" parameter: {arch} in "tool_options"'
             )
 
         package = self.tool_options.get("package")

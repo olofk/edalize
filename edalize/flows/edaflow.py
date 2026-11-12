@@ -1,9 +1,8 @@
+import logging
 import os
 from importlib import import_module
 
 from edalize.utils import EdaCommands
-
-import logging
 
 logger = logging.getLogger(__name__)
 import subprocess
@@ -95,7 +94,7 @@ def merge_edam(a, b):
     return _merge(a, b)
 
 
-class Node(object):
+class Node:
     def __init__(self, name, deps=[], fdto={}, tool=None):
         self.deps = deps
         self.fdto = fdto
@@ -105,7 +104,7 @@ class Node(object):
         self.inst = getattr(import_module(f"edalize.tools.{tool}"), tool.capitalize())()
 
 
-class FlowGraph(object):
+class FlowGraph:
     def __init__(self):
         self._graph = {}
 
@@ -149,7 +148,7 @@ class FlowGraph(object):
         return self._graph
 
 
-class Edaflow(object):
+class Edaflow:
 
     FLOW_OPTIONS = {
         "build_runner": {
@@ -377,10 +376,10 @@ class Edaflow(object):
                 env={**os.environ, **env},
             )
         except FileNotFoundError:
-            _s = "Command '{}' not found. Make sure it is in $PATH".format(cmd)
+            _s = f"Command '{cmd}' not found. Make sure it is in $PATH"
             raise RuntimeError(_s)
         except subprocess.CalledProcessError as e:
-            _s = "'{}' exited with an error: {}".format(e.cmd, e.returncode)
+            _s = f"'{e.cmd}' exited with an error: {e.returncode}"
             logger.debug(_s)
 
             if e.stdout:

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 
@@ -101,7 +102,7 @@ class Ghdl(Edatool):
         top = self.toplevel.split(".")
 
         if len(top) > 2:
-            logger.error("Invalid dot notation in toplevel: {}".format(self.toplevel))
+            logger.error(f"Invalid dot notation in toplevel: {self.toplevel}")
 
         if len(top) > 1:
             libraries[top[0]] = []
@@ -142,12 +143,12 @@ class Ghdl(Edatool):
                     ["ghdl", "-i"]
                     + stdarg
                     + [analyze_options]
-                    + [" -P./{}".format(lib)]
+                    + [f" -P./{lib}"]
                     + [lib_opts, " ".join(files)],
                     [format(lib)],
                     ["make_lib_dirs"],
                 )
-        lib_include_dirs = ["-P./{}".format(lib) for lib in libs]
+        lib_include_dirs = [f"-P./{lib}" for lib in libs]
 
         commands.add(
             make_lib_dirs,

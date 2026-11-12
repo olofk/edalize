@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
 
 from edalize.edatool import Edatool
 
@@ -106,7 +106,7 @@ class Xcelium(Edatool):
 
                 # Sort dictionary items, to ensure stable output, which makes testing easier
                 for k, v in self.vlogdefine.items():
-                    args += ["+define+{}={}".format(k, self._param_value_str(v))]
+                    args += [f"+define+{k}={self._param_value_str(v)}"]
 
                 if f.file_type.startswith("systemVerilogSource"):
                     args += ["-sv"]
@@ -124,7 +124,7 @@ class Xcelium(Edatool):
 
             elif f.file_type == "tclSource":
                 cmd = None
-                tcl_main.write("-input {}\n".format(f.name))
+                tcl_main.write(f"-input {f.name}\n")
             elif f.file_type == "dpiLibrary":
                 cmd = None
                 self.dpi_libraries += f" -sv_lib {f.name}"
@@ -143,14 +143,12 @@ class Xcelium(Edatool):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), "w")
         _parameters = []
         for key, value in self.vlogparam.items():
-            _parameters += ["{}={}".format(key, self._param_value_str(value))]
+            _parameters += [f"{key}={self._param_value_str(value)}"]
         for key, value in self.generic.items():
-            _parameters += [
-                "{}={}".format(key, self._param_value_str(value, bool_is_str=True))
-            ]
+            _parameters += [f"{key}={self._param_value_str(value, bool_is_str=True)}"]
         _plusargs = []
         for key, value in self.plusarg.items():
-            _plusargs += ["{}={}".format(key, self._param_value_str(value))]
+            _plusargs += [f"{key}={self._param_value_str(value)}"]
 
         _xmsim_options = self.tool_options.get("xmsim_options", [])
         _xrun_options = self.tool_options.get("xrun_options", [])
@@ -185,7 +183,7 @@ class Xcelium(Edatool):
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
-                plusargs += ["{}={}".format(key, self._param_value_str(value))]
+                plusargs += [f"{key}={self._param_value_str(value)}"]
             args.append("PLUSARGS=" + " ".join(plusargs))
 
         self._run_tool("make", args)

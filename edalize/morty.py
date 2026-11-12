@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
 
 from edalize.edatool import Edatool
 
@@ -58,9 +58,9 @@ Get `morty` from here: https://github.com/zarubaf/morty
         src_files_filtered = list()
         src_files, incdirs = self._get_fileset_files()
 
-        args += ["-I {}".format(incdir) for incdir in incdirs]
+        args += [f"-I {incdir}" for incdir in incdirs]
         args += [
-            "-D {}={}".format(key, self._param_value_str(value))
+            f"-D {key}={self._param_value_str(value)}"
             for key, value in self.vlogdefine.items()
         ]
 

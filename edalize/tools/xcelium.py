@@ -217,7 +217,7 @@ class Xcelium(Edatool):
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
-                plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+                plusargs += [f"+{key}={self._param_value_str(value)}"]
             args += plusargs
 
         return ("xrun", args, self.work_root)

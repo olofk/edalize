@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
 
 from edalize.edatool import Edatool
 
@@ -104,9 +104,7 @@ quit
                     _s = "{} has unknown file type '{}'"
                     logger.warning(_s.format(src_file.name, src_file.file_type))
                 if prefix:
-                    f.write(
-                        "{} work {}{}\n".format(prefix, logical_name, src_file.name)
-                    )
+                    f.write(f"{prefix} work {logical_name}{src_file.name}\n")
 
         with open(os.path.join(self.work_root, "run_" + self.name + ".tcl"), "w") as f:
             f.write(self.RUN_TCL_TEMPLATE)
@@ -117,14 +115,14 @@ quit
         with open(os.path.join(self.work_root, "config.mk"), "w") as f:
             vlog_defines = " ".join(
                 [
-                    "--define {}={}".format(k, self._param_value_str(v))
+                    f"--define {k}={self._param_value_str(v)}"
                     for k, v, in self.vlogdefine.items()
                 ]
             )
             vlog_includes = " ".join(["-i " + k for k in self.incdirs])
             vlog_params = " ".join(
                 [
-                    "--generic_top {}={}".format(k, self._param_value_str(v))
+                    f"--generic_top {k}={self._param_value_str(v)}"
                     for k, v, in self.vlogparam.items()
                 ]
             )

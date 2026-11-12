@@ -6,11 +6,11 @@
 This module exports :class:`VUnitHooks` which can be used to implement advanced VUnit test cases.
 """
 
-from vunit.ui import Library
 from vunit import VUnit
+from vunit.ui import Library
 
 
-class VUnitHooks(object):
+class VUnitHooks:
     """
     Derive the :class:`VUnitRunner` instance from this class and override its member functions if necessary.
     """

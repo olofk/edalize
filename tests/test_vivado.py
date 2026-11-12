@@ -1,4 +1,5 @@
 import pytest
+
 from .edalize_common import get_flow, make_edalize_test
 
 
@@ -28,6 +29,7 @@ def test_vivado_minimal(params, tmpdir, make_edalize_test):
     import os
 
     import edalize
+
     from .edalize_common import compare_files, tests_dir
 
     test_name, synth_tool = params
@@ -39,7 +41,7 @@ def test_vivado_minimal(params, tmpdir, make_edalize_test):
     tool_options = {
         "part": "xc7a35tcsg324-1",
     }
-    name = "test_vivado_{}_0".format(test_name)
+    name = f"test_vivado_{test_name}_0"
     work_root = str(tmpdir)
     edam = {
         "name": name,

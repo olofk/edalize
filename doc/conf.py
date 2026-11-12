@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -12,9 +11,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-from datetime import datetime
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../tests/"))
@@ -24,7 +23,7 @@ sys.path.insert(0, os.path.abspath("../tests/test_vunit/vunit_mock/"))
 # -- Project information -----------------------------------------------------
 
 project = "Edalize"
-copyright = "2019-{}, Olof Kindgren".format(datetime.now().year)
+copyright = f"2019-{datetime.now().year}, Olof Kindgren"
 author = "Olof Kindgren"
 
 # The short X.Y version

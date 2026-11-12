@@ -2,7 +2,8 @@ from importlib import import_module
 from pathlib import Path
 
 import pytest
-from .edalize_common import compare_files, param_gen, FILES
+
+from .edalize_common import FILES, compare_files, param_gen
 
 
 def get_edam(
@@ -24,7 +25,7 @@ def get_edam(
 
 
 def get_flow(name):
-    return getattr(import_module("edalize.flows.{}".format(name)), name.capitalize())
+    return getattr(import_module(f"edalize.flows.{name}"), name.capitalize())
 
 
 class FlowFixture:

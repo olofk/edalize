@@ -1,8 +1,9 @@
 import logging
 import os
 import shutil
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 

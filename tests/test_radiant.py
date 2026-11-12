@@ -35,7 +35,7 @@ def test_radiant_minimal(tmpdir):
     tool_options = {
         "part": "LIFCL-40-9BG400C",
     }
-    name = "test_{}_minimal_0".format(tool)
+    name = f"test_{tool}_minimal_0"
     work_root = str(tmpdir)
 
     edam = {"name": name, "tool_options": {tool: tool_options}}

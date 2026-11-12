@@ -2,10 +2,11 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import logging
 import os
 import sys
-import logging
 from collections import OrderedDict
+
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
 

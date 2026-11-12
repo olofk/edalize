@@ -3,6 +3,7 @@ import pytest
 
 def test_empty_edam():
     import tempfile
+
     from edalize.edatool import get_edatool
 
     h, edam_file = tempfile.mkstemp()
@@ -97,6 +98,7 @@ def test_verilog_include_file_with_partial_include_path():
 
 def test_edam_hook_failing(tmpdir):
     import os.path
+
     from edalize.edatool import get_edatool
 
     tests_dir = os.path.dirname(__file__)
@@ -123,6 +125,7 @@ def test_edam_multiple_hooks(tmpdir):
     """Test if more than one hook gets successfully executed."""
 
     import os.path
+
     from edalize.edatool import get_edatool
 
     hooks = {

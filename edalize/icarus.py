@@ -2,8 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
 
 from edalize.edatool import Edatool
 
@@ -83,7 +83,7 @@ class Icarus(Edatool):
         timescale = self.tool_options.get("timescale")
         if timescale:
             with open(os.path.join(self.work_root, "timescale.v"), "w") as tsfile:
-                tsfile.write("`timescale {}\n".format(timescale))
+                tsfile.write(f"`timescale {timescale}\n")
             f.write("timescale.v\n")
 
         supported_file_types = [
@@ -109,10 +109,10 @@ class Icarus(Edatool):
 
         with open(os.path.join(self.work_root, "Makefile"), "w") as f:
 
-            f.write("TARGET           := {}\n".format(self.name))
+            f.write(f"TARGET           := {self.name}\n")
             _vpi_modules = " ".join([m["name"] + ".vpi" for m in self.vpi_modules])
             if _vpi_modules:
-                f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
+                f.write(f"VPI_MODULES      := {_vpi_modules}\n")
             f.write(
                 "TOPLEVEL         := {}\n".format(
                     " ".join(["-s" + x for x in self.toplevel.split()])
@@ -131,7 +131,7 @@ class Icarus(Edatool):
             if self.plusarg:
                 plusargs = []
                 for key, value in self.plusarg.items():
-                    plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+                    plusargs += [f"+{key}={self._param_value_str(value)}"]
                 f.write("EXTRA_OPTIONS    ?= {}\n".format(" ".join(plusargs)))
 
             f.write(MAKEFILE_TEMPLATE)
@@ -156,7 +156,7 @@ class Icarus(Edatool):
         if self.plusarg:
             plusargs = []
             for key, value in self.plusarg.items():
-                plusargs += ["+{}={}".format(key, self._param_value_str(value))]
+                plusargs += [f"+{key}={self._param_value_str(value)}"]
             args.append("EXTRA_OPTIONS=" + " ".join(plusargs))
 
         self._run_tool("make", args)

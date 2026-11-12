@@ -2,9 +2,9 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import logging
 import os
 import re
-import logging
 
 from edalize.edatool import Edatool
 
@@ -38,7 +38,7 @@ Example snippet of a CAPI2 description file for Slang:
 
     def __init(self, edam=None, work_root=None, eda_api=None):
         # call the super method here
-        super(Slang, self).__init__(edam, work_root, eda_api)
+        super().__init__(edam, work_root, eda_api)
 
         self.rtl_paths = None
         self.incdirs = None
@@ -81,7 +81,7 @@ Example snippet of a CAPI2 description file for Slang:
 
         for dir in self.incdirs:
             self.flags.append("-I")
-            self.flags.append("{}".format(dir))
+            self.flags.append(str(dir))
 
         ft_re = re.compile(r"(:?systemV|v)erilogSource")
         for file_obj in src_files:
@@ -103,14 +103,14 @@ Example snippet of a CAPI2 description file for Slang:
         understand flags necessary for various defines
         """
         for key, value in self.vlogdefine.items():
-            self.flags.append("-D {}={}".format(key, self._param_value_str(value)))
+            self.flags.append(f"-D {key}={self._param_value_str(value)}")
 
     def _get_param_flags(self):
         """
         get flags for parameters
         """
         for key, value in self.vlogparam.items():
-            self.flags.append("-G {}={}".format(key, self._param_value_str(value)))
+            self.flags.append(f"-G {key}={self._param_value_str(value)}")
 
     def _get_slang_options(self):
         """
@@ -125,7 +125,7 @@ Example snippet of a CAPI2 description file for Slang:
         """
         if self.toplevel != "":
             self.flags.append("--top")
-            self.flags.append("{}".format(self.toplevel))
+            self.flags.append(str(self.toplevel))
 
     def build_main(self):
         self._get_define_flags()

@@ -2,8 +2,9 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
+
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ class Openfpga(Edatool):
 
         - ``SOFA_PATH``: directory of the SOFA eFPGA IPs, available here: https://github.com/lnis-uofu/SOFA
         """
-        super(Openfpga, self).__init__(edam, work_root, verbose)
+        super().__init__(edam, work_root, verbose)
 
         # Check environment variable setup
         if os.environ.get("OPENFPGA_PATH") is None:

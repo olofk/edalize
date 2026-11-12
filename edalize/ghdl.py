@@ -5,6 +5,7 @@
 import collections
 import logging
 import os.path
+
 from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
@@ -109,7 +110,7 @@ class Ghdl(Edatool):
         top = self.toplevel.split(".")
 
         if len(top) > 2:
-            logger.error("Invalid dot notation in toplevel: {}".format(self.toplevel))
+            logger.error(f"Invalid dot notation in toplevel: {self.toplevel}")
 
         top_libraries = ""
 
@@ -125,7 +126,7 @@ class Ghdl(Edatool):
                 # libraries[None] which is perhaps poor form but avoids
                 # conflicts with user generated names
                 libraries[f.logical_name] = libraries.get(f.logical_name, []) + [f.name]
-                vhdl_sources += " {file}".format(file=f.name)
+                vhdl_sources += f" {f.name}"
             elif f.file_type in ["user"]:
                 pass
             else:
@@ -138,8 +139,8 @@ class Ghdl(Edatool):
         for lib, files in libraries.items():
             lib_opts = ""
             if lib:
-                analyze_options += " -P./{}".format(lib)
-                make_libraries_directories += "\tmkdir -p {}\n".format(lib)
+                analyze_options += f" -P./{lib}"
+                make_libraries_directories += f"\tmkdir -p {lib}\n"
                 lib_opts = library_options.format(lib=lib)
             ghdlimport += "\t$(EDALIZE_LAUNCHER) ghdl -i $(STD) $(ANALYZE_OPTIONS) {} {}\n".format(
                 lib_opts, " ".join(files)

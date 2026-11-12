@@ -3,8 +3,8 @@ import sys
 
 sys.path.append(os.getenv("EFXPT_HOME") + "/bin")
 
-from api_service.design import DesignAPI
 import api_service.excp.design_excp as APIExcp
+from api_service.design import DesignAPI
 
 design = DesignAPI(False)
 
