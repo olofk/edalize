@@ -50,3 +50,9 @@ dev = [
 
 [tool.setuptools.packages.find]
 include = ["edalize", "edalize.tools", "edalize.flows", "edalize.build_runners"]
+
+[tool.ruff.lint]
+# Ruff's classic default rules (E4, E7, E9, F) plus import sorting (I) and
+# syntax upgrades (UP). Listed explicitly so a ruff upgrade does not
+# silently change the rule set.
+select = ["E4", "E7", "E9", "F", "I", "UP"]

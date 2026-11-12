@@ -1,6 +1,11 @@
 # Configuration for pre-commit (https://pre-commit.com/), a tool to run
 # formatters, linters, and other productivity tools before a commit.
 repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.4
+    hooks:
+      # Check only. Fix locally with `ruff check --fix`.
+      - id: ruff-check
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: "26.10.1"
     hooks:
