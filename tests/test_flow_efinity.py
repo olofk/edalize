@@ -1,7 +1,5 @@
 import pytest
 
-from .edalize_flow_common import flow_fixture
-
 
 def test_efinity(flow_fixture, monkeypatch):
     monkeypatch.setenv("EFINITY_HOME", "path/to/efinity/intallation")

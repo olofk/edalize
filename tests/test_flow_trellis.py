@@ -1,7 +1,5 @@
 import pytest
 
-from .edalize_flow_common import flow_fixture
-
 
 def test_trellis(flow_fixture):
     flow_options = {}

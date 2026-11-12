@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_symbiyosys(make_edalize_test):
     output_names = {
         "default_output_name": {

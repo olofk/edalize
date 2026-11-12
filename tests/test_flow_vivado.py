@@ -1,6 +1,3 @@
-from .edalize_flow_common import flow_fixture
-
-
 def test_vivado(flow_fixture):
     flow_options = {"part": "xc7a35tcsg324-1"}
     ff = flow_fixture("vivado", flow_options=flow_options)

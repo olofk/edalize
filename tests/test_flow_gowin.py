@@ -1,7 +1,5 @@
 import pytest
 
-from .edalize_flow_common import flow_fixture
-
 
 def test_gowin(flow_fixture):
     flow_options = {"part": "GW1NR-LV9QN88PC6/I5"}

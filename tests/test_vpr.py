@@ -2,8 +2,6 @@ import os
 
 import pytest
 
-from .edalize_common import make_edalize_test
-
 
 @pytest.mark.parametrize("params", [("minimal", "vpr")])
 def test_vpr(params, tmpdir):

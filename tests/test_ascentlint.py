@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_ascentlint_defaults(make_edalize_test):
     """Test the default configuration of Ascent Lint"""
     tf = make_edalize_test(

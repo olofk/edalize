@@ -1,6 +1,3 @@
-from .edalize_tool_common import tool_fixture
-
-
 def test_tool_icarus(tool_fixture):
     tool_name = "icarus"
 

@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_verilator_cc(make_edalize_test):
     mode = "cc"
     tool_options = {

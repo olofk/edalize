@@ -1,6 +1,3 @@
-from .edalize_flow_common import flow_fixture
-
-
 def test_gls(flow_fixture):
     flow_options = {"synth": "yosys", "sim": "icarus", "arch": "ice40"}
     ff = flow_fixture("gls", flow_options=flow_options)

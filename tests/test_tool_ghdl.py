@@ -1,6 +1,3 @@
-from .edalize_tool_common import tool_fixture
-
-
 def test_tool_ghdl(tool_fixture):
     tool_options = {
         "analyze_options": ["some", "analyze_options"],

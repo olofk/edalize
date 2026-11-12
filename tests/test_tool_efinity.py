@@ -1,6 +1,3 @@
-from .edalize_tool_common import tool_fixture
-
-
 def test_tool_efinity(tool_fixture):
     import os
 

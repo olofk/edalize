@@ -1,7 +1,5 @@
 import os
 
-from .edalize_common import make_edalize_test
-
 
 def test_morty(make_edalize_test):
     tool_options = {"morty_options": ["--prefix", "blub"]}

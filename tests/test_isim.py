@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_isim(make_edalize_test):
     tool_options = {
         "fuse_options": ["some", "fuse_options"],

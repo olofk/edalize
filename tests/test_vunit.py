@@ -5,8 +5,6 @@ import pytest
 
 import edalize.edatool
 
-from .edalize_common import make_edalize_test
-
 
 def test_vunit_codegen(make_edalize_test):
     tf = make_edalize_test("vunit", param_types=["cmdlinearg"])

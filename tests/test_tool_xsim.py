@@ -6,8 +6,6 @@ from __future__ import annotations
 
 import pytest
 
-from .edalize_tool_common import tool_fixture
-
 
 def test_tool_xsim(tool_fixture) -> None:
     """Test the AMD/Xilinx XSim logic simulator backend."""

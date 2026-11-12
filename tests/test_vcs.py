@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def run_vcs_test(tf):
     tf.backend.configure()
 

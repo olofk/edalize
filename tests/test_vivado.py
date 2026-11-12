@@ -1,6 +1,6 @@
 import pytest
 
-from .edalize_common import get_flow, make_edalize_test
+from .edalize_common import get_flow
 
 
 def test_vivado(make_edalize_test):

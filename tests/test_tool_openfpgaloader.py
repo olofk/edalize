@@ -1,7 +1,5 @@
 import pytest
 
-from .edalize_tool_common import tool_fixture
-
 
 def test_tool_openfpgaloader_gowin(tool_fixture):
     from .edalize_tool_common import FILES

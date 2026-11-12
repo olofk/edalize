@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_icarus(make_edalize_test):
     name = "test_icarus_0"
     tool_options = {

@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_diamond(make_edalize_test):
     name = "test_diamond_0"
     tf = make_edalize_test(

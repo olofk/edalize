@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_slang_lint(make_edalize_test):
     tool_options = {"mode": "lint"}
     tf = make_edalize_test(

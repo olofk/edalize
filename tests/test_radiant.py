@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_radiant(make_edalize_test):
     name = "test_radiant_0"
     tf = make_edalize_test(

@@ -1,6 +1,3 @@
-from .edalize_common import make_edalize_test
-
-
 def test_libero(make_edalize_test):
     """Test passing tool options to the Libero backend"""
     name = "libero-test"

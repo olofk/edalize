@@ -1,6 +1,3 @@
-from .edalize_tool_common import tool_fixture
-
-
 def test_tool_sv2v(tool_fixture):
     tool_options = {
         "sv2v_options": ["some", "sv2v", "options"],

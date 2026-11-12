@@ -1,7 +1,5 @@
 import pytest
 
-from .edalize_tool_common import tool_fixture
-
 
 def test_tool_nextpnr_noarch(tool_fixture):
     with pytest.raises(RuntimeError) as e:

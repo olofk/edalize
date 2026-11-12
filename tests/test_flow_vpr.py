@@ -1,6 +1,3 @@
-from .edalize_flow_common import flow_fixture
-
-
 def test_flow_vpr(flow_fixture):
     flow_options = {
         "arch": "xilinx",

@@ -1,6 +1,3 @@
-from .edalize_tool_common import tool_fixture
-
-
 # Run / run-options
 def test_tool_vcs_2_stage(tool_fixture):
 

@@ -1,7 +1,5 @@
 import os
 
-from .edalize_common import make_edalize_test
-
 
 def test_openlane(make_edalize_test):
     tool_options = {}

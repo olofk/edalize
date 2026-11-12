@@ -1,7 +1,5 @@
 import pytest
 
-from .edalize_flow_common import flow_fixture
-
 
 def test_sim_no_tool(flow_fixture):
     flow_options = {}

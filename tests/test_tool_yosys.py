@@ -1,7 +1,5 @@
 import pytest
 
-from .edalize_tool_common import tool_fixture
-
 
 @pytest.mark.parametrize("arch", ["xilinx", "ice40", "ecp5"])
 @pytest.mark.parametrize("output_format", ["json", "edif", "blif", "verilog"])

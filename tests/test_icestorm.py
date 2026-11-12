@@ -2,8 +2,6 @@ import os
 
 import pytest
 
-from .edalize_common import make_edalize_test
-
 
 def run_icestorm_test(tf, pnr_cmdfile="nextpnr-ice40.cmd"):
     tf.backend.configure()

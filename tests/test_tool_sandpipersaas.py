@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from .edalize_common import compare_files
-from .edalize_tool_common import get_edam, get_tool, tool_fixture
+from .edalize_tool_common import get_edam, get_tool
 
 TLV_FILES = [{"name": "tlv_file.tlv", "file_type": "TLVerilogSource"}]
 
