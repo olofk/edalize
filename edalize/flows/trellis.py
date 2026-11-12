@@ -69,5 +69,5 @@ class Trellis(Edaflow):
         return FlowGraph.fromdict(flow)
 
     def build(self):
-        (cmd, args) = self.build_runner.get_build_command()
+        cmd, args = self.build_runner.get_build_command()
         self._run_tool(cmd, args + [self.goal], cwd=self.work_root)

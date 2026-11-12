@@ -4,7 +4,6 @@ import subprocess
 
 import pytest
 
-
 # ── Legacy API ──────────────────────────────────────────────────────────
 
 

@@ -156,7 +156,7 @@ class Xcelium(Edatool):
         for fg in filegroups:
             # Ignore empty file groups
             if fg[1]:
-                (file_type, lib, defines) = fg[0]
+                file_type, lib, defines = fg[0]
                 if lib:
                     files_cmd += ["-makelib", lib]
                 for k, v in defines.items():

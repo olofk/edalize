@@ -81,7 +81,7 @@ toolname = os.path.basename(tool)
 
 # If it's in the container list, wrap with Docker
 if [c for c in containers if c["tool"] == toolname]:
-    (build_root, work) = os.path.split(os.getcwd())
+    build_root, work = os.path.split(os.getcwd())
     dockerEnv = ""
     for k in os.environ:
         dockerEnv = dockerEnv + "-e " + k + "=" " + os.environ[k] + " " "

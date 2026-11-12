@@ -82,7 +82,7 @@ class Design_compiler(Edatool):
                 ).replace("'", "")
             return opt
 
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
 
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
 

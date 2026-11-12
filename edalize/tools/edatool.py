@@ -6,6 +6,7 @@ import os
 from jinja2 import Environment, PackageLoader
 from edalize.utils import EdaCommands
 
+
 # Jinja2 tests and filters, available in all templates
 def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
     """Convert a parameter value to string suitable to be passed to an EDA tool

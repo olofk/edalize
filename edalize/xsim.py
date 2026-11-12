@@ -83,7 +83,7 @@ XSIM_OPTIONS  = {xsim_options}
         mfc = self.tool_options.get("compilation_mode") == "common"
         with open(os.path.join(self.work_root, self.name + ".prj"), "w") as f:
             mfcu = []
-            (src_files, self.incdirs) = self._get_fileset_files()
+            src_files, self.incdirs = self._get_fileset_files()
             for src_file in src_files:
                 cmd = ""
                 if src_file.file_type.startswith("verilogSource"):

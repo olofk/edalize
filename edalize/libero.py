@@ -94,17 +94,17 @@ class Libero(Edatool):
         """
         self._set_tool_options_defaults()
         self._check_mandatory_options()
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
-        self.jinja_env.filters[
-            "syn_constraint_file_filter"
-        ] = self.syn_constraint_file_filter
-        self.jinja_env.filters[
-            "pnr_constraint_file_filter"
-        ] = self.pnr_constraint_file_filter
-        self.jinja_env.filters[
-            "tim_constraint_file_filter"
-        ] = self.tim_constraint_file_filter
+        self.jinja_env.filters["syn_constraint_file_filter"] = (
+            self.syn_constraint_file_filter
+        )
+        self.jinja_env.filters["pnr_constraint_file_filter"] = (
+            self.pnr_constraint_file_filter
+        )
+        self.jinja_env.filters["tim_constraint_file_filter"] = (
+            self.tim_constraint_file_filter
+        )
         self.jinja_env.filters["tcl_file_filter"] = self.tcl_file_filter
 
         escaped_name = self.name.replace(".", "_")
