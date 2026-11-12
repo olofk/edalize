@@ -159,7 +159,7 @@ class Edaflow:
             filtered_tool_options = flow_defined_tool_options.get(tool_name, {})
             for opt_name in class_tool_options:
                 # Filter out tool options that are already set by the flow
-                if not opt_name in filtered_tool_options:
+                if opt_name not in filtered_tool_options:
                     tool_opts[opt_name] = class_tool_options[opt_name]
                     tool_opts[opt_name]["tool"] = tool_name
 
@@ -229,7 +229,7 @@ class Edaflow:
                     # probably safe, but might cause pre-build scripts to
                     # be executed several times
                     for c in node.inst.commands.commands:
-                        if not "run" in c.targets:
+                        if "run" not in c.targets:
                             c.order_only_deps.insert(0, "pre_build")
                 self.commands.commands += node.inst.commands.commands
 

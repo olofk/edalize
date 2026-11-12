@@ -3,15 +3,9 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import os.path
-import platform
-import re
-import subprocess
-from importlib import import_module
 
 from edalize.edatool import Edatool
 from edalize.utils import get_file_type
-from edalize.yosys import Yosys
 
 logger = logging.getLogger(__name__)
 

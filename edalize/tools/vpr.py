@@ -4,10 +4,7 @@
 
 import logging
 import os.path
-import pathlib
-import platform
 import re
-import shutil
 import subprocess
 
 from edalize.tools.edatool import Edatool

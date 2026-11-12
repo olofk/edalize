@@ -69,7 +69,7 @@ class Libero(Edatool):
 
     def _set_tool_options_defaults(self):
         for key, default_value in self.tool_options_defaults.items():
-            if not key in self.tool_options:
+            if key not in self.tool_options:
                 logger.info(
                     f"Set Libero tool option {key} to default value {default_value}"
                 )
@@ -78,7 +78,7 @@ class Libero(Edatool):
     def _check_mandatory_options(self):
         shouldExit = 0
         for key in self.mandatory_options:
-            if not key in self.tool_options:
+            if key not in self.tool_options:
                 logger.error('Libero option "%s" must be defined', key)
                 shouldExit = 1
         if shouldExit:
@@ -138,7 +138,7 @@ class Libero(Edatool):
         # Set preferred HDL language based on file type amount if not user defined.
         # According to docs, projects can be mixed but one language must be
         # defined as preferred
-        if not "hdl" in self.tool_options:
+        if "hdl" not in self.tool_options:
             verilogFiles = 0
             VHDLFiles = 0
             for f in src_files:

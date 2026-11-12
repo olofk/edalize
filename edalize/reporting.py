@@ -17,7 +17,6 @@ import io
 import logging
 import pathlib
 from collections.abc import Callable
-from typing import Optional, Union
 
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-import os.path
 
 from edalize.edatool import Edatool
 from edalize.utils import EdaCommands

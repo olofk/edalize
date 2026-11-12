@@ -2,7 +2,6 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os.path
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -90,7 +89,7 @@ class Nextpnr(Edatool):
 
         arch = self._require_tool_option("arch")
         arches = ["xilinx", "ecp5", "gowin", "ice40"]
-        if not arch in arches:
+        if arch not in arches:
             raise RuntimeError("Invalid arch. Allowed options are " + ", ".join(arches))
 
         self.edam = edam.copy()

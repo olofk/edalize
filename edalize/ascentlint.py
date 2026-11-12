@@ -4,8 +4,6 @@
 
 import logging
 import os
-import re
-from collections import OrderedDict
 
 from edalize.edatool import Edatool
 

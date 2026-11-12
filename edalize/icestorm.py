@@ -6,7 +6,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-import os.path
 
 from edalize.edatool import Edatool
 from edalize.flows.icestorm import Icestorm as Icestorm2

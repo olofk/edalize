@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-from pathlib import Path
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -74,7 +73,7 @@ class Vcs(Edatool):
         self.sim_setup_files = []
         # Get all include dirs. Move include files to a separate list
         for f in self.files:
-            if not "simulation" in f.get("tags", ["simulation"]):
+            if "simulation" not in f.get("tags", ["simulation"]):
                 continue
             file_type = f.get("file_type", "")
             if file_type.startswith("verilogSource") or file_type.startswith(
@@ -131,7 +130,7 @@ class Vcs(Edatool):
         vlog_files = []
         has_sv = False
         for f in unused_files.copy():
-            if not "simulation" in f.get("tags", ["simulation"]):
+            if "simulation" not in f.get("tags", ["simulation"]):
                 continue
 
             fname = f.get("name")
@@ -211,7 +210,7 @@ class Vcs(Edatool):
             else:
                 cmd = None
 
-            if not "simulation" in f.get("tags", ["simulation"]):
+            if "simulation" not in f.get("tags", ["simulation"]):
                 cmd = None
 
             # Iterate over all relevant source files. If a file has
@@ -261,7 +260,7 @@ class Vcs(Edatool):
 
                 self.workdirs.add(lib)
 
-                if not target_file in self.target_files:
+                if target_file not in self.target_files:
                     self.target_files.append(target_file)
 
                 cmds.append(

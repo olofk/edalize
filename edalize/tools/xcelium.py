@@ -57,7 +57,7 @@ class Xcelium(Edatool):
         # Move different type of files to a separate list
         for f in self.files:
             # Skip any file that is not tagged for simulation
-            if not "simulation" in f.get("tags", ["simulation"]):
+            if "simulation" not in f.get("tags", ["simulation"]):
                 continue
 
             file_type = f.get("file_type", "")

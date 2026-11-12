@@ -2,7 +2,6 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os.path
 
 from edalize.flows.edaflow import Edaflow
 
@@ -106,7 +105,7 @@ class F4pga(Edaflow):
         # Set up nodes
         synth_tool = "yosys"
         self.pnr_tool = flow_options.get("pnr", "vpr")
-        if not self.pnr_tool in ["vpr", "nextpnr"]:
+        if self.pnr_tool not in ["vpr", "nextpnr"]:
             raise RuntimeError(f"F4PGA flow error: invalid P&R tool: {self.pnr_tool}")
 
         self.device = flow_options.get("device")

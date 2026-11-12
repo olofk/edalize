@@ -95,7 +95,7 @@ intersphinx_mapping = {
 # - apt-get install python-sphinx-rtd-theme
 
 try:
-    import sphinx_rtd_theme
+    import sphinx_rtd_theme  # noqa: F401 (availability check)
 
     html_theme = "sphinx_rtd_theme"
 except ImportError:

@@ -2,7 +2,6 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -109,7 +108,7 @@ class Verilator(Edatool):
             vc.append("--uhdm-ast-sv")
 
         for include_dir in incdirs:
-            vc.append(f"+incdir+" + include_dir)
+            vc.append("+incdir+" + include_dir)
             vc.append("-CFLAGS -I" + include_dir)
 
         vc += vlt_files + uhdm_files + vlog_files

@@ -104,7 +104,7 @@ quit
 
     def configure_main(self):
         for i in ["family", "device", "package", "speed"]:
-            if not i in self.tool_options:
+            if i not in self.tool_options:
                 raise RuntimeError(f"Missing required option '{i}'")
         self._write_tcl_file()
         with open(os.path.join(self.work_root, "Makefile"), "w") as f:
@@ -179,7 +179,7 @@ quit
                 tcl_file.write(f"xfile add {f.name}\n")
             elif f.file_type.startswith("vhdlSource"):
                 if f.logical_name:
-                    if not f.logical_name in _libraries:
+                    if f.logical_name not in _libraries:
                         tcl_file.write(f"lib_vhdl new {f.logical_name}\n")
                         _libraries.append(f.logical_name)
                     _s = "xfile add {} -lib_vhdl {}\n"

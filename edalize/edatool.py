@@ -16,7 +16,7 @@ from jinja2 import Environment, PackageLoader
 
 logger = logging.getLogger(__name__)
 
-from importlib.metadata import EntryPoint, entry_points
+from importlib.metadata import entry_points
 
 NON_TOOL_PACKAGES = [
     "flows",
@@ -86,7 +86,7 @@ def get_namespace_tool_extensions():
 
             try:
                 tool_module = import_module(mod.name)
-            except ImportError as e:
+            except ImportError:
                 logger.warning(
                     f"Failed to import namespace extension module {mod.name}, tool {tool_name} is ignored."
                 )
@@ -342,13 +342,13 @@ class Edatool:
             _description = param.get("description", "No description")
             _paramtype = param["paramtype"]
             if _paramtype in paramtypes:
-                if not _paramtype in param_groups:
+                if _paramtype not in param_groups:
                     param_groups[_paramtype] = parser.add_argument_group(
                         _descr[_paramtype]
                     )
 
                 default = None
-                if not param.get("default") is None:
+                if param.get("default") is not None:
                     try:
                         if param["datatype"] == "bool":
                             default = param["default"]
@@ -356,7 +356,7 @@ class Edatool:
                             default = [
                                 typedict[param["datatype"]]["type"](param["default"])
                             ]
-                    except KeyError as e:
+                    except KeyError:
                         pass
                 try:
                     param_groups[_paramtype].add_argument(
@@ -402,7 +402,7 @@ class Edatool:
                 self.tool_options[key] = value
                 continue
             if key in backend_lists:
-                if not key in self.tool_options:
+                if key not in self.tool_options:
                     self.tool_options[key] = []
                 self.tool_options[key] += value.split(" ")
                 continue
@@ -427,7 +427,7 @@ class Edatool:
             _incdir = f.get("include_path") or os.path.dirname(f["name"]) or "."
             if force_slash:
                 _incdir = _incdir.replace("\\", "/")
-            if not _incdir in incdirs:
+            if _incdir not in incdirs:
                 incdirs.append(_incdir)
             return True
         return False

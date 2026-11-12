@@ -56,7 +56,7 @@ Example snippet of a CAPI2 description file
 
     def _set_tool_options_defaults(self):
         for key, default_value in self.tool_options_defaults.items():
-            if not key in self.tool_options:
+            if key not in self.tool_options:
                 logger.info(
                     f"Set Spyglass tool option {key} to default value {default_value}"
                 )

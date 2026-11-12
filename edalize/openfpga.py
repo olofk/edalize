@@ -126,7 +126,7 @@ Download and source the project: https://github.com/lnis-uofu/SOFA""")
         arch = self.tool_options.get("arch")
         if arch is None:
             raise RuntimeError("Missing required option 'arch'")
-        if not arch in SOFA_TASK_DIRS:
+        if arch not in SOFA_TASK_DIRS:
             raise RuntimeError(f"Unsupported FPGA architecture: 'arch={arch}'")
 
         # Workspace variables

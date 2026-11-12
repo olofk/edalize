@@ -5,7 +5,6 @@
 import logging
 import os
 import os.path
-import platform
 import re
 import subprocess
 import xml.etree.ElementTree as ET

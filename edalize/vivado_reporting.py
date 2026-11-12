@@ -4,7 +4,6 @@ Vivado-specific reporting routines
 
 import io
 import logging
-from typing import Optional, Union
 
 from edalize.reporting import Reporting
 

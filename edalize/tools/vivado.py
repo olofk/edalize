@@ -4,7 +4,6 @@
 
 import logging
 import os.path
-import platform
 import re
 import subprocess
 from pathlib import Path
@@ -122,7 +121,7 @@ class Vivado(Edatool):
             elif file_type == "edif":
                 cmd = "read_edif"
                 edif_files.append(f["name"])
-                if not "no_link_design" in f.get("tags", []):
+                if "no_link_design" not in f.get("tags", []):
                     netlist_flow = True
             elif file_type.startswith("vhdlSource"):
                 cmd = "read_vhdl"

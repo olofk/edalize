@@ -51,7 +51,7 @@ class Efinity(Edatool):
             self.efinity_python = self.efinity_home + "/bin/python3"
 
         for i in ["family", "part", "timing"]:
-            if not i in self.tool_options:
+            if i not in self.tool_options:
                 raise RuntimeError(f"Missing required option '{i}'")
 
         design_files = []

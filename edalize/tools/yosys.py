@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import os.path
 
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands

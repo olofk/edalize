@@ -4,7 +4,6 @@
 
 import collections
 import logging
-import os.path
 
 from edalize.edatool import Edatool
 

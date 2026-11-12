@@ -6,8 +6,6 @@ import os
 
 from jinja2 import Environment, PackageLoader
 
-from edalize.utils import EdaCommands
-
 
 # Jinja2 tests and filters, available in all templates
 def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
@@ -142,7 +140,7 @@ class Edatool:
             _incdir = f.get("include_path") or os.path.dirname(f["name"]) or "."
             if force_slash:
                 _incdir = _incdir.replace("\\", "/")
-            if not _incdir in incdirs:
+            if _incdir not in incdirs:
                 incdirs.append(_incdir)
             return True
         return False

@@ -10,7 +10,7 @@ def test_legacy_backend_plugin():
 
     edatools = [x.__name__ for x in get_edatools()]
     # Test plugin should not be discovered yet
-    assert not "Testplugin" in edatools
+    assert "Testplugin" not in edatools
 
     # Copy original sys.path and add plugin path
     orgpath = sys.path.copy()

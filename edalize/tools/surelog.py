@@ -1,5 +1,3 @@
-import os.path
-
 from edalize.tools.edatool import Edatool
 from edalize.utils import EdaCommands
 

@@ -1,6 +1,5 @@
 import logging
 import re
-from typing import Union
 
 from edalize.reporting import Reporting
 

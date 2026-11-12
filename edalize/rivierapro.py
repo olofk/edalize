@@ -4,7 +4,6 @@
 
 import logging
 import os
-import sys
 
 from edalize.edatool import Edatool
 
@@ -63,7 +62,7 @@ class Rivierapro(Edatool):
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = "work"
-            if not f.logical_name in libs:
+            if f.logical_name not in libs:
                 tcl_build_rtl.write(f"vlib {f.logical_name}\n")
                 libs.append(f.logical_name)
             if f.file_type.startswith("verilogSource") or f.file_type.startswith(
