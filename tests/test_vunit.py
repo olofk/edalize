@@ -97,6 +97,42 @@ def test_vunit_hooks(tmpdir):
             hooks.main.assert_called_with(vu_mock)
 
 
+@pytest.mark.parametrize("relative_work_root", [True, False])
+@pytest.mark.parametrize("stage", ["build", "run"])
+def test_vunit_runner_path(tmp_path, monkeypatch, relative_work_root, stage):
+    import json
+
+    from edalize.edatool import get_edatool
+
+    monkeypatch.chdir(tmp_path)
+    work_root = tmp_path / "build" / "vunit"
+    work_root.mkdir(parents=True)
+    edam = {
+        "name": "runner_path",
+        "files": [],
+        "toplevel": "top",
+        "tool_options": {"vunit": {"vunit_options": ["--verbose"]}},
+    }
+    backend = get_edatool("vunit")(
+        edam=edam,
+        work_root="build/vunit" if relative_work_root else str(work_root),
+    )
+    backend.configure()
+
+    # Exercise the real subprocess path without requiring VUnit or a simulator.
+    (work_root / "run.py").write_text(
+        "import json, sys\n"
+        "from pathlib import Path\n"
+        "Path('runner-args.json').write_text(json.dumps(sys.argv[1:]))\n"
+    )
+    getattr(backend, stage)()
+
+    expected = ["--compile", "-k"] if stage == "build" else []
+    assert json.loads((work_root / "runner-args.json").read_text()) == (
+        expected + ["--verbose"]
+    )
+
+
 if __name__ == "__main__":
     from os.path import dirname
     import sys
