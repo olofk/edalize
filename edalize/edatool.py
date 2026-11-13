@@ -174,7 +174,13 @@ class Edatool:
     argtypes: list[str]
     tool_options: Any
 
-    def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
+    def __init__(
+        self,
+        edam: dict[str, Any] | None = None,
+        work_root: str | None = None,
+        eda_api: dict[str, Any] | None = None,
+        verbose: bool = True,
+    ):
         _tool_name = self.__class__.__name__.lower()
 
         self.verbose = verbose
@@ -183,6 +189,10 @@ class Edatool:
 
         if not edam:
             edam = eda_api
+        # Default is None only to keep the keyword signature. Raising here
+        # narrows the type of self.edam for the rest of the class.
+        if edam is None:
+            raise TypeError("Missing required parameter 'edam'")
         self.edam = edam
         try:
             self.name = edam["name"]
@@ -198,16 +208,19 @@ class Edatool:
         self.hooks = edam.get("hooks", {})
         self.parameters = edam.get("parameters", {})
 
-        self.work_root = work_root
+        # Normalize so self.work_root is always a str. A tool may be
+        # constructed without work_root to inspect the EDAM; configure()
+        # rejects the empty value.
+        self.work_root = work_root or ""
         self.env = os.environ.copy()
 
         self.env["WORK_ROOT"] = self.work_root
 
-        self.plusarg = OrderedDict()
-        self.vlogparam = OrderedDict()
-        self.vlogdefine = OrderedDict()
-        self.generic = OrderedDict()
-        self.cmdlinearg = OrderedDict()
+        self.plusarg: OrderedDict[str, Any] = OrderedDict()
+        self.vlogparam: OrderedDict[str, Any] = OrderedDict()
+        self.vlogdefine: OrderedDict[str, Any] = OrderedDict()
+        self.generic: OrderedDict[str, Any] = OrderedDict()
+        self.cmdlinearg: OrderedDict[str, Any] = OrderedDict()
 
         args = OrderedDict()
         for k, v in self.parameters.items():
@@ -269,6 +282,8 @@ class Edatool:
             logger.error(
                 "Edalize has stopped supporting passing arguments as a function argument. Set these values as default values in the EDAM object instead"
             )
+        if not self.work_root:
+            raise TypeError("Missing required parameter 'work_root'")
         logger.info("Setting up project")
         self.configure_pre()
         self.configure_main()

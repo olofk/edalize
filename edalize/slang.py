@@ -35,21 +35,6 @@ Example snippet of a CAPI2 description file for Slang:
 
     flags: list[str] = []
 
-    def __init(self, edam=None, work_root=None, eda_api=None):
-        # call the super method here
-        super().__init__(edam, work_root, eda_api)
-
-        self.rtl_paths = None
-        self.incdirs = None
-
-        # path for final rtl generation
-        self.gen_rtl_name = None
-
-        # contain the command line arguments
-        self.flags = []
-
-        return 0
-
     @staticmethod
     def get_doc(api_ver):
         if api_ver == 0:

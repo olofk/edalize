@@ -71,8 +71,8 @@ class Icestorm(Edaflow):
 
         return FlowGraph.fromdict(flow)
 
-    def configure_tools(self, nodes):
-        super().configure_tools(nodes)
+    def configure_tools(self, graph):
+        super().configure_tools(graph)
 
         name = self.edam["name"]
         # Slot in statistics command which doesn't have an EdaTool class

@@ -194,8 +194,8 @@ class F4pga(Edaflow):
         ]
 
     # Adds the FASM and bitstream generation
-    def configure_tools(self, nodes):
-        super().configure_tools(nodes)
+    def configure_tools(self, graph):
+        super().configure_tools(graph)
 
         if self.pnr_tool != "nextpnr":
             target = f"{self.name}.fasm"

@@ -102,14 +102,14 @@ class Apicula(Edaflow):
 
         return FlowGraph.fromdict(flow)
 
-    def configure_tools(self, flow):
+    def configure_tools(self, graph):
         self.edam["tool_options"]["nextpnr"]["device"] = self.device
         self.edam["tool_options"]["gowinpack"]["device"] = self.device
         self.edam["tool_options"]["nextpnr"]["device_family"] = self.device_family
         self.edam["tool_options"]["gowinpack"]["device_family"] = self.device_family
         self.edam["tool_options"]["openfpgaloader"]["board"] = self.board
 
-        super().configure_tools(flow)
+        super().configure_tools(graph)
 
     def build(self):
         cmd, args = self.build_runner.get_build_command()
