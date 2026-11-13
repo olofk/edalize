@@ -19,9 +19,6 @@ class Vpr(Edaflow):
         }
         return FlowGraph.fromdict(flow)
 
-    def build_tool_graph(self):
-        return super().build_tool_graph()
-
     def configure_tools(self, nodes):
         super().configure_tools(nodes)
         name = self.edam["name"]

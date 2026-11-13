@@ -135,7 +135,7 @@ prj_project close
             logger.warning(_s.format(f.name, f.file_type))
         return ""
 
-    def build_main(self):
+    def build_main(self, target=None):
         if sys.platform == "win32":
             tcl = "pnmainc"
         else:

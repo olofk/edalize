@@ -46,7 +46,7 @@ class Reporting(abc.ABC):
     _timing_rpt_pattern = "*_timing_report.txt"  # type: str
 
     # The text encoding needed to properly open reports
-    _report_encoding = None  # type: Optional[str]
+    _report_encoding = None  # type: str | None
 
     # The separator used in report tables
     _table_sep = ";"  # type: str

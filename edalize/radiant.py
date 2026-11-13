@@ -122,7 +122,7 @@ prj_close
             logger.warning(_s.format(f.name, f.file_type))
         return ""
 
-    def build_main(self):
+    def build_main(self, target=None):
         self._run_tool("radiantc", [self.name + ".tcl"], quiet=True)
         self._run_tool("radiantc", [self.name + "_run.tcl"], quiet=True)
 

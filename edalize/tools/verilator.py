@@ -53,7 +53,7 @@ class Verilator(Edatool):
         super().setup(edam)
 
         # Future improvement: Separate include directories of c and verilog files
-        incdirs = []
+        incdirs: list[str] = []
 
         verilator_file = self.name + ".vc"
 

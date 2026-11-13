@@ -42,11 +42,11 @@ class Openroad(Edatool):
 
         # The list of RTL paths in the fileset (populated at configure time by
         # _get_file_names)
-        self.rtl_paths = None
+        self.rtl_paths: list[str] | None = None
 
         # The list of include directories in the fileset (populated at
         # configure time by _get_file_names)
-        self.incdirs = None
+        self.incdirs: list[str] | None = None
 
     def _get_file_names(self):
         """Read the fileset to get our file names"""
@@ -54,7 +54,7 @@ class Openroad(Edatool):
 
         src_files, self.incdirs = self._get_fileset_files()
         self.rtl_paths = []
-        bn_to_path = {}
+        bn_to_path: dict[str, str] = {}
 
         # RTL files have types verilogSource or systemVerilogSource*
         ft_re = re.compile(r"(:?systemV|v)erilogSource")
@@ -80,6 +80,8 @@ class Openroad(Edatool):
         RTL files goes to files.txt and the list of include directories goes to
         incdirs.txt.
         """
+        # Populated by _get_file_names()
+        assert self.rtl_paths is not None and self.incdirs is not None
         with open(os.path.join(self.work_root, "files.txt"), "w") as handle:
             handle.write("\n".join(self.rtl_paths) + "\n")
         with open(os.path.join(self.work_root, "incdirs.txt"), "w") as handle:
@@ -135,8 +137,10 @@ class Openroad(Edatool):
                     )
                 self.constraint_file = file
 
-        if any(
-            f is None for f in [self.config_file, self.constraint_file, self.make_file]
+        if (
+            self.config_file is None
+            or self.constraint_file is None
+            or self.make_file is None
         ):
             raise RuntimeError(
                 f"{self.name} one or more files need to be passed: \n"
@@ -165,7 +169,7 @@ class Openroad(Edatool):
                 os.path.join(self.work_root, "Makefile"),
             )
 
-    def build_main(self):
+    def build_main(self, target=None):
         pass
 
     def run_main(self):

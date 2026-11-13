@@ -238,7 +238,7 @@ class Verilator(Edatool):
                 )
             )
 
-    def build_main(self):
+    def build_main(self, target=None):
         logger.info("Building simulation model")
         if "mode" not in self.tool_options:
             self.tool_options["mode"] = "cc"

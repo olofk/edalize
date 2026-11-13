@@ -2,6 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
@@ -49,10 +51,10 @@ class Gls(Edaflow):
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(synth, {})
 
         # Start flow graph dict
-        flow = {synth: {"fdto": fdto}}
+        flow: dict[str, dict[str, Any]] = {synth: {"fdto": fdto}}
 
         # Apply frontends
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]

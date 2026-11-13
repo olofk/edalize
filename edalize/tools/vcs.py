@@ -64,10 +64,10 @@ class Vcs(Edatool):
         self.commands = EdaCommands()
         self.f_files = {}
         self.workdirs = set()
-        self.target_files = []
-        self.user_files = []
+        self.target_files: list[str] = []
+        self.user_files: list[str] = []
 
-        incdirs = []
+        incdirs: list[str] = []
         include_files = []
         unused_files = self.files.copy()
         self.sim_setup_files = []
@@ -180,8 +180,8 @@ class Vcs(Edatool):
         self.vcs_files = vlog_files
 
     def _threestage_setup(self, edam, incdirs, include_files, unused_files, full64):
-        filegroups = []
-        prev_fileopts = ("", "", "")  # file_type, logical_name, defines
+        filegroups: list[tuple[tuple, list[str]]] = []
+        prev_fileopts = ("", "", "", "")  # cmd, file_type, logical_name, defines
         for f in unused_files.copy():
             lib = f.get("logical_name", "work")
 

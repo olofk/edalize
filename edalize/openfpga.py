@@ -187,7 +187,7 @@ Download and source the project: https://github.com/lnis-uofu/SOFA""")
             "task_simulation.conf.j2", "config/task.conf", template_vars
         )
 
-    def build_main(self):
+    def build_main(self, target=None):
         pass
 
     def run_main(self):

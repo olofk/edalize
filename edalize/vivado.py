@@ -100,7 +100,7 @@ class Vivado(Edatool):
     def configure_main(self):
         self.vivado.configure()
 
-    def build_main(self):
+    def build_main(self, target=None):
         logger.info("Building")
         args = []
         if "pnr" in self.tool_options:

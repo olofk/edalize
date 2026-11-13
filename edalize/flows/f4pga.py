@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow
 
 
@@ -12,7 +14,7 @@ class F4pga(Edaflow):
     """Currently supports Xilinx 7-series chips"""
 
     # F4PGA defined inputs to the underlying tools
-    FLOW_DEFINED_TOOL_OPTIONS = {}
+    FLOW_DEFINED_TOOL_OPTIONS: dict[str, dict[str, Any]] = {}
 
     # Inputs to the F4PGA flow
     FLOW_OPTIONS = {
@@ -148,7 +150,7 @@ class F4pga(Edaflow):
             )
             synth_options.update({"f4pga_synth_part_file": part_json})
 
-        pnr_options = {}
+        pnr_options: dict[str, Any] = {}
         if self.pnr_tool == "vpr":
             self.eblif_file = f"{self.name}.eblif"
             pnr_options.update({"arch_xml": self.arch_xml})

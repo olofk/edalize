@@ -2,6 +2,8 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
@@ -10,7 +12,7 @@ class Trellis(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    _flow = {
+    _flow: dict[str, dict[str, Any]] = {
         "yosys": {"fdto": {"arch": "ecp5", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "ecp5"}},
         "ecppack": {"deps": ["nextpnr"], "fdto": {}},
@@ -39,7 +41,7 @@ class Trellis(Edaflow):
         flow = self._flow.copy()
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]

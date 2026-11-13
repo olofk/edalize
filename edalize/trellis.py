@@ -17,7 +17,7 @@ class Trellis(Edatool):
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:
-            options = {"lists": [], "members": []}
+            options: dict[str, list] = {"lists": [], "members": []}
 
             Edatool._extend_options(options, Yosys)
             Edatool._extend_options(options, Nextpnr)

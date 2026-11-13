@@ -86,13 +86,16 @@ class Ghdl(Edatool):
             else:
                 stdarg = ["--std=93c"]
 
-            standard = rx.match(stdarg[0]).group(1)
+            m = rx.match(stdarg[0])
+            # stdarg is always one of the --std= values above
+            assert m is not None
+            standard = m.group(1)
 
         analyze_options = " ".join(analyze_options)
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
 
-        libraries = {}
+        libraries: dict[str, list[str]] = {}
         library_options = "--work={lib} --workdir=./{lib}"
 
         # GHDL versions older than 849a25e0 don't support the dot notation (e.g.
@@ -129,7 +132,7 @@ class Ghdl(Edatool):
 
         commands = EdaCommands()
 
-        make_lib_dirs = []
+        make_lib_dirs: list[str] = []
         libs = []
         for lib, files in libraries.items():
             lib_opts = ""

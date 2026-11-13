@@ -69,7 +69,7 @@ class Yosys(Edatool):
 
         yosys_template = self.tool_options.get("yosys_template")
 
-        incdirs = []
+        incdirs: list[str] = []
         file_table = []
         unused_files = []
 

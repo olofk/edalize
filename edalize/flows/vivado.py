@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
@@ -48,10 +50,10 @@ class Vivado(Edaflow):
         return cls.get_filtered_tool_options(flow, cls.FLOW_DEFINED_TOOL_OPTIONS)
 
     def configure_flow(self, flow_options):
-        flow = {}
+        flow: dict[str, dict[str, Any]] = {}
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -79,7 +81,7 @@ class Vivado(Edaflow):
             args.append("synth")
         self._run_tool(cmd, args=args, cwd=self.work_root)
 
-    def run(self):
+    def run(self, args=None):
         if self.flow_options.get("gui"):
             # To avoid accidentally programming FPGA after closing GUI
             return

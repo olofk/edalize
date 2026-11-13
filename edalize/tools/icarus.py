@@ -34,7 +34,7 @@ class Icarus(Edatool):
         super().setup(edam)
 
         scr_file = StringIO()
-        incdirs = []
+        incdirs: list[str] = []
         vlog_files = []
         depfiles = []
         unused_files = []

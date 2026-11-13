@@ -152,18 +152,16 @@ class Symbiflow(Edatool):
                 continue
 
         if not chipdb:
-            logger.error("Missing required chipdb file")
+            raise RuntimeError("Missing required chipdb file")
 
         if placement_constraints == []:
             logger.error("Missing required XDC file(s)")
 
-        if device is None and arch == "fpga_interchange":
-            logger.error('Missing required ".device" file for "fpga_interchange" arch')
-
         nextpnr_options = self.tool_options.get("nextpnr_options", "")
         partname = part + package
         # Strip speedgrade string when using fpga_interchange
-        package = package.split("-")[0] if arch == "fpga_interchange" else None
+        if arch == "fpga_interchange":
+            package = package.split("-")[0]
 
         if "xc7a" in part:
             bitstream_device = "artix7"
@@ -180,6 +178,10 @@ class Symbiflow(Edatool):
         commands = EdaCommands()
         commands.commands = yosys.commands
         if arch == "fpga_interchange":
+            if device is None:
+                raise RuntimeError(
+                    'Missing required ".device" file for "fpga_interchange" arch'
+                )
             commands.header += """ifndef INTERCHANGE_SCHEMA_PATH
 $(error Environment variable INTERCHANGE_SCHEMA_PATH was not found. It should be set to <fpga-interchange-schema path>/interchange)
 endif

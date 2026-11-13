@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
@@ -11,7 +13,7 @@ class Generic(Edaflow):
 
     argtypes = ["cmdlinearg", "generic", "plusarg", "vlogdefine", "vlogparam"]
 
-    FLOW_DEFINED_TOOL_OPTIONS = {}
+    FLOW_DEFINED_TOOL_OPTIONS: dict[str, dict[str, Any]] = {}
 
     FLOW_OPTIONS = {
         **Edaflow.FLOW_OPTIONS,
@@ -39,10 +41,10 @@ class Generic(Edaflow):
         fdto = self.FLOW_DEFINED_TOOL_OPTIONS.get(tool, {})
 
         # Start flow graph dict
-        flow = {tool: {"fdto": fdto}}
+        flow: dict[str, dict[str, Any]] = {tool: {"fdto": fdto}}
 
         # Apply frontends
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]

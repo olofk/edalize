@@ -17,7 +17,7 @@ class Surelog(Edatool):
     def setup(self, edam):
         super().setup(edam)
 
-        incdirs = []
+        incdirs: list[str] = []
         file_table = []
         unused_files = []
 

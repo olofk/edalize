@@ -57,8 +57,8 @@ class Rivierapro(Edatool):
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
         libs = []
-        common_compilation_sv = []
-        common_compilation_vhdl = []
+        common_compilation_sv: list[str] = []
+        common_compilation_vhdl: list[str] = []
         for f in src_files:
             if not f.logical_name:
                 f.logical_name = "work"
@@ -217,7 +217,7 @@ class Rivierapro(Edatool):
             )
         super().build_pre()
 
-    def build_main(self):
+    def build_main(self, target=None):
         args = ["-c", "-do", "do edalize_main.tcl; exit"]
         self._run_tool("vsim", args, quiet=True)
 

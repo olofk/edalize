@@ -208,7 +208,7 @@ class Libero(Edatool):
         if f.file_type == "SDC":
             return f.name
 
-    def build_main(self):
+    def build_main(self, target=None):
         logger.info("Executing Libero TCL Scripts.")
         escaped_name = self.name.replace(".", "_")
         if shutil.which("libero"):
@@ -217,7 +217,7 @@ class Libero(Edatool):
             filePath = os.path.join(
                 Path(self.work_root).relative_to(os.getcwd()), escaped_name + "-run.tcl"
             )
-            logger.warn(
+            logger.warning(
                 'Libero not found on path, execute manually the script "'
                 + filePath
                 + '"'

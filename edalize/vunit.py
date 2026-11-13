@@ -62,9 +62,9 @@ class Vunit(Edatool):
         )
 
         # vunit does not allow empty library name or 'work', so we use `vunit_test_runner_lib`:
-        libraries = OrderedDict()
+        libraries: OrderedDict[str, list] = OrderedDict()
 
-        core_files = {}
+        core_files: dict[str, list] = {}
         for f in src_files:
             lib = f.logical_name if f.logical_name else "vunit_test_runner_lib"
             libraries.setdefault(lib, []).append(f)
@@ -87,7 +87,7 @@ class Vunit(Edatool):
             },
         )
 
-    def build_main(self):
+    def build_main(self, target=None):
         vunit_options = self.tool_options.get("vunit_options", [])
         testrunner = os.path.join(self.work_root, self.testrunner)
         self._run_tool(
