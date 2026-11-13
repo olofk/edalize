@@ -56,3 +56,24 @@ include = ["edalize", "edalize.tools", "edalize.flows", "edalize.build_runners"]
 # syntax upgrades (UP). Listed explicitly so a ruff upgrade does not
 # silently change the rule set.
 select = ["E4", "E7", "E9", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+mypy_path = "."
+namespace_packages = true
+explicit_package_bases = true
+check_untyped_defs = true
+enable_error_code = ["deprecated"]
+files = ["edalize/"]
+
+# Optional deps without type info, and the setuptools_scm generated
+# version module that is missing in a fresh checkout.
+[[tool.mypy.overrides]]
+module = [
+  "pandas",
+  "vunit",
+  "vunit.*",
+  "api_service.*",
+  "edalize.version",
+]
+ignore_missing_imports = true

@@ -10,3 +10,17 @@ repos:
     rev: "26.10.1"
     hooks:
       - id: black
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.4.1
+    hooks:
+      - id: mypy
+        # Typed runtime deps mypy needs to resolve imports. Keep in sync
+        # with `pyproject.toml`'s dependencies for any package that ships
+        # type info.
+        additional_dependencies:
+          - Jinja2>=3
+          - pyparsing>=3.0.0
+        args: [--config-file=pyproject.toml]
+        # Don't let pre-commit pass file paths as arguments. They would
+        # override `files = [...]` in pyproject.toml.
+        pass_filenames: false
