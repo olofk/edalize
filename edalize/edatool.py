@@ -26,11 +26,7 @@ try:
 except ImportError:
     _mswindows = False
 
-if sys.version_info < (3, 10):
-    from importlib_metadata import entry_points, EntryPoint
-else:
-    from importlib.metadata import entry_points, EntryPoint
-
+from importlib.metadata import entry_points, EntryPoint
 
 NON_TOOL_PACKAGES = [
     "flows",
