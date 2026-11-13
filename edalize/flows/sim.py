@@ -24,7 +24,7 @@ class Sim(Generic):
         },
     }
 
-    def configure_tools(self, flow):
+    def configure_tools(self, graph):
         if self.flow_options.get("cocotb_module"):
             tool = self.flow_options.get("tool")
             libnamepath = ""
@@ -89,7 +89,7 @@ class Sim(Generic):
                 self.edam["tool_options"][tool].get(opt, []) + val
             )
 
-        super().configure_tools(flow)
+        super().configure_tools(graph)
 
     def configure(self):
         if self.flow_options.get("tool") == "vcs":

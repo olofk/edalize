@@ -10,7 +10,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 from functools import partial
 
-from edalize.edatool import Edatool
+from edalize.edatool import Edatool, jinja_filter_param_value_str
 from edalize.utils import get_file_type
 
 logger = logging.getLogger(__name__)
@@ -127,7 +127,7 @@ class Quartus(Edatool):
         # and versions use "true"/"false" strings
         if (version["edition"] != "Pro") or (int(version["major"]) < 17):
             self.jinja_env.filters["generic_value_str"] = partial(
-                self.jinja_env.filters["generic_value_str"], bool_is_str=True
+                jinja_filter_param_value_str, bool_is_str=True
             )
 
     def configure_main(self):

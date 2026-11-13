@@ -19,7 +19,7 @@ class Vpr(Edaflow):
         }
         return FlowGraph.fromdict(flow)
 
-    def configure_tools(self, nodes):
-        super().configure_tools(nodes)
+    def configure_tools(self, graph):
+        super().configure_tools(graph)
         name = self.edam["name"]
         self.commands.set_default_target(name + ".analysis")

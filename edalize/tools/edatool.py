@@ -46,6 +46,8 @@ class Edatool:
         # The EDAM dict. None until setup() is called
         self.edam: Any = None
         self.prev_nodes = set()
+        # Always set for modules loaded through the import system
+        assert __package__ is not None
         self.jinja_env = Environment(
             loader=PackageLoader(__package__, "templates"),
             trim_blocks=True,

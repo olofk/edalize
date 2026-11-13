@@ -46,7 +46,7 @@ def merge_edam(a, b):
 
 
 class Node:
-    def __init__(self, name, deps=[], fdto={}, tool=None):
+    def __init__(self, name, deps=[], fdto={}, *, tool: str):
         self.deps = deps
         self.fdto = fdto
         self.tool = tool
