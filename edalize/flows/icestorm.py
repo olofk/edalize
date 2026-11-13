@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 
+from typing import Any
+
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
 
@@ -11,7 +13,7 @@ class Icestorm(Edaflow):
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    _flow = {
+    _flow: dict[str, dict[str, Any]] = {
         "yosys": {"fdto": {"arch": "ice40", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "ice40"}},
         "icepack": {"deps": ["nextpnr"]},
@@ -42,7 +44,7 @@ class Icestorm(Edaflow):
         flow = self._flow.copy()
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]

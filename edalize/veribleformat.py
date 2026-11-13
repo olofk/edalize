@@ -28,7 +28,7 @@ class Veribleformat(Edatool):
                 ],
             }
 
-    def build_main(self):
+    def build_main(self, target=None):
         pass
 
     def _get_tool_args(self):

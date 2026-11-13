@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+from typing import Any
 
 from edalize.edatool import Edatool
 from edalize.utils import EdaCommands
@@ -11,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class Nextpnr(Edatool):
+    # Set by the backend wrapping this class
+    flow_config: dict[str, Any]
+
     @classmethod
     def get_doc(cls, api_ver):
         if api_ver == 0:

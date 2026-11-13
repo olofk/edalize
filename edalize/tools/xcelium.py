@@ -48,7 +48,7 @@ class Xcelium(Edatool):
         self.commands = EdaCommands()
 
         unused_files = self.files.copy()
-        incdirs = []
+        incdirs: list[str] = []
         include_files = []
         src_files = []
         tcl_files = []
@@ -105,7 +105,7 @@ class Xcelium(Edatool):
             self.tcl_cmd += ["-input", tcl]
 
         # Append DPI libraries
-        self.dpi_lib_cmd = []
+        self.dpi_lib_cmd: list[str] = []
         for lib in dpi_libraries:
             self.dpi_lib_cmd.extend(("-sv_lib", lib))
 
@@ -125,7 +125,7 @@ class Xcelium(Edatool):
             vlogparam_cmd.append(f"-defparam {self.toplevel}.{k}={val}")
 
         # Append VHDL generics
-        generic_cmd = []
+        generic_cmd: list[str] = []
         for k, v in self.generic.items():
             val = self._param_value_str(v, str_quote_style='"')
             generic_cmd.extend(("-generic", f"{k}={val}"))
@@ -136,8 +136,8 @@ class Xcelium(Edatool):
         # Append top level module
         top_cmd = ["-top", self.toplevel]
 
-        prev_fileopts = ("", "", {})
-        filegroups = []
+        prev_fileopts: tuple = ("", "", {})
+        filegroups: list[tuple[tuple, list[str]]] = []
         # Iterate over all relevant source files. If a file has
         # different file_type, logical_name or defines compared
         # to the previous file, we put it in a new file group

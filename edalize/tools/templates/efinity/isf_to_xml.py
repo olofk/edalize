@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append(os.getenv("EFXPT_HOME") + "/bin")
+sys.path.append(os.environ["EFXPT_HOME"] + "/bin")
 
 from api_service.design import DesignAPI
 

@@ -43,7 +43,7 @@ class Yosys(Edatool):
 
         yosys_template = self.tool_options.get("yosys_template")
 
-        incdirs = []
+        incdirs: list[str] = []
         file_table = []
         unused_files = []
 
@@ -144,7 +144,7 @@ class Yosys(Edatool):
         # Configure first call to Yosys
         targets = []
         depends = depfiles
-        variables = []
+        variables: dict[str, str] = {}
         logfile = ""
 
         targets = [default_target]

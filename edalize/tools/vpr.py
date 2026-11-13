@@ -124,13 +124,13 @@ class Vpr(Edatool):
                 [depends],
             )
 
-        depends = [self.name + ".net"]
+        place_depends = [self.name + ".net"]
         targets = self.name + ".place"
         command = ["vpr", arch_xml, netlist_file]
 
         # Modify place stage if running generate constraints script
         if gen_constr_list:
-            depends += [constraints_file]
+            place_depends += [constraints_file]
             command += [f"--fix_clusters {constraints_file}"]
 
         command += ["--place"]
@@ -139,7 +139,7 @@ class Vpr(Edatool):
             if gen_constr_list
             else []
         )
-        commands.add(command, [targets], depends)
+        commands.add(command, [targets], place_depends)
 
         depends = self.name + ".place"
         targets = self.name + ".route"
@@ -171,4 +171,4 @@ class Vpr(Edatool):
 
     def build(self):
         logger.info("Building")
-        return ("make", self.args, self.work_root)
+        return ("make", [], self.work_root)

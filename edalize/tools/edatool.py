@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os
+from typing import Any
 
 from jinja2 import Environment, PackageLoader
 
@@ -32,14 +33,18 @@ def jinja_filter_param_value_str(value, str_quote_style="", bool_is_str=False):
 
 
 class Edatool:
-    TOOL_OPTIONS = {}
+    TOOL_OPTIONS: dict[str, dict[str, Any]] = {}
+
+    # Set by the flow before setup() is called
+    work_root: str
 
     @classmethod
     def get_tool_options(cls):
         return cls.TOOL_OPTIONS
 
     def __init__(self):
-        self.edam = None
+        # The EDAM dict. None until setup() is called
+        self.edam: Any = None
         self.prev_nodes = set()
         self.jinja_env = Environment(
             loader=PackageLoader(__package__, "templates"),

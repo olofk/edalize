@@ -89,7 +89,10 @@ class Ghdl(Edatool):
             else:
                 stdarg = ["--std=93c"]
 
-            standard = rx.match(stdarg[0]).group(1)
+            m = rx.match(stdarg[0])
+            # stdarg is always one of the --std= values above
+            assert m is not None
+            standard = m.group(1)
 
         run_options = self.tool_options.get("run_options", [])
 
@@ -97,7 +100,7 @@ class Ghdl(Edatool):
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
 
-        libraries = collections.OrderedDict()
+        libraries: collections.OrderedDict[str, list[str]] = collections.OrderedDict()
         library_options = "--work={lib} --workdir=./{lib}"
         ghdlimport = ""
         vhdl_sources = ""

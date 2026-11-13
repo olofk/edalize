@@ -17,7 +17,7 @@ class Sv2v(Edatool):
     def setup(self, edam):
         super().setup(edam)
 
-        incdirs = []
+        incdirs: list[str] = []
         sv_files = []
         unused_files = []
 

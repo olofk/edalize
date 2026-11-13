@@ -121,11 +121,11 @@ You can reproduce the example above with something like
 
         # The list of RTL paths in the fileset (populated at configure time by
         # _get_file_names)
-        self.rtl_paths = None
+        self.rtl_paths: list[str] | None = None
 
         # The list of include directories in the fileset (populated at
         # configure time by _get_file_names)
-        self.incdirs = None
+        self.incdirs: list[str] | None = None
 
         # The name of the interpolated .sby file that we create in the work
         # root
@@ -154,7 +154,7 @@ You can reproduce the example above with something like
 
         src_files, self.incdirs = self._get_fileset_files()
         self.rtl_paths = []
-        bn_to_path = {}
+        bn_to_path: dict[str, str] = {}
         sby_names = []
 
         # RTL files have types verilogSource or systemVerilogSource*. We
@@ -199,6 +199,8 @@ You can reproduce the example above with something like
 
         These are exposed as the {{flags}} variable in Jinja templates.
         """
+        # Populated by _get_file_names()
+        assert self.incdirs is not None
         return " ".join(
             [
                 f"-D{key}={self._param_value_str(value)}"
@@ -235,6 +237,9 @@ You can reproduce the example above with something like
         See the class documentation for more details.
         """
         base_cmd = f"read {value} {self._get_read_flags()} "
+
+        # Populated by _get_file_names()
+        assert self.rtl_paths is not None
 
         lines = []
         for path in self.rtl_paths:
@@ -295,6 +300,8 @@ You can reproduce the example above with something like
         RTL files goes to files.txt and the list of include directories goes to
         incdirs.txt.
         """
+        # Populated by _get_file_names()
+        assert self.rtl_paths is not None and self.incdirs is not None
         with open(os.path.join(self.work_root, "files.txt"), "w") as handle:
             handle.write("\n".join(self.rtl_paths) + "\n")
         with open(os.path.join(self.work_root, "incdirs.txt"), "w") as handle:
@@ -305,7 +312,7 @@ You can reproduce the example above with something like
         self._interpolate_sby(clean_sby_name)
         self._dump_file_lists()
 
-    def build_main(self):
+    def build_main(self, target=None):
         pass
 
     def run_main(self):

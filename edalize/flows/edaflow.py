@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 from importlib import import_module
+from typing import Any
 
 from edalize.utils import EdaCommands
 
@@ -174,7 +175,7 @@ class Edaflow:
 
     # Filter out tool options for each tool from self.flow_options
     def extract_tool_options(self):
-        tool_options = {}
+        tool_options: dict[str, Any] = {}
         edam_flow_opts = self.edam.get("flow_options", {})
         for name, node in self.flow.get_nodes().items():
             # Get the tool class
@@ -203,7 +204,7 @@ class Edaflow:
         # Configure each node in graph order
         while unconfigured_nodes:
             node = unconfigured_nodes.pop(0)
-            input_edam = {}
+            input_edam: dict[str, Any] = {}
 
             # Check all dependencies are fulfilled
             all_deps_configured = True
@@ -232,6 +233,10 @@ class Edaflow:
                         if "run" not in c.targets:
                             c.order_only_deps.insert(0, "pre_build")
                 self.commands.commands += node.inst.commands.commands
+
+    # Implemented by each flow. Returns the FlowGraph to build.
+    def configure_flow(self, flow_options):
+        raise NotImplementedError
 
     def add_scripts(self, depends, hook_name):
         last_script = depends

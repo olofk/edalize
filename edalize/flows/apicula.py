@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import re
+from typing import Any
 
 from edalize.flows.edaflow import Edaflow, FlowGraph
 
@@ -13,7 +14,7 @@ class Apicula(Edaflow):
     argtypes = ["vlogdefine", "vlogparam"]
     verbose = False
 
-    _flow = {
+    _flow: dict[str, dict[str, Any]] = {
         "yosys": {"fdto": {"arch": "gowin", "output_format": "json"}},
         "nextpnr": {"deps": ["yosys"], "fdto": {"arch": "gowin"}},
         "gowinpack": {"deps": ["nextpnr"], "fdto": {}},
@@ -66,7 +67,7 @@ class Apicula(Edaflow):
         flow = self._flow.copy()
 
         # Add any user-specified frontends to the flow
-        deps = []
+        deps: list[str] = []
         for frontend in flow_options.get("frontends", []):
             flow[frontend] = {"deps": deps}
             deps = [frontend]
@@ -114,7 +115,7 @@ class Apicula(Edaflow):
         cmd, args = self.build_runner.get_build_command()
         self._run_tool(cmd, args=args, cwd=self.work_root, quiet=True)
 
-    def run(self):
+    def run(self, args=None):
         cmd, args = self.build_runner.get_build_command()
         args += ["openfpgaloader"]
         self._run_tool(cmd, args=args, cwd=self.work_root)

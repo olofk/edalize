@@ -168,10 +168,10 @@ class Design_compiler(Edatool):
         logger.warning(_s.format(f.name, f.file_type))
         return "add_files -norecurse" + " " + f.name
 
-    def build_main(self):
+    def build_main(self, target=None):
         logger.info("Building")
         logger.info(
             "(running make, which runs dc_shell which has an unbelievably long lag before printing. be patient)"
         )
-        args = []
+        args: list[str] = []
         self._run_tool("make", args, quiet=True)

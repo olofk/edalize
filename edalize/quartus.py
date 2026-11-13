@@ -183,12 +183,14 @@ class Quartus(Edatool):
             try:
                 qsysTree = ET.parse(os.path.join(self.work_root, f.name))
                 try:
-                    try:
-                        tool = qsysTree.find("component").attrib["tool"]
-                    except AttributeError:
-                        tool = qsysTree.find(
+                    component = qsysTree.find("component")
+                    if component is not None:
+                        tool: str | None = component.attrib["tool"]
+                    else:
+                        tool_elem = qsysTree.find(
                             ".//{http://www.altera.com/XMLSchema/IPXact2014/extensions}tool"
-                        ).text
+                        )
+                        tool = tool_elem.text if tool_elem is not None else None
                     if tool == "QsysPro":
                         if self.isPro:
                             name = f.name
@@ -263,7 +265,7 @@ class Quartus(Edatool):
 
         return ""
 
-    def build_main(self):
+    def build_main(self, target=None):
         logger.info("Building")
         args = []
         if "pnr" in self.tool_options:

@@ -12,6 +12,7 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from importlib import import_module
 from importlib.metadata import entry_points
+from typing import Any
 
 from jinja2 import Environment, PackageLoader
 
@@ -167,6 +168,12 @@ class FileAction(argparse.Action):
 
 
 class Edatool:
+    # Declared here so the base class methods using them type check.
+    # argtypes is set by subclasses. tool_options is the option docs on
+    # some subclasses and the user's option values on instances.
+    argtypes: list[str]
+    tool_options: Any
+
     def __init__(self, edam=None, work_root=None, eda_api=None, verbose=True):
         _tool_name = self.__class__.__name__.lower()
 
@@ -214,7 +221,10 @@ class Edatool:
         # module that the class comes form and then load that to see which
         # package it belongs to in order to get the right path for jinja.
 
-        _package = import_module(self.__class__.__module__).__spec__.parent
+        _spec = import_module(self.__class__.__module__).__spec__
+        # Always set for modules loaded through the import system
+        assert _spec is not None and _spec.parent is not None
+        _package = _spec.parent
 
         self.jinja_env = Environment(
             loader=PackageLoader(_package, "templates"),
@@ -229,7 +239,7 @@ class Edatool:
     def get_doc(cls, api_ver):
         if api_ver == 0:
             desc = getattr(cls, "_description", f"Options for {cls.__name__} backend")
-            opts = {"description": desc}
+            opts: dict[str, Any] = {"description": desc}
             for group in ["members", "lists", "dicts"]:
                 if group in cls.tool_options:
                     opts[group] = []
@@ -318,7 +328,7 @@ class Edatool:
         self.default_target = target
 
     def parse_args(self, args, paramtypes):
-        typedict = {
+        typedict: dict[str, dict[str, Any]] = {
             "bool": {"action": "store_true"},
             "file": {"type": str, "nargs": 1, "action": FileAction},
             "int": {"type": int, "nargs": 1},
@@ -445,7 +455,7 @@ class Edatool:
                 self.logical_name = logical_name
                 self.core = core
 
-        incdirs = []
+        incdirs: list[str] = []
         src_files = []
         for f in self.files:
             if not self._add_include_dir(f, incdirs, force_slash):
@@ -527,6 +537,7 @@ class Edatool:
         print(f"Leaving directory '{abs_work_root}'")
         return cp.returncode, cp.stdout, cp.stderr
 
+    @staticmethod
     def _filter_verilog_files(src_file):
         ft = src_file.file_type
         return ft.startswith("verilogSource") or ft.startswith("systemVerilogSource")

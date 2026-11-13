@@ -33,7 +33,7 @@ Example snippet of a CAPI2 description file for Slang:
 
     argtypes = ["vlogdefine", "vlogparam"]
 
-    flags = []
+    flags: list[str] = []
 
     def __init(self, edam=None, work_root=None, eda_api=None):
         # call the super method here
@@ -97,7 +97,7 @@ Example snippet of a CAPI2 description file for Slang:
         elif run_mode == "preprocess":
             self.flags += ["--preprocess"]
 
-    def _get_define_flags(self) -> str:
+    def _get_define_flags(self) -> None:
         """
         understand flags necessary for various defines
         """
@@ -126,7 +126,7 @@ Example snippet of a CAPI2 description file for Slang:
             self.flags.append("--top")
             self.flags.append(str(self.toplevel))
 
-    def build_main(self):
+    def build_main(self, target=None):
         self._get_define_flags()
         self._get_param_flags()
         self._get_file_names()
