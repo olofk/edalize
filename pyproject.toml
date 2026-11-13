@@ -77,3 +77,22 @@ module = [
   "edalize.version",
 ]
 ignore_missing_imports = true
+
+[tool.ty.environment]
+python-version = "3.10"
+
+[tool.ty.src]
+include = ["edalize/"]
+
+# Optional deps that `ty check --isolated` doesn't install
+# (pandas, pyparsing, vunit, api_service)
+[[tool.ty.overrides]]
+include = [
+  "edalize/ise_reporting.py",
+  "edalize/quartus_reporting.py",
+  "edalize/reporting.py",
+  "edalize/tools/templates/efinity/isf_to_xml.py",
+  "edalize/vivado_reporting.py",
+  "edalize/vunit_hooks.py",
+]
+rules.import-not-found = "ignore"
