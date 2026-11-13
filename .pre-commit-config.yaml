@@ -24,3 +24,9 @@ repos:
         # Don't let pre-commit pass file paths as arguments. They would
         # override `files = [...]` in pyproject.toml.
         pass_filenames: false
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: v0.0.99
+    hooks:
+      - id: ty
+        # Don't create/update uv.lock or a .venv in the working tree.
+        args: [--isolated]
