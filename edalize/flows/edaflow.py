@@ -396,7 +396,7 @@ class Edaflow(object):
         return cp.returncode, cp.stdout, cp.stderr
 
     def build(self):
-        (cmd, args) = self.build_runner.get_build_command()
+        cmd, args = self.build_runner.get_build_command()
         self._run_tool(cmd, args=args, cwd=self.work_root)
 
     # Most flows won't have a run phase

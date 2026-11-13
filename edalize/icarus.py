@@ -67,7 +67,7 @@ class Icarus(Edatool):
         )
         f = open(os.path.join(self.work_root, self.name + ".scr"), "w")
 
-        (src_files, incdirs) = self._get_fileset_files()
+        src_files, incdirs = self._get_fileset_files()
         for key, value in self.vlogdefine.items():
             f.write("+define+{}={}\n".format(key, self._param_value_str(value, "")))
 

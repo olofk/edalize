@@ -138,7 +138,7 @@ class Quartus(Edatool):
         sources, IPs and constraints and then writes them to the TCL file along
         with the build steps.
         """
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
         self.jinja_env.filters["qsys_file_filter"] = self.qsys_file_filter
 

@@ -5,7 +5,7 @@ def test_empty_edam():
     import tempfile
     from edalize.edatool import get_edatool
 
-    (h, edam_file) = tempfile.mkstemp()
+    h, edam_file = tempfile.mkstemp()
 
     with pytest.raises(TypeError):
         backend = get_edatool("icarus")(edam=None)
@@ -42,7 +42,7 @@ def test_edam_files():
     edam = {"files": files, "name": "test_edam_files"}
 
     backend = get_edatool("icarus")(edam=edam)
-    (parsed_files, incdirs) = backend._get_fileset_files()
+    parsed_files, incdirs = backend._get_fileset_files()
 
     assert len(parsed_files) == 2
     assert parsed_files[0].name == "plain_file"
@@ -69,7 +69,7 @@ def test_verilog_include_file_with_include_path():
     edam = {"files": files, "name": "test_edam_files"}
 
     backend = get_edatool("icarus")(edam=edam)
-    (parsed_files, incdirs) = backend._get_fileset_files()
+    parsed_files, incdirs = backend._get_fileset_files()
 
     assert len(parsed_files) == 0
     assert incdirs == ["some_dir"]
@@ -89,7 +89,7 @@ def test_verilog_include_file_with_partial_include_path():
     edam = {"files": files, "name": "test_edam_files"}
 
     backend = get_edatool("icarus")(edam=edam)
-    (parsed_files, incdirs) = backend._get_fileset_files()
+    parsed_files, incdirs = backend._get_fileset_files()
 
     assert len(parsed_files) == 0
     assert incdirs == ["../some_dir"]

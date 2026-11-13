@@ -53,7 +53,7 @@ class Rivierapro(Edatool):
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl = open(os.path.join(self.work_root, "edalize_build_rtl.tcl"), "w")
 
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
         libs = []

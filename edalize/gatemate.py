@@ -43,7 +43,7 @@ class Gatemate(Edatool):
             }
 
     def configure_main(self):
-        (src_files, incdirs) = self._get_fileset_files()
+        src_files, incdirs = self._get_fileset_files()
         synth_out = self.name + "_synth.v"
 
         device = self.tool_options.get("device")

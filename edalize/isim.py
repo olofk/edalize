@@ -75,7 +75,7 @@ quit
             logger.error("VPI modules not supported by Isim: %s" % ", ".join(modules))
 
         with open(os.path.join(self.work_root, self.name + ".prj"), "w") as f:
-            (src_files, self.incdirs) = self._get_fileset_files()
+            src_files, self.incdirs = self._get_fileset_files()
 
             for src_file in src_files:
                 prefix = ""

@@ -35,7 +35,7 @@ common coding errors or coding style violations.
             }
 
     def configure_main(self):
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
 
         self._write_fileset_to_f_file(
             os.path.join(self.work_root, "sources.f"), include_vlogparams=False

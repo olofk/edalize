@@ -26,7 +26,7 @@ class Openlane(Edatool):
         files = []
         tcl = []
 
-        (src_files, incdirs) = self._get_fileset_files()
+        src_files, incdirs = self._get_fileset_files()
         for f in src_files:
             if f.file_type.startswith("verilogSource"):
                 files.append(f.name)

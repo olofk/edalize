@@ -56,7 +56,7 @@ Get `morty` from here: https://github.com/zarubaf/morty
     def build_main(self, target=None):
         args = list()
         src_files_filtered = list()
-        (src_files, incdirs) = self._get_fileset_files()
+        src_files, incdirs = self._get_fileset_files()
 
         args += ["-I {}".format(incdir) for incdir in incdirs]
         args += [
