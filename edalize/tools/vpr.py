@@ -12,7 +12,6 @@ import platform
 import re
 import subprocess
 
-
 logger = logging.getLogger(__name__)
 
 

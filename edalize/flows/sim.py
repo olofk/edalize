@@ -84,7 +84,7 @@ class Sim(Generic):
                     ],
                 ),
             }
-            (opt, val) = cocotb_options[tool]
+            opt, val = cocotb_options[tool]
             self.edam["tool_options"][tool][opt] = (
                 self.edam["tool_options"][tool].get(opt, []) + val
             )
@@ -102,7 +102,7 @@ class Sim(Generic):
         run_tool = self.flow.get_node(tool).inst
 
         # Get run command from simulator
-        (cmd, args, cwd) = run_tool.run()
+        cmd, args, cwd = run_tool.run()
 
         cocotb_module = self.flow_options.get("cocotb_module")
         if cocotb_module:

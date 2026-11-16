@@ -609,7 +609,7 @@ class Edatool(object):
 
         with open(output_file, "w") as f:
             unused_files = []
-            (src_files, incdirs) = self._get_fileset_files()
+            src_files, incdirs = self._get_fileset_files()
 
             for key, value in self.vlogdefine.items():
                 define_str = self._param_value_str(param_value=value)

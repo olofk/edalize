@@ -150,7 +150,7 @@ class Verilator(Edatool):
         incdirs = set()
         src_files = []
 
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
 
         self.verilator_file = self.name + ".vc"
 

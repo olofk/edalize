@@ -81,7 +81,7 @@ Example snippet of a CAPI2 description file for VCS:
 
         vcs_options = self.tool_options.get("vcs_options", [])
 
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
         if self._filelist_has_filetype(src_files, "systemVerilog", match_type="prefix"):
             vcs_options.append("-sverilog")
 

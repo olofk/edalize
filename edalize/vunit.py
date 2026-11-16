@@ -54,11 +54,11 @@ class Vunit(Edatool):
         return ""
 
     def configure_main(self):
-        (src_files, _incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, _incdirs = self._get_fileset_files(force_slash=True)
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
-        self.jinja_env.filters[
-            "src_file_vhdl_standard_filter"
-        ] = self.src_file_vhdl_standard_filter
+        self.jinja_env.filters["src_file_vhdl_standard_filter"] = (
+            self.src_file_vhdl_standard_filter
+        )
 
         # vunit does not allow empty library name or 'work', so we use `vunit_test_runner_lib`:
         libraries = OrderedDict()

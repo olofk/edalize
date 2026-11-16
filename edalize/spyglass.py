@@ -73,7 +73,7 @@ Example snippet of a CAPI2 description file
         """
         self._set_tool_options_defaults()
 
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
 
         self.jinja_env.filters["src_file_filter"] = self.src_file_filter
 

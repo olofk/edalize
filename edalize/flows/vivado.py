@@ -71,7 +71,7 @@ class Vivado(Edaflow):
         return FlowGraph.fromdict(flow)
 
     def build(self):
-        (cmd, args) = self.build_runner.get_build_command()
+        cmd, args = self.build_runner.get_build_command()
         pnr_opt = self.flow_options.get("pnr", "")
         if self.flow_options.get("gui"):
             # Invoking the GUI by user has the highest precedence over anything else
@@ -89,5 +89,5 @@ class Vivado(Edaflow):
 
             # Get run command from tool instance
             vivado_inst = self.flow.get_node("vivado").inst
-            (cmd, args, cwd) = vivado_inst.run()
+            cmd, args, cwd = vivado_inst.run()
             self._run_tool(cmd, args=args, cwd=cwd)

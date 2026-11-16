@@ -113,10 +113,10 @@ class Apicula(Edaflow):
         super().configure_tools(flow)
 
     def build(self):
-        (cmd, args) = self.build_runner.get_build_command()
+        cmd, args = self.build_runner.get_build_command()
         self._run_tool(cmd, args=args, cwd=self.work_root, quiet=True)
 
     def run(self):
-        (cmd, args) = self.build_runner.get_build_command()
+        cmd, args = self.build_runner.get_build_command()
         args += ["openfpgaloader"]
         self._run_tool(cmd, args=args, cwd=self.work_root)

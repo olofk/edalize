@@ -65,17 +65,13 @@ class Openfpga(Edatool):
 
         # Check environment variable setup
         if os.environ.get("OPENFPGA_PATH") is None:
-            raise RuntimeError(
-                """\
+            raise RuntimeError("""\
 Environment variable 'OPENFPGA_PATH' was not found!
-Download, build and source the framework: https://github.com/lnis-uofu/OpenFPGA"""
-            )
+Download, build and source the framework: https://github.com/lnis-uofu/OpenFPGA""")
         if os.environ.get("SOFA_PATH") is None:
-            raise RuntimeError(
-                """\
+            raise RuntimeError("""\
 Environment variable 'SOFA_PATH' was not found!
-Download and source the project: https://github.com/lnis-uofu/SOFA"""
-            )
+Download and source the project: https://github.com/lnis-uofu/SOFA""")
 
         self.openfpga_path = os.environ["OPENFPGA_PATH"]
         self.openfpga_flow = f"{self.openfpga_path}/openfpga_flow"
@@ -87,7 +83,7 @@ Download and source the project: https://github.com/lnis-uofu/SOFA"""
         benchmark variable need to be a Verilog file type, a made up of
         multiple files.
         """
-        (src_files, inc_dirs) = self._get_fileset_files(force_slash=True)
+        src_files, inc_dirs = self._get_fileset_files(force_slash=True)
 
         # Create the benchmark variable, as a list of files using absolute path
         tb_files = []

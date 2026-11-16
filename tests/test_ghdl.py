@@ -33,6 +33,7 @@ LOCAL_FILES = [
     {"name": "vhdl_lfile", "file_type": "vhdlSource", "logical_name": "libx"},
 ]
 
+
 # Test 02 - no vhdl version specified
 def test_ghdl_02(make_edalize_test):
     tf = make_edalize_test(

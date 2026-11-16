@@ -88,7 +88,7 @@ class Xcelium(Edatool):
     def _write_build_rtl_f_file(self, tcl_main):
         tcl_build_rtl = open(os.path.join(self.work_root, "edalize_build_rtl.f"), "w")
 
-        (src_files, incdirs) = self._get_fileset_files()
+        src_files, incdirs = self._get_fileset_files()
         vlog_include_dirs = ["+incdir+" + d.replace("\\", "/") for d in incdirs]
 
         libs = []

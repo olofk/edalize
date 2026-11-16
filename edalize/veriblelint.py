@@ -58,7 +58,7 @@ class Veriblelint(Edatool):
         return args
 
     def run_main(self):
-        (src_files, incdirs) = self._get_fileset_files(force_slash=True)
+        src_files, incdirs = self._get_fileset_files(force_slash=True)
 
         src_files_filtered = []
         config_files_filtered = []

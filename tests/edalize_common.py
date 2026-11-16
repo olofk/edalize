@@ -7,7 +7,6 @@ import pytest
 
 from edalize.edatool import get_edatool
 
-
 tests_dir = os.path.dirname(__file__)
 
 

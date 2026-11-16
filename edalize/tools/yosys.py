@@ -84,11 +84,13 @@ class Yosys(Edatool):
         self.edam["files"].append(
             {
                 "name": default_target,
-                "file_type": "jsonNetlist"
-                if output_format == "json"
-                else "verilogSource"
-                if output_format == "verilog"
-                else output_format,
+                "file_type": (
+                    "jsonNetlist"
+                    if output_format == "json"
+                    else (
+                        "verilogSource" if output_format == "verilog" else output_format
+                    )
+                ),
             }
         )
 
@@ -123,9 +125,11 @@ class Yosys(Edatool):
             "synth_options": " ".join(self.tool_options.get("yosys_synth_options", "")),
             "write_command": "write_" + output_format,
             "output_format": "v" if output_format == "verilog" else output_format,
-            "output_opts": "-pvector bra "
-            if (arch == "xilinx" and output_format == "edif")
-            else "",
+            "output_opts": (
+                "-pvector bra "
+                if (arch == "xilinx" and output_format == "edif")
+                else ""
+            ),
             "yosys_template": template,
             "name": self.name,
         }
