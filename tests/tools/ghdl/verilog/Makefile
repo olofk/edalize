@@ -14,5 +14,5 @@ make_lib_dirs:
 analyze: default_library libx
 	$(EDALIZE_LAUNCHER) ghdl -m --std=08  -P./default_library -P./libx --work=default_library --workdir=./default_library top_module
 
-run: analyze work-obj08.cf
+run: analyze default_library/default_library-obj08.cf
 	$(EDALIZE_LAUNCHER) ghdl --synth --out=verilog --std=08 --work=default_library --workdir=./default_library top_module

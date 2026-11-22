@@ -173,7 +173,7 @@ class Ghdl(Edatool):
                 + stdarg
                 + [top_libraries, top_unit],
                 ["run"],
-                ["analyze", f"work-obj{standard}.cf"],
+                ["analyze", f"{top_lib}/{top_lib.lower()}-obj{standard}.cf"],
             )
         else:
             commands.add(
@@ -182,7 +182,8 @@ class Ghdl(Edatool):
                 + run_options
                 + lib_include_dirs
                 + [top_libraries, top_unit]
-                + sim_options,
+                + sim_options
+                + ["$(EXTRA_OPTIONS)"],
                 ["run"],
                 [
                     "analyze",
