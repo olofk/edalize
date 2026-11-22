@@ -24,7 +24,7 @@ set_property board_part {{ tool_options.board_part }} [current_project]
 set_param project.enableVHDL2008 1
 {%- endif %}
 
-{% if vlogparam -%}
+{% if vlogparam and not generic -%}
 set_property generic {
   {%- for k, v in vlogparam.items() %}{{ k }}={{ v|param_value_str }} {% endfor -%}
   } [get_filesets sources_1]
@@ -32,6 +32,7 @@ set_property generic {
 
 {% if generic -%}
 set_property generic {
+  {%- for k, v in vlogparam.items() %}{{ k }}={{ v|param_value_str }} {% endfor -%}
   {%- for k, v in generic.items() %}{{ k }}={{ v|generic_value_str(bool_is_str = True) }} {% endfor -%}
   } [get_filesets sources_1]
 {%- endif %}
