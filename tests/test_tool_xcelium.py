@@ -11,7 +11,9 @@ def test_tool_xcelium(tool_fixture):
         "xrun_options": ["some", "xrun", "options"],
     }
 
-    tf = tool_fixture("xcelium", tool_options=tool_options)
+    paramtypes = ["plusarg", "vlogdefine", "vlogparam", "generic"]
+
+    tf = tool_fixture("xcelium", tool_options=tool_options, paramtypes=paramtypes)
 
     tf.tool.configure()
     tf.compare_config_files(
