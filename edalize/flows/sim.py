@@ -159,11 +159,10 @@ class Sim(Generic):
         failed: int = 0
         tests: int = 0
 
-        for testsuite in ET.parse(file).getroot().findall("testsuite"):
-            for testcase in testsuite.findall("testcase"):
-                failed += len(testcase.findall("failure"))
-                failed += len(testcase.findall("error"))
-                tests += 1
+        for testcase in ET.parse(file).getroot().iter("testcase"):
+            failed += len(testcase.findall("failure"))
+            failed += len(testcase.findall("error"))
+            tests += 1
 
         if failed:
             raise RuntimeError(f"ERROR: Failed {failed} of {tests} tests.")
