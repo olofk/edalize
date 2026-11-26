@@ -111,6 +111,17 @@ class Sim(Generic):
             self.verbose = False
             _, libpy, _ = self._run_tool("cocotb-config", ["--libpython"], quiet=True)
             _, pybin, _ = self._run_tool("cocotb-config", ["--python-bin"], quiet=True)
+            # cocotb >= 2.1 needs GPI_USERS to load libpython and the PyGPI entry point
+            gpi_users = None
+            if "GPI_USERS" not in os.environ:
+                _, hlp, _ = self._run_tool("cocotb-config", ["--help"], quiet=True)
+                if b"--pygpi-entry-point" in hlp:
+                    _, entry, _ = self._run_tool(
+                        "cocotb-config", ["--pygpi-entry-point"], quiet=True
+                    )
+                    gpi_users = ";".join(
+                        x.decode("utf-8").strip() for x in (libpy, entry)
+                    )
             self.verbose = prev_verbose
 
             env = {
@@ -119,6 +130,8 @@ class Sim(Generic):
                 "LIBPYTHON_LOC": libpy.decode("utf-8").strip(),
                 "PYGPI_PYTHON_BIN": pybin.decode("utf-8").strip(),
             }
+            if gpi_users:
+                env["GPI_USERS"] = gpi_users
         else:
             env = {}
 
