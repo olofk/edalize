@@ -15,4 +15,4 @@ analyze: libx default_library
 	$(EDALIZE_LAUNCHER) ghdl -m --std=08  -P./libx -P./default_library --work=libx --workdir=./libx vhdl_lfile
 
 run: analyze libx/libx-obj08.cf
-	$(EDALIZE_LAUNCHER) ghdl -r --std=08 -P./libx -P./default_library --work=libx --workdir=./libx vhdl_lfile
+	$(EDALIZE_LAUNCHER) ghdl -r --std=08 -P./libx -P./default_library --work=libx --workdir=./libx vhdl_lfile $(EXTRA_OPTIONS)

@@ -15,4 +15,4 @@ analyze: default_library libx
 	$(EDALIZE_LAUNCHER) ghdl -m --std=93 --ieee=synopsys -P./default_library -P./libx --work=default_library --workdir=./default_library top_module
 
 run: analyze default_library/default_library-obj93.cf
-	$(EDALIZE_LAUNCHER) ghdl -r --std=93 -P./default_library -P./libx --work=default_library --workdir=./default_library top_module
+	$(EDALIZE_LAUNCHER) ghdl -r --std=93 -P./default_library -P./libx --work=default_library --workdir=./default_library top_module $(EXTRA_OPTIONS)
