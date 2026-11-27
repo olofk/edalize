@@ -1,0 +1,17 @@
+{
+  "DESIGN_NAME": "top_module",
+  "VERILOG_FILES": [
+    "dir::vlog_file.v",
+    "/abs/path/sv_file.sv"
+  ],
+  "VERILOG_DEFINES": [
+    "vlogdefine_bool=1",
+    "vlogdefine_int=42",
+    "vlogdefine_str=hello"
+  ],
+  "SYNTH_PARAMETERS": [
+    "vlogparam_bool=1",
+    "vlogparam_int=42",
+    "vlogparam_str=\"hello\""
+  ]
+}

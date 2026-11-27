@@ -1,0 +1,38 @@
+{
+  "DESIGN_NAME": "top_module",
+  "VERILOG_FILES": [
+    "dir::sv_file.sv",
+    "dir::vlog_file.v",
+    "dir::vlog_with_define.v",
+    "dir::vlog05_file.v",
+    "dir::another_sv_file.sv"
+  ],
+  "VHDL_FILES": [
+    "dir::vhdl_file.vhd",
+    "dir::vhdl_lfile",
+    "dir::vhdl2008_file"
+  ],
+  "VERILOG_INCLUDE_DIRS": [
+    "dir::."
+  ],
+  "VERILOG_DEFINES": [
+    "vlogdefine_bool=1",
+    "vlogdefine_int=42",
+    "vlogdefine_str=hello"
+  ],
+  "SYNTH_PARAMETERS": [
+    "vlogparam_bool=1",
+    "vlogparam_int=42",
+    "vlogparam_str=\"hello\""
+  ],
+  "PNR_SDC_FILE": "dir::sdc_file",
+  "SIGNOFF_SDC_FILE": "dir::sdc_file",
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 20,
+  "DIE_AREA": [
+    0,
+    0,
+    100,
+    100
+  ]
+}
